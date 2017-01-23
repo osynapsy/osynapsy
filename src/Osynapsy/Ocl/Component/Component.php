@@ -98,7 +98,7 @@ class Component extends Tag
         self::requireFile($file,'css');
     }
     
-    public function getParameter($par)
+    public function getParameter($key)
     {
         return array_key_exists($key, $this->__par) ? $this->__par[$key] : null;
     }
