@@ -33,6 +33,9 @@ class Html extends HtmlResponse
                     case 'js':
                         $this->addJs($url);
                         break;
+                    case 'jscode':
+                        $this->addJsCode($url);
+                        break;
                     case 'css':
                         $this->addCss($url);
                         break;
