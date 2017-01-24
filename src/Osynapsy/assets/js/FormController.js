@@ -202,6 +202,7 @@ FormController =
         $('.field-in-error').removeClass('field-in-error');
         var ajaxpar = {
             url  : $('form').attr('action'),
+            headers: {'Osynapsy-Action': cmd},
             type : 'post',
             dataType : 'json',
             success : funcDispatcher,
