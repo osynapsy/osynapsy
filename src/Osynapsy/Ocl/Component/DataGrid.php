@@ -508,12 +508,15 @@ class DataGrid extends Component
         }
         if ($this->get_par('layout') == 'search' && $orw->oid)
         {
-            $orw->add(tag::create('td'),'first')
+            $orw->add(new Tag('td'),'first')
                 ->att('class','center')
                 ->add('<input type="radio" name="rad_search" value="'.$orw->oid.'" class="osy-radiosearch">');
         }
-        if ($this->get_par('print-pencil') && $this->get_par('record-update')){
-            $orw->add(tag::create('td'))->att('class','center')->att('style','padding: 3px 3px; vertical-align: middle;')->add('<span class="fa fa-pencil cmd-upd fa-lg" style="color: transparent;"></span>');
+        if ($this->get_par('print-pencil') && $this->get_par('record-update')) {
+            $orw->add(new Tag('td'))
+                ->att('class','center')
+                ->att('style','padding: 3px 3px; vertical-align: middle;')
+                ->add('<span class="fa fa-pencil cmd-upd fa-lg" style="color: transparent;"></span>');
         }
         $grd->add($orw.'');
     }
@@ -709,28 +712,7 @@ class DataGrid extends Component
             }
         }
 
-        //Calcolo statistiche
-        if ($sql_stat = $this->get_par('datasource-sql-stat')) {
-            try {
-                $sql_stat = str_replace('<[datasource-sql]>',$sql,$sql_stat).$whr;
-                $stat = $this->db->execUnique($sql_stat,null,'ASSOC');
-                if (!is_array($stat)) $stat = array($stat);
-                $dstat = tag::create('div')->att('class',"osy-datagrid-stat");
-                $tr = $dstat->add(tag::create('table'))->att('align','right')->add(tag::create('tr'));
-                foreach ($stat as $k=>$v) {
-                    $v = ($v > 1000) ? number_format($v,2,',','.') : $v;
-                    $tr->add(Tag::create('td'))->add('&nbsp;');
-                    $tr->add(Tag::create('td'))->att('title',$k)->add($k);
-                    $tr->add(Tag::create('td'))->add($v);
-                }
-                $this->__par['div-stat'] = $dstat;
-            } catch(\Exception $e) {
-                $this->par('error-in-sql-stat','<pre>'.$sql_stat."\n".$e->getMessage().'</pre>');
-            }
-        }
-
-        switch ($this->db->getType())
-        {
+        switch ($this->db->getType()) {
             case 'oracle':
                 $sql = "SELECT a.*
                         FROM (
@@ -798,7 +780,8 @@ class DataGrid extends Component
         $this->__dat = $dat;
     }
 
-    private function dataPivot($tr){
+    private function dataPivot($tr)
+    {
        $data = array();
        $hcol = array();
        $hrow = array();
