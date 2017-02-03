@@ -4,7 +4,7 @@ namespace Osynapsy\Core\Helper\Geo;
 /**
  * Description of GoogleMaps
  *
- * @author pietr
+ * @author p.celeste@osynapsy.net
  */
 class GoogleMaps 
 {
