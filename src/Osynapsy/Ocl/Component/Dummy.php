@@ -11,11 +11,9 @@ class Dummy extends Component
     
     protected function __build_extra__()
     {
-         if (!($txt = $this->getGlobal($this->id, $_REQUEST)))
-         {
-            $txt = $this->get_par('text');
-            $txt = kkernel::ReplaceVariable($txt);
-         }
-         $this->add($txt);
+        if (!($txt = $this->getGlobal($this->id, $_REQUEST))) {
+            $txt = $this->get_par('text');            
+        }
+        $this->add($txt);
     }
 }

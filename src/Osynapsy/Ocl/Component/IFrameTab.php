@@ -1,4 +1,6 @@
-class iframetab extends component
+<?php
+
+class IFrameTab extends component
 {
     private $iframe;
     
@@ -6,7 +8,7 @@ class iframetab extends component
     {
        parent::__construct('div',$name);
        $this->att('class','osy-iframe-tab tabs');
-       kkernel::$page->add_script(OSY_WEB_ROOT.'/js/component/oiframe.js');
+       $this->requireJs('/__assets/osynapsy/Ocl/IFrame.js');
        //osy_form::$page->add_script('../lib/jquery/jquery.scrollabletab.js');
     }
     
