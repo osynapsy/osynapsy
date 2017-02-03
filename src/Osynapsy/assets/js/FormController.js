@@ -190,18 +190,18 @@ FormController =
             } 
             parameterLst.push('actionParameters[]=' + parameterValue);
         }
-        FormController.exec($(obj).data('action'),parameterLst.join('&'));
+        FormController.exec(obj, $(obj).data('action'), parameterLst.join('&'));
     },
-    exec : function(cmd)
+    exec : function(obj, cmd)
     {
-        var extraData = (arguments.length > 1) ? arguments[1] : '';
-        var funcDispatcher = (arguments.length > 2) ? arguments[2] : function(resp){
-                FormController.waitMask('remove');
-                FormController.dispatchKernelResp(resp);
+        var extraData = (arguments.length > 2) ? arguments[2] : '';
+        var funcDispatcher = (arguments.length > 3) ? arguments[3] : function(resp){
+            FormController.waitMask('remove');
+            FormController.dispatchKernelResp(resp);
         };
         $('.field-in-error').removeClass('field-in-error');
         var ajaxpar = {
-            url  : $('form').attr('action'),
+            url  : $(obj).closest('form').attr('action'),
             headers: {'Osynapsy-Action': cmd},
             type : 'post',
             dataType : 'json',
@@ -224,7 +224,7 @@ FormController =
         }
         if (upload){ //Se devo effettuare un upload personalizzo il metodo jquery $.ajax per fargli spedire il FormData
           this.waitMask('open','progress');
-          ajaxpar['data'] = new FormData(document.forms[0]);
+          ajaxpar['data'] = new FormData($(obj).closest('form')[0]);
           ajaxpar['data'].append('k-cmd',cmd);
           ajaxpar['xhr'] = function(){  // Custom XMLHttpRequest
              var myXhr = $.ajaxSettings.xhr();
