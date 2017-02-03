@@ -34,15 +34,18 @@ abstract class Controller implements InterfaceController
         }
     }
     
-    private function execAction()
+    private function execAction($cmd)
     {
         $this->setResponse(new JsonResponse());
-        $cmd = $_REQUEST[$this->actionKey];
+        //$cmd = $_REQUEST[$this->actionKey];
         //sleep(0.7);
         if (!method_exists($this, $cmd.'Action')) {
             $res = 'No action '.$cmd.' exist';
         } elseif (!empty($_REQUEST['actionParameters'])){
-            $res = call_user_func_array(array($this,$cmd.Action),$_REQUEST['actionParameters']);
+            $res = call_user_func_array(
+                array($this,$cmd.Action),
+                $_REQUEST['actionParameters']
+            );
         } else {
             $res = $this->{$cmd.'Action'}();
         }
@@ -88,8 +91,10 @@ abstract class Controller implements InterfaceController
     
     public function run()
     {
-        if (!empty($_REQUEST[$this->actionKey])) {
-            return $this->execAction();
+        //if (!empty($_REQUEST[$this->actionKey])) {
+        $cmd = filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION');
+        if (!empty($cmd)) {
+            return $this->execAction($cmd);
         }        
         $this->setResponse(new HtmlResponse());
         $layoutPath = $this->request->get('app.layouts.'.$this->templateId);
