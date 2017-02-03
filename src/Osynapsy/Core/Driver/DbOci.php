@@ -12,7 +12,7 @@
  */
 namespace Osynapsy\Core\Driver;
 
-class DbOci
+class DbOci implements InterfaceDbo
 {
     private $__par = array();
     private $__cur = null;
@@ -211,7 +211,7 @@ class DbOci
         return $cols;
     }
 
-    public function insert($table, $values, $keys = array())
+    public function insert($table, array $values, $keys = array())
     {
         $command  = 'INSERT INTO '.$table;
         $command .= '('.implode(',', array_keys($values)).')';
@@ -258,7 +258,7 @@ class DbOci
         return $this->execCommand($cmd, $values);
     }
 
-    public function delete($table, $keys)
+    public function delete($table, array $keys)
     {
         $where = array();
         if (!is_array($keys)){ 
@@ -275,17 +275,6 @@ class DbOci
     public function par($p)
     {
         return array_key_exists($p,$this->__par) ? $this->__par[$p] : null;
-    }
-
-    public function cast($field,$type)
-    {
-        $cast = $field;
-        switch ($this->get_type()) {
-            case 'pgsql':
-                         $cast .= '::'.$type;
-                         break;
-        }
-        return $cast;
     }
 
     public function freeRs($rs)

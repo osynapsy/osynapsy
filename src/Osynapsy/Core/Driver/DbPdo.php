@@ -1,7 +1,7 @@
 <?php
 namespace Osynapsy\Core\Driver;
 
-class DbPdo extends \PDO
+class DbPdo extends \PDO implements InterfaceDbo
 {
     private $param = array();
     private $iCursor = null;
@@ -150,7 +150,7 @@ class DbPdo extends \PDO
         return $cols;
     }
 
-    public function insert($tbl,$arg)
+    public function insert($tbl, array $arg)
     {
         $fld = $val = array();
         foreach ($arg as $k=>$v) {
@@ -163,7 +163,7 @@ class DbPdo extends \PDO
         return $this->lastId();
     }
 
-    public function update($tbl,$arg,$cnd)
+    public function update($tbl, array $arg, array $cnd)
     {
         $fld = array();
         foreach ($arg as $k => $v) {
@@ -183,7 +183,7 @@ class DbPdo extends \PDO
         return $this->execCommand($cmd,$val);
     }
 
-    public function delete($tbl, $cnd)
+    public function delete($tbl, array $cnd)
     {
         $whr = array();
         if (!is_array($cnd)) {
@@ -199,7 +199,7 @@ class DbPdo extends \PDO
     
     public function par($p)
     {
-        return key_exists($p,$this->param) ? $this->param[$p] : null;
+        return array_key_exists($p,$this->param) ? $this->param[$p] : null;
     }
     
     public function cast($field,$type)
