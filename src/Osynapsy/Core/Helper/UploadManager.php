@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 namespace Osynapsy\Core\Helper;
 
 class UploadManager
@@ -12,7 +12,7 @@ class UploadManager
         $this->documentRoot = filter_input(\INPUT_SERVER, 'DOCUMENT_ROOT');
     }
 
-    public static function getUniqueFilename($pathOnDisk)
+    public function getUniqueFilename($pathOnDisk)
     {
         if (empty($pathOnDisk)) {
             return false;

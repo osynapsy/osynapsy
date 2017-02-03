@@ -3,7 +3,7 @@ namespace Osynapsy\Core\Model;
 
 use Osynapsy\Core\Lib\Dictionary;
 use Osynapsy\Core\Model\ModelField;
-use Osynapsy\Core\Helper\ImageProcessor;
+use Osynapsy\Core\Helper\UploadManager;
 
 abstract class Model
 {
@@ -292,7 +292,11 @@ abstract class Model
             case 'file':
             case 'image':
                 if (is_array($_FILES) && array_key_exists($field->html, $_FILES)) {
-                    $value = ImageProcessor::upload($field->html);
+                    $upload = new UploadManager($this->controller->getResponse());
+                    $value = $upload->saveFile(
+                        $field->html, 
+                        $this->controller->getRequest()->get('app.parameters.path-upload')
+                    );
                 } else {
                     //For prevent overwrite of db value
                     $field->readonly = true;
