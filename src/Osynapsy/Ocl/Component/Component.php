@@ -93,6 +93,11 @@ class Component extends Tag
         self::requireFile($file,'js');
     }
     
+    public static function requireJsCode($code)
+    {
+        self::requireFile($code, 'jscode');
+    }
+    
     public static function requireCss($file)
     {
         self::requireFile($file,'css');
