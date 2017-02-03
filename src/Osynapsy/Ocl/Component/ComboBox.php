@@ -13,11 +13,11 @@ class ComboBox extends Component
     public $dba = null;
     public $placeholder = '- Seleziona -';
     
-    public function __construct($nam, $id=null)
+    public function __construct($nam, $id=null, $db = null)
     {
         parent::__construct('select',$this->nvl($id,$nam));
-        $this->att('name',$nam);
-        $this->dba = Kernel::$dba;
+        $this->att('name',$nam);        
+        $this->dba = empty($db) ? Kernel::$dba : $db;
     }
     
     protected function __build_extra__()
