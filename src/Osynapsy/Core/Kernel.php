@@ -8,53 +8,54 @@ use Osynapsy\Core\Driver\DbOci;
 
 class Kernel
 {
-    private static $repo = array(
+    private $repo = array(
         'xmlconfig' => array(),
         'events' => array(), 
         'layouts' => array()        
     );
-    public static $router;
-    public static $request;
-    public static $controller;
-    public static $appController;
-    public static $db = array();
-    public static $dba = array();
+    public $router;
+    public $request;
+    public $controller;
+    public $appController;
+    public $db = array();
+    public $dba = array();
 
-    public static function init($fileconf, $requestRoute)
+    public function __construct($fileconf, $requestRoute)
     {        
-        self::loadConfiguration($fileconf);
-        self::$request = new Request($_GET, $_POST, array(), $_COOKIE, $_FILES, $_SERVER);
-        self::$request->set(
+        $this->loadConfiguration($fileconf);
+        $this->request = new Request($_GET, $_POST, array(), $_COOKIE, $_FILES, $_SERVER);
+        $this->request->set(
             'app.parameters',
-            self::loadXmlConfig('/configuration/parameters/parameter', 'name', 'value')
+            $this->loadXmlConfig('/configuration/parameters/parameter', 'name', 'value')
         );
-        self::$request->set(
+        $this->request->set(
             'app.layouts',
-            self::loadXmlConfig('/configuration/layouts/layout', 'name', 'path')
+            $this->loadXmlConfig('/configuration/layouts/layout', 'name', 'path')
         );        
-        self::$router = new Router(
+        $this->router = new Router(
             $requestRoute,
-            self::$request
+            $this->request
         );
-        self::loadRoutes(
-            self::$repo['xmlconfig'],
+        $this->loadRoutes(
+            $this->repo['xmlconfig'],
             '/configuration/routes/route'
-        );       
-        return self::run();
+        );        
     }
     
-    public static function run()
+    public function run()
     {
-        if (self::runAppController()) {
-            $response = self::runRouteController(self::$router->getRoute('controller'));
+        if ($this->runAppController()) {
+            $response = $this->runRouteController(
+                $this->router->getRoute('controller')
+            );
             if ($response !== false) {
                 return $response;
             }
         }
-        return self::pageNotFound();
+        return $this->pageNotFound();
     }
     
-    private static function loadRoutes($xmlDocs, $path)
+    private function loadRoutes($xmlDocs, $path)
     {
         foreach ($xmlDocs as $appName => $xml) {
             foreach ($xml->xpath($path) as $e) {
@@ -62,10 +63,10 @@ class Kernel
                 $url = (string) $e['path'];
                 $ctl = (string) trim(str_replace(':', '\\', $e[0]));
                 $tpl = (string) $e['template'];
-                self::$router->addRoute($id, $url, $ctl, $tpl, $appName, $e->attributes());                
+                $this->router->addRoute($id, $url, $ctl, $tpl, $appName, $e->attributes());                
             }
         }
-        self::$router->addRoute(
+        $this->router->addRoute(
             'OsynapsyAssetsManager',
             '/__assets/osynapsy/?*',
             'Osynapsy\\Core\\Controller\\AssetLoader',
@@ -74,68 +75,68 @@ class Kernel
         );
     }
     
-    private static function runAppController()
+    private function runAppController()
     {
-        $app = self::$router->getRoute('application');      
+        $app = $this->router->getRoute('application');      
         if (empty($app)) {
             return true;
         }
-        self::loadDatasources("/configuration/app/$app/datasources/db");
+        $this->loadDatasources("/configuration/app/$app/datasources/db");
         
-        if (empty(self::$repo['xmlconfig'][$app]['controller'])) {
+        if (empty($this->repo['xmlconfig'][$app]['controller'])) {
             return true;
         }
         //If app has applicationController instance it before recall route controller;
-        $classControllerApp = str_replace(':','\\',self::$repo['xmlconfig'][$app]['controller']);
-        self::$appController = new $classControllerApp(Kernel::$dba, self::$router->getRoute());
-        return self::$appController->run();
+        $classControllerApp = str_replace(':','\\',$this->repo['xmlconfig'][$app]['controller']);
+        $this->appController = new $classControllerApp($this->dba, $this->router->getRoute());
+        return $this->appController->run();
     }
     
-    private static function runRouteController($classController)
+    private function runRouteController($classController)
     {
         if (empty($classController)) {
             return false;
         }
-        self::$controller = new $classController(self::$request, self::$dba, self::$appController);
-        return (string) self::$controller->run();
+        $this->controller = new $classController($this->request, $this->dba, $this->appController);
+        return (string) $this->controller->run();
     }
     
-    private static function loadConfiguration($path)
+    private function loadConfiguration($path)
     {
         if (!is_file($path)) {
             return;
         }
-        self::$repo['xmlconfig'][0] = simplexml_load_file($path);
-        if (!empty(self::$repo['xmlconfig'][0]) && self::$repo['xmlconfig'][0]->app) {
-            foreach (self::$repo['xmlconfig'][0]->app[0] as $e) {
+        $this->repo['xmlconfig'][0] = simplexml_load_file($path);
+        if (!empty($this->repo['xmlconfig'][0]) && $this->repo['xmlconfig'][0]->app) {
+            foreach ($this->repo['xmlconfig'][0]->app[0] as $e) {
                 $appName = $e->getName();
                 $appConf = filter_input(\INPUT_SERVER,'DOCUMENT_ROOT').'/../vendor/'.str_replace('_','/',$appName).'/etc/config.xml';                
                 if (is_file($appConf)) {
-                    self::$repo['xmlconfig'][$appName] = simplexml_load_file($appConf);
+                    $this->repo['xmlconfig'][$appName] = simplexml_load_file($appConf);
                 }
             }
         }
     }
 
-    private static function loadDatasources($path = '/configuration/datasources/db')
+    private function loadDatasources($path = '/configuration/datasources/db')
     {
-        foreach (self::$repo['xmlconfig'] as $xml) {            
+        foreach ($this->repo['xmlconfig'] as $xml) {            
             foreach ($xml->xpath($path) as $e) {                     
                 $connectionStr = (string) $e[0];
                 $connectionSha = sha1($connectionStr);
-                if (array_key_exists($connectionSha, self::$db)) {
+                if (array_key_exists($connectionSha, $this->db)) {
                     continue;
                 }
-                self::$db[$connectionSha] = self::getDbConnection($connectionStr);               
-                self::$db[$connectionSha]->connect();
-                if (empty(self::$dba)) {
-                    self::$dba = self::$db[$connectionSha];
+                $this->db[$connectionSha] = $this->getDbConnection($connectionStr);               
+                $this->db[$connectionSha]->connect();
+                if (empty($this->dba)) {
+                    $this->dba = $this->db[$connectionSha];
                 }
             }
         }
     }
 
-    private static function getDbConnection($connectionString)
+    private function getDbConnection($connectionString)
     {        
         if (strpos($connectionString, 'oracle') !== false) {
             return new DbOci($connectionString);
@@ -143,10 +144,10 @@ class Kernel
         return new DbPdo($connectionString);
     }
     
-    public static function loadXmlConfig($xpath, $kkey, $kval)
+    public function loadXmlConfig($xpath, $kkey, $kval)
     {
         $result = array();
-        foreach (self::$repo['xmlconfig'] as $xml) {
+        foreach ($this->repo['xmlconfig'] as $xml) {
             foreach ($xml->xpath($xpath) as $e) {
                 $result[$e[$kkey]->__toString()] = (isset($e[$kval]) ? $e[$kval]->__toString() : '');
             }
@@ -154,7 +155,7 @@ class Kernel
         return $result;
     }
     
-    public static function loadRoute($xmlDocs, $path)
+    public function loadRoute($xmlDocs, $path)
     {
         foreach ($xmlDocs as $appName => $xml) {
             foreach ($xml->xpath($path) as $e) {
@@ -162,12 +163,12 @@ class Kernel
                 $url = (string) $e['path'];
                 $ctl = (string) trim(str_replace(':', '\\', $e[0]));
                 $tpl = (string) $e['template'];
-                self::$router->addRoute($id, $url, $ctl, $tpl, $appName, $e->attributes());                
+                $this->router->addRoute($id, $url, $ctl, $tpl, $appName, $e->attributes());                
             }
         }        
     }
     
-    public static function pageNotFound($message = 'Page not found')
+    public function pageNotFound($message = 'Page not found')
     {
         ob_clean();
         header('HTTP/1.1 404 Not Found');
