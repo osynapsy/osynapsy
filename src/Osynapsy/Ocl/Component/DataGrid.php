@@ -42,12 +42,11 @@ class DataGrid extends Component
     private $columns = array();
     private $columnProperties = array();
 
-    public function __construct($name, $toolbar=true, $db=null)
+    public function __construct($name, $toolbar=true)
     {
         $this->requireJs('/__assets/osynapsy/Ocl/DataGrid/script.js');
         $this->requireCss('/__assets/osynapsy/Ocl/DataGrid/style.css');
-        parent::__construct('div',$name);
-        $this->db = empty($db) ? Kernel::$dba : $db;
+        parent::__construct('div',$name);       
         $this->att('class','osy-datagrid-2');
         $this->__par['type'] = 'datagrid';
         $this->__par['row-num'] = 10;
@@ -82,22 +81,7 @@ class DataGrid extends Component
         );
         return $this->toolbar;
     }
-
-    private function loadColumnObject()
-    {
-        $oid = $this->__par['objectid'];
-        $sql = "SELECT o.o_nam as obj_nam,
-                       p.p_id  as prp_id,
-                       p.p_vl  as prp_vl
-                FROM osy_obj o
-                INNER JOIN osy_obj_prp p ON (o.o_id = p.o_id )
-                WHERE o.o_own = ?";
-        $res = Kernel::$dbo->execQuery($sql,array($oid));
-        foreach ($res as $rec) {
-            $this->__par['column-object'][$rec['obj_nam']][$rec['prp_id']] = $rec['prp_vl'];
-        }
-    }
-
+    
     private function checkAndBuildFilter()
     {
         if (!empty($_REQUEST[$this->id.'_filter']) && is_array($_REQUEST[$this->id.'_filter'])) {
@@ -270,12 +254,14 @@ class DataGrid extends Component
 
     private function buildBody($container, $data, $lev, $ico_arr = null)
     {
-        if (!is_array($data)) return;
+        if (!is_array($data)) {
+            return;
+        }
         $i = 0;
         $l = count($data);
         $ico_tre = null;
 
-        foreach ($data as $k => $row) {
+        foreach ($data as $row) {
             if (!is_null($lev)) {
                 if (($i+1) == $l) {
                     $ico_tre = 3;
@@ -726,7 +712,7 @@ class DataGrid extends Component
         //Calcolo statistiche
         if ($sql_stat = $this->get_par('datasource-sql-stat')) {
             try {
-                $sql_stat = Kernel::replaceVariable(str_replace('<[datasource-sql]>',$sql,$sql_stat).$whr);
+                $sql_stat = str_replace('<[datasource-sql]>',$sql,$sql_stat).$whr;
                 $stat = $this->db->execUnique($sql_stat,null,'ASSOC');
                 if (!is_array($stat)) $stat = array($stat);
                 $dstat = tag::create('div')->att('class',"osy-datagrid-stat");
@@ -777,29 +763,19 @@ class DataGrid extends Component
                 }
                 break;
         }
-        //Eseguo la query
-        //Kernel::mail_debug($sql,false);
-        //return;
+        //Eseguo la query        
         try {
             $this->__dat = $this->db->execQuery($sql,$this->get_par('datasource-sql-par'),'ASSOC');
         } catch (\Exception $e) {
             die($sql.$e->getMessage());
         }
-
-
         //Salvo le colonne in un option
         $this->__par['cols'] = $this->db->getColumns();
         $this->__par['cols_tot'] = count($this->__par['cols']);
         $this->__par['cols_vis'] = 0;
-        if (is_array($this->__par['cols']))
-        {
+        if (is_array($this->__par['cols'])) {
             $this->__par['cols_tot'] = count($this->__par['cols']);
-        }
-        //Scorro il recordset
-        //$this->__dat = $this->db->fetch_all($rs);
-
-        //Libero memoria annullando il recordset
-        //$this->db->free_rs($rs);
+        }        
     }
 
     private function dataGroup()
@@ -818,10 +794,8 @@ class DataGrid extends Component
                 $dat[] = $v;
             }
         }
-        //array_multisort($this->__grp[$gid]);
+        
         $this->__dat = $dat;
-        //var_dump($this->__dat);
-        //var_dump($this->__grp);
     }
 
     private function dataPivot($tr){
@@ -870,52 +844,6 @@ class DataGrid extends Component
        //return ; //Restituisco il record contenente l'header delle colonne in
     }
 
-    private function setExtForm()
-    {
-        $add = $this->get_par('record-add');
-        if (is_null($add)) $this->par('record-add',true);
-        $this->par('record-update',true);
-        $res = Kernel::$dbo->execQuery("SELECT frm.o_id    AS id,
-                                             'index.php' as page, /* fty.p1    AS form_man, */
-                                             dfld.p_vl   AS field_pkey,
-                                             coalesce(hprp.p_vl,'480') AS height,
-                                             coalesce(wprp.p_vl,'640') AS width,
-                                             frm.o_nam   as name,
-                                             frm.o_own   as app
-                                      FROM  osy_obj frm
-                                      INNER JOIN osy_obj      fld  ON (frm.o_id = fld.o_own)
-                                      INNER JOIN osy_obj_prp  pfld ON (fld.o_id = pfld.o_id AND pfld.p_id = 'db-field-is-pkey')
-                                      INNER JOIN  osy_obj_prp dfld ON (fld.o_id = dfld.o_id AND dfld.p_id = 'db-field-connected')
-                                      LEFT JOIN  osy_obj_prp  hprp ON (frm.o_id = hprp.o_id AND hprp.p_id = 'height')
-                                      LEFT JOIN  osy_obj_prp  wprp ON (frm.o_id = wprp.o_id AND wprp.p_id = 'width')
-                                      LEFT JOIN  osy_res      fty  ON (frm.o_sty = fty.v_id AND fty.k_id = 'osy-object-subtype')
-                                      WHERE frm.o_id = ? AND pfld.p_vl = '1'
-                                      UNION
-                                      SELECT frm.o_id  AS form_id,
-                                             'index.php' as form_man, /* fty.p1    AS form_man, */
-                                             null      AS field_pkey,
-                                             coalesce(hprp.p_vl,'480') AS height,
-                                             coalesce(wprp.p_vl,'640') AS width,
-                                             frm.o_nam as name,
-                                             frm.o_own as app
-                                      FROM  osy_obj frm
-                                      LEFT JOIN osy_obj_prp hprp ON (frm.o_id = hprp.o_id AND hprp.p_id = 'height')
-                                      LEFT JOIN osy_obj_prp wprp ON (frm.o_id = wprp.o_id AND wprp.p_id = 'width')
-                                      LEFT JOIN osy_res      fty  ON (frm.o_sty = fty.v_id AND fty.k_id = 'osy-object-subtype')
-                                      WHERE frm.o_id = ?",array($this->get_par('form-related'),$this->get_par('form-related-ins')),'ASSOC');
-        $pkey = array();
-        foreach ($res as $k => $rec){
-            if ($this->get_par('form-related') == $rec['id']){
-                $pkey[] = $rec['field_pkey'];
-                $this->att('oform',base64_encode(json_encode($rec)));
-            } elseif($this->get_par('form-related-ins') == $rec['id']){
-                $this->att('oform-insert',base64_encode(json_encode($rec)));
-            }
-        }
-
-        $this->par('pkey',$pkey);
-    }
-
     public function getColumns()
     {
         return $this->__col;
@@ -962,8 +890,9 @@ class DataGrid extends Component
         return $this->columnProperties[$n][$propertyKey];
     }
 
-    public function SetSql($sql,$par=array())
+    public function SetSql($db, $sql, $par=array())
     {
+        $this->db = $db;
         $this->__par['datasource-sql'] = $sql;
         $this->__par['datasource-sql-par'] = $par;
     }
