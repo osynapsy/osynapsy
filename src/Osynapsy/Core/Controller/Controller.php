@@ -40,7 +40,7 @@ abstract class Controller implements InterfaceController
         //$cmd = $_REQUEST[$this->actionKey];
         //sleep(0.7);
         if (!method_exists($this, $cmd.'Action')) {
-            $res = 'No action '.$cmd.' exist';
+            $res = 'No action '.$cmd.' exist in '.get_class($this);
         } elseif (!empty($_REQUEST['actionParameters'])){
             $res = call_user_func_array(
                 array($this,$cmd.Action),
