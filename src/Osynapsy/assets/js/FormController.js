@@ -176,7 +176,7 @@ FormController =
             alert('Attribute data-action don\'t set.');
         }
         if (!$(obj).data('action-parameters')) {
-            FormController.exec($(obj).data('action'));
+            FormController.exec(obj, $(obj).data('action'));
             return;
         }
         var parameterLst = [];        
