@@ -11,6 +11,13 @@ $ composer require osynapsy.org/osynapsy "^0.2.0"
 This install osynapsy and all required dependencies. Osynapsy require PHP 5.5.0 or newer.
 
 ## Usage
+Create and enter in webroot directory:
+
+```bash
+mkdir webroot
+
+cd webroot
+```
 
 Create an index.php file with the following contents:
 
