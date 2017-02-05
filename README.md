@@ -1,7 +1,7 @@
 # What is Osynapsy?
 Osynapsy is a MVC php framework. 
 
-#Installation
+##Installation
 It's recommended that you use [Composer](https://getcomposer.org/) to install Osynapsy.
 
 ```bash
