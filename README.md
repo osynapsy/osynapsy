@@ -57,11 +57,8 @@ Create an instance.xml config file with the following contents:
     </app>
 </configuration>
 ```
-The configuration file part are:
+The configuration file parts are:
 - configuration tag and app subtag.
 - your own app tag (Test_App in example)
 - datasources section in your app tag tell osynapsy db connection to create
 - parameters section in your app tag define instance parameters for your app
-
-
-
