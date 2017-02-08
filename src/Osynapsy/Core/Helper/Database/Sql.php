@@ -10,15 +10,17 @@ class Sql {
     //put your code here
     private $debug;
     private $part = [
-        'SELECT' => ['separator' => ','],
+        'SELECT' => ['separator' => ','.PHP_EOL],
         'JOIN'   => ['separator' => ' '.PHP_EOL,'postfix' => PHP_EOL],
-        'WHERE'  => ['separator' => ' ']       
+        'WHERE'  => ['separator' => ' '],
+        'ORDER BY' => ['separator' => ','.PHP_EOL]
     ];
     private $elements = [
         'SELECT' => array(),
         'FROM' => array(),
         'JOIN' => array(),
-        'WHERE' => array()
+        'WHERE' => array(),
+        'ORDER BY' => array()
     ];
     private $parameters = [];
     
@@ -33,6 +35,7 @@ class Sql {
             return $this;
         }
         $function($this);
+        return $this;
     }
     
     public function select(array $fields = null)
@@ -49,7 +52,8 @@ class Sql {
             }            
             $fields = $app;
         }
-        $this->elements['SELECT'] = array_merge($this->elements['SELECT'], $fields);        
+        $this->elements['SELECT'] = array_merge($this->elements['SELECT'], $fields);
+        return $this;
     }
     
     public function from($table, $fields = null)
@@ -70,7 +74,7 @@ class Sql {
     public function joinLeft($table, array $on, array $fields = null)
     {
         $this->select($fields);
-        $this->elements['JOIN'][] = 'INNER JOIN '.$table;
+        $this->elements['JOIN'][] = 'LEFT JOIN '.$table;
         $this->elements['JOIN'][] = 'ON ('.implode(' AND ',$on).')';
         return $this;
     }
@@ -87,7 +91,18 @@ class Sql {
         );
         return $this;
     }
-            
+    
+    public function orderBy(array $fields)
+    {
+        if (empty($fields)) {
+            return;
+        } elseif (!is_array($fields)) {
+            $fields = array($fields);
+        }
+        $this->elements['ORDER BY'] = array_merge($this->elements['ORDER BY'], $fields);
+        return $this;
+    }
+    
     public function __toString() {
         $string = '';
         foreach ($this->elements as $word => $items) {            
@@ -99,6 +114,12 @@ class Sql {
         }
         return $string;
     }
+    
+    public function getParameters()
+    {
+        return $this->parameters;
+    }
+    
     
     private function prefix($word)
     {
