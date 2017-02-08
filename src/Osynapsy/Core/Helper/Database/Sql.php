@@ -10,12 +10,16 @@ class Sql {
     //put your code here
     private $debug;
     private $part = [
-        'select' => [' ', PHP_EOL],
-        'from'   => [' ', PHP_EOL],
-        'where'  => [' ', PHP_EOL],
-        'ON' => [' (', ')'.PHP_EOL]
+        'SELECT' => ['separator' => ','],
+        'JOIN'   => ['separator' => ' '.PHP_EOL,'postfix' => PHP_EOL],
+        'WHERE'  => ['separator' => ' ']       
     ];
-    private $elements = [0 => ['SELECT', array()] ];
+    private $elements = [
+        'SELECT' => array(),
+        'FROM' => array(),
+        'JOIN' => array(),
+        'WHERE' => array()
+    ];
     private $parameters = [];
     
     public function __construct($debug = false)
@@ -23,7 +27,7 @@ class Sql {
         $this->debug = $debug;
     }
     
-    public function condition($condition, $function)
+    public function condition($condition, callable $function)
     {
         if (!$condition) {
             return $this;
@@ -31,70 +35,66 @@ class Sql {
         $function($this);
     }
     
-    public function select($fields = null)
+    public function select(array $fields = null)
     {
         if (empty($fields)) {
             return;
-        }
+        }        
         if (!is_array($fields)) {
             $fields = array($fields);
+        } elseif ($this->isAssoc($fields)) {
+            $app = array();
+            foreach($fields as $key => $value) {
+                $app[] = $value.' as "'.$key.'"';
+            }            
+            $fields = $app;
         }
-        $this->elements[0][1] = array_merge($this->elements[0][1], $fields);        
+        $this->elements['SELECT'] = array_merge($this->elements['SELECT'], $fields);        
     }
     
     public function from($table, $fields = null)
     {
         $this->select($fields);
-        $this->elements[] = ['FROM', $table];
+        $this->elements['FROM'] = $table;
         return $this;
     }
     
     public function join($table, array $on, array $fields = null)
     {
         $this->select($fields);
-        $this->elements[] = ['INNER JOIN', $table];
-        $this->elements[] = ['ON', $on];
+        $this->elements['JOIN'][] = 'INNER JOIN '.$table;
+        $this->elements['JOIN'][] = 'ON ('.implode(' AND ',$on).')';
         return $this;
     }
     
     public function joinLeft($table, array $on, array $fields = null)
     {
         $this->select($fields);
-        $this->elements[] = ['LEFT JOIN', $table];
-        $this->elements[] = ['ON', $on];
+        $this->elements['JOIN'][] = 'INNER JOIN '.$table;
+        $this->elements['JOIN'][] = 'ON ('.implode(' AND ',$on).')';
         return $this;
     }
     
     public function where($condition, array $parameters = array(), $operator = 'AND')
     {
-        $this->elements[]['WHERE'][] = $condition;
+        if (!empty($this->elements['WHERE'])) {
+            $condition = $operator . ' ' . $condition;
+        } 
+        $this->elements['WHERE'][] = $condition;
         $this->parameters = array_merge(
             $this->parameters,
             is_array($parameters) ? $parameters : [$parameters]
         );
         return $this;
     }
-    
-    public function __call2($method, $params)
-    {
-        if (!is_array($params) || count($params) < 2) {
-            $params = array($params, true);
-        }
-        $this->elements[$method] = $params;
-        return $this;
-    }
-    
+            
     public function __toString() {
         $string = '';
-        foreach ($this->elements as $item) {
-            $word = $item[0];
-            $string .= $word.' ';
-            $string .= $this->prefix($word);
-            $string .= is_array($item[1]) ? implode(',', $item[1]) : $item[1];
-            $string .= $this->postfix($word);
-            if (array_key_exists($word, $this->part)) {
-                $string .= $this->part[$word][1];
-            }
+        foreach ($this->elements as $word => $items) {            
+            $string .= $word == 'JOIN' ? '' : $word.' ';
+            $string .= $this->prefix($word);            
+            $string .= is_array($items) ? implode($this->getSeparator($word), $items) : ' '.$items;            
+            $string .= $this->postfix($word);            
             $string .= PHP_EOL;
         }
         return $string;
@@ -108,5 +108,15 @@ class Sql {
     private function postfix($word)
     {
         return array_key_exists($word, $this->part) ? $this->part[$word][1] : ' ';
+    }
+    
+    private function getSeparator($word)
+    {
+        return array_key_exists($word, $this->part) ? $this->part[$word]['separator'] : ' ';
+    }
+    
+    private function isAssoc($array)
+    {
+        return !($array === array_values($array));
     }
 }
