@@ -23,17 +23,6 @@ class Sql {
         $this->debug = $debug;
     }
     
-    private function addFields($fields)
-    {
-        if (empty($fields)) {
-            return;
-        }
-        if (!is_array($fields)) {
-            $fields = array($fields);
-        }
-        $this->elements[0][1] = array_merge($this->elements[0][1], $fields);
-    }
-    
     public function condition($condition, $function)
     {
         if (!$condition) {
@@ -42,16 +31,27 @@ class Sql {
         $function($this);
     }
     
+    public function select($fields = null)
+    {
+        if (empty($fields)) {
+            return;
+        }
+        if (!is_array($fields)) {
+            $fields = array($fields);
+        }
+        $this->elements[0][1] = array_merge($this->elements[0][1], $fields);        
+    }
+    
     public function from($table, $fields = null)
     {
-        $this->addFields($fields);
+        $this->select($fields);
         $this->elements[] = ['FROM', $table];
         return $this;
     }
     
     public function join($table, array $on, array $fields = null)
     {
-        $this->addFields($fields);
+        $this->select($fields);
         $this->elements[] = ['INNER JOIN', $table];
         $this->elements[] = ['ON', $on];
         return $this;
@@ -59,7 +59,7 @@ class Sql {
     
     public function joinLeft($table, array $on, array $fields = null)
     {
-        $this->addFields($fields);
+        $this->select($fields);
         $this->elements[] = ['LEFT JOIN', $table];
         $this->elements[] = ['ON', $on];
         return $this;
