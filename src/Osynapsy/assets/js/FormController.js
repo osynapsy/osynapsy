@@ -143,7 +143,7 @@ FormController =
     initButton : function()
     {
         $('.cmd-save,.cmd-exec').on('click',function(){
-            FormController.exec('save');
+            FormController.exec(this,'save');
         });
         $('body').on('click','.cmd-execute, .click-execute',function() {
             FormController.execute(this);
@@ -155,7 +155,7 @@ FormController =
         });
         $('.cmd-delete').on('click',function(){
             if (confirm('Sei sicuro di voler eliminare il record corrente?')){
-                FormController.exec('delete');
+                FormController.exec(this,'delete');
             }
         });
         $('.cmd-back').on('click',function(){
