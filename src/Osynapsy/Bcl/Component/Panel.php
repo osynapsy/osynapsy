@@ -142,7 +142,7 @@ class Panel extends Component
     public function buildLabel(&$obj, $colspan)
     {
         $style='';
-        if (is_object($obj['obj']) && ($obj['obj']->tag == 'button')) {
+        if (is_object($obj['obj']) && ($obj['obj']->tag == 'button') || strpos($obj['obj']->class, 'label-block') !== false) {
            $obj['lbl'] = '&nbsp';
            $style = 'display: block';
         }
