@@ -283,7 +283,12 @@ class DataGrid extends Component
             $i++;
         }
     }
-
+    
+    protected function formatOption($opt)
+    {
+        return $opt;
+    }
+    
     private function buildHead($thead)
     {
         $tr = new Tag('tr');
@@ -307,7 +312,7 @@ class DataGrid extends Component
                 'style'    => '',
                 'title'    => $col['name']
             );
-
+            
             switch ($opt['title'][0]) {
                 case '_':
                     $opt['print'] = false;
@@ -359,6 +364,9 @@ class DataGrid extends Component
                     $opt['title'] = str_replace(array('$','?','#','!'),array('','','',''),$opt['title']);
                     break;
             }
+            
+            $opt = $this->formatOption($opt);
+            
             if ($opt['print']) {
                 $this->__par['cols_vis'] += 1;
                 $cel = $tr->add(new Tag('th'))
@@ -460,8 +468,11 @@ class DataGrid extends Component
                     break;
                     break;
             }
+            
+            $opt['cell'] = $this->formatOption($opt['cell']);
+            
             if (!empty($opt['cell']['format'])){
-                list($opt,$lev,$pos,$ico_arr) = $this->formatCellValue($opt,$pk,$lev,$pos,$ico_arr);
+                list($opt,$lev,$pos,$ico_arr) = $this->formatCellValue($opt, $pk, $lev, $pos, $ico_arr, $row);
                 //var_dump($opt['row']);
             }
             $t++; //Incremento l'indice generale della colonna
@@ -520,10 +531,16 @@ class DataGrid extends Component
         }
         $grd->add($orw.'');
     }
-
-    private function formatCellValue($opt, $pk, $lev, $pos, $ico_arr = null)
+    
+    protected function formatCellOption($opt, $pk, $lev, $pos, $ico_arr, $data)
+    {
+        return $opt;
+    }
+    
+    private function formatCellValue($opt, $pk, $lev, $pos, $ico_arr = null, $data = array())
     {
         $opt['cell']['print'] = false;
+        
         switch ($opt['cell']['format'])
         {
             case '_attr':
@@ -639,6 +656,9 @@ class DataGrid extends Component
                 $opt['cell']['print'] = true;
                 break;
         }
+        
+        $opt = $this->formatCellOption($opt, $pk, $lev, $pos, $ico_arr, $data);
+        
         return array($opt,$lev,$pos,$ico_arr);
     }
 
