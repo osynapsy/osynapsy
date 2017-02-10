@@ -272,6 +272,24 @@ class DbOci implements InterfaceDbo
         $this->execCommand($cmd, $keys);
     }
 
+    public function select($table, array $fields, array $condition)
+    {
+        $where = array();   
+        foreach ($condition as $field => $value) {
+            if (is_null($value)) {
+                $where[] = "$field is null";
+                continue;
+            }
+            $where[] = "$field = :WHERE_{$field}";
+            $values['WHERE_'.$field] = $value;
+        }
+        $cmd = 'SELECT '.implode(', ',$fields);
+        $cmd .= ' FROM '.$table;
+        $cmd .= ' WHERE ';
+        $cmd .= implode(' AND ',$where);
+        return $this->execQuery($cmd, $values, 'ASSOC');
+    }
+    
     public function par($p)
     {
         return array_key_exists($p,$this->__par) ? $this->__par[$p] : null;
