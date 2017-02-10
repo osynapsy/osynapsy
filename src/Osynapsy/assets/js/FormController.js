@@ -77,7 +77,8 @@ FormController =
         }
         if ('command' in resp){
             $.each(resp.command, function(idx,val){
-                if (idx in this) {
+                //if (idx in this) {
+                if (val[0] in FormController) {
                     FormController[val[0]](val[1]);
                 }
             });
