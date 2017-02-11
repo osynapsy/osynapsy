@@ -16,6 +16,32 @@ FormController =
         event : { init : {} },
         componentInit : {}
     },
+    init : function()
+    {
+        $('body').on('click','.cmd-execute, .click-execute',function() {
+            FormController.execute(this);
+        }).on('change','.change-execute',function(){
+            FormController.execute(this);
+        }).on('click','a.open-modal',function(e){
+            e.preventDefault();            
+            FormController.modalWindow(
+                'amodal', 
+                $(this).attr('title'), 
+                $(this).attr('href'), 
+                $(this).attr('modal-width') ? $(this).attr('modal-width') : '75%',
+                $(this).attr('modal-height') ? $(this).attr('modal-height') : $(window).innerHeight() - 200
+            );
+        }).on('click','.cmd-delete',function(){
+            if (confirm('Sei sicuro di voler eliminare il record corrente?')){
+                FormController.exec(this,'delete');
+            }
+        }).on('click','.cmd-back',function(){        
+            FormController.back();
+        }).on('click','.save-history',function(){
+            FormController.saveHistory();
+        });
+        this.fire('init');
+    },
     back : function()
     {
         if (!sessionStorage.history) {
@@ -48,29 +74,20 @@ FormController =
     },
     dispatchKernelResp : function(resp)
     {
-        console.log(resp);
+        //console.log(resp);
         if (!this.isObject(resp)){
             console.log('Resp is not an object : ',resp);
             return;
         }
         if ('errors' in resp){
             msg = '';
-            $.each(resp.errors,function(idx,val){
+            $.each(resp.errors, function(idx, val){
                 if (val[0] == 'alert'){
                     alert(val[1]);
                 } else if (!$('#'+val[0]).hasClass('field-in-error')){
                     cmp = $('#'+val[0]);
                     if (cmp){
-                        FormController.showErrorOnLabel(cmp, val[1]);
-                        /*cmp.change(function(){
-                            $(this).closest('.form-group').removeClass('has-error');
-                            $(this).popover('destroy');
-                        }).closest('.form-group')
-                          .addClass('has-error');
-                        var err =  val[1].replace(val[0],cmp.attr('label'));
-                        console.log(err);
-                        $(cmp).popover({content : err,placement :'right'});
-                        $(cmp).popover('show');*/
+                        FormController.showErrorOnLabel(cmp, val[1]);                        
                     }
                 }
             });
@@ -112,7 +129,7 @@ FormController =
         }
 
     },
-    gotoPost : function (url,parameters)
+    gotoPost : function (url, parameters)
     {
         var frm = $('<form method="post" action="'+url+'"></form>');
         for (k in parameters) {
@@ -121,52 +138,7 @@ FormController =
         $('body').append(frm);
         frm.submit();
     },
-    init : function()
-    {
-        this.initButton();
-        this.initDatePicker();
-        this.fire('init');
-    },
-    initDatePicker : function()
-    {
-        $('.datepicker').each(function(){
-            var parStartDate = $(this).data('start-date');
-            var parEndDate = $(this).data('end-date');
-            $(this).datepicker({
-                autoclose : true,
-                format : 'dd/mm/yyyy',
-                todayHighlight : true,
-                startDate : parStartDate,
-                endDate : parEndDate
-            });
-        });
-    },
-    initButton : function()
-    {
-        $('.cmd-save,.cmd-exec').on('click',function(){
-            FormController.exec(this,'save');
-        });
-        $('body').on('click','.cmd-execute, .click-execute',function() {
-            FormController.execute(this);
-        }).on('change','.change-execute',function(){
-            FormController.execute(this);
-        }).on('click','a.open-modal',function(e){
-            e.preventDefault();
-            FormController.modalWindow('amodal',$(this).attr('title'), $(this).attr('href'));
-        });
-        $('.cmd-delete').on('click',function(){
-            if (confirm('Sei sicuro di voler eliminare il record corrente?')){
-                FormController.exec(this,'delete');
-            }
-        });
-        $('.cmd-back').on('click',function(){
-            FormController.back();
-        });
-        
-        $('body').on('click','.save-history',function(){
-            FormController.saveHistory();
-        });
-    },
+    
     isObject : function(v)
     {
         return v instanceof Object;
@@ -184,7 +156,7 @@ FormController =
         var parameterRaw = String($(obj).data('action-parameters')).split(',');
         for (i in parameterRaw) {
             var parameterValue = parameterRaw[i];
-            if (parameterValue == 'this.value'){
+            if (parameterValue === 'this.value'){
                 parameterValue = $(obj).val();
             } else if (parameterValue.charAt(0) === '#' && $(parameterValue).length > 0) {
                 parameterValue = $(parameterValue).val();
@@ -276,7 +248,7 @@ FormController =
             success : function(rsp) {
                 console.log(rsp);
                 FormController.waitMask('remove');
-                for (i in component ) {
+                for (i in component) {
                     var cid = '#'+$(component[i]).attr('id');
                     var cmp = $(rsp).find(cid);
                     //$(cid).html(cmp.html());
@@ -288,39 +260,7 @@ FormController =
     register : function(evt,lbl,fnc)
     {
         this.repo['event'][evt][lbl] = fnc;
-    },
-    /*saveHistory : function ()
-    {
-        var h = [];
-        
-        if (sessionStorage.history){
-            h = JSON.parse(sessionStorage.history);
-        }
-        var h2 = [];
-        if (sessionStorage.history2){
-            h2 = JSON.parse(sessionStorage.history2);
-        }
-        var par = {};
-        var arr = [];
-        //$('.history-param').each(function(){
-        $('input,select,textarea').each(function(){
-            switch ($(this).attr('type')) {
-                case 'submit':
-                case 'button':
-                    break;
-                default:
-                    par[$(this).attr('name')] = $(this).val();
-                    if ($this.attr('name')) {
-                        arr.push([$(this).attr('name'), $(this).val()]);
-                    }                    
-                    break;
-            }
-        });
-        h.push({url : window.location.href, parameters : par});
-        h2.push({url : window.location.href, parameters : arr});
-        sessionStorage.history = JSON.stringify(h);
-        sessionStorage.history2 = JSON.stringify(h2);
-    },*/
+    },    
     saveHistory : function()
     {
         var hst = [];
@@ -412,18 +352,25 @@ FormController =
         });
         return $(win);
     },
-    modalWindow : function(id, title, url, parameters) {
-        var hgt = $(window).innerHeight() - 200;
+    modalWindow : function(id, title, url) {
+        var wdt = '90%';
+        var hgt = ($(window).innerHeight() - 200) + 'px';
+        if (typeof arguments[3] !== 'undefined') {
+            wdt = arguments[3];
+        }        
+        if (typeof arguments[4] !== 'undefined') {
+            hgt = arguments[4];
+        }
         $('.modal').remove();
         var win  = '<div id="' + id + '" class="modal fade" role="dialog">\n';
-            win += '    <div class="modal-dialog modal-lg" style="width: 90%;">\n';
+            win += '    <div class="modal-dialog modal-lg" style="width: '+wdt+';">\n';
             win += '        <div class="modal-content">\n';
             win += '            <div class="modal-header">\n';
             win += '                <button type="button" class="close" data-dismiss="modal">&times;</button>';
             win += '                <h4 class="modal-title">' + title + '</h4>';
             win += '            </div>';
             win += '            <div class="modal-body">';
-            win += '                <iframe name="'+id+'" src="'+url+'?view=simple" style="width: 100%; height:'+ hgt +'px; border: 0px; border-radius: 3px;" border="0"></iframe>';
+            win += '                <iframe name="'+id+'" src="'+url+'?view=simple" style="width: 100%; height:'+ hgt +'; border: 0px; border-radius: 3px;" border="0"></iframe>';
             win += '            </div>';
             win += '            <div class="modal-footer">';
             win += '                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>';
@@ -431,14 +378,14 @@ FormController =
             win += '        </div>';
             win += '    </div>';
             win += '</div>';
-        win = $(win);
+            win = $(win);
         $('body').append(win);
         $('#'+id).modal({
             keyboard : true
         });
         return win;
     }
-}
+};
 
 $(document).ready(function(){
     FormController.init();
