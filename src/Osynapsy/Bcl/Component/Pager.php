@@ -172,9 +172,9 @@ class Pager extends Component
         return " WHERE " .implode(' AND ',$filter);        
     }
 
-    private function calcPage()
-    {
-        $this->page['current'] = max(1, $_REQUEST[$this->id]+0);
+    private function calcPage($requestPage)
+    {        
+        $this->page['current'] = max(1, $requestPage+0);        
         if ($this->total['rows'] == 0 || empty($this->page['dimension'])) {
             return;
         }
@@ -183,19 +183,19 @@ class Pager extends Component
             'data-page-max',
             max($this->page['total'],1)
         );
-        switch ($_REQUEST[$this->id]) {
+        switch ($requestPage) {
             case 'first':
                 $this->page['current'] = 1;
                 break;
             case 'last' :
                 $this->page['current'] = $this->page['total'];
                 break;
-            case 'min':
+            case 'prev':
                 if ($this->page['current'] > 1){
                     $this->page['current']--;
                 }
                 break;
-            case 'min':
+            case 'next':
                 if ($this->page['current'] < $this->page['total']) {
                     $this->page['current']++;
                 }
@@ -211,7 +211,7 @@ class Pager extends Component
         return array_key_exists($key, $this->total) ? $this->total[$key] : null;
     }
     
-    public function loadData()
+    public function loadData($requestPage)
     {        
         if (empty($this->sql)) {
             return array();
@@ -228,7 +228,7 @@ class Pager extends Component
             return array();
         }
         
-        $this->calcPage();
+        $this->calcPage($requestPage);
         
         switch ($this->db->getType()) {
             case 'oracle':
