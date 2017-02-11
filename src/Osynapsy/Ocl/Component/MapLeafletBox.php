@@ -28,18 +28,22 @@ use Osynapsy\Core\Lib\Tag;
 class MapLeafletBox extends Component
 {
 	private $map;
-	
+	private $datagridParent;
+    
 	public function __construct($name)
 	{
 		parent::__construct('dummy',$name);
-		$this->requireCss('/__assets/Lib/leaflet-0.7.3/leaflet.css');
-		$this->requireCss('/__assets/Lib/leaflet-0.7.3/leaflet.draw.css');
-		$this->requireJs('/__assets/Lib/leaflet-0.7.3/leaflet.js');
-		$this->requireJs('/__assets/Lib/leaflet-0.7.3/leaflet.awesome-markers.min.js');
-		$this->requireJs('/__assets/Lib/leaflet-0.7.3/leaflet.draw.js');
-		$this->requireJs('/__assets/Ocl/MapLeafletBox/script.js');
+		$this->requireCss('/__assets/osynapsy/Lib/leaflet-0.7.3/leaflet.css');
+		$this->requireCss('/__assets/osynapsy/Lib/leaflet-0.7.3/leaflet.draw.css');
+		$this->requireJs('/__assets/osynapsy/Lib/leaflet-0.7.3/leaflet.js');
+		$this->requireJs('/__assets/osynapsy/Lib/leaflet-0.7.3/leaflet.awesome-markers.min.js');
+		$this->requireJs('/__assets/osynapsy/Lib/leaflet-0.7.3/leaflet.draw.js');
+		$this->requireJs('/__assets/osynapsy/Ocl/MapLeafletBox/script.js');
 
-		$this->map = $this->add(new Tag('div'))->att('class','osy-mapgrid-leaflet');
+		$this->map = $this->add(new Tag('div'))
+                          ->att('id',$name)
+                          ->att('style','width: 100%; min-height: 600px;')
+                          ->att('class','osy-mapgrid-leaflet');
 		$this->add(new HiddenBox($this->id.'_ne_lat'));
         $this->add(new HiddenBox($this->id.'_ne_lng'));
         $this->add(new HiddenBox($this->id.'_sw_lat'));
@@ -52,12 +56,14 @@ class MapLeafletBox extends Component
 	
 	public function __build_extra__()
 	{
-		foreach($this->get_att() as $k => $v) {
+		
+        /*foreach($this->att as $k => $v) {
+         
 			if (is_numeric($k)) {
                 continue;
             }
 			$this->map->att($k, $v, true);
-		}
+		}*/        
 		if (empty($res)){ 
 		  	$res = array(
                 array(
@@ -70,8 +76,12 @@ class MapLeafletBox extends Component
 		if (empty($_REQUEST[$this->id.'_center'])) {
 			$_REQUEST[$this->id.'_center'] = $res[0]['lat'].','.$res[0]['lng'];
 		}
-        if ($grid = $this->get_par('datagrid-parent')){
-            $this->map->att('data-datagrid-parent',$grid);
-        }
+        
+        $this->map->att('data-datagrid-parent', '#'.$this->datagridParent);        
 	}
+    
+    public function setGridParent($gridName)
+    {
+        $this->datagridParent = $gridName;
+    }
 }

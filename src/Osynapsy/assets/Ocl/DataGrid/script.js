@@ -85,12 +85,26 @@ ODataGrid =
                     var foot = $('.osy-datagrid-2-foot', grid).html();
                     $('.osy-datagrid-2-body',this).html(body);
                     $('.osy-datagrid-2-foot',this).html(foot);
+                    ODataGrid.refreshAjaxAfter(this);
                     if ($(this).hasClass('osy-treegrid')){
                         ODataGrid.parentOpen();
                     }
                 }
             }
         });
+    },
+    refreshAjaxAfter : function(obj)
+    {
+        if ((map = $(obj).data('mapgrid')) && window.OclMapLeafletBox){
+            OclMapLeafletBox.markersClean(map);
+            OclMapLeafletBox.refreshMarkers(map,$(obj).attr('id'));
+            return;
+        }
+        if ((map = $(obj).data('mapgrid')) && window.OclMapGridGoogle){
+            omapgrid.clear_markers(map);
+            omapgrid.refresh_markers(map);
+        }
+        
     }
 }
 

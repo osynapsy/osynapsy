@@ -216,7 +216,7 @@ OclMapLeafletBox = {
         this.layermarker[lid][mid] = mrk;
         this.layerlist[lid].addLayer(mrk);
    },
-   markers_clean : function(mapid)
+   markersClean : function(mapid)
    {
    },
    markers_add : function(mid, lid, dat)
@@ -261,11 +261,11 @@ OclMapLeafletBox = {
             for( i in this.datagrid ) {
                 var gid = this.datagrid[i]; //Datagrid id
                 var mid = $(div).attr('id'); //Map id
-                OclDataGrid.refresh_ajax($('#'+gid),null/*,function(){OclMapLeafletBox.refresh_markers(mid)}*/);
+                ODataGrid.refreshAjax($('#'+gid),null/*,function(){OclMapLeafletBox.refresh_markers(mid)}*/);
             }
         }
    },
-   refresh_markers : function(mid, gid)
+   refreshMarkers : function(mid, gid)
    {        
         if (this.datagrid.length == 0){ 
             return; 
@@ -339,10 +339,8 @@ OclMapLeafletBox = {
     }
 }
 
-if (window.oform)
-{
-	oform.reg('omapgrid.leaflet',function() { OclMapLeafletBox.init(); });
+if (window.FormController){    
+    FormController.register('init','OclMapLeafletBox',function(){
+        OclMapLeafletBox.init();
+    });
 }
-
-
-
