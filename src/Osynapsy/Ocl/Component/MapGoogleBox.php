@@ -24,19 +24,17 @@ namespace Osynapsy\Ocl\Component;
  */
  
 
-class GMapBox extends Component
+class MapGoogleBox extends Component
 {
     private $map;
-    private $cnt;
     
     public function __construct($name)
     {
         parent::__construct('dummy',$name);
-        $this->requireCss('/__assets/Ocl/GMapBox/style.css');
+        $this->requireCss('/__assets/osynapsy/Ocl/GMapBox/style.css');
         $this->requireJs('http://maps.google.com/maps/api/js?sensor=false&amp;language=en&libraries=drawing');
-        //oform::$page->add_script('https://maps.googleapis.com/maps/api/js?libraries=drawing');
-        $this->requireJs('/__assets/Lib/gmap3-6.0.0/gmap3.min.js');
-        $this->requireJs('/__assets/Ocl/GMapBox/script.js');
+        $this->requireJs('/__assets/osynapsy/Lib/gmap3-6.0.0/gmap3.min.js');
+        $this->requireJs('/__assets/osynapsy/Ocl/GMapBox/script.js');
         $this->map = $this->add(new Tag('div'))->att('class','osy-mapgrid');
         $this->add(new HiddenBox($this->id.'_ne_lat'));
         $this->add(new HiddenBox($this->id.'_ne_lng'));
