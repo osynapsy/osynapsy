@@ -11,10 +11,11 @@ use Osynapsy\Core\Lib\Tag;
 class ListSortable extends Component
 {    	
     private $rootKey = '[--ROOT--]';
-
+    private $head;
+    
 	public function __construct($id)
     {
-        parent::__construct('div',$id);
+        parent::__construct('div', $id);
         $this->requireCss('/__assets/osynapsy/Ocl/ListSortable/style.css');
         $this->requireJs('/__assets/osynapsy/Lib/jquery-sortable-0.9.13/jquery-sortable.js');        
 		$this->requireJs('/__assets/osynapsy/Ocl/ListSortable/script.js');        
@@ -29,7 +30,9 @@ class ListSortable extends Component
 
     protected function __build_extra__()
     {						
-		$this->buildHead();
+		if ($this->head) {
+            $this->add($this->head);
+        }
 		$this->buildBody();				
     }
 	
@@ -52,22 +55,20 @@ class ListSortable extends Component
 	protected function buildBody($rootKey=null){
 		$ul = $this->add(new Tag('ul'));		
 		if (is_null($rootKey)){
-			$rootKey = $this->rootKey;
-			//$ul = $this->add(new Tag('ul'));
+			$rootKey = $this->rootKey;			
 			$ul->att('class','osy-listsortable-body');
-		} else {
-			//$ul = new Tag('ul');
+		} else {			
 	 	    $ul->att('data-parent',$rootKey)
 			   ->att('class','osy-listsortable-leaf');
 		}		
         if (!array_key_exists($rootKey,$this->data)) {
 			return '';
-		}
-        $i = 0;
+		}        
         foreach ($this->data[$rootKey] as $kr => $row) {
             $li = $ul->add(new Tag('li'));
             $li->att('class','row clearfix');
-            $cnt = $li->add(new Tag('div'))->att('class','cnt clearfix osy-listsortable-item');
+            $container = $li->add(new Tag('div'))
+                            ->att('class','cnt clearfix osy-listsortable-item');
             if ($kr == 0) {
                $nc = 0;
                foreach ($row as $kr => $v) {
@@ -77,41 +78,65 @@ class ListSortable extends Component
                }
                $wdt = ($nc > 0 ? floor(75 / $nc) : '75') . '%';
             }
-            $form = $j = 0;				
-            foreach($row as $k => $v) {						
-                $print = false;
-                switch($k[0]) {
-                    case '_':
-                        $par = explode(',',$k);
-                        switch($par[0]) {
-                           case '_col':
-                                       $li->att('class',$v,true);
-                                       break;                                   
-                           case '_form':
-                                        if (!empty($v)) $li->att('data-form',$v);
-                                        break;
-                           case '_html':
-                                        $print = true;
-                                        break;
-                        }
-                        break;
-                    default:                                
-                        $print = true;
-                        break;
-                }
-                if ($print) {
-                    $cnt->add("<div class=\"cell\" style=\"width: {$wdt}\">$v</div>");
-                    $j++;
-                    $i++;
-                }
-            }
+            $this->buildRow($row, $container);
             if ($this->get_par('form-related') && !is_null($pk)) {
-                $cnt->add('<div class="cmd"><span class="btn_edit">Modifica</span></div>');
+                $cnt->add();
             }	           
         }
 		return $ul;
 	}
 	
+    private function buildRow($rec, $container)
+    {
+        foreach($rec as $fieldName => $fieldValue) {						           
+            $container->add(
+                $this->buildCell(
+                    $fieldName,
+                    $fieldValue
+                )
+            );
+        }
+    }
+    
+    private function buildCell($fieldName, $fieldValue)
+    {
+        $print = false;        
+        switch($fieldName[0]) {
+            case '_':
+                $par = explode(',',$fieldName);
+                switch($par[0]) {                          
+                    case '_html':
+                        $print = true;
+                        break;
+                    case '_cmd':
+                        return '<div class="cmd"><a href="'.$fieldValue.'" class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span></a></div>';                        
+                }
+                break;
+            default:                                
+                $print = true;
+                break;
+        }
+        if ($print) {
+            return "<div class=\"cell\" style=\"width: {$wdt}\">$fieldValue</div>";
+        }
+    }
+    
+    public function getHead()
+    {
+        if ($this->head){
+            return $this->head;
+        }
+        $this->head = new Tag('div');        
+        $this->head->att('class','clearfix ocl-listsortable-head');
+        return $this->head;
+    }
+    
+    public function setAction($action, $parameters = null)
+    {
+        $this->att('data-action', $action)
+             ->att('data-action-parameters', $parameters);        
+    }
+    
     public function setSql($db, $sql, $par = array())
     {
         $rs =  $db->execQuery($sql, $par, 'ASSOC');        

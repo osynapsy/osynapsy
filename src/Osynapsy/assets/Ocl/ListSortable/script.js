@@ -1,13 +1,11 @@
 OclListSortable = {
-    init : function(){
-        $('.osy-listview').on('click','.command-add',function(event){
-            osyview.open_detail_2($(this));     
-        });
-        $('.osy-listview ul,.osy-listview-leaf').sortable({
+    init : function(){        
+        $('.osy-listsortable ul,.osy-listsortable-leaf').sortable({
             items : 'li.row',
             containment: "parent",
-            update : function(e,o) {                     
-                var ajax = $(o.item).closest('.osy-listview').attr('id');  
+            afterMove : function(e,o) {                 
+                var ajax = $(o).closest('.osy-listsortable').attr('id');  
+                console.log(o);
                 if (ajax == 'undefined') {
                     return;
                 }                         

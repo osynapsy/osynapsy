@@ -1,6 +1,26 @@
 /**
  * Listview
  */
+body.dragging, body.dragging * {
+  cursor: move !important;
+}
+
+.dragged {
+  position: absolute;
+  opacity: 0.5;
+  z-index: 2000;
+}
+
+.osy-listsortable li.placeholder {
+  position: relative;
+  /** More li styles **/
+}
+
+.osy-listsortable li.placeholder:before {
+  position: absolute;
+  /** Define arrowhead **/
+}
+
 .osy-listsortable {
         padding: 5px 20px;
         display: table;
