@@ -12,6 +12,7 @@ class ListSortable extends Component
 {    	
     private $rootKey = '[--ROOT--]';
     private $head;
+    private $columnFunction = array();
     
 	public function __construct($id)
     {
@@ -100,7 +101,10 @@ class ListSortable extends Component
     
     private function buildCell($fieldName, $fieldValue)
     {
-        $print = false;        
+        $print = false;
+        if (array_key_exists($fieldName, $this->columnFunction)) {
+            $fieldValue = $this->columnFunction[$fieldName]($fieldValue, $fieldName);
+        }
         switch($fieldName[0]) {
             case '_':
                 $par = explode(',',$fieldName);
@@ -109,7 +113,10 @@ class ListSortable extends Component
                         $print = true;
                         break;
                     case '_cmd':
+                        return '<div class="cmd">'.$fieldValue.'</div>';
+                    case '_detail':
                         return '<div class="cmd"><a href="'.$fieldValue.'" class="btn btn-default save-history"><span class="glyphicon glyphicon-pencil"></span></a></div>';                        
+                    
                 }
                 break;
             default:                                
@@ -119,6 +126,11 @@ class ListSortable extends Component
         if ($print) {
             return "<div class=\"cell\" style=\"width: {$wdt}\">$fieldValue</div>";
         }
+    }
+    
+    public function addColumnFunction($column, callable $function)
+    {
+        $this->columnFunction[$column] = $function;
     }
     
     public function getHead()
@@ -149,5 +161,7 @@ class ListSortable extends Component
                   $this->data[$this->rootKey][] = $rec;
             }
         }
-    }		
+    }
+    
+    
 }
