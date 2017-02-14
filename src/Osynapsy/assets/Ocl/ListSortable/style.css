@@ -1,34 +1,34 @@
 /**
  * Listview
  */
-.osy-listview {
+.osy-listsortable {
         padding: 5px 20px;
         display: table;
 }
-.osy-listview div.row {
+.osy-listsortable div.row {
     display: table-row;
 }
-.osy-listview div.cell {
+.osy-listsortable div.cell {
     display: table-cell;
 }
-.osy-listview div.osy-listview-body-cont {
+.osy-listsortable div.osy-listsortable-body-cont {
     column-span: all; 
     /* W3C */ -webkit-column-span: 5; 
     /* Safari & Chrome */ -moz-column-span: all; 
     /* Firefox */ -ms-column-span: all; 
     /* Internet Explorer */-o-column-span: all; /* Opera */
 }
-.osy-listview ul{
+.osy-listsortable ul{
     padding: 0px; list-style-type: none;
 }
-.osy-listview li {
+.osy-listsortable li {
     margin-top: 10px;
 }
-.osy-listview > li.head, 
-.osy-listview > li.foot{
+.osy-listsortable > li.head, 
+.osy-listsortable > li.foot{
     text-align: right
 }
-.osy-listview  li.row {
+.osy-listsortable  li.row {
     border: 1px solid #d5d5d5;
     border-radius: 5px;
     border-bottom-width: 2px;
@@ -37,13 +37,13 @@
     background-repeat: no-repeat; 
     background-position: 7px 50%;
 }
-.osy-listview  li.row > div.ord {
+.osy-listsortable  li.row > div.ord {
     background-color: transparent;
     margin: 0px;
     border: 0px; 
     padding: 10px;
 }
-.osy-listview  li.row > div.cnt {
+.osy-listsortable  li.row > div.cnt {
     background-color: #fafafa; 
     padding: 15px 10px; 
     margin-left: 30px; 
@@ -51,25 +51,25 @@
     border-bottom-right-radius: 5px; 
     overflow: hidden;
 }
-.osy-listview  li.row > div.cnt > div {
+.osy-listsortable  li.row > div.cnt > div {
     float: left;
     font-size: 13px;
     border-left: 1px solid #d5d5d5;
     padding-left: 20px;
     overflow: hidden;
 }
-.osy-listview  li.row > div.cnt > div:first-child {
+.osy-listsortable  li.row > div.cnt > div:first-child {
     border-left-width: 0px;
 }
-.osy-listview  li.row > div.cnt > div.cmd {
+.osy-listsortable  li.row > div.cnt > div.cmd {
     visibility : hidden;
     border-left-width: 0px;
     cursor: pointer; float: right;
 }
-.osy-listview  li.row:hover > div.cnt > div.cmd {
+.osy-listsortable  li.row:hover > div.cnt > div.cmd {
     visibility : visible;
 }
-.osy-listview  ul.osy-listview-leaf {
+.osy-listsortable  ul.osy-listsortable-leaf {
     background-color: white;
     margin-left: 30px;
     border-top: 1px solid #ccc;
