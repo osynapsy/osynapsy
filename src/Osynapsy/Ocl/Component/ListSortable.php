@@ -109,7 +109,7 @@ class ListSortable extends Component
                         $print = true;
                         break;
                     case '_cmd':
-                        return '<div class="cmd"><a href="'.$fieldValue.'" class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span></a></div>';                        
+                        return '<div class="cmd"><a href="'.$fieldValue.'" class="btn btn-default save-history"><span class="glyphicon glyphicon-pencil"></span></a></div>';                        
                 }
                 break;
             default:                                
