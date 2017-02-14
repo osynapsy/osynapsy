@@ -42,9 +42,9 @@ class Tab extends Component
         return $this->currentCard;
     }
     
-    public function put($label, $object, $col, $row, $colspan)
+    public function put($label, $object, $col, $row, $width, $colspan)
     {
-        $this->currentCard->put($label, $object, $col, $row, $colspan);
+        $this->currentCard->put($label, $object, $col, $row, $width, $colspan);
     }
     
     public function setType($type)
