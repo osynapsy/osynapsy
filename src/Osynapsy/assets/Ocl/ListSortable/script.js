@@ -33,29 +33,11 @@ OclListSortable = {
                 });
             }
         });
-    },
-    initRow : function()
-    {
-        $('.osy-listview').on('click','.osy-listview-item div.cmd',function(e){
-            if ($(this).hasClass('__f')) {
-                return;
-            }
-            if ($(this).closest('.osy-listview').data('form') === 'undefined') {
-                return;
-            }
-            if (window.osy) {
-                osypage.open_detail_2($(this).closest('li'));
-            } else if (window.osyview) {
-                osyview.open_detail_2($(this).closest('li'));
-            }
-            e.preventDefault();
-        });
-    }	
+    }    
 }
 
 if (window.FormController) {    
-    FormController.register('init','OclListSortable.init',function(){
-        OclListSortable.initRow();
+    FormController.register('init','OclListSortable.init',function(){     
         OclListSortable.init();        
     });
 }
