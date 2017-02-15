@@ -39,7 +39,9 @@ class ListSortable extends Component
 		if ($this->head) {
             $this->add($this->head);
         }
-		$this->buildBody();				
+		$this->add(
+            $this->buildBody()
+        );        
     }
 	
 	protected function savePosition()
@@ -54,12 +56,13 @@ class ListSortable extends Component
 	protected function buildHead()
 	{
         if ($this->get_par('height')) {
-          $this->att('style','height : '.$this->par('height').'px; overflow:auto;');
+            $this->att('style','height : '.$this->par('height').'px; overflow:auto;');
         }       
 	}
 	
-	protected function buildBody($rootKey=null){
-		$ul = $this->add(new Tag('ul'));		
+	protected function buildBody($rootKey=null)
+    {
+		$ul = new Tag('ul');
 		if (is_null($rootKey)){
 			$rootKey = $this->rootKey;			
 			$ul->att('class','osy-listsortable-body');
@@ -85,16 +88,17 @@ class ListSortable extends Component
                $wdt = ($nc > 0 ? floor(75 / $nc) : '75') . '%';
             }
             $this->buildRow($row, $container);
-            if ($this->get_par('form-related') && !is_null($pk)) {
-                $cnt->add();
-            }	           
+            if (!empty($row['_id']) && !empty($this->data[$row['_id']])) {
+                $branchBody = $this->buildBody($row['_id']);
+                $li->add($branchBody);
+            }            
         }
 		return $ul;
 	}
 	
     private function buildRow($rec, $container)
     {
-        foreach($rec as $fieldName => $fieldValue) {						           
+        foreach($rec as $fieldName => $fieldValue) {		           
             $container->add(
                 $this->buildCell(
                     $fieldName,
@@ -169,7 +173,5 @@ class ListSortable extends Component
                   $this->data[$this->rootKey][] = $rec;
             }
         }
-    }
-    
-    
+    }    
 }
