@@ -17,10 +17,15 @@ class ListSortable extends Component
 	public function __construct($id)
     {
         parent::__construct('div', $id);
+        
         $this->requireCss('/__assets/osynapsy/Ocl/ListSortable/style.css');
-        $this->requireJs('/__assets/osynapsy/Lib/jquery-sortable-0.9.13/jquery-sortable.js');        
-		$this->requireJs('/__assets/osynapsy/Ocl/ListSortable/script.js');        
-        $this->att('class','osy-listsortable');
+        //$this->requireJs('/__assets/osynapsy/Lib/jquery-sortable-0.9.13/jquery-sortable.js');  
+        $this->requireJs('/__assets/osynapsy/Lib/html5-sortable/jquery-sortable.js');
+		$this->requireJs('/__assets/osynapsy/Ocl/ListSortable/script.js');
+        $this->add('<input type="hidden" id="'.$id.'_order" name="'.$id.'">');
+        $this->att('class','osy-listsortable')
+             ->att('data-action','sortList')
+             ->att('data-action-parameters','#'.$id.'_order');
         $this->par('record-add','1');
 		$this->par('command-add-label','+ Aggiungi');
         $this->par('add_position','header');
@@ -93,13 +98,14 @@ class ListSortable extends Component
             $container->add(
                 $this->buildCell(
                     $fieldName,
-                    $fieldValue
+                    $fieldValue,
+                    $container
                 )
             );
         }
     }
     
-    private function buildCell($fieldName, $fieldValue)
+    private function buildCell($fieldName, $fieldValue, $container)
     {
         $print = false;
         if (array_key_exists($fieldName, $this->columnFunction)) {
@@ -109,6 +115,9 @@ class ListSortable extends Component
             case '_':
                 $par = explode(',',$fieldName);
                 switch($par[0]) {                          
+                    case '_id':
+                        $container->att('data-id', $fieldValue);
+                        return;
                     case '_html':
                         $print = true;
                         break;
@@ -145,8 +154,7 @@ class ListSortable extends Component
     
     public function setAction($action, $parameters = null)
     {
-        $this->att('data-action', $action)
-             ->att('data-action-parameters', $parameters);        
+        $this->att('data-action', $action);        
     }
     
     public function setSql($db, $sql, $par = array())

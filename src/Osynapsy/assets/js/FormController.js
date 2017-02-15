@@ -29,7 +29,7 @@ FormController =
                 $(this).attr('title'), 
                 $(this).attr('href'), 
                 $(this).attr('modal-width') ? $(this).attr('modal-width') : '75%',
-                $(this).attr('modal-height') ? $(this).attr('modal-height') : ($(window).innerHeight() - 300) + 'px'
+                $(this).attr('modal-height') ? $(this).attr('modal-height') : ($(window).innerHeight() - 250) + 'px'
             );
         }).on('click','.cmd-delete',function(){
             if (confirm('Sei sicuro di voler eliminare il record corrente?')){
@@ -353,9 +353,8 @@ FormController =
         return $(win);
     },
     modalWindow : function(id, title, url) {
-        var wdt = '90%';
-        console.log(arguments);
-        var hgt = ($(window).innerHeight() - 300) + 'px';
+        var wdt = '90%';        
+        var hgt = ($(window).innerHeight() - 250) + 'px';
         if (typeof arguments[3] !== 'undefined') {
             wdt = arguments[3];
         }        
