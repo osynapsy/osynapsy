@@ -1,10 +1,6 @@
 /**
  * Listview
  */
-
-
-
-
 .sortable-dragging {
     border: 1px solid red !important;
     opacity: 0.9;
@@ -87,6 +83,6 @@
     background-color: white;
     margin-left: 30px;
     border-top: 1px solid #ccc;
-    padding: 20px;
+    padding: 10px 50px;
 }
 
