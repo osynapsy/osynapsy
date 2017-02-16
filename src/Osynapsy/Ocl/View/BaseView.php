@@ -48,6 +48,11 @@ abstract class BaseView
         $this->controller->response->addCss($path);
     }
     
+    public function addJsCode($code)
+    {
+        $this->controller->response->addJsCode($code);
+    }
+    
     public function __toString()
     {
         return $this->get();
