@@ -103,7 +103,7 @@ class DbPdo extends \PDO implements InterfaceDbo
         return;
     }
     
-    public function execQuery($sql, $par = null, $mth = null)
+    public function execQuery($sql, $par = null, $mth = null, $iColumn = null)
     {
         $this->iCursor = $this->prepare($sql);
         $this->iCursor->execute($par);
@@ -118,7 +118,11 @@ class DbPdo extends \PDO implements InterfaceDbo
                 $mth = \PDO::FETCH_BOTH;
                 break;
         }
-        $res = $this->iCursor->fetchAll($mth);
+        if (is_null($iColumn)) {
+            $res = $this->iCursor->fetchAll($mth);
+        } else {
+            $res = $this->iCursor->fetchAll(\PDO::FETCH_COLUMN, $iColumn);
+        }
         return $res;
     }
 
