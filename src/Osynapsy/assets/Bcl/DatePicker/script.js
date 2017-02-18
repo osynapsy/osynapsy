@@ -3,12 +3,31 @@ BclDatePicker =
     init : function()
     {
         $('.date-picker').each(function(){
-            console.log('ci sono');
-            var parStartDate = $(this).data('start-date');
-            var parEndDate = $(this).data('end-date');
-            $(this).datetimepicker({                
-                format: 'DD/MM/YYYY'                
-            });
+            var self = this;
+            var opt = {
+                format: 'DD/MM/YYYY'
+            };
+            var minDate = $(this).data('min');
+            if (typeof minDate !== 'undefined') {
+                if (minDate.charAt(0) === '#') {
+                    $(minDate).on("dp.change", function (e) {
+                         $(self).data("DateTimePicker").minDate(e.date);
+                    });
+                } else {
+                    opt['minDate'] = new Date(minDate);
+                }
+            }            
+            var maxDate = $(this).data('max');
+            if (typeof maxDate !== 'undefined') {
+                if (maxDate.charAt(0) === '#') {
+                    $(maxDate).on("dp.change", function (e) {
+                        $(self).data("DateTimePicker").maxDate(e.date);
+                    });
+                } else {
+                    opt['maxDate'] = new Date(maxDate);
+                }
+            }
+            $(this).datetimepicker(opt);
         });
     }
 };
