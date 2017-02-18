@@ -7,6 +7,7 @@ class DatePicker extends Component
 {
     private $text;
     private $datePickerId;
+    private $dateContainer;
     
     public function __construct($id)
     {
@@ -18,7 +19,7 @@ class DatePicker extends Component
         
         parent::__construct('div',$id.'_datepicker');
         $this->att('class','input-group');
-        $this->add(new TextBox($id))->att('class','date date-picker form-control');
+        $this->dateContainer = $this->add(new TextBox($id))->att('class','date date-picker form-control');
         $this->add('<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>');
     }
     
@@ -31,5 +32,33 @@ class DatePicker extends Component
                 $_REQUEST[$this->datePickerId] = $data[2].'/'.$data[1].'/'.$data[0];
             }
         }
+    }
+    
+    /**
+     * 
+     * @param type $min accepted mixed input (ISO DATE : YYYY-MM-DD or name of other component date #name)
+     * @param type $max accepted mixed input (ISO DATE : YYYY-MM-DD or name of other component date #name)
+     */
+    public function setDateLimit($min, $max)
+    {
+        $this->setDateMin($min);
+        $this->setDateMax($max);
+    }
+    
+    /**
+     * 
+     * @param type $date accepted mixed input (ISO DATE : YYYY-MM-DD or name of other component date #name)
+     */
+    public function setDateMax($date)
+    {
+        $this->dateContainer->att('data-max', $date);
+    }
+    /**
+     * 
+     * @param type $date accepted mixed input (ISO DATE : YYYY-MM-DD or name of other component date #name)
+     */
+    public function setDateMin($date)
+    {
+        $this->dateContainer->att('data-min', $date);
     }
 }
