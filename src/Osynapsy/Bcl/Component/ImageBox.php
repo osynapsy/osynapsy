@@ -52,10 +52,8 @@ class ImageBox extends Component
         $this->getImage();
         $this->checkCrop();
         $this->buildImageTag();
-        $this->toolbar->add(new Tag('a'))
-             ->att('href','javascript:void(0);')             
-             ->att('data-cmd','delete')
-             ->add('<buttun type="button" class="btn btn-danger cmd-execute pull-right" data-action="deleteImage" data-action-parameters="'.$this->image['webPath'].'"><span class="fa fa-trash"></span>');   
+        $this->toolbar
+             ->add('<button type="button" class="btn btn-danger cmd-execute pull-right image-delete" data-action="deleteImage" data-action-parameters="'.$this->image['webPath'].'"><span class="fa fa-trash"></span>');   
         if (empty($this->image['object'])) {
             $this->dummy
                  ->add(new Tag('span'))
