@@ -8,9 +8,11 @@
     text-align: center !important;
     padding: 3px;
 }
+
 .osy-imagebox-dummy:hover {
     background-color: #efefef;
 }
+
 .osy-imagebox-dummy span{
     position: relative;
     top: 50%;
@@ -18,4 +20,17 @@
     font-size: 1.5em;
 }
 
-.osy-imagebox-bcl img.imagebox-main {max-width: 100%}
+.osy-imagebox-bcl img.imagebox-main {
+    max-width: 100%
+}
+
+.osy-imagebox-bcl .osy-imagebox-bcl-image-delete {
+    position: absolute;
+    top: 10px;
+    right: 22px;
+    visibility: hidden;
+}
+
+.osy-imagebox-bcl:hover .osy-imagebox-bcl-image-delete {
+    visibility: visible;
+}
