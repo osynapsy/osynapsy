@@ -13,11 +13,13 @@ class Form extends Component
 {
     private $components = array();
     private $head;
+    public  $headClass = 'col-lg-12';
     private $alert;
     private $alertCount=0;
     private $body;
     private $foot;
     private $repo;
+    private $appendFootToMain = false;
     
     public function __construct($name, $mainComponent = 'Panel', $tag = 'form')
     {
@@ -33,6 +35,7 @@ class Form extends Component
              ->att('method','post')
              ->att('role','form');
         $mainComponent = '\\Osynapsy\\Bcl\\Component\\'.$mainComponent;
+        $this->appendFootToMain = ($mainComponent === 'Panel');
         //Body setting
         $this->body = new $mainComponent($name.'_panel', 'div');
         $this->body->par('label-position','inside');
@@ -44,7 +47,9 @@ class Form extends Component
     {
         if ($this->head) {
             $this->add(new Tag('div'))
-                 ->att('class','block-header')
+                 ->att('class','row block-header')
+                 ->add(new Tag('div'))
+                 ->att('class', $this->headClass)
                  ->add($this->head);
         }
         
@@ -55,7 +60,10 @@ class Form extends Component
         $container = $this->add(new Tag('div'))->att('class','content');
         $container->add($this->body);
         //Append foot
-        if ($this->foot) {           
+        if (!$this->foot) {
+            return;
+        }
+        if ($this->appendFootToMain) {
             $this->body->put(
                 '',
                 $this->foot->get(), 
@@ -64,7 +72,9 @@ class Form extends Component
                 $this->repo->get('foot.width'),
                 $this->repo->get('foot.offset')
             );
+            return;
         }
+        $this->add($this->foot->get());
     }
     
     public function addCard($title)
@@ -106,6 +116,7 @@ class Form extends Component
     {
         if (empty($this->foot)) {
             $this->foot = new Tag('div');
+            $this->foot->att('class','clearfix');
         }
         $this->foot->add($obj);
         return is_object($obj) ? $obj : $this->foot;
