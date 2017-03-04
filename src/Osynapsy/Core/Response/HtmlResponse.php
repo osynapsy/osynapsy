@@ -78,6 +78,11 @@ class HtmlResponse extends Response
         $this->addContent('<link href="'.$path.'" rel="stylesheet" />', 'css', true);
     }
     
+    public function addStyle($style)
+    {
+        $this->addContent('<style>'.PHP_EOL.$style.PHP_EOL.'</style>', 'css', true);
+    }
+    
     public function resetTemplate()
     {
         $this->template = '';
