@@ -53,7 +53,7 @@ class ImageBox extends Component
         $this->checkCrop();
         $this->buildImageTag();
         $this->toolbar
-             ->add('<button type="button" class="btn btn-danger cmd-execute pull-right image-delete" data-action="deleteImage" data-action-parameters="'.$this->image['webPath'].'"><span class="fa fa-trash"></span>');   
+             ->add('<button type="button" class="btn btn-danger cmd-execute pull-right image-delete osy-imagebox-bcl-image-delete" data-action="deleteImage" data-action-parameters="'.$this->image['webPath'].'"><span class="fa fa-trash"></span>');   
         if (empty($this->image['object'])) {
             $this->dummy
                  ->add(new Tag('span'))
