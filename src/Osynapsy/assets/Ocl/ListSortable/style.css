@@ -12,8 +12,9 @@
 }
 
 .osy-listsortable {
-        padding: 5px 20px;
-        display: table;
+    padding: 0px 20px;
+    display: table;
+    width: 100%;
 }
 .osy-listsortable div.row {
     display: table-row;
@@ -32,7 +33,7 @@
     padding: 0px; list-style-type: none;
 }
 .osy-listsortable li {
-    margin-top: 10px;
+    margin-bottom: 12px;
 }
 .osy-listsortable > li.head, 
 .osy-listsortable > li.foot{
