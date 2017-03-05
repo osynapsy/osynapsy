@@ -16,6 +16,10 @@
     display: table;
     width: 100%;
 }
+.ocl-listsortable-head {
+    margin-bottom: 12px;
+    margin-left: -14px;
+}
 .osy-listsortable div.row {
     display: table-row;
 }
