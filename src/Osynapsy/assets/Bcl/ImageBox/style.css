@@ -7,6 +7,7 @@
     margin: auto !important;
     text-align: center !important;
     padding: 3px;
+    position: relative;
 }
 
 .osy-imagebox-dummy:hover {
@@ -26,7 +27,7 @@
 
 .osy-imagebox-bcl .osy-imagebox-bcl-image-delete {
     position: absolute;
-    top: 10px;
+    bottom: 20px;
     right: 22px;
     visibility: hidden;
 }
