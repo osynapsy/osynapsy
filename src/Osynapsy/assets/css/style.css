@@ -151,3 +151,16 @@ div#waitMask > div.message > div.progress {
     width: 100%;
     z-index: 0;
 }
+
+.osy-input-underline {
+    border: 0px; 
+    border-bottom: 2px solid transparent; 
+    margin-left: 15px; 
+    width: 95%;
+}
+
+.osy-input-underline:focus, 
+.osy-input-underline:hover {
+    outline: 0; 
+    border-bottom: 2px solid #ddd !important
+};
