@@ -7,6 +7,7 @@ use Osynapsy\Core\Lib\Tag as Tag;
 use Osynapsy\Core\Lib\Dictionary;
 use Osynapsy\Bcl\Component\Panel as Panel;
 use Osynapsy\Bcl\Component\Tab;
+use Osynapsy\Bcl\Component\Column;
 use Osynapsy\Bcl\Component\Alert;
 
 class Form extends Component
@@ -82,14 +83,15 @@ class Form extends Component
         $this->body->addCard($title);
     }
     
-    public function head($obj)
+    public function head($obj, $width=12, $offset = 0)
     {
         //Head setting
         if (empty($this->head)) {
             $this->head = new Tag('dummy');
         } 
-        $this->head->add($obj);
-        return is_object($obj) ? $obj : $this->head;
+        $column = $this->head->add(new Column($width, $offset));
+        $column->add($obj);
+        return is_object($obj) ? $obj : $column;
     }
     
     public function alert($label, $type='danger')
