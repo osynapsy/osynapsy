@@ -13,6 +13,7 @@ class ListSortable extends Component
     private $rootKey = '[--ROOT--]';
     private $head;
     private $columnFunction = array();
+    private $emptyMessage;
     
 	public function __construct($id)
     {
@@ -37,21 +38,14 @@ class ListSortable extends Component
     protected function __build_extra__()
     {						
 		if ($this->head) {
-            $this->add($this->head);
+            $this->add(
+                $this->head
+            );
         }
 		$this->add(
             $this->buildBody()
         );        
     }
-	
-	protected function savePosition()
-	{		
-		$i = 10;
-		foreach($_REQUEST[$this->id] as $k => $v){
-			$this->__db->exec_cmd($sql,array($i,$v));
-			$i += 10;
-		}
-	}
 	
 	protected function buildHead()
 	{
@@ -66,6 +60,9 @@ class ListSortable extends Component
 		if (is_null($rootKey)){
 			$rootKey = $this->rootKey;			
 			$ul->att('class','osy-listsortable-body');
+            if (empty($this->data[$rootKey])) {                
+                $this->buildEmptyMessage();                
+            }
 		} else {			
 	 	    $ul->att('data-parent',$rootKey)
 			   ->att('class','osy-listsortable-leaf');
@@ -92,10 +89,18 @@ class ListSortable extends Component
                 $branchBody = $this->buildBody($row['_id']);
                 $li->add($branchBody);
             }            
-        }
+        }        
 		return $ul;
 	}
 	
+    private function buildEmptyMessage()
+    {        
+        if (empty($this->emptyMessage)) {
+            return;
+        }        
+        $this->add('<div class="osy-listsortable-emptymessage">'.$this->emptyMessage.'</div>');
+    }
+    
     private function buildRow($rec, $container)
     {
         foreach($rec as $fieldName => $fieldValue) {		           
@@ -173,5 +178,10 @@ class ListSortable extends Component
                   $this->data[$this->rootKey][] = $rec;
             }
         }
-    }    
+    }
+    
+    public function setEmptyMessage($msg)
+    {
+        $this->emptyMessage = $msg;
+    }
 }
