@@ -374,9 +374,9 @@ FormController =
             win += '            <div class="modal-body">';
             win += '                <iframe name="'+id+'" src="'+url+'?view=simple" style="width: 100%; height:'+ hgt +'; border: 0px; border-radius: 3px;" border="0"></iframe>';
             win += '            </div>';
-            win += '            <div class="modal-footer">';
-            win += '                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>';
-            win += '            </div>';
+            //win += '            <div class="modal-footer">';
+            //win += '                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>';
+            //win += '            </div>';
             win += '        </div>';
             win += '    </div>';
             win += '</div>';
