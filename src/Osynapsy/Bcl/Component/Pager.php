@@ -51,6 +51,9 @@ class Pager extends Component
             $this->loadData;
         }
         $this->add(new HiddenBox($this->id));
+        foreach($this->fields as $field) {
+            $this->add(new HiddenBox($field));
+        }
         $ul = $this->add(new Tag('ul'));
         $ul->att('class','pagination');
         $liFirst = $ul->add(new Tag('li'));
