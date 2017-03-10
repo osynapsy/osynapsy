@@ -99,6 +99,6 @@ class JsonResponse extends Response
     
     public function js($cmd)
     {
-        $this->message('command','execCode', $cmd);
+        $this->message('command','execCode', str_replace(PHP_EOL,'\n',$cmd));
     }
 }
