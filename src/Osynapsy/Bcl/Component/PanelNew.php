@@ -12,28 +12,35 @@ class PanelNew extends Component
         'foot' => null
     );
     
+    private $classCss = [
+        'main' => 'panel',
+        'head' => 'panel-head',
+        'body' => 'panel-body',
+        'foot' => 'panel-foot'
+    ];
+    
     private $currentRow = null;
     private $currentColumn = null;
     
     public function __construct($id, $title='', $class = ' panel-default', $tag = 'div')
     {
         parent::__construct($tag, $id);
-        $this->att('class','panel'.$class);
+        $this->classCss['main'] = 'panel'.$class;
         if (!empty($title)) {
             $this->sections['head'] = new Tag('div');
-            $this->sections['head']->att('class','panel-heading')
-                                   ->add('<h4 class="panel-title">'.$title.'</h4>');
+            $this->sections['head']->add('<h4 class="panel-title">'.$title.'</h4>');
         }
-        $this->sections['body'] = new Tag('div');
-        $this->sections['body']->att('class','panel-body');
+        $this->sections['body'] = new Tag('div');        
     }
     
     protected function __build_extra__()
     {
-        foreach ($this->sections as $section){
+        $this->att('class', $this->classCss['main']);
+        foreach ($this->sections as $key => $section){
             if (empty($section)) {
                 continue;
             }
+            $section->att('class', $this->classCss[$key]);
             $this->add($section);
         }
     }
@@ -58,5 +65,20 @@ class PanelNew extends Component
     public function getBody()
     {
         return $this->sections['body'];
+    }
+    
+    public function setClass($body, $head = null, $foot = null, $main = null)
+    {
+        $this->classCss['body'] = $body;
+        if (!is_null($head)) {
+            $this->classCss['head'] = $head;
+        }
+        if (!is_null($foot)) {
+            $this->classCss['foot'] = $foot;
+        }
+        if (!is_null($main)) {
+            $this->classCss['main'] = $main;
+        }        
+        return $this;
     }
 }
