@@ -31,8 +31,8 @@ class PanelAccordion extends Component
         $this->panels[] = new PanelNew($panelId, $panelTitle);
         $this->panels[$panelIdx]
              ->getBody()
-             ->att('id', $panelId.'-body')
-             ->att('class', 'collapse' .(empty($panelIdx) ? ' in' : ''), true);
+             ->att('id', $panelId.'-body');
+        $this->panels[$panelIdx]->setClass('panel-body collapse' .(empty($panelIdx) ? ' in' : ''));             
         return $this->panels[$panelIdx];
     }
 }
