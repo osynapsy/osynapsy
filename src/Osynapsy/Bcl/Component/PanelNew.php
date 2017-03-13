@@ -14,9 +14,9 @@ class PanelNew extends Component
     
     private $classCss = [
         'main' => 'panel',
-        'head' => 'panel-head',
+        'head' => 'panel-heading',
         'body' => 'panel-body',
-        'foot' => 'panel-foot'
+        'foot' => 'panel-footer'
     ];
     
     private $currentRow = null;
