@@ -114,6 +114,9 @@ class DbPdo extends \PDO implements InterfaceDbo
             case 'ASSOC':
                 $mth = \PDO::FETCH_ASSOC;
                 break;
+            case 'KEY_PAIR':
+                $mth = \PDO::FETCH_KEY_PAIR;
+                break;
             default :
                 $mth = \PDO::FETCH_BOTH;
                 break;
