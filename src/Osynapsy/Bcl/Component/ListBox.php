@@ -4,7 +4,6 @@ namespace Osynapsy\Bcl\Component;
 use Osynapsy\Ocl\Component\Component;
 use Osynapsy\Ocl\Component\HiddenBox;
 use Osynapsy\Core\Lib\Tag;
-use Osynapsy\Core\Kernel;
 
 class ListBox extends Component
 {
@@ -17,7 +16,7 @@ class ListBox extends Component
     {
         $this->requireJs('/__assets/osynapsy/Bcl/ListBox/script.js');
         $this->requireCss('/__assets/osynapsy/Bcl/ListBox/style.css');
-        parent::__construct('div',$name);
+        parent::__construct('div',$name.'_container');
         $this->att('class','listbox');
         $this->hdn = $this->add(new HiddenBox($name));
         $this->box = $this->add(new Tag('div'))
