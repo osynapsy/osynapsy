@@ -10,7 +10,7 @@ class FileBox extends Component
     public $showImage = false;
     public $span;
     
-    public function __construct($name, $postfix=true, $prefix=true)
+    public function __construct($name, $postfix=false, $prefix=true)
     {
          /* 
             http://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3/
@@ -45,11 +45,21 @@ class FileBox extends Component
     
     protected function __build_extra__()
     {
-        //var_dump( $_REQUEST );
-        if ($this->showImage && !empty($_REQUEST[$this->id])) {
-            $this->span->add(new Tag('img'))->att('src',$_REQUEST[$this->id]);
-            $this->span->add('');
+        if (empty($_REQUEST[$this->id])) {
+            return;
         }
+        if ($this->showImage) {
+            $this->span->add(new Tag('img'))->att('src',$_REQUEST[$this->id]);
+            return;
+        } 
+        $pathinfo = pathinfo($_REQUEST[$this->id]);            
+        $filename = $pathinfo['filename'].(!empty($pathinfo['extension']) ? '.'.$pathinfo['extension'] : '');
+        $download = new Tag('a');
+        $download->att('target','_blank')->att('href',$_REQUEST[$this->id])->add($filename.' <span class="fa fa-download"></span>');
+        $label = $this->span->add(new LabelBox('donwload_'.$this->id));
+        $label->att('style','padding: 10px; background-color: #ddd; margin-bottom: 10px;');
+        $label->setLabel($download);
+        $this->span->add($label);        
     }
 }
 
