@@ -4,7 +4,7 @@ namespace Osynapsy\Bcl\Component;
 use Osynapsy\Core\Lib\Tag;
 use Osynapsy\Ocl\Component\Component;
 
-class FileBox extends Component implements InterfaceModelFieldUpload
+class FileBox extends Component
 {
     protected $fileBox;
     public $showImage = false;
