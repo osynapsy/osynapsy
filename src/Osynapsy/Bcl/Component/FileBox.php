@@ -2,15 +2,13 @@
 namespace Osynapsy\Bcl\Component;
 
 use Osynapsy\Core\Lib\Tag;
-use Osynapsy\Core\Model\InterfaceModelFieldUpload;
 use Osynapsy\Ocl\Component\Component;
 
 class FileBox extends Component implements InterfaceModelFieldUpload
 {
     protected $fileBox;
     public $showImage = false;
-    public $span;
-    private $uploadDir = '/upload';
+    public $span;    
     
     public function __construct($name, $postfix=false, $prefix=true)
     {
@@ -62,16 +60,5 @@ class FileBox extends Component implements InterfaceModelFieldUpload
         $label->att('style','padding: 10px; background-color: #ddd; margin-bottom: 10px;');
         $label->setLabel($download);
         $this->span->add($label);        
-    }
-    
-    public function getUploadDir()
-    {
-        return $this->uploadDir;
-    }
-    
-    public function setUploadDir($dir)
-    {
-        $this->uploadDir = $dir;
-    }
+    }   
 }
-
