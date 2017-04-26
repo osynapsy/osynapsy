@@ -310,13 +310,12 @@ abstract class Model
                 
         $upload = new UploadManager();
         try {
-            $value = $upload->saveFile($field->html, $this->controller->getRequest()->get('app.parameters.path-upload'));
+            $field->value = $upload->saveFile($field->html, $field->uploadDir);
         } catch(\Exception $e) {
             $this->controller->response->error('alert', $e->getMessage());
-            $field->readonly = true;
-            $value = $field->value;
+            $field->readonly = true;            
         }
-        return $value;
+        return $field->value;
     }
     
     public function softDelete($field, $value)
