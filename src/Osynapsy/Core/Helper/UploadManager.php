@@ -2,13 +2,11 @@
 namespace Osynapsy\Core\Helper;
 
 class UploadManager
-{
-    private $response;
+{    
     private $documentRoot;    
     
-    public function __construct($response)
-    {        
-        $this->response = $response;
+    public function __construct()
+    {                
         $this->documentRoot = filter_input(\INPUT_SERVER, 'DOCUMENT_ROOT');
     }
 
@@ -47,23 +45,17 @@ class UploadManager
     {
         if (!is_array($_FILES) || !array_key_exists($componentName, $_FILES)){ 
             return; 
-        }   
+        }           
         $fileNameFinal = $_FILES[$componentName]['name'];
         $fileNameTemp = $_FILES[$componentName]['tmp_name'];
-        if (empty($fileNameFinal)) { 
-            $this->response->error('alert','Filename empty');
-        }
-        if (empty($fileNameTemp)) {
-            $this->response->error('alert','Filename Temp empty');
-        }
         $alert = $this->checkUploadDir($uploadRoot);
         if (!empty($alert)) {
-            $this->response->error('alert','path-upload '.$this->documentRoot.$uploadRoot.' not exists');
-        }        
-        if ($this->response->error()) { 
-            $this->response->dispatch(); 
-            return;
-        }        
+            throw new \Exception('path-upload '.$this->documentRoot.$uploadRoot.' not exists');            
+        } elseif(empty($fileNameFinal)) {             
+            throw new \Exception('Filename is empty for field '.$componentName);
+        } elseif (empty($fileNameTemp)) {            
+            throw new \Exception('Temporary filename is empty for field '.$componentName);
+        }       
         $pathOnWeb = $uploadRoot.'/'.$fileNameFinal;
         $pathOnDisk = $this->getUniqueFilename($this->documentRoot.$pathOnWeb);
         $pathOnWeb = str_replace($this->documentRoot,'',$pathOnDisk);
