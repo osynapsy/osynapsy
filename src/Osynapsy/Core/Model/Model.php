@@ -290,18 +290,31 @@ abstract class Model
                 }
                 break;
             case 'file':
-            case 'image':
-                if (is_array($_FILES) && array_key_exists($field->html, $_FILES)) {
-                    $upload = new UploadManager($this->controller->getResponse());
-                    $value = $upload->saveFile(
-                        $field->html, 
-                        $this->controller->getRequest()->get('app.parameters.path-upload')
-                    );
-                } else {
-                    //For prevent overwrite of db value
-                    $field->readonly = true;
-                }
+            case 'image':                
+                $value = $this->grabUploadedFile($field);                
                 break;
+        }
+        return $value;
+    }
+    
+    private function grabUploadedFile(&$field)
+    {
+        if (
+            !is_array($_FILES) 
+            || !array_key_exists($field->html, $_FILES)
+            || empty($_FILES[$field->html]['name'])
+        ) {
+            $field->readonly = true;            
+            return $field->value;
+        }
+                
+        $upload = new UploadManager();
+        try {
+            $value = $upload->saveFile($field->html, $this->controller->getRequest()->get('app.parameters.path-upload'));
+        } catch(\Exception $e) {
+            $this->controller->response->error('alert', $e->getMessage());
+            $field->readonly = true;
+            $value = $field->value;
         }
         return $value;
     }
