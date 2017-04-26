@@ -34,14 +34,21 @@ class UploadManager
             return 'configuration parameters.path-upload is empty';
         }
         if (!is_dir($this->documentRoot.$uploadRoot)) {
-            return 'path-upload '.$this->documentRoot.$uploadRoot.' not exists';
+            if (!$this->createDir($this->documentRoot.$uploadRoot)) {
+                return 'path-upload '.$this->documentRoot.$uploadRoot.' not exists';
+            }
         } 
         if (!is_writeable($this->documentRoot.$uploadRoot)) {
             return $this->documentRoot.$uploadRoot.' is not writeable.';
         }        
     }
     
-    public function saveFile($componentName, $uploadRoot='/upload/')
+    private function createDir($dir)
+    {
+        return @mkdir($dir, 0775, true);
+    }
+    
+    public function saveFile($componentName, $uploadRoot='/upload')
     {
         if (!is_array($_FILES) || !array_key_exists($componentName, $_FILES)){ 
             return; 
