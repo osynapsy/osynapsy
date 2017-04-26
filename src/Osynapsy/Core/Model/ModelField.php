@@ -12,7 +12,8 @@ class ModelField
         'readonly' => false,
         'rawvalue' => null,
         'unique' => false,
-        'value' => null
+        'value' => null,
+        'uploadDir' => '/upload'
     );
     private $model;    
     public $type;
