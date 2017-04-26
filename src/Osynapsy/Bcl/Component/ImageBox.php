@@ -3,9 +3,10 @@ namespace Osynapsy\Bcl\Component;
 
 use Osynapsy\Core\Helper\Image;
 use Osynapsy\Ocl\Component\Component;
+use Osynapsy\Core\Model\InterfaceModelFieldUpload;
 use Osynapsy\Core\Lib\Tag;
 
-class ImageBox extends Component
+class ImageBox extends Component implements InterfaceModelFieldUpload
 {
     private $image = array(
         'object' => null,
@@ -27,6 +28,7 @@ class ImageBox extends Component
         'crop' => 'crop',
         'delete' => 'deleteImage'
     );
+    private $uploadDir = '/upload';
     
     public function __construct($id)
     {        
@@ -163,5 +165,15 @@ class ImageBox extends Component
     public function setCropAction($action)
     {
         $this->action['crop'] = $action;
+    }
+    
+    public function getUploadDir()
+    {
+        return $this->uploadDir;
+    }
+    
+    public function setUploadDir($dir)
+    {
+        $this->uploadDir = $dir;
     }
 }
