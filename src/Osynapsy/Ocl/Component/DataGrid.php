@@ -308,7 +308,7 @@ class DataGrid extends Component
                 'hidden'   => false,
                 'print'    => true,
                 'realname' => strip_tags($col['name']),
-                'style'    => '',
+                'style'    => $this->getColumnProperty($k, 'style'),
                 'title'    => $col['name']
             );
             
@@ -448,7 +448,7 @@ class DataGrid extends Component
                 'print'    => true,
                 'rawtitle' => $k,
                 'rawvalue' => $v,
-                'style'    => array(),
+                'style'    => array($this->getColumnProperty($i, 'style')),
                 'title'    => $k,
                 'value'    => htmlentities($v)
             );
