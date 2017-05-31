@@ -129,7 +129,7 @@ class DbOci implements InterfaceDbo
             }
         }
         
-        $ok = $this->__transaction ? oci_execute($rs, OCI_NO_AUTO_COMMIT) : oci_execute($rs);
+        $ok = $this->__transaction ? @oci_execute($rs, OCI_NO_AUTO_COMMIT) : @oci_execute($rs);
         
         if (!$ok) {
             $e = oci_error($rs);  // For oci_parse errors pass the connection handle
