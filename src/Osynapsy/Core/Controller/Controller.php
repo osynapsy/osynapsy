@@ -55,6 +55,11 @@ abstract class Controller implements InterfaceController
         return $this->response;
     }
 
+    public function getApp()
+    {
+        return $this->app;
+    }
+    
     public function getDb()
     {
         return $this->db;
