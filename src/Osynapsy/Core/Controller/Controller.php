@@ -101,16 +101,13 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     
     private function loadObserver()
     {
-        $observers = $this->getRequest()->get('observers');
-        if (empty($observers)) {
+        $observerList = $this->getRequest()->get('observers');
+        if (empty($observerList)) {
             return;
         }
-        $currentSubject = str_replace('\\', ':', get_class($this));
-        foreach($observers as $rawObserver => $subject) {
-            if ($currentSubject != $subject) {
-                continue;
-            }
-            $observer = str_replace(':','\\',$rawObserver);
+        $observers = array_keys($observerList, str_replace('\\', ':', get_class($this)));
+        foreach($observers as $observer) {
+            $observer = str_replace(':','\\',$observer);
             $this->attach(new $observer());
         }
     }
