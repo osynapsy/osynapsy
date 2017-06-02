@@ -33,7 +33,7 @@ class Kernel
             $this->loadXmlConfig('/configuration/layouts/layout', 'name', 'path')
         );
         $this->request->set(
-            'app.observers',
+            'observers',
             $this->loadXmlConfig('/configuration/observers/observer', 0, 'subject')
         );        
         $this->router = new Router(
