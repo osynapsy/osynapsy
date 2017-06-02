@@ -107,7 +107,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         }
         $observers = array_keys($observerList, str_replace('\\', ':', get_class($this)));
         foreach($observers as $observer) {
-            $observer = str_replace(':','\\',$observer);
+            $observer = '\\'.trim(str_replace(':','\\',$observer));
             $this->attach(new $observer());
         }
     }
