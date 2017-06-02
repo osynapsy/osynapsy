@@ -31,6 +31,10 @@ class Kernel
         $this->request->set(
             'app.layouts',
             $this->loadXmlConfig('/configuration/layouts/layout', 'name', 'path')
+        );
+        $this->request->set(
+            'app.observers',
+            $this->loadXmlConfig('/configuration/observers/observer', 0, 'event')
         );        
         $this->router = new Router(
             $requestRoute,
