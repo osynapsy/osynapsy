@@ -34,7 +34,7 @@ class Kernel
         );
         $this->request->set(
             'app.observers',
-            $this->loadXmlConfig('/configuration/observers/observer', 0, 'event')
+            $this->loadXmlConfig('/configuration/observers/observer', 0, 'subject')
         );        
         $this->router = new Router(
             $requestRoute,
