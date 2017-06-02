@@ -11,15 +11,14 @@ use Osynapsy\Core\Observer\InterfaceObserver;
 abstract class Controller implements InterfaceController, InterfaceSubject
 {
     protected $actionKey = 'k-cmd';
-    protected $state;
     protected $db;
+    protected $observers = [];
+    protected $state;
     private $parameters;
     private $templateId;
-    protected $observers = [];
     public $model;
     public $request;
     public $response;
-    
     public $app;
         
     public function __construct(Request $request = null, $db = null, $appController = null)
@@ -124,7 +123,6 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     
     public function run()
     {
-        //if (!empty($_REQUEST[$this->actionKey])) {
         $cmd = filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION');
         if (!empty($cmd)) {
             return $this->execAction($cmd);
