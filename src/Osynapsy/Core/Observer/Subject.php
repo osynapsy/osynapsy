@@ -6,22 +6,20 @@ namespace Osynapsy\Core\Observer;
  *
  * @author Peter
  */
-trait Observer 
+trait Subject 
 {
-    protected $observers = [];
+    private $observers;
+    
     //add observer
-    public function attach(InterfaceObserver $observer)
+    public function attach(\SplObserver $observer)
     {
-        $this->observers[] = $observer;
+         $this->getObservers()->attach($observer);
     }
     
     //remove observer
-    public function detach(InterfaceObserver $observer)
+    public function detach(\SplObserver $observer)
     {    
-        $key = array_search($observer,$this->observers, true);
-        if ($key) {
-            unset($this->observers[$key]);
-        }
+        $this->getObservers()->detach($observer);
     }
     
     private function loadObserver()
@@ -32,14 +30,13 @@ trait Observer
         }
         $observers = array_keys($observerList, str_replace('\\', ':', get_class($this)));
         foreach($observers as $observer) {
-            $observer = '\\'.trim(str_replace(':','\\',$observer));
-            $this->attach(new $observer());
+            $observerClass = '\\'.trim(str_replace(':','\\',$observer));
+            $this->attach(new $observerClass());
         }
     }
     
     public function notify()
-    {
-        //var_dump($this->observers);
+    {        
         foreach ($this->observers as $value) {
             $value->update($this);
         }
@@ -49,5 +46,13 @@ trait Observer
     {
         $this->state = $state;
         $this->notify();
+    }
+    
+    protected function getObservers()
+    {
+        if (is_null($this->observer)) {
+            $this->observers = new \SplObjectStorage();
+        }
+        return $this->observers;
     }
 }

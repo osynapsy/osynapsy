@@ -6,13 +6,7 @@ namespace Osynapsy\Core\Observer;
  *
  * @author Peter
  */
-interface InterfaceSubject
-{
-    public function attach ( InterfaceObserver $observer);
-    
-    public function detach ( InterfaceObserver $observer);
-    
-    public function notify ();
-    
+interface InterfaceSubject extends \SplSubject
+{        
     public function getState();
 }

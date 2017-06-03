@@ -6,11 +6,10 @@ use Osynapsy\Ocl\Response\Html as HtmlResponse;
 use Osynapsy\Core\Response\Response;
 use Osynapsy\Core\Response\JsonResponse;
 use Osynapsy\Core\Observer\InterfaceSubject;
-use Osynapsy\Core\Observer\Observer;
 
 abstract class Controller implements InterfaceController, InterfaceSubject
 {
-    use Observer;
+    use \Osynapsy\Core\Observer\Subject;
     
     protected $db;
     private $parameters;
