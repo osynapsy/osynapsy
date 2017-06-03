@@ -45,7 +45,7 @@ trait Observer
         }
     }
     
-    private function setState( $state )
+    public function setState( $state )
     {
         $this->state = $state;
         $this->notify();
