@@ -37,7 +37,7 @@ trait Subject
     
     public function notify()
     {        
-        foreach ($this->observers as $value) {
+        foreach ($this->getObservers() as $value) {
             $value->update($this);
         }
     }
