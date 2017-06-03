@@ -12,5 +12,7 @@ interface InterfaceSubject
     
     public function detach ( InterfaceObserver $observer);
     
-    public function notify ( $state );
+    public function notify ();
+    
+    public function getState();
 }

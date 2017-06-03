@@ -6,14 +6,13 @@ use Osynapsy\Ocl\Response\Html as HtmlResponse;
 use Osynapsy\Core\Response\Response;
 use Osynapsy\Core\Response\JsonResponse;
 use Osynapsy\Core\Observer\InterfaceSubject;
-use Osynapsy\Core\Observer\InterfaceObserver;
+use Osynapsy\Core\Observer\Observer;
 
 abstract class Controller implements InterfaceController, InterfaceSubject
 {
-    protected $actionKey = 'k-cmd';
+    use Observer;
+    
     protected $db;
-    protected $observers = [];
-    protected $state;
     private $parameters;
     private $templateId;
     public $model;
@@ -29,9 +28,9 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         $this->setDbHandler($db);
         $this->app = $appController;
         $this->loadObserver();
-        $this->notify('init');
+        $this->setState('init');
         $this->init();
-        $this->notify('initEnd');
+        $this->setState('initEnd');
     }
     
     public function deleteAction()
@@ -46,7 +45,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         $this->setResponse(new JsonResponse());
         //$cmd = $_REQUEST[$this->actionKey];
         //sleep(0.7);
-        $this->notify($cmd.'ActionStart');
+        $this->setState($cmd.'ActionStart');
         if (!method_exists($this, $cmd.'Action')) {
             $res = 'No action '.$cmd.' exist in '.get_class($this);
         } elseif (!empty($_REQUEST['actionParameters'])){
@@ -57,7 +56,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         } else {
             $res = $this->{$cmd.'Action'}();
         }
-        $this->notify($cmd.'ActionEnd');
+        $this->setState($cmd.'ActionEnd');
         if (!empty($res) && is_string($res)) {
             $this->response->error('alert',$res);
         }
@@ -97,19 +96,6 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     abstract public function indexAction();
     
     abstract public function init();
-    
-    private function loadObserver()
-    {
-        $observerList = $this->getRequest()->get('observers');
-        if (empty($observerList)) {
-            return;
-        }
-        $observers = array_keys($observerList, str_replace('\\', ':', get_class($this)));
-        foreach($observers as $observer) {
-            $observer = '\\'.trim(str_replace(':','\\',$observer));
-            $this->attach(new $observer());
-        }
-    }
     
     public function loadView($path, $params = array(), $return = false)
     {
@@ -159,26 +145,5 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         $this->response = $response;
     }
     
-    //add observer
-    public function attach(InterfaceObserver $observer)
-    {
-        $this->observers[] = $observer;
-    }
     
-    //remove observer
-    public function detach(InterfaceObserver $observer)
-    {    
-        $key = array_search($observer,$this->observers, true);
-        if ($key) {
-            unset($this->observers[$key]);
-        }
-    }
-    
-    public function notify( $state )
-    {
-        $this->state = $state;
-        foreach ($this->observers as $value) {
-            $value->update($this);
-        }
-    }
 }
