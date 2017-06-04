@@ -66,11 +66,12 @@ class UploadManager
             throw new \Exception('Temporary filename is empty for field '.$componentName);
         }       
         $pathOnWeb = $uploadRoot.'/'.$fileNameFinal;
-        if ($this->debug) {
-            throw new \Exception('Debug file upload in '.$pathOnWeb);
-        }
+        
         $pathOnDisk = $this->getUniqueFilename($this->documentRoot.$pathOnWeb);
         $pathOnWeb = str_replace($this->documentRoot,'',$pathOnDisk);
+        if ($this->debug) {
+            throw new \Exception('Path on web : '.$pathOnWeb.' - PathOnDisk :'.$pathOnDisk);
+        }
         //Thumbnail path            
         if ($pathOnDisk && move_uploaded_file($fileNameTemp, $pathOnDisk)){                        
             //Inserisco sul db l'immagine
