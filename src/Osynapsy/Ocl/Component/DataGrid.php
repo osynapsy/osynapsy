@@ -344,6 +344,7 @@ class DataGrid extends Component
                         case '_button':
                         case '_html'  :
                         case '_text'  :
+                        case '_img'   :
                         case '_img64' :
                         case '_img64x2':
                         case '_center':
@@ -633,6 +634,11 @@ class DataGrid extends Component
                 break;
            case '_pk'   :
                 $opt['row']['attr'][] = array('_pk',$opt['cell']['rawvalue']);
+                break;
+            case '_img':
+                $opt['cell']['print'] = true;
+                $opt['cell']['value'] = empty($opt['cell']['rawvalue']) ? '<span class="fa fa-ban"></span>': '<img src="'.$opt['cell']['rawvalue'].'" style="width: 64px;">';
+                $opt['cell']['class'][] = 'text-center';
                 break;
             case '_img64x2':
                 $dimcls = 'osy-image-med';
