@@ -198,7 +198,6 @@ FormController =
         if (upload){ //Se devo effettuare un upload personalizzo il metodo jquery $.ajax per fargli spedire il FormData
           this.waitMask('open','progress');
           ajaxpar['data'] = new FormData($(obj).closest('form')[0]);
-          ajaxpar['data'].append('k-cmd',cmd);
           ajaxpar['xhr'] = function(){  // Custom XMLHttpRequest
              var myXhr = $.ajaxSettings.xhr();
              if(myXhr.upload) { // Check if upload property exists
@@ -212,10 +211,10 @@ FormController =
           ajaxpar['processData'] = false;
         } else { //No file to upload or IE9,IE8,etc browser
           this.waitMask('open');
-          ajaxpar['data'] = $('form').serialize()+'&k-cmd='+cmd+'&'+extraData;
+          ajaxpar['data'] = $(obj).closest('form').serialize()+'&'+extraData;
         }
-
         $.ajax(ajaxpar);
+                console.log(ajaxpar);
     },
     execCode : function(code) {
         eval(code);
