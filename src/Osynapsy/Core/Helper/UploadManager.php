@@ -4,10 +4,12 @@ namespace Osynapsy\Core\Helper;
 class UploadManager
 {    
     private $documentRoot;    
+    private $debug = false;
     
-    public function __construct()
+    public function __construct($debug = false)
     {                
         $this->documentRoot = filter_input(\INPUT_SERVER, 'DOCUMENT_ROOT');
+        $this->debug = $debug;
     }
 
     public function getUniqueFilename($pathOnDisk)
@@ -64,6 +66,9 @@ class UploadManager
             throw new \Exception('Temporary filename is empty for field '.$componentName);
         }       
         $pathOnWeb = $uploadRoot.'/'.$fileNameFinal;
+        if ($this->debug) {
+            throw new \Exception('Debug file upload in '.$pathOnWeb);
+        }
         $pathOnDisk = $this->getUniqueFilename($this->documentRoot.$pathOnWeb);
         $pathOnWeb = str_replace($this->documentRoot,'',$pathOnDisk);
         //Thumbnail path            
