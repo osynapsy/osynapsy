@@ -100,7 +100,7 @@ class DataGrid2 extends Component
         if (!empty($properties['class'])) {
             $cell->att('class', $properties['class'], true);
         }
-        return ($value == 0 && !empty($value)) ? $value : '&nbsp;';
+        return ($value != 0 && empty($value)) ? '&nbsp;' : $value;
     }
     
     public function addColumn($label, $field, $class = '', $type = 'string',callable $function = null)
