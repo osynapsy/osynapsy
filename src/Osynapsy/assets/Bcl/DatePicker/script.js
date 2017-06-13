@@ -33,7 +33,7 @@ BclDatePicker =
 };
 
 if (window.FormController){    
-    FormController.register('init','BclDatePicker_Init',function(){
+    FormController.register('init','BclDatePicker_init',function(){
         BclDatePicker.init();
     });
 }
