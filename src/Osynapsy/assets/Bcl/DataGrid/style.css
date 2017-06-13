@@ -1,0 +1,33 @@
+.bcl-datagrid > div.row {
+    margin-bottom: -1px;
+}
+.bcl-datagrid .bcl-datagrid-th,
+.bcl-datagrid .bcl-datagrid-head {
+    font-weight: bold;
+}
+.bcl-datagrid .bcl-datagrid-head {
+    font-size: 1.2em;
+    margin-left: -28px;
+    margin-bottom: 5px !important;
+}
+.bcl-datagrid-thead {
+    border: 1px solid #ddd;   
+}
+.bcl-datagrid-thead > .bcl-datagrid-th {
+    padding: 5px;
+    border-left: 1px solid #ddd;
+    background-color: #fdfdfd;
+}
+.bcl-datagrid-thead > .bcl-datagrid-th:first-child {
+    border-left: 1px solid transparent;
+}
+.bcl-datagrid-body .row:first-child {
+    border-top: 1px solid #ddd;
+}
+.bcl-datagrid-body .row {
+    border-left: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
