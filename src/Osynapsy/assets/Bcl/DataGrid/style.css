@@ -1,5 +1,9 @@
 .bcl-datagrid > div.row {
-    margin-bottom: -1px;
+    margin-bottom: -1px;   
+}
+.bcl-datagrid div.row {
+    margin-left: 0px !important;
+    margin-right: 0px !important;
 }
 .bcl-datagrid .bcl-datagrid-th,
 .bcl-datagrid .bcl-datagrid-head {
@@ -23,6 +27,9 @@
 }
 .bcl-datagrid-body .row:first-child {
     border-top: 1px solid #ddd;
+}
+.bcl-datagrid-body .row:hover {
+    background-color: #f8f8f8;
 }
 .bcl-datagrid-body .row {
     border-left: 1px solid #ddd;
