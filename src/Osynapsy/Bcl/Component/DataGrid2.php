@@ -12,7 +12,9 @@ class DataGrid2 extends Component
     public function __construct($name)
     {
         parent::__construct('div', $name);
-        $this->att('class','container-fluid bcl-datagrid');
+        $this->att('class','container bcl-datagrid');
+        $this->requireCss('/__assets/osynapsy/Bcl/DataGrid/style.css');
+        $this->requireJs('/__assets/osynapsy/Bcl/DataGrid/script.js');
     }
     
     public function __build_extra__()
@@ -24,12 +26,10 @@ class DataGrid2 extends Component
         }
         $this->add(
             $this->buildColumnHead()
-        );        
-        foreach ($this->data as $rec) {
-            $this->add(
-                $this->buildRow($rec)
-            );
-        }
+        );
+        $this->add(
+            $this->buildBody()
+        );
     }
     
     private function buildTitle($title)
@@ -54,6 +54,21 @@ class DataGrid2 extends Component
         return $tr;
     }
     
+     private function buildBody()
+    {
+        $body = new Tag('div');
+        $body->att('class','bcl-datagrid-body');        
+        if (empty($this->data)) {
+            return $this->buildEmptyMessage($body);
+        }
+        foreach ($this->data as $rec) {
+            $body->add(
+                $this->buildRow($rec)
+            );
+        }        
+        return $body;
+    }
+    
     private function buildRow($row)
     {
         $tr = new Tag('div');
@@ -67,6 +82,9 @@ class DataGrid2 extends Component
             $cell->add(
                 $this->valueFormatting($value, $cell, $properties)
             );
+        }
+        if (!empty($row['_url_detail'])) {
+            $tr->att('data-url-detail', $row['_url_detail']);
         }
         return $tr;
     }
@@ -82,7 +100,7 @@ class DataGrid2 extends Component
         if (!empty($properties['class'])) {
             $cell->att('class', $properties['class'], true);
         }
-        return $value;
+        return ($value == 0 && !empty($value)) ? $value : '&nbsp;';
     }
     
     public function addColumn($label, $field, $class = '', $type = 'string',callable $function = null)
