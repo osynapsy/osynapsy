@@ -12,7 +12,7 @@ class DataGrid2 extends Component
     public function __construct($name)
     {
         parent::__construct('div', $name);
-        $this->att('class','container bcl-datagrid');
+        $this->att('class','bcl-datagrid');
         $this->requireCss('/__assets/osynapsy/Bcl/DataGrid/style.css');
         $this->requireJs('/__assets/osynapsy/Bcl/DataGrid/script.js');
     }
