@@ -141,21 +141,21 @@ class Form extends Component
             $this->foot(new Button('btn_save'))
                  ->att('class','cmd-execute btn btn-primary pull-right')
                  ->att('data-action','save')
-                 ->att('style','width: 100px; margin-right: 10px;')
+                 ->att('style','min-width: 100px; margin-right: 10px;')
                  ->add(($save === true ? '<span class="glyphicon glyphicon-floppy-disk"></span> Salva' : $save));
         }
         
         if ($delete) {
             $this->foot(new Button('btn_delete'))
                  ->att('class','btn btn-danger pull-right cmd-delete')                 
-                 ->att('style','width: 100px; margin-right: 10px;')
+                 ->att('style','min-width: 100px; margin-right: 10px;')
                  ->add('<span class="glyphicon glyphicon-trash"></span> Elimina');
         }
 
         if ($back) {
             $this->foot(new Button('btn_back'))
                  ->att('class','cmd-back btn btn-default pull-left')
-                 ->att('style','margin-right: 10px; width: 100px;')
+                 ->att('style','margin-right: 10px; min-width: 100px;')
                  ->add('<span class="glyphicon glyphicon-chevron-left"></span> Indietro');
         }
     }
