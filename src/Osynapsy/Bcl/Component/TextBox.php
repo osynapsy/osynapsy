@@ -5,9 +5,9 @@ use Osynapsy\Ocl\Component\TextBox as OclTextBox;
 
 class TextBox extends OclTextBox
 {
-    public function __construct($name)
+    public function __construct($name, $class='')
     {
         parent::__construct($name);
-        $this->att('class','form-control',true);
+        $this->att('class',trim('form-control '.$class),true);
     }
 }
