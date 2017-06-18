@@ -2,7 +2,6 @@
 namespace Osynapsy\Bcl\Component;
 
 use Osynapsy\Ocl\Component\Component;
-use Osynapsy\Core\Lib\Tag;
 
 class Column extends Component
 {
@@ -40,24 +39,28 @@ class Column extends Component
     {
         $this->size['lg']['width'] = $size;
         $this->size['lg']['offset'] = $offset;
+         return $this;
     }
     
     public function setMd($size, $offset = 0)
     {
         $this->size['md']['width'] = $size;
         $this->size['md']['offset'] = $offset;
+         return $this;
     }
     
     public function setSm($size, $offset = 0)
     {
         $this->size['sm']['width'] = $size;
         $this->size['sm']['offset'] = $offset;
+         return $this;
     }
     
     public function setXs($size, $offset = 0)
     {
         $this->size['xs']['width'] = $size;
         $this->size['xs']['offset'] = $offset;
+        return $this;
     }
     
     public function push($label, $object, $grouped=true)
