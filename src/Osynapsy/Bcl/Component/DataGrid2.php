@@ -8,6 +8,7 @@ class DataGrid2 extends Component
 {
     private $columns = [];
     private $title;
+    private $emptyMessage = 'No data found';
     
     public function __construct($name)
     {
@@ -54,7 +55,15 @@ class DataGrid2 extends Component
         return $tr;
     }
     
-     private function buildBody()
+    private function buildEmptyMessage($body)
+    {
+        $body->add(
+            '<div class="row"><div class="col-lg-12 text-center">'.$this->emptyMessage.'</div></div>'
+        );
+        return $body;
+    }
+    
+    private function buildBody()
     {
         $body = new Tag('div');
         $body->att('class','bcl-datagrid-body');        
@@ -124,5 +133,11 @@ class DataGrid2 extends Component
     {
         $this->title = $title;
         return $this;
-    }    
+    }
+    
+    public function setEmptyMessage($message)
+    {
+        $this->emptyMessage = $message;
+        return $this;
+    }
 }
