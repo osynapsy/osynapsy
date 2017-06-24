@@ -66,7 +66,7 @@ class Column extends Component
     public function push($label, $object, $grouped=true)
     {
         if ($object instanceof Tag) {
-            $object->att('data-label', $lbl);
+            $object->att('data-label', $label);
         }
         if ($grouped) {
             $this->add(new FormGroup($object,$label));
