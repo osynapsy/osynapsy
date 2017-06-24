@@ -60,7 +60,10 @@ FormController =
     },
     showErrorOnLabel : function(elm, err)
     {
-        par = elm.closest('.form-group');
+        /*if ($(elm).data('label')) {
+            return err.replace('<!--'+$(elm).attr('id')+'-->',$(elm).data('label')) + '\n';
+        }*/
+        var par = elm.closest('.form-group');
         if (par.hasClass('has-error')) {
             return;
         }
