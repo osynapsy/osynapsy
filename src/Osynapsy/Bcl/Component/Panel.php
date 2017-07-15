@@ -181,7 +181,7 @@ class Panel extends Component
     public function put($lbl, $obj, $row = 0, $col = 0, $width=1, $offset=null, $class='')
     {
         if ($obj instanceof Tag) {
-            $obj->att('data-label', $lbl);
+            $obj->att('data-label', strip_tags($lbl));
         }
         $this->cells[$row][$col][] = array(
             'lbl' => $lbl,
