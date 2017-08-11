@@ -29,15 +29,15 @@ class Dispatcher
             if ($eventId != $event->getId()) {
                 continue;
             }
-            $this->trigger($listener);
+            $listenerClass = '\\'.trim(str_replace(':','\\',$listener));
+            $handle = new $listenerClass($this->controller);
+            $this->trigger($handle);
         }
     }
     
-    private function trigger($listener)
-    {
-        $listenerClass = '\\'.trim(str_replace(':','\\',$listener));
-        $handle = new $listenerClass($this->controller);
-        $handle->trigger();
+    private function trigger(InterfaceListener $listener)
+    {                
+        $listener->trigger();
     }
     
     private function init()
