@@ -27,6 +27,11 @@ class Event
         return get_class($this->origin).'\\'.$this->eventId;
     }
     
+    public function getId()
+    {
+        return $this->eventId;
+    }
+    
     public function trigger()
     {        
     }
