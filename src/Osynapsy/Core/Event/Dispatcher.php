@@ -22,7 +22,22 @@ class Dispatcher
             $this->init();
         }
         $listeners = $this->controller->getRequest()->get('listeners');
-        die('ciao'.print_r($listeners,'true'));
+        if (empty($listeners)) {
+            return;
+        }
+        foreach($listeners as $listener => $eventId) {
+            if ($eventId != $event->getId()) {
+                continue;
+            }
+            $this->trigger($listener);
+        }
+    }
+    
+    private function trigger($listener)
+    {
+        $listenerClass = '\\'.trim(str_replace(':','\\',$listener));
+        $handle = new $listenerClass($this->controller);
+        $handle->trigger();
     }
     
     private function init()
