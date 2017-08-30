@@ -315,7 +315,12 @@ abstract class Model
             $this->controller->response->error('alert', $e->getMessage());
             $field->readonly = true;            
         }
+        $this->afterUpload($this->value, $field);
         return $field->value;
+    }
+    
+    protected function afterUpload($filename, $field = null)
+    {        
     }
     
     public function softDelete($field, $value)
