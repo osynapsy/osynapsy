@@ -6,6 +6,7 @@ use Osynapsy\Ocl\Response\Html as HtmlResponse;
 use Osynapsy\Core\Response\Response;
 use Osynapsy\Core\Response\JsonResponse;
 use Osynapsy\Core\Observer\InterfaceSubject;
+use Osynapsy\Core\Event\Dispatcher;
 
 abstract class Controller implements InterfaceController, InterfaceSubject
 {
@@ -14,6 +15,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     protected $db;
     private $parameters;
     private $templateId;
+    private $dispatcher;
     public $model;
     public $request;
     public $response;
@@ -26,6 +28,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         $this->request = $request;
         $this->setDbHandler($db);
         $this->app = $appController;
+        $this->dispatcher = new Dispatcher($this);
         $this->loadObserver();
         $this->setState('init');
         $this->init();
@@ -70,6 +73,11 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     public function getDb()
     {
         return $this->db;
+    }
+    
+    public function getDispacther()
+    {
+        return $this->dispatcher;
     }
     
     public function getParameter($key)
