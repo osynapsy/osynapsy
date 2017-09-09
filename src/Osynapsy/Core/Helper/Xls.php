@@ -102,15 +102,22 @@ class Xls
         return $insert;
     }
     
-    public function export($data, $title='Data export')
+    private buildXls()
     {
         $xls = new \PHPExcel();
         
-        $xls->getProperties()->setCreator("Whiterabbit suite");
-        $xls->getProperties()->setLastModifiedBy("Whiterabbit suite");
+        $xls->getProperties()->setCreator("Osynapsy");
+        $xls->getProperties()->setLastModifiedBy("Osynapsy");
         $xls->getProperties()->setTitle($title);
         $xls->getProperties()->setSubject("Data Export");
-        $xls->getProperties()->setDescription("Data export from Whiterabbit suite");
+        $xls->getProperties()->setDescription("Data export from Osynapsy");
+        
+        return $xls;
+    }
+    
+    public function export($data, $title = 'Data export', $basePath = '/upload/export/')
+    {
+        $xls = $this->buildXls();
         
         $letters = array_unshift(range('A','Z'),'');
         $cell = '';
@@ -141,7 +148,7 @@ class Xls
         }
         $xls->getActiveSheet()->setTitle($title);
         //Generate filename
-        $filename  = '/export/';
+        $filename  = $basePath;
         $filename .= str_replace(' ','-',strtolower($title));
         $filename .= date('-Y-m-d-H-i-s');
         $filename .= '.xlsx';
