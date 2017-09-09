@@ -24,9 +24,9 @@ class Xls
                     if (!is_null($this->delimiter)) {
                         $reader->setDelimiter($this->delimiter);
                     }
-                    if (!is_null($this->lineending)) {
+                    //if (!is_null($this->lineending)) {
                         //$reader->setLineEnding($this->lineending);
-                    }
+                    //}
                     break;
             }            
             $excel = $reader->load($fileName);
@@ -102,7 +102,7 @@ class Xls
         return $insert;
     }
     
-    private buildXls()
+    private function buildXls()
     {
         $xls = new \PHPExcel();
         
@@ -146,6 +146,7 @@ class Xls
                 $j++;
             }
         }
+        
         $xls->getActiveSheet()->setTitle($title);
         //Generate filename
         $filename  = $basePath;
