@@ -171,7 +171,7 @@ FormController =
     exec : function(obj, cmd)
     {
         var extraData = (arguments.length > 2) ? arguments[2] : '';
-        var funcDispatcher = (arguments.length > 3) ? arguments[3] : function(resp){
+        var funcDispatcher = (arguments.length > 3) ? arguments[3] : function(resp){            
             FormController.waitMask('remove');
             FormController.dispatchKernelResp(resp);
         };
