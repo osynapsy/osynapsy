@@ -175,4 +175,3 @@ class Xls
         $this->lineending = $linending;
     }
 }
-
