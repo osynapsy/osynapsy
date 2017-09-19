@@ -110,7 +110,8 @@ class KM_Mailer
     private $localhost = 'localhost';
     private $timeout = '60';
     private $debug = false;
-
+    private $certificateVerify = false;
+    
     public function __construct($server, $port, $username=null, $password=null, $secure=null)
     {
         $this->server = $server;
@@ -135,7 +136,8 @@ class KM_Mailer
         if(strtolower(trim($this->secure)) == 'ssl') {
             $this->server = 'ssl://' . $this->server;
         }
-        $this->conn = fsockopen($this->server, $this->port, $errno, $errstr, $this->timeout);
+        $opt = '';        
+        $this->conn = stream_socket_client($this->server.':'.$this->port, $errno, $errstr, $this->timeout);
         if (substr($this->getServerResponse(),0,3)!='220') { return false; }
         return true;
     }
