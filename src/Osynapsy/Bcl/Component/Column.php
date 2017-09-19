@@ -2,6 +2,7 @@
 namespace Osynapsy\Bcl\Component;
 
 use Osynapsy\Ocl\Component\Component;
+use Osynapsy\Core\Lib\Tag;
 
 class Column extends Component
 {
@@ -66,7 +67,7 @@ class Column extends Component
     public function push($label, $object, $grouped=true)
     {
         if ($object instanceof Tag) {
-            $object->att('data-label', $label);
+            $object->att('data-label', strip_tags($label));
         }
         if ($grouped) {
             $this->add(new FormGroup($object,$label));
