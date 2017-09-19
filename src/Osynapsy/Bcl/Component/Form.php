@@ -98,7 +98,7 @@ class Form extends Component
     {
         if (empty($this->alert)) {
             $this->alert = new Tag('div');
-            $this->alert->att('class','normalheader transition animated fadeIn');
+            $this->alert->att('class','transition animated fadeIn m-b-sm');
         }
         $icon = '';
         switch ($type) {
