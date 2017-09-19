@@ -60,9 +60,9 @@ FormController =
     },
     showErrorOnLabel : function(elm, err)
     {
-        /*if ($(elm).data('label')) {
+        if ($(elm).data('label')) {
             return err.replace('<!--'+$(elm).attr('id')+'-->',$(elm).data('label')) + '\n';
-        }*/
+        }
         var par = elm.closest('.form-group');
         if (par.hasClass('has-error')) {
             return;
@@ -83,17 +83,22 @@ FormController =
             return;
         }
         if ('errors' in resp){
-            msg = '';
+            var errorMessage = '';
             $.each(resp.errors, function(idx, val){
                 if (val[0] == 'alert'){
                     alert(val[1]);
-                } else if (!$('#'+val[0]).hasClass('field-in-error')){
-                    cmp = $('#'+val[0]);
-                    if (cmp){
-                        FormController.showErrorOnLabel(cmp, val[1]);                        
+                } else if (!$('#'+val[0]).hasClass('field-in-error')){                                        
+                    var cmp = $('#'+val[0]);                    
+                    if (cmp.length > 0){
+                        errorMessage += FormController.showErrorOnLabel(cmp, val[1]);                        
+                    } else {
+                        errorMessage += val[1] + '\n';
                     }
                 }
             });
+            if (errorMessage != '') {
+                FormController.modalAlert('Si sono verificati i seguenti errori', '<pre>' + errorMessage +'</pre>');
+            }
         }
         if ('command' in resp){
             $.each(resp.command, function(idx,val){
