@@ -330,6 +330,7 @@ class DataGrid extends Component
                                 $opt['title'] = $nam;
                             }
                             $opt['print'] = true;
+                            break;
                         case '_rad'   :
                             $opt['title'] = '&nbsp;';
                             $opt['print'] = true;
@@ -575,8 +576,10 @@ class DataGrid extends Component
                 $opt['cell']['print'] = true;
                 break;
             case '_chk':
-                list($v,$sel) = explode('#',$opt['cell']['rawvalue']);
-                $opt['cell']['value'] = "<input type=\"checkbox\" name=\"chk_{$this->id}[]\" value=\"{$v}\"".(empty($sel) ? '' : ' checked').">";
+                list($v,$sel) = explode('#',$opt['cell']['rawvalue']);                
+                if ($v === '0' || !empty($v)) {
+                    $opt['cell']['value'] = "<input type=\"checkbox\" name=\"chk_{$this->id}[]\" value=\"{$v}\"".(empty($sel) ? '' : ' checked').">";
+                }
                 $opt['cell']['class'][] = 'center';
                 $opt['cell']['print'] = true;
                 break;
