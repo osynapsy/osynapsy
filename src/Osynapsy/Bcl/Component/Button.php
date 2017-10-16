@@ -6,10 +6,13 @@ use Osynapsy\Ocl\Component\Button as OclButton;
 class Button extends OclButton
 {
     
-    public function __construct($id, $type = 'button', $class = '')
+    public function __construct($id, $type = 'button', $class = '', $label = '')
     {
         parent::__construct($id);        
         $this->att('type',$type)->att('class','btn '.$class);
+        if (!empty($label)) {
+            $this->add($label);
+        }
     }
     
     public function setAction($action, $parameters = null)
