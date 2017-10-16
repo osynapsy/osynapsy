@@ -334,9 +334,9 @@ FormController =
             $('#'+k).val(v);
         }
     },
-    modalAlert : function(title, body) {
-        var id = 'alert';
+    modal : function(id, title, body, confirm){
         $('.modal').remove();
+        var btnCloseClass = '';
         var win  = '<div id="' + id + '" class="modal fade" role="dialog">\n';
             win += '    <div class="modal-dialog modal-xs">\n';
             win += '        <div class="modal-content">\n';
@@ -344,11 +344,16 @@ FormController =
             win += '                <button type="button" class="close" data-dismiss="modal">&times;</button>';
             win += '                <h4 class="modal-title">' + title + '</h4>';
             win += '            </div>';
-            win += '            <div class="modal-body">';
+            win += '            <div class="modal-body" style="padding: 20px">';
             win += body;
             win += '            </div>';
             win += '            <div class="modal-footer">';
-            win += '                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>';
+            if (confirm) {
+                btnCloseClass = ' pull-left';
+                win += '<button type="button" class="btn btn-default click-execute pull-right" data-dismiss="modal" data-action="confirm">Conferma</button>';
+            }    
+            win += '                <button type="button" class="btn btn-default'+btnCloseClass+'" data-dismiss="modal">Chiudi</button>';
+            
             win += '            </div>';
             win += '        </div>';
             win += '    </div>';
@@ -358,6 +363,13 @@ FormController =
             keyboard : true
         });
         return $(win);
+    },
+    modalAlert : function(title, message) {
+        var win = this.modal('alert', 'Alert', message, null);        
+        return $(win);
+    },
+    modalConfirm : function(title, message, actionConfirm){
+        return this.modal('confirm', 'Conferma', message, actionConfirm);
     },
     modalWindow : function(id, title, url) {
         var wdt = '90%';        
