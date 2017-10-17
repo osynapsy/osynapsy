@@ -334,7 +334,7 @@ FormController =
             $('#'+k).val(v);
         }
     },
-    modal : function(id, title, body, confirm){
+    modal : function(id, title, body, actionConfirm, actionCancel){
         $('.modal').remove();
         var btnCloseClass = '';
         var win  = '<div id="' + id + '" class="modal fade" role="dialog">\n';
@@ -348,12 +348,15 @@ FormController =
             win += body;
             win += '            </div>';
             win += '            <div class="modal-footer">';
-            if (confirm) {
+            if (actionConfirm) {
                 btnCloseClass = ' pull-left';
-                win += '<button type="button" class="btn btn-default click-execute pull-right" data-dismiss="modal" data-action="confirm">Conferma</button>';
-            }    
-            win += '                <button type="button" class="btn btn-default'+btnCloseClass+'" data-dismiss="modal">Chiudi</button>';
-            
+                win += '<button type="button" class="btn btn-default click-execute pull-right" data-dismiss="modal" data-action="'+ actionConfirm +'">Conferma</button>';
+            }
+            if (actionCancel) {
+                win += '<button type="button" class="btn btn-default'+btnCloseClass+' click-execute" data-action="'+ actionCancel +'" data-dismiss="modal">Annulla</button>';
+            } else {
+                win += '<button type="button" class="btn btn-default'+btnCloseClass+'" data-dismiss="modal">Annulla</button>';
+            }
             win += '            </div>';
             win += '        </div>';
             win += '    </div>';
@@ -365,11 +368,17 @@ FormController =
         return $(win);
     },
     modalAlert : function(title, message) {
-        var win = this.modal('alert', 'Alert', message, null);        
+        if (!title) {
+            title = 'Alert';
+        }
+        var win = this.modal('alert', title, message, null, null);        
         return $(win);
     },
-    modalConfirm : function(title, message, actionConfirm){
-        return this.modal('confirm', 'Conferma', message, actionConfirm);
+    modalConfirm : function(title, message, actionConfirm, actionCancel){
+        if (!title) {
+            title = 'Conferm';
+        }
+        return this.modal('confirm', title, message, actionConfirm, actionCancel);
     },
     modalWindow : function(id, title, url) {
         var wdt = '90%';        
