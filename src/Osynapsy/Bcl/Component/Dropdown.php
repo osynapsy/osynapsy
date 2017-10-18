@@ -31,7 +31,11 @@ class Dropdown extends Component
     
     protected function __build_extra__()
     {
-        foreach ($this->data as $rec) {
+        foreach ($this->data as $key => $rec) {
+            if (is_object($rec)) {
+                $this->list->att('data-value',$key)->add(new Tag('li'))->add($rec);
+                continue;
+            }
             $rec = array_values($rec);
             $this->list
                  ->add(new Tag('li'))
