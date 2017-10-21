@@ -171,13 +171,6 @@ class Form extends Component
     public function setTitle($title, $subTitle=null)
     {
         if (!empty($title)) {
-            /*$this->head(
-                '<a class="small-header-action" href="">
-                    <div class="clip-header">
-                        <i class="fa fa-arrow-up"></i>
-                    </div>
-                </a>'
-            );*/
             $this->head(new Tag('h2'))
                  ->att('class','font-light m-b-xs')
                  ->add($title);
