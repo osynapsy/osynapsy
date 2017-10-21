@@ -14,7 +14,7 @@ class Form extends Component
 {
     private $components = array();
     private $head;
-    public  $headClass = 'col-lg-12';
+    public  $headClass = 'row';
     private $alert;
     private $alertCount=0;
     private $body;
@@ -48,7 +48,7 @@ class Form extends Component
     {
         if ($this->head) {
             $this->add(new Tag('div'))
-                 ->att('class','row block-header')
+                 ->att('class','block-header m-b')
                  ->add(new Tag('div'))
                  ->att('class', $this->headClass)
                  ->add($this->head);
