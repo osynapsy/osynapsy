@@ -48,7 +48,7 @@ abstract class Model
     
     public function set($key, $value, $append=false)
     {
-        $this->repo->get($key, $value, $append);
+        $this->repo->set($key, $value);
         return $this;
     }
     
