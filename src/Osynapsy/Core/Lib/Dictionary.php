@@ -22,14 +22,14 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
 
     private function addValue($key, $value, $append = false)
     {
-        $ksearch = explode('.',$key);
+        $ksearch = explode('.',$key);        
         $klast   = count($ksearch)-1;
         $target  =& $this->repo;
         
         foreach ($ksearch as $i => $k) {
             if ($klast == $i) {
                 if (!$append) {
-                    $target[$k] = $value;
+                    $target[$k] = $value;                   
                 } elseif (is_array($target[$k])) {
                     $target[$k][] = $value;
                 } else {
