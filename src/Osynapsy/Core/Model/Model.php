@@ -91,6 +91,9 @@ abstract class Model
             );
         }
         $this->afterDelete();
+        if ($this->repo->get('actions.after-delete') === false) {
+            return;
+        }
         $this->controller->response->go($this->repo->get('actions.after-delete'));
     }
 
@@ -109,6 +112,9 @@ abstract class Model
             $lastId = $this->db->insert($this->repo->get('table'), $values);
         }        
         $this->afterInsert($lastId);
+        if ($this->repo->get('actions.after-insert') === false) {
+            return;
+        }
         switch ($this->repo->get('actions.after-insert')) {
             case 'back':
             case 'refresh':
@@ -128,6 +134,9 @@ abstract class Model
         }
         $this->db->update($this->repo->get('table'), $values, $where);
         $this->afterUpdate();
+        if ($this->repo->get('actions.after-update') === false) {
+            return;
+        }
         $this->controller->response->go($this->repo->get('actions.after-update'), false);        
     }    
 
