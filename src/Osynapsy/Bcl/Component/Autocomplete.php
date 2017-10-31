@@ -8,7 +8,7 @@ use Osynapsy\Core\Lib\Tag;
 class Autocomplete extends Component
 {
     private $emptyMessage;
-    
+    private $ico = '<span class="fa fa-search"></span>';
     public function __construct($id)
     {
         $this->requireJs('/__assets/osynapsy/Bcl/Autocomplete/script.js');
@@ -27,7 +27,7 @@ class Autocomplete extends Component
     
     private function addInput()
     {
-         $this->add(new InputGroup($this->id, '', '<span class="fa fa-search"></span>'))
+         $this->add(new InputGroup($this->id, '', $this->ico))
               ->att('class','osy-autocomplete',true)
               ->add(new HiddenBox('__'.$this->id));
     }
@@ -69,5 +69,10 @@ class Autocomplete extends Component
     {
         $this->emptyMessage = $msg;
         return $this;
+    }
+    
+    public function setIco($ico)
+    {
+        $this->ico = $ico;
     }
 }
