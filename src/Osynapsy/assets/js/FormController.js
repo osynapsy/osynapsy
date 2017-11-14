@@ -349,8 +349,9 @@ FormController =
             win += '            </div>';
             win += '            <div class="modal-footer">';
             if (actionConfirm) {
+                var action = actionConfirm.replace(')','').split('(');
                 btnCloseClass = ' pull-left';
-                win += '<button type="button" class="btn btn-default click-execute pull-right" data-dismiss="modal" data-action="'+ actionConfirm +'">Conferma</button>';
+                win += '<button type="button" class="btn btn-default click-execute pull-right" data-dismiss="modal" data-action="'+ action[0] +'" data-action-parameters="' + (action[1] === 'undefined' ? '' : action[1]) +'">Conferma</button>';
             }
             if (actionCancel) {
                 win += '<button type="button" class="btn btn-default'+btnCloseClass+' click-execute" data-action="'+ actionCancel +'" data-dismiss="modal">Annulla</button>';
@@ -400,7 +401,7 @@ FormController =
             win += '                <h4 class="modal-title">' + title + '</h4>';
             win += '            </div>';
             win += '            <div class="modal-body">';
-            win += '                <iframe name="'+id+'" src="'+url+'?view=simple" style="width: 100%; height:'+ hgt +'; border: 0px; border-radius: 3px;" border="0"></iframe>';
+            win += '                <iframe name="'+id+'" src="'+url+'" style="width: 100%; height:'+ hgt +'; border: 0px; border-radius: 3px;" border="0"></iframe>';
             win += '            </div>';
             //win += '            <div class="modal-footer">';
             //win += '                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>';
