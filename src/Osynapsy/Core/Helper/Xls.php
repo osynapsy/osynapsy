@@ -10,8 +10,9 @@ class Xls
     private $delimiter = null;
     private $lineending = null;
     
-    public function __construct()
+    public function __construct($db)
     {
+        $this->db = $db;        
     }
     
     public function loadExcel($fileName,$grabNumRow=null)
@@ -59,9 +60,8 @@ class Xls
         }
     }
     
-    public function import($db, $table, $fields, $data, $constant=array())
-    {
-        $this->db = $db;
+    public function import($table, $fields, $data, $constant=array())
+    {        
         if (empty($table)) {
             $this->error[] = 'Table is empty';
         }
@@ -73,6 +73,7 @@ class Xls
         }
         //  Loop through each row of the worksheet in turn
         $insert = 0;
+        //die(print_r($data,true));
         foreach ($data as $k => $rec) { 
             if (empty($rec)) {
                 continue;
