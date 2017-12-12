@@ -111,6 +111,9 @@ class KM_Mailer
     private $timeout = '60';
     private $debug = false;
     private $certificateVerify = false;
+    private $errors = [];
+    private $response = [];
+    private $contextOptions = [];
     
     public function __construct($server, $port, $username=null, $password=null, $secure=null)
     {
@@ -118,8 +121,13 @@ class KM_Mailer
         $this->port = $port;
         $this->username = $username;
         $this->password = $password;
-        $this->secure = $secure;
-
+        $this->secure = strtolower(trim($secure));
+        if ($this->secure == 'ssl') {
+            $this->server = 'ssl://'.$server;
+        }
+        if (in_array($this->secure,['tls','ssl'])) {
+            $this->verifyCertificate(false);
+        }
         if(!$this->connect()) {
             return;
         }
@@ -133,48 +141,80 @@ class KM_Mailer
     /* Connect to the server */
     private function connect()
     {
-        if(strtolower(trim($this->secure)) == 'ssl') {
-            $this->server = 'ssl://' . $this->server;
+        $streamContext = stream_context_create(
+            $this->contextOptions
+        );
+        $this->conn = stream_socket_client(
+            $this->server.':'.$this->port,
+            $errno,
+            $errstr,
+            $this->timeout,
+            STREAM_CLIENT_CONNECT,
+            $streamContext
+        );        
+        if (!$this->conn) {
+            $this->response[] = 'ERROR : '.$errno .' '. $errstr;
         }
-        $opt = '';        
-        $this->conn = stream_socket_client($this->server.':'.$this->port, $errno, $errstr, $this->timeout);
-        if (substr($this->getServerResponse(),0,3)!='220') { return false; }
+        if (substr($this->getServerResponse(),0,3) != '220') {             
+            return false;             
+        }
         return true;
     }
 
+    public function verifyCertificate($verify)
+    {
+        if (!array_key_exists('ssl', $this->contextOptions)) {
+            $this->contextOptions['ssl'] = [];
+        }
+        $this->contextOptions['ssl']['verify_peer'] = $verify; 
+        $this->contextOptions['ssl']['verify_peer_name'] = $verify; 
+        $this->contextOptions['ssl']['allow_self_signed'] = !$verify;
+        return $this;
+    }
+    
     /* sign in / authenicate */
     private function auth()
-    {
-        fputs($this->conn, 'HELO ' . $this->localhost . $this->newline);
-        $this->getServerResponse();
-        if(strtolower(trim($this->secure)) == 'tls') {
-            fputs($this->conn, 'STARTTLS' . $this->newline);
-            if (substr($this->getServerResponse(),0,3)!='220') {
-                return false; 
-            }
-            stream_socket_enable_crypto($this->conn, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
-            fputs($this->conn, 'HELO ' . $this->localhost . $this->newline);
-            if (substr($this->getServerResponse(),0,3)!='250') {
-                return false; 
-            }
+    {        
+        $this->putRow('HELO ' . $this->localhost);        
+        if(strtolower(trim($this->secure)) == 'tls' && !$this->authTls()) {
+            return false;
         }
-        if($this->server != 'localhost') {
-            fputs($this->conn, 'AUTH LOGIN' . $this->newline);
-            if (substr($this->getServerResponse(),0,3)!='334') { 
-                return false;
-            }
-            fputs($this->conn, base64_encode($this->username) . $this->newline);
-            if (substr($this->getServerResponse(),0,3)!='334') {
-                return false; 
-            }
-            fputs($this->conn, base64_encode($this->password) . $this->newline);
-            if (substr($this->getServerResponse(),0,3)!='235') {
-                return false; 
-            }
+        if($this->server == 'localhost') {
+            return true;            
+        }        
+        if ($this->putRow('AUTH LOGIN') != '334') { 
+            return false;
+        }
+        if ($this->putRow(base64_encode($this->username)) != '334') {
+            return false;
+        }
+        if ($this->putRow(base64_encode($this->password)) != '235') {
+            return false;
+        }        
+        return true;
+    }
+        
+    private function authTls()
+    {        
+        fputs($this->conn, 'STARTTLS' . $this->newline);
+        if (substr($this->getServerResponse(),0,3)!='220') {            
+            return false; 
+        }        
+        stream_socket_enable_crypto($this->conn, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+        fputs($this->conn, 'HELO ' . $this->localhost . $this->newline);
+        if (substr($this->getServerResponse(),0,3)!='250') {           
+            return false; 
         }
         return true;
     }
-
+    
+    private function putRow($command)
+    {
+        fputs($this->conn, $command . $this->newline);
+        $resp = $this->getServerResponse();        
+        return substr($resp,0,3);
+    }
+    
     /* send the email message */
     public function send($from, $to, $subject, $message, $headers=null, $utf8=false)
     {
@@ -218,8 +258,7 @@ class KM_Mailer
         fputs($this->conn, 'DATA'. $this->newline);
         $this->getServerResponse();
         fputs($this->conn, $email);  /* transmit the entire email here */
-        if (substr($this->getServerResponse(),0,3)!='250') { return false; }
-        return true;
+        return substr($this->getServerResponse(),0,3) != '250'  ? false : true;
     }
 
     private function setRecipients($to) /* assumes there is at least one recipient */
@@ -308,12 +347,17 @@ class KM_Mailer
     /* private functions used internally */
     private function getServerResponse()
     {
-        $data="";
+        $data = "";
         while($str = fgets($this->conn,4096)) {
-          $data .= $str;
-          if(substr($str,3,1) == " ") { break; }
+            $data .= $str;
+            if(substr($str,3,1) == " ") { 
+                break;              
+            }
         }
-        if($this->debug) echo $data . "<br>";
+        if($this->debug) {
+            echo $data . "<br>";
+        }
+        $this->response[] = trim($data);
         return $data;
     }
 
@@ -328,7 +372,12 @@ class KM_Mailer
         }
         return $addr;
     }
-
+    
+    public function getResponse()
+    {
+        return implode(PHP_EOL,$this->response);
+    }
+    
     private function randID($len)
     {
         $index = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
