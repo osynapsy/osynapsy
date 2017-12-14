@@ -95,12 +95,13 @@ class ModelField
         return $this;
     }
     
-    public function setValue($val, $def = null)
+    public function setValue($value, $default = null)
     {
-        if ($val !== '0' && $val !== 0 && empty($val)) {
-            $val = $def;
+        if ($value !== '0' && $value !== 0 && empty($value)) {
+            $value = $default;
         }
-        $this->value = $this->rawvalue = $val;
+        $this->value = $this->rawvalue = $value;
+        $this->defaultValue = $default;
         if ($this->type == 'date' && !empty($val) && strpos($val, '/') !== false) {
             list($dd, $mm, $yy) = explode('/', $this->value );
             $this->value = "$yy-$mm-$dd";
