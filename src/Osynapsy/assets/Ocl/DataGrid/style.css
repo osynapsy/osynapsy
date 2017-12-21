@@ -78,3 +78,58 @@
 .osy-datagrid-2 .osy-datagrid-2-foot button {
   margin: 0px 2px;
 }
+
+div.osy-datagrid-2 span.tree {
+    display: inline-block;
+    margin-right: 3px;
+    background-repeat: no-repeat;
+    line-height: 20px;
+    width: 16px; 
+    padding: 0px;
+}
+
+div.osy-datagrid-2 span.tree-plus-1 {
+    background-image: url(/__assets/osynapsy/Ocl/DataGrid/tree.set.png);
+    background-position: 0 6px;
+}
+
+div.osy-datagrid-2 span.tree-plus-2 {
+    background-image: url(/__assets/osynapsy/Ocl/DataGrid/tree.set.png);
+    background-position: 0 -23px;
+}
+
+div.osy-datagrid-2 span.tree-plus-3 {
+    background-image: url(/__assets/osynapsy/Ocl/DataGrid/tree.set.png);
+    background-position: 0 -48px;
+}
+
+div.osy-datagrid-2 span.tree-null {
+    background-repeat: no-repeat;
+    width: 16px;
+    display: inline-block;
+    margin-right: 3px;
+}
+
+div.osy-datagrid-2 span.minus {
+    background-position-x: -20px;
+}
+
+div.osy-datagrid-2 span.tree-con-1 {
+    background-image: url(/__assets/osynapsy/Ocl/DataGrid/tree.set.png);
+    background-position: 0 -73px;
+}
+
+div.osy-datagrid-2 span.tree-con-2 {
+    background-image: url(/__assets/osynapsy/Ocl/DataGrid/tree.set.png);
+    background-position: 0 -73px;
+}
+
+div.osy-datagrid-2 span.tree-con-3 {
+    background-image: url(/__assets/osynapsy/Ocl/DataGrid/tree.set.png);
+    background-position: 0 -98px;
+}
+
+div.osy-datagrid-2 span.tree-con-4 {
+    background-image: url(/__assets/osynapsy/Ocl/DataGrid/tree.set.png);
+    background-position: 0 -124px;
+}
