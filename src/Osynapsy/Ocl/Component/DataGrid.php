@@ -106,13 +106,21 @@ class DataGrid extends Component
     protected function __build_extra__() {
 
         //$this->loadColumnObject();
-        if ($this->rows) $this->__par['row-num'] = $this->rows;
-        if ($this->get_par('form-related')) $this->__set_ext_form__();
-        if ($this->get_par('datasource-sql')) $this->dataLoad();
-        if ($this->get_par('filter-show')) $this->buildFilter ();
-        if ($par = $this->get_par('mapgrid-parent')) $this->att('data-mapgrid',$par);
-        if ($this->get_par('mapgrid-parent-refresh')) $this->att('class','mapgrid-refreshable',true);
-        if ($par = $this->get_par('mapgrid-infowindow-format')) $this->att('data-mapgrid-infowindow-format',$par);
+        if ($this->rows) {
+            $this->__par['row-num'] = $this->rows;
+        }
+        if ($this->get_par('datasource-sql')) {
+            $this->dataLoad();
+        }
+        if ($par = $this->get_par('mapgrid-parent')) {
+            $this->att('data-mapgrid',$par);
+        }
+        if ($this->get_par('mapgrid-parent-refresh')) {
+            $this->att('class','mapgrid-refreshable',true);
+        }
+        if ($par = $this->get_par('mapgrid-infowindow-format')) {
+            $this->att('data-mapgrid-infowindow-format',$par);
+        }
         //Aggiungo il campo che conterr? i rami aperti dell'albero.
         $this->add(new HiddenBox($this->id.'_open'))->att('class','req-reinit');
         $this->add(new HiddenBox($this->id.'_order'))->att('class','req-reinit');
@@ -189,68 +197,7 @@ class DataGrid extends Component
                  ->add($this->__par['record-add-label']);
         }
     }
-
-    private function buildFilter()
-    {
-        $cols = array();
-        if ($filters_raw = $this->get_par('filter-fields')) {
-            $filters_raw = explode("\n",$filters_raw);
-            $filters_lst = array();
-            foreach ($filters_raw as $k => $filter_raw){
-                $filter = explode(',',$filter_raw);
-                $filters_lst[trim($filter[0])] = array_key_exists(1,$filter) ? trim($filter[1]) : trim($filter[0]);
-            }
-            //var_dump($this->get_par('cols'));
-            foreach ($this->get_par('cols') as $k => $col){
-                if (array_key_exists($col['name'],$filters_lst)){
-                    $cols[] = array($col['name'].'[::]'.(in_array($col['native_type'],array('VAR_STRING','BLOB')) ? '==-=' : '==>=<='),$filters_lst[$col['name']]);
-                }
-            }
-        } else {
-            foreach ($this->get_par('cols') as $k => $col) {
-                $cols[] = array($col['name'].'[::]'.(in_array($col['native_type'],array('VAR_STRING','BLOB')) ? '==-=' : '==>=<='),$col['name']);
-            }
-        }
-        $operator = array('='  => 'is equal to',
-                          '>=' => 'is greater than',
-                          '<=' => 'is less than',
-                          'like'=>'contains');
-        $flts = $this->add(tag::create('div'))->att('class','osy-datagrid-filters');
-        $i = 0;
-        if (!empty($_REQUEST[$this->id.'_filter'])) {
-            $lbls = tag::create('div')->att('class','osy-datagrid-filter-labels');
-            foreach ($_REQUEST[$this->id.'_filter'] as $k => $rec){
-                list($rec[0],) = explode('[::]', $rec[0]);
-                if (empty($rec[0])) continue;
-                $lbl = $lbls->add(tag::create('span'))->att('class','osy-datagrid-filter-label');
-                $lbl->add(new HiddenBox($this->id.'_filter['.$k.'][0]'));
-                $lbl->add(new HiddenBox($this->id.'_filter['.$k.'][1]'));
-                $lbl->add(new HiddenBox($this->id.'_filter['.$k.'][2]'));
-                $lbl->add('<span class="fa fa-remove cmd-del-filter"></span> '.(!empty($filters_lst) ? $filters_lst[$rec[0]] : $rec[0]).' '.$operator[$rec[1]].' '.$rec[2]);
-                $i++;
-            }
-            if ($i>0) {
-                $flts->add($lbls);
-                $i = $k;
-            }
-            $i++;
-        }
-        $flt = $flts->add(tag::create('div'))->att('class','osy-datagrid-filter');
-        $flt->add('Filter');
-        $_REQUEST[$this->id.'_filter_fields'] = $_REQUEST[$this->id.'_filter_operator'] = $_REQUEST[$this->id.'_filter_value'] = '';
-        $cmb_flt = $flt->add(new combo_box($this->id.'_filter_fields'))
-                       ->att('class','osy-datagrid-filter-fields')
-                       ->att('data-error','Non hai selezionato nessun campo da filtrare');
-        $cmb_flt->par('datasource',$cols);
-        $cmb_opr = $flt->add(new combo_box($this->id.'_filter_operator'))->att('class','osy-datagrid-filter-operator');
-        $cmb_opr->att('data-error','Non hai selezionato nessun operatore di confronto')->par('datasource',array());
-        //$flt->add( print_r($this->get_par('cols'),true) );
-        $flt->add(new text_box($this->id.'_filter_value'))->att('class','osy-datagrid-filter-value')->att('data-error','Non hai inserito nessun valore');
-        $flt->add(new button($this->id.'_filter_apply'))->att('label','Apply')->att('class','cmd-apply');
-
-        //var_dump($this->get_par('cols'));
-    }
-
+    
     private function buildBody($container, $data, $lev, $ico_arr = null)
     {
         if (!is_array($data)) {
