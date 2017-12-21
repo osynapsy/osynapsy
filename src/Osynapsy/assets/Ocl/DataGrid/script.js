@@ -3,14 +3,14 @@ OTree = {
     {
         $('tr[gid="'+gid+'"]').each(function(){
             OTree.branchClose($(this).attr('oid'));
-            $(this).addClass('hide').hide();
+            $(this).addClass('hide');
         });
     },
     branchOpen : function(gid)
     {
         if ($('tr[oid="'+gid+'"]').is(':visible')){ //Serve a bloccare le aperture su refresh
             $('tr[gid="'+gid+'"]').each(function(){
-                $(this).removeClass('hide').show();
+                $(this).removeClass('hide');
                 if ($(this).attr('__state') === 'open') {
                     OTree.branchOpen($(this).attr('oid'));
                 }
@@ -22,7 +22,7 @@ OTree = {
         dg2 = obj.closest('.osy-datagrid-2');
         gid = obj.attr('gid');
         $('tr[gid="'+gid+'"]').each(function(){
-             $(this).show();
+             $(this).addClass('hide');
         });
         $('tr[oid="'+gid+'"]').each(function(){
             $(this).attr('__state','open');
