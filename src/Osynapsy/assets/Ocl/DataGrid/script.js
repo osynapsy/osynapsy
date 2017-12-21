@@ -19,8 +19,7 @@ OTree = {
     },
     branchOpen2 : function(obj)
     {
-        dg2 = obj.closest('.osy-datagrid-2');
-        gid = obj.attr('gid');
+        var gid = obj.attr('gid');
         $('tr[gid="'+gid+'"]').each(function(){
              $(this).addClass('hide');
         });
@@ -41,16 +40,16 @@ OTree = {
     parentOpen : function()
     {
         $('div.osy-treegrid').each(function(){
-            did = $(this).attr('id');
-            sel = $('#'+did+'_sel',this).val().split('][')[0];
+            var did = $(this).attr('id');
+            var sel = $('#'+did+'_sel',this).val().split('][')[0];
             if (sel){
                 sel = sel.replace('[','').replace(']','');
                 $('tr[oid="'+sel+'"]',this).addClass('sel');
             }
-            obj_opn = $('input[name='+ $(this).attr('id') + '_open]');
-            val_opn = obj_opn.val().split('][');
+            var obj_opn = $('input[name='+ $(this).attr('id') + '_open]');
+            var val_opn = obj_opn.val().split('][');
             for (i in val_opn) {
-                gid = val_opn[i].replace('[','').replace(']','');
+                var gid = val_opn[i].replace('[','').replace(']','');
                 $('tr[oid="'+gid+'"]').attr('__state','open');
                 $('span[class*=tree-plus]','tr[oid="'+gid+'"]').addClass('minus');
                 OTree.branchOpen(gid);
@@ -63,14 +62,14 @@ OTree = {
         OTree.checkOpen();
         $('.osy-datagrid-2').on(
             'click',
-    'span.tree',
+            'span.tree',
             function (event){
                 event.stopPropagation();
-                tr = $(this).closest('tr');
-                dt = $(this).closest('div.osy-datagrid-2');
-                obj_opn = $('input[name='+ dt.attr('id') + '_open]');
-                val_opn = obj_opn.val();
-                gid = tr.attr('oid');
+                var tr = $(this).closest('tr');
+                var dt = $(this).closest('div.osy-datagrid-2');
+                var obj_opn = $('input[name='+ dt.attr('id') + '_open]');
+                var val_opn = obj_opn.val();
+                var gid = tr.attr('oid');
                 if ($(this).hasClass('minus')){
                     obj_opn.val(val_opn.replace('['+gid+']',''));
                     OTree.branchClose(gid);
