@@ -1,14 +1,103 @@
+OTree = {
+    branchClose : function(gid)
+    {
+        $('tr[gid="'+gid+'"]').each(function(){
+            OTree.branchClose($(this).attr('oid'));
+            $(this).addClass('hide').hide();
+        });
+    },
+    branchOpen : function(gid)
+    {
+        if ($('tr[oid="'+gid+'"]').is(':visible')){ //Serve a bloccare le aperture su refresh
+            $('tr[gid="'+gid+'"]').each(function(){
+                $(this).removeClass('hide').show();
+                if ($(this).attr('__state') === 'open') {
+                    OTree.branchOpen($(this).attr('oid'));
+                }
+            });
+        }
+    },
+    branchOpen2 : function(obj)
+    {
+        dg2 = obj.closest('.osy-datagrid-2');
+        gid = obj.attr('gid');
+        $('tr[gid="'+gid+'"]').each(function(){
+             $(this).show();
+        });
+        $('tr[oid="'+gid+'"]').each(function(){
+            $(this).attr('__state','open');
+            $('span[class*=tree-plus]',this).addClass('minus');
+            OTree.branchOpen2($(this));
+        });
+    },
+    checkOpen : function()
+    {
+        $('div.osy-treegrid').each(function(){
+            $('input[type=checkbox]:checked',this).each(function(){
+                OTree.branchOpen2($(this).closest('tr'));
+            });
+        });
+    },
+    parentOpen : function()
+    {
+        $('div.osy-treegrid').each(function(){
+            did = $(this).attr('id');
+            sel = $('#'+did+'_sel',this).val().split('][')[0];
+            if (sel){
+                sel = sel.replace('[','').replace(']','');
+                $('tr[oid="'+sel+'"]',this).addClass('sel');
+            }
+            obj_opn = $('input[name='+ $(this).attr('id') + '_open]');
+            val_opn = obj_opn.val().split('][');
+            for (i in val_opn) {
+                gid = val_opn[i].replace('[','').replace(']','');
+                $('tr[oid="'+gid+'"]').attr('__state','open');
+                $('span[class*=tree-plus]','tr[oid="'+gid+'"]').addClass('minus');
+                OTree.branchOpen(gid);
+            }
+        });
+    },    
+    init : function()
+    {
+        OTree.parentOpen();
+        OTree.checkOpen();
+        $('.osy-datagrid-2').on(
+            'click',
+    'span.tree',
+            function (event){
+                event.stopPropagation();
+                tr = $(this).closest('tr');
+                dt = $(this).closest('div.osy-datagrid-2');
+                obj_opn = $('input[name='+ dt.attr('id') + '_open]');
+                val_opn = obj_opn.val();
+                gid = tr.attr('oid');
+                if ($(this).hasClass('minus')){
+                    obj_opn.val(val_opn.replace('['+gid+']',''));
+                    OTree.branchClose(gid);
+                    tr.attr('__state','close');
+                } else {
+                    obj_opn.val(val_opn+'['+gid+']');
+                    OTree.branchOpen(gid);
+                    tr.attr('__state','open');
+                }
+                $(this).toggleClass('minus');
+            }
+        );
+    }
+}
+
 ODataGrid = 
 {
     init : function()
     {
         this.initOrderBy();
         this.initPagination();
+        OTree.init();
         this.initAdd();
         $('.osy-datagrid-2').each(function(){
             this.refresh = function() {ODataGrid.refreshAjax(this);}
         });
-    },
+    },    
     initAdd : function()
     {
         $('.osy-datagrid-2 .cmd-add').click(function(){
