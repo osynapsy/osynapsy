@@ -48,7 +48,7 @@ OTree = {
             }
             var obj_opn = $('input[name='+ $(this).attr('id') + '_open]');
             var val_opn = obj_opn.val().split('][');
-            for (i in val_opn) {
+            for (var i in val_opn) {
                 var gid = val_opn[i].replace('[','').replace(']','');
                 $('tr[oid="'+gid+'"]').attr('__state','open');
                 $('span[class*=tree-plus]','tr[oid="'+gid+'"]').addClass('minus');
@@ -175,7 +175,7 @@ ODataGrid =
                     $('.osy-datagrid-2-foot',this).html(foot);
                     ODataGrid.refreshAjaxAfter(this);
                     if ($(this).hasClass('osy-treegrid')){
-                        ODataGrid.parentOpen();
+                        OTree.parentOpen();
                     }
                 }
             }
