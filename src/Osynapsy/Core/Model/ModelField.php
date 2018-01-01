@@ -13,6 +13,7 @@ class ModelField
         'rawvalue' => null,
         'unique' => false,
         'value' => null,
+        'defaultValue' => null,
         'uploadDir' => '/upload'
     );
     private $model;    
@@ -107,5 +108,15 @@ class ModelField
             $this->value = "$yy-$mm-$dd";
         }       
         return $this;
+    }
+    
+    public function getValue()
+    {        
+        return $this->value;                
+    }
+    
+    public function getDefaultValue()
+    {
+        return $this->defaultValue;
     }
 }
