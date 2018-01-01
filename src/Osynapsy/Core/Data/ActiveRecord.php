@@ -3,16 +3,16 @@ namespace Osynapsy\Core\Data;
 
 abstract class ActiveRecord
 {
-    private $dbConnection;
-    private $table;
-    private $sequence;
-    private $searchCondition = [];
     private $activeRecord = [];
+    private $dbConnection;
     private $originalRecord = [];
+    private $state = 'insert';
+    private $sequence;
+    private $table;    
+    private $searchCondition = [];        
     private $softDelete = [];
     private $keys = [];
-    private $fields = [];
-    private $updatable = true;
+    private $fields = [];    
     
     public function __construct($dbCn) 
     {
@@ -28,7 +28,7 @@ abstract class ActiveRecord
     {
         if (empty($reSearchParameters)) {
             throw new \Exception('Parameter required');
-        }
+        }        
         $this->searchCondition = $reSearchParameters;
         
         $where = array_map(
@@ -44,26 +44,32 @@ abstract class ActiveRecord
             $reSearchParameters, 
             'ASSOC'
         );
+        if (!empty($this->originalRecord)) {
+            $this->state = 'update';
+        }
         return $this->activeRecord;
     }
     
     public function findByKey($keyValues)
     {        
+        $this->reset();
         $raw = is_array($keyValues) ? $keyValues : [$keyValues];
         if (count($this->keys) != count($raw)) {
-            throw new \Exception('Values don\'t match keys');
+            throw new \Exception('Values don\'t match keys', 202);
         }        
         $params = [];
         foreach($this->keys as $idx => $key) {
+            if (!$raw[$idx]) {
+                throw new \Exception('Values key is empty', 10);
+            }
             $params[$key] = $raw[$idx]; 
         }
-        $this->updatable = true;
         return $this->find($params);
     }
     
     public function findByAttributes(array $reSearchParameters)
     {
-        $this->updatable = false;
+        $this->reset();        
         return $this->find($reSearchParameters);        
     }
     
@@ -78,27 +84,26 @@ abstract class ActiveRecord
         return false;
     }
     
-    public function setValue($field, $value)
+    public function setValue($field, $value, $defaultValue = null)
     {
         if (!in_array($field, $this->fields)) {
             throw new \Exception('Field do not exist');
         }
-        $this->activeRecord[$field] = $value;
+        $this->activeRecord[$field] = !$value ? $defaultValue : $value;
         return $this;
     }
     
     public function save()
     {
-        if (empty($this->updatable)) {
+        if (!$this->state) {
             throw new \Exception('Record is not updatable');
         }
         $this->beforeSave();
-        if (empty($this->originalRecord)) {
-            $this->insert($this->activeRecord);
-        } else {
-            $this->update($this->activeRecord);
-        }
+        $id = empty($this->originalRecord)? 
+              $this->insert($this->activeRecord): 
+              $this->update($this->activeRecord);        
         $this->afterSave();
+        return $id;
     }
     
     private function insert()
@@ -114,6 +119,7 @@ abstract class ActiveRecord
             $this->findByKey($id);
         }
         $this->afterInsert($id);
+        return $id;
     }
     
     private function update()
@@ -141,11 +147,16 @@ abstract class ActiveRecord
     
     public function reset()
     {
-        $this->updatable = true;
+        $this->state = 'insert';
         $this->activeRecord = [];
         $this->originalRecord = [];
         $this->searchCondition = [];
         return $this;
+    }
+    
+    public function getState()
+    {
+        return $this->state;
     }
     
     protected function getSequenceNextValue()
