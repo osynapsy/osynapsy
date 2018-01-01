@@ -1,4 +1,15 @@
 <?php
+/**
+ * Pdo wrap class
+ *
+ * PHP Version 5
+ *
+ * @category Driver
+ * @package  Opensymap
+ * @author   Pietro Celeste <p.celeste@osynapsy.org>
+ * @license  GPL http://www.gnu.org/licenses/gpl-3.0.en.html
+ * @link     http://docs.osynapsy.org/ref/DbPdo
+ */
 namespace Osynapsy\Core\Driver;
 
 class DbPdo extends \PDO implements InterfaceDbo
