@@ -1,13 +1,21 @@
 <?php
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Interface for Db class driver
+ *
+ * PHP Version 5
+ *
+ * @category Driver
+ * @package  Osynapsy\Core\Driver
+ * @author   Pietro Celeste <p.celeste@osynapsy.org>
+ * @license  GPL http://www.gnu.org/licenses/gpl-3.0.en.html
+ * @link     http://docs.osynapsy.org/ref/InterfaceDbo
  */
 
 namespace Osynapsy\Core\Driver;
 
+define('DBPDO_NUM', 1);
+define('DBPDO_ASSOC', 2);
+define('DBPDO_BOTH', 3);
 /**
  *
  * @author Peter
