@@ -1,4 +1,15 @@
 <?php
+/**
+ * Active record implementaion
+ *
+ * PHP Version 5
+ *
+ * @category Driver
+ * @package  Opensymap
+ * @author   Pietro Celeste <p.celeste@osynapsy.org>
+ * @license  GPL http://www.gnu.org/licenses/gpl-3.0.en.html
+ * @link     http://docs.osynapsy.org/ref/ActiveRecord
+ */
 namespace Osynapsy\Core\Data;
 
 abstract class ActiveRecord
@@ -55,7 +66,7 @@ abstract class ActiveRecord
         $this->reset();
         $raw = is_array($keyValues) ? $keyValues : [$keyValues];
         if (count($this->keys) != count($raw)) {
-            throw new \Exception('Values don\'t match keys', 202);
+            throw new \Exception('Values don\'t match keys '.count($this->keys).' ('.count($raw).')', 202);
         }        
         $params = [];
         foreach($this->keys as $idx => $key) {
@@ -168,7 +179,7 @@ abstract class ActiveRecord
             $this->keys
         );        
         $sequenceValue = $this->db->execUnique(
-            "SELECT {$sequence}.nextval FROM dual"
+            "SELECT {$this->sequence}.nextval FROM dual"
         );
         if (!empty($sequenceValue) && !empty($firstKey)) {
             $this->activeRecord[$firstKey] = $sequenceValue;
