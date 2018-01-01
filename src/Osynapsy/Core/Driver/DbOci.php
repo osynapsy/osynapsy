@@ -6,9 +6,9 @@
  *
  * @category Driver
  * @package  Opensymap
- * @author   Pietro Celeste <p.celeste@opensymap.org>
+ * @author   Pietro Celeste <p.celeste@osynapsy.org>
  * @license  GPL http://www.gnu.org/licenses/gpl-3.0.en.html
- * @link     http://docs.opensymap.org/ref/Osy
+ * @link     http://docs.osynapsy.org/ref/DbOci
  */
 namespace Osynapsy\Core\Driver;
 
