@@ -195,15 +195,17 @@ class KM_Mailer
     }
         
     private function authTls()
-    {        
-        fputs($this->conn, 'STARTTLS' . $this->newline);
-        if (substr($this->getServerResponse(),0,3)!='220') {            
-            return false; 
+    {
+        if ($this->putRow('STARTTLS') != '220') {
+            return false;
         }        
-        stream_socket_enable_crypto($this->conn, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
-        fputs($this->conn, 'HELO ' . $this->localhost . $this->newline);
-        if (substr($this->getServerResponse(),0,3)!='250') {           
-            return false; 
+        stream_socket_enable_crypto(
+            $this->conn,
+            true, 
+            STREAM_CRYPTO_METHOD_TLS_CLIENT
+        );
+        if ($this->putRow('HELO ' . $this->localhost) != '250') {
+            return false;
         }
         return true;
     }
@@ -241,24 +243,21 @@ class KM_Mailer
             $email .= "Content-Type: $this->contentType; charset=$this->charset";
         }
         $email .= $this->newline . $this->newline . $message . $this->newline;
-        $email .= "." . $this->newline;
-
+        //$email .= "." . $this->newline;
+        $email .= ".";
         /* set up the server commands and send */
-        fputs($this->conn, 'MAIL FROM: <'. $this->getMailAddr($from) .'>'. $this->newline);
-        $this->getServerResponse();
-
-        if(!$to=='') {
-            fputs($this->conn, 'RCPT TO: <'. $this->getMailAddr($to) .'>' . $this->newline);
-            $this->getServerResponse();
+        $this->putRow('MAIL FROM: <'. $this->getMailAddr($from) .'>');
+        if (!empty($to)) {
+            $this->putRow('RCPT TO: <'. $this->getMailAddr($to) .'>');
         }
         $this->sendRecipients($this->recipients);
         $this->sendRecipients($this->cc);
         $this->sendRecipients($this->bcc);
 
-        fputs($this->conn, 'DATA'. $this->newline);
-        $this->getServerResponse();
-        fputs($this->conn, $email);  /* transmit the entire email here */
-        return substr($this->getServerResponse(),0,3) != '250'  ? false : true;
+        $this->putRow('DATA');
+        //fputs($this->conn, $email);  /* transmit the entire email here */
+        //return substr($this->getServerResponse(),0,3) != '250'  ? false : true;
+        return $this->putRow($email) != '250' ? false : true; /* transmit the entire email here */
     }
 
     private function setRecipients($to) /* assumes there is at least one recipient */
@@ -281,14 +280,13 @@ class KM_Mailer
         return $r;
     }
 
-    private function sendRecipients($r)
+    private function sendRecipients(array $recipients)
     {
-        if(empty($r)) {
+        if (empty($recipients)) {
             return; 
         }
-        for($i=0;$i<count($r);$i++) {
-            fputs($this->conn, 'RCPT TO: <'. $this->getMailAddr($r[$i]) .'>'. $this->newline);
-            $this->getServerResponse();
+        foreach($recipients as $recipient) {
+            $this->putRow('RCPT TO: <'. $this->getMailAddr($recipient) .'>');
         }
     }
 
@@ -299,8 +297,7 @@ class KM_Mailer
 
     public function clearRecipients()
     {
-        unset($this->recipients);
-        $this->recipients = array();
+        $this->recipients = [];
     }
 
     public function addCC($c)
@@ -366,7 +363,7 @@ class KM_Mailer
         $addr = $emailaddr;
         $strSpace = strrpos($emailaddr,' ');
         if($strSpace > 0) {
-            $addr= substr($emailaddr,$strSpace+1);
+            $addr = substr($emailaddr, $strSpace+1);
             $addr = str_replace("<","",$addr);
             $addr = str_replace(">","",$addr);
         }
