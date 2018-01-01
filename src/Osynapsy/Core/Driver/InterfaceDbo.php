@@ -13,9 +13,9 @@
 
 namespace Osynapsy\Core\Driver;
 
-define('DBPDO_NUM', 1);
-define('DBPDO_ASSOC', 2);
-define('DBPDO_BOTH', 3);
+define('Osynapsy\Core\Driver\DBPDO_NUM', 1);
+define('Osynapsy\Core\Driver\DBPDO_ASSOC', 2);
+define('Osynapsy\Core\Driver\DBPDO_BOTH', 3);
 /**
  *
  * @author Peter
