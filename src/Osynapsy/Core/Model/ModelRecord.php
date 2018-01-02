@@ -9,10 +9,8 @@ abstract class ModelRecord
 {
     private $repo;
     private $record;
-    protected $controller = null;    
+    private $controller = null;    
     protected $db = null;
-    protected $keys = [];
-    protected $softdelete;
     protected $errorMessages = array(        
         'email' => 'Il campo <fieldname> non contiene un indirizzo mail valido.',
         'fixlength' => 'Il campo <fieldname> solo valori con lunghezza pari a ',
@@ -24,11 +22,11 @@ abstract class ModelRecord
         'unique' => '<value> è già presente in archivio.'
     );    
     
-    public function __construct($controller, $record)
+    public function __construct($controller)
     {
-        $this->controller = $controller;
-        $this->record = $record;
+        $this->controller = $controller;        
         $this->db = $this->controller->getDb();
+        $this->record = $this->record();
         $this->repo = new Dictionary();
         $this->repo->set('actions.after-insert', $this->controller->request->get('page.url'))
                    ->set('actions.after-update', 'back')
@@ -36,12 +34,17 @@ abstract class ModelRecord
                    ->set('fields',[])                   
                    ->set('values',[]);
         $this->init();
-        $this->find();        
+        $this->recordFill();        
     }       
     
     public function get($key)
     {
         return $this->repo->get($key);
+    }
+    
+    protected function getController()
+    {
+        return $this->controller;
     }
     
     public function getRecord()
@@ -58,7 +61,7 @@ abstract class ModelRecord
     public function delete()
     {
         $this->beforeDelete();
-        if ($this->controller->response->error()){ 
+        if ($this->getController()->getResponse()->error()){ 
             return; 
         }
         $this->getRecord()->delete();
@@ -66,17 +69,40 @@ abstract class ModelRecord
         if ($this->repo->get('actions.after-delete') === false) {
             return;
         }
-        $this->controller->response->go($this->repo->get('actions.after-delete'));
+        $this->getController()->getResponse()->go($this->repo->get('actions.after-delete'));
     }
 
+    private function recordFill()
+    {
+        $keys = [];
+        foreach($this->get('fields') as $field) {
+            if ($field->isPkey()) {
+                $keys[$field->name] = $field->getDefaultValue();
+            }            
+        }
+        try {
+            $this->getRecord()->findByAttributes($keys);
+        } catch (\Exception $e) {            
+        }
+    }
+    
     public function find()
     {        
-        try {
-            $this->getRecord()->findByKeys($this->keys);
-        } catch (\Exception $e) {
-            $this->controller->response->addContent(
-                'MODEL FIND ERROR: <pre>'.$e->getMessage()."\n".$sql.'</pre>'
-            );
+        $this->loadRecordInRequest();
+    }
+    
+    public function loadRecordInRequest()
+    {
+        $values = $this->getRecord()->get();
+        var_dump($values);
+        if (empty($values)) {
+            return;
+        }
+        foreach($this->get('fields') as $field) {
+            if (array_key_exists($field->html, $_REQUEST) || !array_key_exists($field->name, $values)) {
+                continue;
+            }
+            $_REQUEST[$field->html] = $values[$field->name];
         }
     }
     
@@ -84,7 +110,7 @@ abstract class ModelRecord
     {
         $this->beforeInsert();        
 
-        if ($this->controller->response->error()) {
+        if ($this->getController()->getResponse()->error()) {
             return;
         }        
 
@@ -97,10 +123,10 @@ abstract class ModelRecord
                 return;
             case 'back':
             case 'refresh':
-                $this->controller->response->go($this->repo->get('actions.after-insert'));                
+                $this->controller->getResponse()->go($this->repo->get('actions.after-insert'));                
                 break;
             default: 
-                $this->controller->response->go($this->repo->get('actions.after-insert').$lastId);                
+                $this->controller->getResponse()->go($this->repo->get('actions.after-insert').$lastId);                
                 break;
         }
     }
@@ -108,7 +134,7 @@ abstract class ModelRecord
     public function update()
     {
         $this->beforeUpdate();
-        if ($this->controller->response->error()) {
+        if ($this->getController()->getResponse()->error()) {
             return;
         }
         $id = $this->getRecord()->save();   
@@ -116,7 +142,7 @@ abstract class ModelRecord
         if ($this->repo->get('actions.after-update') === false) {
             return;
         }
-        $this->controller->response->go($this->repo->get('actions.after-update'), false);        
+        $this->getController()->getResponse()->go($this->repo->get('actions.after-update'), false);        
     }    
         
     protected function addError($errorId, $field, $postfix = '')
@@ -126,12 +152,12 @@ abstract class ModelRecord
             array('<!--'.$field->html.'-->', $field->value),            
             $this->errorMessages[$errorId].$postfix
         );
-        $this->controller->response->error($field->html, $error);
+        $this->getController()->getResponse()->error($field->html, $error);
     }
     
     public function getValue($key)
     {
-        return $this->get('databaseValues.'.$key);
+        return $this->getRecord()->getValue($key);
     }
     
     public function map($htmlField, $dbField = null, $value = null, $type = 'string')
@@ -139,9 +165,6 @@ abstract class ModelRecord
         $modelField = new ModelField($this, $dbField, $htmlField, $type);
         $modelField->setValue($_REQUEST[$modelField->html], $value);
         $this->set('fields.'.$modelField->html, $modelField);
-        if ($modelField->isPkey()) {
-            $this->keys[$dbField] = $modelField->getDefaultValue();
-        }
         return $modelField;
     }
     
@@ -164,7 +187,7 @@ abstract class ModelRecord
             }                        
         }
         //If occurred some error stop db updating
-        if ($this->controller->response->error()) { 
+        if ($this->getController()->getResponse()->error()) { 
             return; 
         }
         //If where list is empty execute db insert else execute a db update
@@ -243,7 +266,7 @@ abstract class ModelRecord
         try {
             $field->value = $upload->saveFile($field->html, $field->uploadDir);
         } catch(\Exception $e) {
-            $this->controller->response->error('alert', $e->getMessage());
+            $this->getController()->getResponse()->error('alert', $e->getMessage());
             $field->readonly = true;            
         }
         $this->afterUpload($this->value, $field);
@@ -252,11 +275,6 @@ abstract class ModelRecord
     
     protected function afterUpload($filename, $field = null)
     {        
-    }
-    
-    public function softDelete($field, $value)
-    {
-        $this->softdelete = array($field => $value);
     }
     
     protected function beforeExec()
@@ -291,5 +309,7 @@ abstract class ModelRecord
     {
     }
     
-    abstract protected function init();        
+    abstract protected function init();  
+    
+    abstract protected function record();
 }
