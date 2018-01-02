@@ -162,8 +162,8 @@ abstract class ModelRecord
     public function map($htmlField, $dbField = null, $value = null, $type = 'string')
     {
         $modelField = new ModelField($this, $dbField, $htmlField, $type);
-        $modelField->setValue($_REQUEST[$modelField->html], $value);
-        $this->set('fields.'.$modelField->html, $modelField);
+        $modelField->setValue($_REQUEST[$modelField->html], $value);        
+        $this->set('fields.'.$modelField->html, $modelField);        
         return $modelField;
     }
     
@@ -181,7 +181,7 @@ abstract class ModelRecord
             //Check if value respect rule
             $value = $this->sanitizeFieldValue($field);
             //If field isn't in readonly mode assign values to values list for store it in db
-            if (!$field->readonly) {
+            if (!$field->readonly && $field->name) {
                 $this->getRecord()->setValue($field->name, $value);
             }                        
         }
@@ -207,7 +207,7 @@ abstract class ModelRecord
         }
         if ($field->isUnique() && $value) {
             $nOccurence = $this->db->execUnique(
-                "SELECT COUNT(*) FROM {$this->table} WHERE {$field->name} = ?",
+                "SELECT COUNT(*) FROM {$this->getRecord()->table()} WHERE {$field->name} = ?",
                 array($value)
             );
             if (!empty($nOccurence)) {
