@@ -134,8 +134,11 @@ abstract class ActiveRecord
      * @return $this
      * @throws \Exception
      */
-    public function setValue($field, $value, $defaultValue = null)
+    public function setValue($field, $value = null, $defaultValue = null)
     {
+        if (empty($field)) {
+            throw new \Exception('Field parameter is empty');
+        }
         if (!in_array($field, $this->fields)) {
             throw new \Exception('Field do not exist');
         }
@@ -296,9 +299,9 @@ abstract class ActiveRecord
     
     protected function beforeUpdate(){}  
     
-    abstract protected function fields();
+    abstract public function fields();
     
-    abstract protected function primaryKey();
+    abstract public function primaryKey();
         
-    abstract protected function table();
+    abstract public function table();
 }
