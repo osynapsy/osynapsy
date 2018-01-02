@@ -5,7 +5,7 @@
  * PHP Version 5
  *
  * @category Pattern
- * @package  Opensymap
+ * @package  Osynapsy
  * @author   Pietro Celeste <p.celeste@osynapsy.org>
  * @license  GPL http://www.gnu.org/licenses/gpl-3.0.en.html
  * @link     http://docs.osynapsy.org/ref/ActiveRecord
