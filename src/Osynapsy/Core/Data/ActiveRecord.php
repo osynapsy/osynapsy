@@ -52,23 +52,30 @@ abstract class ActiveRecord
         if (empty($reSearchParameters)) {
             throw new \Exception('Parameter required');
         }        
-        $this->searchCondition = $reSearchParameters;        
-        $where = array_map(
-            function($field) {
-                return "$field = :{$field}";
-            },
-            array_keys(
-                $reSearchParameters
-            )
-        );
-        $this->originalRecord = $this->activeRecord = $this->dbConnection->execUnique(
-            "SELECT * FROM {$this->table} WHERE ".implode(' AND ', $where)." ORDER BY 1",
-            $reSearchParameters, 
-            'ASSOC'
-        );
-        if (!empty($this->originalRecord)) {
-            $this->state = 'update';
+        $this->searchCondition = $reSearchParameters;
+        $where = [
+            'conditions' => [],
+            'parameters' => []
+        ];
+        foreach ($reSearchParameters as $field => $value) {
+            $fieldsh1 = sha1($field);
+            $where['conditions'][] = "$field = :{$fieldsh1}";
+            $where['parameters'][$fieldsh1] = $value; 
         }
+        try {
+            $sql = "SELECT * FROM {$this->table} WHERE ".implode(' AND ', $where['conditions'])." ORDER BY 1";
+            $this->originalRecord = $this->activeRecord = $this->dbConnection->execUnique(
+                $sql,
+                $where['parameters'],
+                'ASSOC'
+            );
+        } catch (\Exception $e) {
+            throw new \Exception('Query error : '.$sql, 100);
+        }
+        if (empty($this->originalRecord)) {
+            return $this->originalRecord;
+        }
+        $this->state = 'update';
         return $this->activeRecord;
     }
     
