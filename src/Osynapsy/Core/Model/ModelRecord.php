@@ -94,7 +94,6 @@ abstract class ModelRecord
     public function loadRecordInRequest()
     {
         $values = $this->getRecord()->get();
-        var_dump($values);
         if (empty($values)) {
             return;
         }
