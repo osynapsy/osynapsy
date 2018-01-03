@@ -258,7 +258,7 @@ abstract class ModelRecord
             || empty($_FILES[$field->html]['name'])
         ) {
             $field->readonly = true;            
-            return $field->value;
+            return $this->getRecord()->get($field->name);
         }
                 
         $upload = new UploadManager();
