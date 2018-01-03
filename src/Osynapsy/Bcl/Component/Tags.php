@@ -11,6 +11,7 @@ class Tags extends Component
     private $modal;
     private $dropdown;
     private $hidden;
+    private $autocomplete;
     
     public function __construct($name, $class="label-info")
     {
@@ -35,7 +36,9 @@ class Tags extends Component
                 $cont->add('<span class="label '.$this->labelClass.'" data-parent="#'.$this->id.'">'.$item.' <span class="fa fa-close bclTags-delete"></span></span>');
             }
         }
-        
+        if (!empty($this->autocomplete)) {
+            $this->add($this->autocomplete);
+        }
         if (!empty($this->modal)) {
             $buttonAdd = $this->add(new Button('btn'.$this->id));
             $buttonAdd->att('class','btn-info btn-xs',true)
@@ -69,5 +72,26 @@ class Tags extends Component
     {
         $this->dropdown = new Dropdown($this->id.'_list', $label, 'span');       
         $this->dropdown->setData($data);
+    }
+    
+    public function addAutoComplete(array $data = [])
+    {
+        $ajax = filter_input(\INPUT_POST, 'ajax');
+        if (empty($ajax)) {
+            $this->autocomplete = new Autocomplete($this->id.'_auto','div');      
+            $this->autocomplete->att([
+                'style' =>'width: 250px; margin-top: 3px;',
+                'class' => 'pull-left'
+            ]);
+            $this->autocomplete->setSelected("BclTags.addLabel(this)");
+            $this->autocomplete->setIco('<span class="fa fa-plus" onclick="BclTags.addLabel($(this).parent().prev(),\'#'.$this->id.'\');"></span>');           
+            return $this->autocomplete;
+        }
+        if ($ajax != $this->id.'_auto') {
+            return;
+        }                  
+        $Autocomplete = new Autocomplete($this->id.'_auto');
+        $Autocomplete->setData($data);        
+        die($Autocomplete);
     }
 }
