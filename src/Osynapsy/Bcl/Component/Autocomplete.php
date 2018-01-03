@@ -71,6 +71,18 @@ class Autocomplete extends Component
         return $this;
     }
     
+    public function setSelected($function)
+    {
+        $this->onselected = $function;        
+        return $this;
+    }
+    
+    public function setUnSelected($function)
+    {
+        $this->onunselected = $function;   
+        return $this;
+    }
+    
     public function setIco($ico)
     {
         $this->ico = $ico;
