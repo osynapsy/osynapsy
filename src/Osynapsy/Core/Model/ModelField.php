@@ -119,4 +119,9 @@ class ModelField
     {
         return $this->defaultValue;
     }
+    
+    public function setUploadPath($path)
+    {
+        $this->uploadDir = $path;
+    }
 }
