@@ -9,7 +9,7 @@ window.locationPost = function(url,vars){
   f.submit();
 }
 
-FormController = 
+var FormController = 
 {
     repo : 
     {
@@ -85,7 +85,7 @@ FormController =
         if ('errors' in resp){
             var errorMessage = '';
             $.each(resp.errors, function(idx, val){
-                if (val[0] == 'alert'){
+                if (val[0] === 'alert'){
                     alert(val[1]);
                 } else if (!$('#'+val[0]).hasClass('field-in-error')){                                        
                     var cmp = $('#'+val[0]);                    
@@ -96,7 +96,7 @@ FormController =
                     }
                 }
             });
-            if (errorMessage != '') {
+            if (errorMessage !== '') {
                 FormController.modalAlert('Si sono verificati i seguenti errori', '<pre>' + errorMessage +'</pre>');
             }
         }
@@ -112,7 +112,7 @@ FormController =
     fire : function(evt)
     {
         if (evt in this.repo['event']){
-            for ( i in this.repo['event'][evt] ){
+            for (var i in this.repo['event'][evt] ){
                 try{
                     this.repo['event'][evt][i]();
                 } catch(err) {
@@ -121,7 +121,7 @@ FormController =
             }
         }
     },
-    goto : function(pag,par)
+    goto : function(pag, par)
     {
         switch(pag) {
             case 'refresh':
@@ -169,8 +169,8 @@ FormController =
             } else if (parameterValue.charAt(0) === '#' && $(parameterValue).length > 0) {
                 parameterValue = $(parameterValue).val();
             } 
-            parameterLst.push('actionParameters[]=' + parameterValue);
-        }
+            parameterLst.push('actionParameters[]=' + encodeURIComponent(parameterValue));
+        }        
         FormController.exec(obj, $(obj).data('action'), parameterLst.join('&'));
     },
     exec : function(obj, cmd)
