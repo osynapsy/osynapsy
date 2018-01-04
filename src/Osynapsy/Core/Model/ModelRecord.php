@@ -28,7 +28,7 @@ abstract class ModelRecord
         $this->db = $this->controller->getDb();
         $this->record = $this->record();
         $this->repo = new Dictionary();
-        $this->repo->set('actions.after-insert', $this->controller->request->get('page.url'))
+        $this->repo->set('actions.after-insert', $this->getController()->getRequest()->get('page.url'))
                    ->set('actions.after-update', 'back')
                    ->set('actions.after-delete', 'back')
                    ->set('fields',[])                   
@@ -117,15 +117,15 @@ abstract class ModelRecord
 
         $this->afterInsert($lastId);
         
-        switch ($this->repo->get('actions.after-insert')) {
+        switch ($this->get('actions.after-insert')) {
             case false:
                 return;
             case 'back':
             case 'refresh':
-                $this->controller->getResponse()->go($this->repo->get('actions.after-insert'));                
+                $this->controller->getResponse()->go($this->get('actions.after-insert'));                
                 break;
             default: 
-                $this->controller->getResponse()->go($this->repo->get('actions.after-insert').$lastId);                
+                $this->controller->getResponse()->go($this->get('actions.after-insert').$lastId);                
                 break;
         }
     }
