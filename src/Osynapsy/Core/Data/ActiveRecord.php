@@ -184,11 +184,30 @@ abstract class ActiveRecord
             $this->activeRecord
         );
         $id = !empty($autoincrementId) ? $autoincrementId : $sequenceId;
-        if (!empty($id)) {
-            $this->findByKey($id);
-        }
+        $this->loadRecordAfterInsert($id);
         $this->afterInsert($id);
         return $id;
+    }        
+    
+    /**
+     * After insert load record from db.
+     * 
+     * @return string
+     */
+    private function loadRecordAfterInsert($id)
+    {
+        if (!empty($id) && count($this->key) == 1) {                     
+            $this->findByKey($id);
+            return;
+        }
+        $attributes = [];
+        foreach($this->keys as $key) {
+            if (!$this->activeRecord[$key]) {
+                return;
+            }
+            $attributes[$key] = $this->activeRecord[$key];
+        }
+        $this->findByAttributes($attributes);
     }
     
     /**
