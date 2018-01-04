@@ -12,7 +12,7 @@ abstract class BaseView
     protected $reponse;
     protected $db;    
     
-    public function __construct(Controller $controller, $title=null)
+    public function __construct(Controller $controller, $title = null)
     {
         $this->controller = $controller;
         $this->request = $controller->request;
@@ -33,6 +33,16 @@ abstract class BaseView
         return;        
     }
 
+    public function getController()
+    {
+        return $this->controller;
+    }
+    
+    public function getModel()
+    {
+        return $this->getController()->model;
+    }
+    
     public function setTitle($title)
     {
         $this->controller->response->addContent($title,'title');
