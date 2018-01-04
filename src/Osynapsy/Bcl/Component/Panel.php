@@ -59,7 +59,7 @@ class Panel extends Component
     {
         if (empty($this->body)) {
             $this->body = new Tag('div');
-            $this->body->att('class','panel-body');
+            //$this->body->att('class','panel-body');
         }
         if ($content) {
             $this->body->add($content);
