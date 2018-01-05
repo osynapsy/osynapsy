@@ -17,7 +17,7 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
     
     public function __call($method, $args)
     {
-        echo 'ci sono'.$method;
+        throw new Exception('Dictionary class - Recall inexistent method :'.$method);
     }
 
     private function addValue($key, $value, $append = false)
