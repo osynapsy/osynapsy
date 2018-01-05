@@ -103,3 +103,7 @@ div.osy-addressbook  div.p1-row {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+div.osy-addressbook div.row {
+    padding-bottom: 25px;
+}
