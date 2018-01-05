@@ -65,6 +65,7 @@ class Addressbook extends Component
     {
         switch($k) {
             case 'href':
+                $a->att('class','save-history',true);
                 break;
             case 'class':
                 $a->att('class',$v,true);
@@ -76,10 +77,9 @@ class Addressbook extends Component
                 $p2->add('<span>'.$v.'</span><br>');
                 break;
             case 'title':
-                $p1->add('<strong>'.$v.'</strong><br>');
-                break;
+                $v = '<strong>'.$v.'</strong>';
             default:
-                $p1->add('<span>'.$v.'</span><br>');
+                $p1->add('<div class="p1-row">'.$v.'</div>');
                 break;
         }
     }
