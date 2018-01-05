@@ -16,23 +16,20 @@ class CropAction
     private $where;
     private $targetFile;
     
-    public function __construct($db, $table, $field, $where)
+    public function __construct($db, $table, $field, array $where)
     {
         $this->db = $db;
         $this->table = $table;
         $this->field = $field;
         $this->where = $where;
-        $this->targetFile = $this->db->select($table, $field, $where);
+        $this->targetFile = $this->db->selectOne($table, $where, [$field], 'NUM');
     }
-
 
     public function cropAction($newWidth, $newHeight, $cropX, $cropY, $cropWidth, $cropHeight, $filename)
     {       
-        $pathInfo = pathinfo($this->targetFile);
         $img = new Image('.'.$this->targetFile);
         $img->resize($newWidth, $newHeight);
         $img->crop($cropX, $cropY, $cropWidth, $cropHeight);
-        $filename = $pathInfo['dirname'].'/'.$filename;
         $img->save('.'.$filename);                
         $this->updateRecord($filename);        
     }
@@ -50,5 +47,10 @@ class CropAction
             [$this->field => $filename],
             $this->where
         );        
+    }
+    
+    public function getTarget()
+    {
+        return $this->targetFile;
     }
 }
