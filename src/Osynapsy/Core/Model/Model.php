@@ -324,6 +324,8 @@ abstract class Model
             $this->controller->response->error('alert', $e->getMessage());
             $field->readonly = true;            
         }
+        $this->set('actions.after-update','refresh');
+        $this->set('actions.after-insert','refresh');
         $this->afterUpload($this->value, $field);
         return $field->value;
     }
