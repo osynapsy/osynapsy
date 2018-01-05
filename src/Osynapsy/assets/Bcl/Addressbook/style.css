@@ -62,6 +62,19 @@ div.osy-addressbook .osy-addressbook-item:hover div.p2 {
     background-color: #337ab7; 
     color: #eee !important;
 }
+div.osy-addressbook .osy-addressbook-item:hover .osy-addressbook-img {
+    border-color: #337ab7;
+}
+div.osy-addressbook div.p0 .osy-addressbook-img {
+    width: 33px;
+    height: 33px;
+    position: absolute;
+    top: 12px;
+    left: 7px;
+    border-radius: 3px;
+    border: 1px solid silver;
+}
+
 div.osy-addressbook div.osy-addressbook-body div.contact {
     background-image: url(/img/ico/contact.png); 
     background-repeat: no-repeat; 
@@ -80,7 +93,7 @@ div.osy-addressbook .osy-addressbook-item {
     margin-bottom: 25px;
 }
 div.osy-addressbook .osy-addressbook-item div.p1 {
-    padding-left: 35px;
+    padding-left: 45px;
     padding-top: 10px;
 }
 div.osy-addressbook .osy-addressbook-item div.p1 strong {
