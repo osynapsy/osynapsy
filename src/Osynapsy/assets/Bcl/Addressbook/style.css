@@ -48,6 +48,19 @@ div.osy-addressbook .osy-addressbook-item {
     -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    text-decoration: none;
+    color: #555;
+}
+
+div.osy-addressbook .osy-addressbook-item:hover {
+    color: #337ab7;
+    border-color : #337ab7;
+    box-shadow-color: 0 1px 3px #337ab7;
+}
+div.osy-addressbook .osy-addressbook-item:hover div.p2 {
+    border-color: #337ab7;
+    background-color: #337ab7; 
+    color: #eee !important;
 }
 div.osy-addressbook div.osy-addressbook-body div.contact {
     background-image: url(/img/ico/contact.png); 
@@ -62,8 +75,8 @@ div.osy-addressbook div.osy-addressbook-body div.distribution-list {
 div.osy-addressbook .osy-addressbook-item div.p1 {
     height:79px
 }
-div.osy-addressbook .osy-addressbook-item  span {
-    color: #888 !important;
+div.osy-addressbook .osy-addressbook-item {
+    color: #888;
 }
 div.osy-addressbook .osy-addressbook-item div.p1 {
     padding-left: 35px;
@@ -82,4 +95,11 @@ div.osy-addressbook .osy-addressbook-item div.p2 {
     position: absolute;
     bottom: 0px;
     width: 100%;
+}
+
+div.osy-addressbook  div.p1-row {
+    white-space: nowrap;
+    width: 95%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
