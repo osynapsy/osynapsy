@@ -269,6 +269,8 @@ abstract class ModelRecord
             $field->readonly = true;            
         }
         $this->afterUpload($this->value, $field);
+        $this->set('actions.after-update','refresh');
+        $this->set('actions.after-insert','refresh');
         return $field->value;
     }
     
