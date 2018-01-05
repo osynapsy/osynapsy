@@ -71,7 +71,12 @@ class Addressbook extends Component
                 $a->att('class',$v,true);
                 break;
             case 'img':
-                $p0->add('<img src="'.$v.'">');
+                if (!empty($v)) {
+                    $v = '<img src="'.$v.'" class="osy-addressbook-img">';
+                } else {
+                    $v = '<span class="fa fa-user-o fa-2x osy-addressbook-img text-center" style="padding-top: 3px"></span>';
+                }
+                $p0->add($v);
                 break;
             case 'tag':
                 $p2->add('<span>'.$v.'</span><br>');
