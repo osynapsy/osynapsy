@@ -215,6 +215,33 @@ class DbPdo extends \PDO implements InterfaceDbo
         $this->execCommand($cmd, $val);
     }
     
+    private function buildSelect($table, array $fields, array $conditions)
+    {
+        $sql .= 'SELECT '. implode(',', $fields) . ' FROM ' . $table;
+        if (empty($conditions)) {
+            return $sql;
+        }
+        $where = $params = [];
+        foreach($conditions as $field => $value) {
+            $where[] = $field.' = :'.sha1($field);
+            $params[sha1($field)] = $value;
+        }
+        
+        $sql .= ' WHERE '.implode(' AND ', $where);    
+
+        return [$sql, $params];
+    }
+    
+    public function selectOne($table, array $conditions, array $fields = ['*'], $fetchMethod = 'ASSOC')
+    {        
+        list($sql, $params) = $this->buildSelect($table, $fields, $conditions);
+        return $this->execUnique(
+            $sql, 
+            $params, 
+            $fetchMethod
+        );
+    }
+    
     public function par($p)
     {
         return array_key_exists($p,$this->param) ? $this->param[$p] : null;
