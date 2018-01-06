@@ -11,8 +11,16 @@ and open the template in the editor.
 /*OSY ADDRESSBOOK*/
 div.osy-addressbook div.osy-addressbook-empty {
     text-align: center;
-    margin-top: 100px;
+    margin-top: 75px;
 }
+
+div.osy-addressbook div.osy-addressbook-empty span {
+    padding: 20px 50px;
+    background-color: #eee;
+    border: 1px solid silver;
+    border-radius: 5px;
+}
+
 div.osy-addressbook div.osy-addressbook-head {
     padding: 0px;
     border-bottom: 1px solid #333;
