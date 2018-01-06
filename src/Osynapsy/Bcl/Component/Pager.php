@@ -267,6 +267,7 @@ class Pager extends Component
     public function setOrder($field)
     {
         $this->orderBy = $field;
+        return $this;
     }
     
     public function setInfiniteScroll($container)
