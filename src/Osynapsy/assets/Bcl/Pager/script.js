@@ -7,29 +7,14 @@ BclPager = {
                 $(document).imagesLoaded(function() {
                     BclPager.infiniteScrollInit($('.infinitescroll'));
                 });
-            }
-            var par = $(this).closest('.BclPager');
-            var hdn = $('input[type=hidden]:first-child', par);
-            var cur = parseInt(hdn.val());
-            $(this).on('click','a',function(e){
+            }                      
+            $('body').on('click','.BclPager a',function(e){
                 e.preventDefault();
+                var par = $(this).closest('.BclPager');
+                var hdn = $('input[type=hidden]:first-child', par);
                 hdn.val($(this).data('value'));
-                $(this).closest('form').submit();
-                return;
-                switch($(this).data('value')) {
-                    case 'first':
-                        hdn.val(cur-1);
-                        break;
-                    case 'last':
-                        hdn.val(cur+1);
-                        break;
-                    default:
-                        hdn.val($(this).data('value'));
-                        break;
-                }                
-                $(this).closest('form').submit();
-            });
-            
+                $(this).closest('form').submit();                
+            });            
         });
     },
     infiniteScrollInit : function(obj) {
