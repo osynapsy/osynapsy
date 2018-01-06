@@ -63,6 +63,9 @@ class Addressbook extends Component
     
     private function formatCell($k, $v, $a, $p0, $p1, $p2)
     {
+        if ($k[0] === '_') {
+            return;
+        }
         switch($k) {
             case 'href':
                 $a->att('class','save-history',true);
