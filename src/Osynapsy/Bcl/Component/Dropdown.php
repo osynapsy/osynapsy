@@ -9,19 +9,20 @@ use Osynapsy\Ocl\Component\HiddenBox;
 class Dropdown extends Component
 {
     private $list;
+    private $button;
     
     public function __construct($name, $label, $tag='div')
     {
         parent::__construct($tag);
         $this->add(new HiddenBox($name));
-        $this->att('class','dropdown')
+        $this->button = $this->att('class','dropdown')
              ->add(new Button($name.'_btn'))
              ->att('type', 'button')
              ->att('class','dropdown-toggle',true)
              ->att('data-toggle','dropdown')
              ->att('aria-haspopup','true')
-             ->att('aria-expanded','false')
-             ->add($label.' <span class="caret"></span>');
+             ->att('aria-expanded','false');        
+        $this->button->add($label.' <span class="caret"></span>');
         $this->list = $this->add(
             new Tag('ul')
         )->att('class','dropdown-menu')
@@ -43,9 +44,9 @@ class Dropdown extends Component
                  ->add('<a href="#">'.$rec[1].'</a>');
         }
     }
-    
-    public function setData($data)
+            
+    public function getButton()
     {
-        $this->data = $data;
+        return $this->button;
     }
 }
