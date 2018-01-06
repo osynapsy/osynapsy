@@ -14,13 +14,13 @@ class Addressbook extends Component
 {
     protected $columns = 4;
     protected $foot;
-    protected $title;
+    protected $emptyMessage;
     
-    public function __construct($id, $title = 'La rubrica', $columns = 4)
+    public function __construct($id, $emptyMessage = 'Addressbook is empty', $columns = 4)
     {
         parent::__construct('dummy', $id.'_dummy');
         $this->columns = $columns;
-        $this->title = $title;
+        $this->emptyMessage = $emptyMessage;
         $this->requireCss('/__assets/osynapsy/Bcl/Addressbook/style.css');
     }
     
@@ -30,10 +30,7 @@ class Addressbook extends Component
         $body->setClass('osy-addressbook','','','');
         if (empty($this->data)) {
             $body->addColumn(12)
-                 ->push(
-                    false,
-                    '<div class="osy-addressbook-empty">'.$this->title.' &egrave; vuota</div>'
-                 );
+                 ->push(false,'<div class="osy-addressbook-empty"><span>'.$this->emptyMessage.'</span></div>');
             return;
         }
         $this->buildBody($body);
