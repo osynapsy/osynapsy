@@ -111,6 +111,7 @@ class Component extends Tag
     public function setData($data)
     {
         $this->data = $data;
+        return $this;
     }
     
     public function setClass($class, $append=true)
