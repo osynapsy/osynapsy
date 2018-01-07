@@ -22,29 +22,43 @@ BclTags = {
         }).on('click','.bclTags-delete',function(){
             BclTags.deleteLabel($(this));
         });
-        $('.bclTags .dropdown li').click(function(e){
-            BclTags.addLabel($(e.target).text(), '#'+$(e.target).closest('.bclTags').attr('id'));
-            $(e.target).closest('.dropdown').removeClass('open');
-        });
     },
     addLabel : function(lbl, par){
-        lbl = '<span class="label label-info m-r-1" data-parent="'+par+'">' + lbl;
-        lbl += ' <span class="fa fa-close bclTags-delete"></span>';
-        lbl += '</span>';
-        $('.bclTags-container', $('div'+par)).append(lbl);
+        if (lbl.val() === '') {
+            alert('Tag field is empty');
+            return;
+        } else if (this.checkField(lbl.val(), par)) {
+            alert('Tag <' + lbl.val() + '> is present');
+            return;
+        }
+        var htmlLabel = ' <span class="label label-default">' + lbl.val();
+        htmlLabel += ' <span class="fa fa-close bclTags-delete"></span>';
+        htmlLabel += '</span> ';
+        $('.bclTags-container', $('div'+par)).append(htmlLabel);
+        lbl.val('');
         this.updateField(par);
     },
+    checkField : function(val, par)
+    {
+        var exist = false;
+        $('.label', $('div'+par)).each(function(){
+            if ($(this).text().trim() == val.trim()) {
+                exist = true;
+            }
+        });
+        return exist;
+    },
     deleteLabel : function(obj) {
-        if (confirm('Sei sicuro di voler eliminare il tag ')) {            
-            var par = $(obj).parent().data('parent');
+        if (confirm('Are you sure to delete tag')) {
+            var parentId = '#' + $(obj).closest('.bclTags').attr('id');
             $(obj).parent().remove();
-            this.updateField(par);
+            this.updateField(parentId);
         }
     },
     updateField : function(par) {
         var val = '';
         $('.label', $('div'+par)).each(function(){
-            val += (val != '' ? ';' : '') + $(this).text().trim();
+            val += '[' + $(this).text().trim() + ']';
         });
         $('input'+par).val(val);
     }
