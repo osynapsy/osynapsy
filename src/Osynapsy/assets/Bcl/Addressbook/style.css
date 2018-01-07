@@ -117,6 +117,9 @@ div.osy-addressbook .osy-addressbook-item div.p2 {
     position: absolute;
     bottom: 0px;
     width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 div.osy-addressbook  div.p1-row {
