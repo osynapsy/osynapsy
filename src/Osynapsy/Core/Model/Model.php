@@ -200,6 +200,11 @@ abstract class Model
         return array_key_exists($key, $this->values) ? $this->values[$key] : null;
     }
     
+    public function getController()
+    {
+        return $this->controller;
+    }
+    
     public function map($htmlField, $dbField = null, $value = null, $type = 'string')
     {
         $modelField = new ModelField($this, $dbField, $htmlField, $type);
