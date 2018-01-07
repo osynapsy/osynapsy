@@ -25,15 +25,15 @@ class Tags extends Component
     public function __build_extra__()
     {
         $this->att('class','bclTags');
-        $cont = $this->add(new Tag('span'))
-                     ->att('class','bclTags-container');
+        $cont = $this->add(new Tag('h4'))
+                     ->att(['class' => 'bclTags-container', 'style' => 'margin: 0px 0px 5px 0px']);
         if (!empty($_REQUEST[$this->id])) {
-            $list = explode(';',$_REQUEST[$this->id]);
+            $list = explode('][',$_REQUEST[$this->id]);
             foreach($list as $item) {
                 if (!$item) {
                     continue;
                 }
-                $cont->add('<span class="label '.$this->labelClass.'" data-parent="#'.$this->id.'">'.$item.' <span class="fa fa-close bclTags-delete"></span></span>');
+                $cont->add('<span class="label label-lg '.$this->labelClass.'" data-parent="#'.$this->id.'">'.str_replace(['[',']'], '', $item).' <span class="fa fa-close bclTags-delete"></span></span>');
             }
         }
         if (!empty($this->autocomplete)) {
