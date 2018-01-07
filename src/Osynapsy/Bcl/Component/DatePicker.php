@@ -7,7 +7,8 @@ class DatePicker extends Component
 {
     private $text;
     private $datePickerId;
-    private $dateContainer;
+    private $dateComponent;
+    private $format = 'DD/MM/YYYYY';
     
     public function __construct($id)
     {
@@ -19,12 +20,13 @@ class DatePicker extends Component
         
         parent::__construct('div',$id.'_datepicker');
         $this->att('class','input-group');
-        $this->dateContainer = $this->add(new TextBox($id))->att('class','date date-picker form-control');
+        $this->dateComponent = $this->add(new TextBox($id))->att('class','date date-picker form-control');
         $this->add('<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>');
     }
     
     protected function __build_extra__()
     {
+        $this->dateComponent->att('data-format', $this->format);
         if (!empty($_REQUEST[$this->datePickerId])) {
             $data = $_REQUEST[$this->datePickerId];
             $data = explode('-',$data);
@@ -51,7 +53,7 @@ class DatePicker extends Component
      */
     public function setDateMax($date)
     {
-        $this->dateContainer->att('data-max', $date);
+        $this->dateComponent->att('data-max', $date);
     }
     /**
      * 
@@ -59,6 +61,11 @@ class DatePicker extends Component
      */
     public function setDateMin($date)
     {
-        $this->dateContainer->att('data-min', $date);
+        $this->dateComponent->att('data-min', $date);
+    }
+    
+    public function setFormat($format)
+    {
+        $this->format = $format;
     }
 }

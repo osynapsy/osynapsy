@@ -5,7 +5,7 @@ BclDatePicker =
         $('.date-picker').each(function(){
             var self = this;
             var opt = {
-                format: 'DD/MM/YYYY'
+                format: $(this).data('format')
             };
             var minDate = $(this).data('min');
             if (typeof minDate !== 'undefined') {
