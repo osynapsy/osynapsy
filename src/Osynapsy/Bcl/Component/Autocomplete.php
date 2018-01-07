@@ -9,11 +9,12 @@ class Autocomplete extends Component
 {
     private $emptyMessage;
     private $ico = '<span class="fa fa-search"></span>';
+    
     public function __construct($id)
     {
         $this->requireJs('/__assets/osynapsy/Bcl/Autocomplete/script.js');
         $this->requireCss('/__assets/osynapsy/Bcl/Autocomplete/style.css');
-        parent::__construct('dummy', $id);
+        parent::__construct('div', $id);
     }
     
     public function __build_extra__()
