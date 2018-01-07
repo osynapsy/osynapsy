@@ -90,9 +90,9 @@ BclAutocomplete = {
             }
         }).on('click','div.row',function(e){ 
             e.preventDefault();
-            parentid = $(this).closest('#search_content').data('parent');            
-            $('#'+parentid).removeClass('osy-autocomplete-unselected').nextAll('#__'.parentid).val($(this).data('value'));
-            $('#'+parentid).val($(this).data('label'));
+            var parentid = $(this).closest('#search_content').data('parent');
+            $('input#'+parentid).removeClass('osy-autocomplete-unselected').nextAll('#__'.parentid).val($(this).data('value'));
+            $('input#'+parentid).val($(this).data('label'));
         }).data('parent',$(obj).attr('id'));
         $(document.body).append(div);
     },
