@@ -103,9 +103,9 @@ class ModelField
         }
         $this->value = $this->rawvalue = $value;
         $this->defaultValue = $default;
-        if ($this->type == 'date' && !empty($val) && strpos($val, '/') !== false) {
+        if ($this->type == 'date' && !empty($value) && strpos($value, '/') !== false) {
             list($dd, $mm, $yy) = explode('/', $this->value );
-            $this->value = "$yy-$mm-$dd";
+            $this->value = "$yy-$mm-$dd";            
         }       
         return $this;
     }
