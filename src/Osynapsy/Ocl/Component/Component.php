@@ -15,7 +15,7 @@ class Component extends Tag
 
     public function __construct($tag, $id = null)
     {
-        parent::__construct($tag,$id);
+        parent::__construct($tag, $id);
         if (!empty($id)) {
             self::$ids[$id] = $this;
         }
@@ -31,7 +31,7 @@ class Component extends Tag
     {
     }
     
-    public function par($key, $val=null)
+    public function par($key, $val = null)
     {
         $this->__par[$key] = $val;
     }
