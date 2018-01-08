@@ -208,12 +208,8 @@ class DataGrid extends Component
     private function buildHead($thead)
     {
         $tr = new Tag('tr');
-        $list_pkey = $this->get_par('pkey');
         $cols = $this->get_par('cols');
-        foreach ($cols as $k => $col) {
-            if (is_array($list_pkey) && in_array($col['name'],$list_pkey)) {
-                continue;
-            }
+        foreach ($cols as $k => $col) {            
             $opt = array(
                 'alignment'=> '',
                 'class'    => $this->getColumnProperty($k, 'class'),
