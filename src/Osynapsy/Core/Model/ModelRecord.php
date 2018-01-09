@@ -47,9 +47,19 @@ abstract class ModelRecord
         return $this->controller;
     }
     
+    public function getField($field)
+    {
+        return $this->get('fields.'.$field);
+    }
+    
     public function getRecord()
     {
         return $this->record;
+    }
+    
+    public function getValue($key)
+    {
+        return $this->getRecord()->getValue($key);
     }
     
     public function set($key, $value)
@@ -152,12 +162,7 @@ abstract class ModelRecord
             $this->errorMessages[$errorId].$postfix
         );
         $this->getController()->getResponse()->error($field->html, $error);
-    }
-    
-    public function getValue($key)
-    {
-        return $this->getRecord()->getValue($key);
-    }
+    }        
     
     public function map($htmlField, $dbField = null, $value = null, $type = 'string')
     {
