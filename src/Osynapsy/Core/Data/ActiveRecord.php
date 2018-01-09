@@ -57,13 +57,16 @@ abstract class ActiveRecord
             'conditions' => [],
             'parameters' => []
         ];
+        $range = range('a','z');
+        $i = 0;
         foreach ($reSearchParameters as $field => $value) {
-            $fieldsh1 = sha1($field);
+            $fieldsh1 = $range[$i];
             $where['conditions'][] = "$field = :{$fieldsh1}";
             $where['parameters'][$fieldsh1] = $value; 
+            $i++;
         }
-        try {
-            $sql = "SELECT * FROM {$this->table} WHERE ".implode(' AND ', $where['conditions'])." ORDER BY 1";
+        try {            
+            $sql = "SELECT * FROM {$this->table} WHERE ".implode(' AND ', $where['conditions'])." ORDER BY 1";            
             $this->originalRecord = $this->activeRecord = $this->dbConnection->execUnique(
                 $sql,
                 $where['parameters'],
@@ -290,7 +293,7 @@ abstract class ActiveRecord
         $firstKey = key(
             $this->keys
         );        
-        $sequenceValue = $this->db->execUnique(
+        $sequenceValue = $this->getDb()->execUnique(
             "SELECT {$this->sequence}.nextval FROM dual"
         );
         if (!empty($sequenceValue) && !empty($firstKey)) {
