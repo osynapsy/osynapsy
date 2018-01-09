@@ -129,7 +129,7 @@ abstract class ActiveRecord
         if (is_null($key)) {
             return $this->activeRecord;
         }
-        if (array_key_exists($key, $this->activeRecord)) {
+        if (is_array($this->activeRecord) && array_key_exists($key, $this->activeRecord)) {
             return $this->activeRecord[$key];
         }
         return false;
