@@ -11,7 +11,7 @@ class Dropdown extends Component
     private $list;
     private $button;
     
-    public function __construct($name, $label, $tag='div')
+    public function __construct($name, $label, $align = 'left', $tag = 'div')
     {
         parent::__construct($tag);
         $this->add(new HiddenBox($name));
@@ -25,7 +25,7 @@ class Dropdown extends Component
         $this->button->add($label.' <span class="caret"></span>');
         $this->list = $this->add(
             new Tag('ul')
-        )->att('class','dropdown-menu')
+        )->att('class','dropdown-menu dropdown-menu-'.$align)
          ->att('aria-labelledby',$name);
 
     }
