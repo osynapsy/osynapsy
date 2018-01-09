@@ -258,6 +258,16 @@ abstract class ActiveRecord
     }
     
     /**
+     * Get current db connection
+     * 
+     * @return DbPdo object
+     */
+    public function getDb()
+    {
+        return $this->dbConnection;
+    }
+    
+    /**
      * Get current state of active record
      * 
      * @return string
