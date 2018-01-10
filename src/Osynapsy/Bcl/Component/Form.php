@@ -176,7 +176,7 @@ class Form extends Component
         $column->push(false, $objTitle, false);
         
         if (!empty($subTitle)) {
-            $column->push(false,'<small>'.$subTitle.'</small>',false);
+            $column->push(false,'<h4><i>'.$subTitle.'</i></h4>',false);
         }
     }
     
