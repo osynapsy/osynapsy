@@ -83,15 +83,14 @@ class Form extends Component
         $this->body->addCard($title);
     }
     
-    public function head($obj, $width=12, $offset = 0)
+    public function head($width=12, $offset = 0)
     {
         //Head setting
         if (empty($this->head)) {
             $this->head = new Tag('dummy');
         } 
         $column = $this->head->add(new Column($width, $offset));
-        $column->add($obj);
-        return is_object($obj) ? $obj : $column;
+        return $column;
     }
     
     public function alert($label, $type='danger')
@@ -168,16 +167,16 @@ class Form extends Component
         $this->body->setType($type);
     }
     
-    public function setTitle($title, $subTitle=null)
+    public function setTitle($title, $subTitle = null, $weight = 3)
     {
-        if (!empty($title)) {
-            $this->head(new Tag('h2'))
-                 ->att('class','font-light m-b-xs')
+        $objTitle = new Tag('h2');
+        $objTitle->att('class','font-light m-t-2')
                  ->add($title);
-        }
+        $column = $this->head($weight);
+        $column->push(false, $objTitle, false);
         
         if (!empty($subTitle)) {
-            $this->head('<small>'.$subTitle.'</small>');
+            $column->push(false,'<small>'.$subTitle.'</small>',false);
         }
     }
     
