@@ -71,7 +71,7 @@ abstract class ActiveRecord
                 $sql,
                 $where['parameters'],
                 'ASSOC'
-            );
+            );           
         } catch (\Exception $e) {
             throw new \Exception('Query error : '.$sql, 100);
         }
