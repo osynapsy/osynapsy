@@ -142,14 +142,12 @@ class DbPdo extends \PDO implements InterfaceDbo
 
     public function execUnique($sql, $par = null, $mth = 'NUM')
     {
-        $res = $this->execQuery($sql,$par,$mth);
-        if (empty($res)) {
+        $raw = $this->execQuery($sql, $par, $mth);       
+        if (empty($raw)) {
             return null;
         }
-        if (count($res) > 1) {
-            $res = $res[0];
-        }
-        return (count($res)== 1 && count($res[0])==1) ? $res[0][0] : $res[0];
+        $one = array_shift($raw);
+        return count($one) == 1 ? array_values($one)[0] : $one;
     }
    
     public function fetch_all($rs)
