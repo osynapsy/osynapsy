@@ -73,4 +73,3 @@ class ChartGoogle extends Component
         $this->options[$key] = $value;
     }
 }
-
