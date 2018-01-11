@@ -52,13 +52,17 @@ class Kernel
     
     public function run()
     {
-        if ($this->runAppController()) {
-            $response = $this->runRouteController(
-                $this->router->getRoute('controller')
-            );
-            if ($response !== false) {
-                return $response;
+        try {
+            if ($this->runAppController()) {
+                $response = $this->runRouteController(
+                    $this->router->getRoute('controller')
+                );
+                if ($response !== false) {
+                    return $response;
+                }
             }
+        } catch (\Exception $e) {
+            return $this->pageOops($e->getMessage(), $e->getTrace());
         }
         return $this->pageNotFound();
     }
@@ -181,5 +185,39 @@ class Kernel
         ob_clean();
         header('HTTP/1.1 404 Not Found');
         return $message;
+    }
+    
+    public function pageOops($message, $trace)
+    {
+        ob_clean();
+        $body = '';
+        foreach ($trace as $step) {
+            $body .= '<tr>';
+            $body .= '<td>'.$step['class'].'</td>';
+            $body .= '<td>'.$step['function'].'</td>';
+            $body .= '<td>'.$step['file'].'</td>';
+            $body .= '<td>'.$step['line'].'</td>';            
+            $body .= '</tr>';            
+        }
+        return <<<PAGE
+            <style>
+                * {font-family: Arial;} 
+                div.container {margin: auto;} 
+                td,th {font-size: 12px; font-family: Arial; padding: 3px; border: 0.5px solid silver}
+            </style>
+            <div class="container">       
+                {$message}
+                <table style="border-collapse: collapse; max-width: 1200px;">
+                    <tr>
+                        <th>Class</th>
+                        <th>Function</th>
+                        <th>File</th>
+                        <th>Line</th>
+                    </tr>
+                    {$body}
+                </table>
+            </div>
+PAGE;
+                    
     }
 }
