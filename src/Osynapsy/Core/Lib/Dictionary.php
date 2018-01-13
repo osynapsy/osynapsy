@@ -155,4 +155,22 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
     {
         return count($this->repo);
     }
+    
+    public function search($keySearch, $data = false)
+    {
+        $result = [];
+        $array = $data ? $data : $this->repo;
+        
+        foreach($array as $key => $value){
+            if ($key == $keySearch) {
+                $result[] = $value;
+                continue;
+            } elseif (!is_array($value)) {
+                continue;
+            }
+            $result += $this->search($keySearch, $value);
+            
+        }
+        return $result;
+    }
 }
