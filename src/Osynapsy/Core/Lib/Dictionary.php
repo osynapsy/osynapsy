@@ -163,7 +163,7 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
         
         foreach($array as $key => $value){
             if ($key == $keySearch) {
-                $result[] = $value;
+                $result[] = $this->flatternize($value);
                 continue;
             } elseif (!is_array($value)) {
                 continue;
@@ -171,6 +171,22 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
             $result += $this->search($keySearch, $value);
             
         }
-        return $result;
+        return  $this->flatternize($result);
+    }
+    
+    public static function flatternize($array)
+    {
+        if (!is_array($array)) {
+            return $array;
+        }
+        $plain = array();
+        foreach ($array as $key => $value) {
+            if(is_array($value)){
+                $plain = array_merge($plain, self::flatternize($value));
+            } else {
+                $plain[]=$value;
+            }	
+        }
+        return $plain;
     }
 }
