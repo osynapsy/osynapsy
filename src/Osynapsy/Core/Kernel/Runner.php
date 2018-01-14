@@ -2,7 +2,7 @@
 namespace Osynapsy\Core\Kernel;
 
 use Osynapsy\Core\Lib\Dictionary;
-use Osynapsy\Core\Network\Router;
+use Osynapsy\Core\Kernel\Router;
 use Osynapsy\Core\Driver\DbPdo;
 use Osynapsy\Core\Driver\DbOci;
 
