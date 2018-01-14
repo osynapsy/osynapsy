@@ -1,6 +1,8 @@
 <?php
 namespace Osynapsy\Core\Kernel;
 
+use Osynapsy\Core\Network\Request;
+
 class Router
 {
     public $request;
