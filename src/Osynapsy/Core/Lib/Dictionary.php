@@ -31,7 +31,7 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
                 if (!$append) {
                     $target[$k] = $value;                   
                 } elseif (is_array($target[$k])) {
-                    $target[$k][] = $value;
+                    $target[$k] += $value;
                 } else {
                     $target[$k] = array($value);
                 }
@@ -62,6 +62,9 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
     
     public function &get($key) 
     {
+        if (empty($key)) {
+            return $this->repo;
+        }
         $ksearch = explode('.', $key);
         $target =& $this->repo;
         foreach ($ksearch as $k) { 
@@ -156,22 +159,20 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
         return count($this->repo);
     }
     
-    public function search($keySearch, $data = false)
+    public function search($keySearch, $searchPath = null, &$result = [])
     {
-        $result = [];
-        $array = $data ? $data : $this->repo;
-        
-        foreach($array as $key => $value){
-            if ($key == $keySearch) {
-                $result[] = $this->flatternize($value);
-                continue;
-            } elseif (!is_array($value)) {
-                continue;
-            }
-            $result += $this->search($keySearch, $value);
-            
+        $data = is_array($searchPath) ? $searchPath : $this->get($searchPath); 
+        if (empty($data)) {
+            return [];
         }
-        return  $this->flatternize($result);
+        foreach($data as $key => $value){
+            if ($key === $keySearch) {
+                $result += $value;
+            } elseif (is_array($value)) {
+                $this->search($keySearch, $value, $result);
+            }            
+        }        
+        return  $result;
     }
     
     public static function flatternize($array)
@@ -184,7 +185,7 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
             if(is_array($value)){
                 $plain = array_merge($plain, self::flatternize($value));
             } else {
-                $plain[]=$value;
+                $plain[] = $value;
             }	
         }
         return $plain;
