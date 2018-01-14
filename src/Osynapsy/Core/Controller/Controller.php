@@ -150,7 +150,5 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     public function setResponse(Response $response)
     {
         $this->response = $response;
-    }
-    
-    
+    }        
 }
