@@ -1,83 +1,82 @@
 <?php
 namespace Osynapsy\Core;
 
+use Osynapsy\Core\Kernel\Loader;
 use Osynapsy\Core\Kernel\Router;
+use Osynapsy\Core\Kernel\Runner;
 use Osynapsy\Core\Network\Request;
-use Osynapsy\Core\Data\Driver\DbPdo;
-use Osynapsy\Core\Data\Driver\DbOci;
 
 class Kernel
 {
-    private $repo = array(
-        'xmlconfig' => array(),
-        'events' => array(), 
-        'layouts' => array()        
-    );
+    const VERSION = '0.3-DEV';
     public $router;
     public $request;
     public $controller;
     public $appController;
-    public $db = array();
-    public $dba = array();
+    private $loader;    
 
     public function __construct($fileconf, $requestRoute)
     {        
-        $this->loadConfiguration($fileconf);
+        $this->loader = new Loader($fileconf);
         $this->request = new Request($_GET, $_POST, array(), $_COOKIE, $_FILES, $_SERVER);
         $this->request->set(
             'app.parameters',
-            $this->loadXmlConfig('/configuration/parameters/parameter', 'name', 'value')
+            $this->loadConfig('parameter', 'name', 'value')
+        );
+        $this->request->set(
+            'env',
+            $this->loader->get()
         );
         $this->request->set(
             'app.layouts',
-            $this->loadXmlConfig('/configuration/layouts/layout', 'name', 'path')
+            $this->loadConfig('layout', 'name', 'path')
         );
         $this->request->set(
             'observers',
-            $this->loadXmlConfig('/configuration/observers/observer', 0, 'subject')
+            $this->loadConfig('observer', 'observerValue', 'subject')
         );
         $this->request->set(
             'listeners',
-            $this->loadXmlConfig('/configuration/listeners/listener', 0, 'event')
+            $this->loadConfig('listener', 'listenerValue', 'event')
         );
         $this->router = new Router(
             $requestRoute,
             $this->request
         );
-        $this->loadRoutes(
-            $this->repo['xmlconfig'],
-            '/configuration/routes/route'
-        );        
+        $this->loadRoutes();        
     }
     
-    public function run()
+    private function loadConfig($key, $name, $value)
     {
-        try {
-            if ($this->runAppController()) {
-                $response = $this->runRouteController(
-                    $this->router->getRoute('controller')
-                );
-                if ($response !== false) {
-                    return $response;
-                }
-            }
-        } catch (\Exception $e) {
-            return $this->pageOops($e->getMessage(), $e->getTrace());
+        $array = $this->loader->search($key);
+        $result = [];
+        foreach($array as $rec) {
+            $result[$rec[$name]] = $rec[$value];
         }
-        return $this->pageNotFound();
+        return $result;
     }
     
-    private function loadRoutes($xmlDocs, $path)
-    {
-        foreach ($xmlDocs as $appName => $xml) {
-            foreach ($xml->xpath($path) as $e) {
-                $id = (string) $e['id'];
-                $url = (string) $e['path'];
-                $ctl = (string) trim(str_replace(':', '\\', $e[0]));
-                $tpl = (string) $e['template'];
-                $this->router->addRoute($id, $url, $ctl, $tpl, $appName, $e->attributes());                
+    /**
+     * Load in router object all route of application present in config file
+     * 
+     * 
+     */
+    private function loadRoutes()
+    {        
+        $applicationList = array_keys($this->loader->get('app'));
+        foreach($applicationList as $applicationId) {
+            $routes = $this->loader->search(
+                'route',
+                "app.{$applicationId}"
+            );
+            foreach ($routes as $route) {
+                $id = $route['id'];
+                $url = $route['path'];
+                $ctl = trim(str_replace(':', '\\', $route['routeValue']));
+                $tpl = $route['template'];
+                $this->router->addRoute($id, $url, $ctl, $tpl, $applicationId, $route);                
             }
-        }
+        }        
         $this->router->addRoute(
             'OsynapsyAssetsManager',
             '/__assets/osynapsy/?*',
@@ -87,137 +86,9 @@ class Kernel
         );
     }
     
-    private function runAppController()
+    public function run()
     {
-        $app = $this->router->getRoute('application');      
-        if (empty($app)) {
-            return true;
-        }
-        $this->loadDatasources("/configuration/app/$app/datasources/db");
-        
-        if (empty($this->repo['xmlconfig'][$app]['controller'])) {
-            return true;
-        }
-        //If app has applicationController instance it before recall route controller;
-        $classControllerApp = str_replace(':','\\',$this->repo['xmlconfig'][$app]['controller']);
-        $this->appController = new $classControllerApp($this->dba, $this->router->getRoute());
-        return $this->appController->run();
-    }
-    
-    private function runRouteController($classController)
-    {
-        if (empty($classController)) {
-            return false;
-        }
-        $this->controller = new $classController($this->request, $this->dba, $this->appController);
-        return (string) $this->controller->run();
-    }
-    
-    private function loadConfiguration($path)
-    {
-        if (!is_file($path)) {
-            return;
-        }
-        $this->repo['xmlconfig'][0] = simplexml_load_file($path);
-        if (!empty($this->repo['xmlconfig'][0]) && $this->repo['xmlconfig'][0]->app) {
-            foreach ($this->repo['xmlconfig'][0]->app[0] as $e) {
-                $appName = $e->getName();
-                $appConf = filter_input(\INPUT_SERVER,'DOCUMENT_ROOT').'/../vendor/'.str_replace('_','/',$appName).'/etc/config.xml';                
-                if (is_file($appConf)) {
-                    $this->repo['xmlconfig'][$appName] = simplexml_load_file($appConf);
-                }
-            }
-        }
-    }
-
-    private function loadDatasources($path = '/configuration/datasources/db')
-    {
-        foreach ($this->repo['xmlconfig'] as $xml) {            
-            foreach ($xml->xpath($path) as $e) {                     
-                $connectionStr = (string) $e[0];
-                $connectionSha = sha1($connectionStr);
-                if (array_key_exists($connectionSha, $this->db)) {
-                    continue;
-                }
-                $this->db[$connectionSha] = $this->getDbConnection($connectionStr);               
-                $this->db[$connectionSha]->connect();
-                if (empty($this->dba)) {
-                    $this->dba = $this->db[$connectionSha];
-                }
-            }
-        }
-    }
-
-    private function getDbConnection($connectionString)
-    {        
-        if (strpos($connectionString, 'oracle') !== false) {
-            return new DbOci($connectionString);
-        } 
-        return new DbPdo($connectionString);
-    }
-    
-    public function loadXmlConfig($xpath, $kkey, $kval)
-    {
-        $result = array();
-        foreach ($this->repo['xmlconfig'] as $xml) {
-            foreach ($xml->xpath($xpath) as $e) {
-                $result[$e[$kkey]->__toString()] = (isset($e[$kval]) ? $e[$kval]->__toString() : '');
-            }
-        }
-        return $result;
-    }
-    
-    public function loadRoute($xmlDocs, $path)
-    {
-        foreach ($xmlDocs as $appName => $xml) {
-            foreach ($xml->xpath($path) as $e) {
-                $id = (string) $e['id'];
-                $url = (string) $e['path'];
-                $ctl = (string) trim(str_replace(':', '\\', $e[0]));
-                $tpl = (string) $e['template'];
-                $this->router->addRoute($id, $url, $ctl, $tpl, $appName, $e->attributes());                
-            }
-        }        
-    }
-    
-    public function pageNotFound($message = 'Page not found')
-    {
-        ob_clean();
-        header('HTTP/1.1 404 Not Found');
-        return $message;
-    }
-    
-    public function pageOops($message, $trace)
-    {
-        ob_clean();
-        $body = '';
-        foreach ($trace as $step) {
-            $body .= '<tr>';
-            $body .= '<td>'.$step['class'].'</td>';
-            $body .= '<td>'.$step['function'].'</td>';
-            $body .= '<td>'.$step['file'].'</td>';
-            $body .= '<td>'.$step['line'].'</td>';            
-            $body .= '</tr>';            
-        }
-        return <<<PAGE
-            <style>
-                * {font-family: Arial;} 
-                div.container {margin: auto;} 
-                td,th {font-size: 12px; font-family: Arial; padding: 3px; border: 0.5px solid silver}
-            </style>
-            <div class="container">       
-                {$message}
-                <table style="border-collapse: collapse; max-width: 1200px;">
-                    <tr>
-                        <th>Class</th>
-                        <th>Function</th>
-                        <th>File</th>
-                        <th>Line</th>
-                    </tr>
-                    {$body}
-                </table>
-            </div>
-PAGE;
-                    
-    }
+        $runner = new Runner($this->request, $this->router);
+        return $runner->run();        
+    }            
 }
