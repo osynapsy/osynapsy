@@ -16,7 +16,7 @@ class Router
         '?w' => '([\\w-,]+){1}', 
         '?*'  => '(.*){1}',
         '?' => '([^\/]*)',
-        '/'  => '\\/'        
+        '/'  => '\\/'
     );
     
     public function __construct($requestRoute, Request &$request)
