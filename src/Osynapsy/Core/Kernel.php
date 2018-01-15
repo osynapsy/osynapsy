@@ -15,8 +15,11 @@ class Kernel
     public $appController;
     private $loader;    
 
-    public function __construct($fileconf, $requestRoute)
+    public function __construct($fileconf, $requestRoute = null)
     {        
+        if (is_null($requestRoute)) {
+            $requestRoute = strtok(filter_input(INPUT_SERVER, 'REQUEST_URI'),'?');
+        }
         $this->loader = new Loader($fileconf);
         $this->request = new Request($_GET, $_POST, array(), $_COOKIE, $_FILES, $_SERVER);
         $this->request->set(
