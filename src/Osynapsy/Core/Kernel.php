@@ -3,8 +3,8 @@ namespace Osynapsy\Core;
 
 use Osynapsy\Core\Kernel\Router;
 use Osynapsy\Core\Network\Request;
-use Osynapsy\Core\Driver\DbPdo;
-use Osynapsy\Core\Driver\DbOci;
+use Osynapsy\Core\Data\Driver\DbPdo;
+use Osynapsy\Core\Data\Driver\DbOci;
 
 class Kernel
 {
