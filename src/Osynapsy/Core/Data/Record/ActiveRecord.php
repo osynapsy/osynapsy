@@ -10,7 +10,7 @@
  * @license  GPL http://www.gnu.org/licenses/gpl-3.0.en.html
  * @link     http://docs.osynapsy.org/ref/ActiveRecord
  */
-namespace Osynapsy\Core\Data;
+namespace Osynapsy\Core\Data\Record;
 
 abstract class ActiveRecord
 {
