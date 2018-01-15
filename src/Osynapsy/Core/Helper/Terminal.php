@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Core\Helper\Terminal;
+namespace Osynapsy\Core\Helper;
 
 class Terminal
 {
