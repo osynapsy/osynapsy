@@ -1,7 +1,7 @@
 <?php
 namespace Installer\Lib;
 
-use Osynapsy\Core\Driver\DbFactory;
+use Osynapsy\Core\Data\Driver\DbFactory;
 use Osynapsy\Core\Helper\Terminal;
 
 class Installer
@@ -13,7 +13,7 @@ class Installer
         'dbhost' => "Digit db host : ",
         'dbname' => "Digit db name : ",
         'dbuser' => "Digit db user : ",
-        'dbpwd'  => "Digit db type : "
+        'dbpwd'  => "Digit db pass : "
     );
     
     public function __construct()
