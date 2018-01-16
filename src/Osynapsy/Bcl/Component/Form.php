@@ -167,12 +167,12 @@ class Form extends Component
         $this->body->setType($type);
     }
     
-    public function setTitle($title, $subTitle = null, $weight = 3)
+    public function setTitle($title, $subTitle = null, $size = 6)
     {
         $objTitle = new Tag('h2');
         $objTitle->att('class','font-light m-t-2')
                  ->add($title);
-        $column = $this->head($weight);
+        $column = $this->head($size);
         $column->push(false, $objTitle, false);
         
         if (!empty($subTitle)) {
