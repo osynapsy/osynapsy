@@ -53,7 +53,10 @@ class AssetLoader extends Controller
             }
             mkdir($currentPath);
         }
-        $currentPath .= $file;        
+        $currentPath .= $file;
+        if (!is_writable($currentPath)) {
+            return false;
+        }
         return copy($assetsPath, $currentPath);
     }
     
