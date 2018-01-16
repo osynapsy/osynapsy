@@ -8,7 +8,20 @@ namespace Osynapsy\Core\Data\Driver;
  */
 class DbFactory
 {    
-    private $connectionPool = [];
+    private static $connectionPool = [];
+    private static $connectionIndex = [];
+    
+    /**
+     * get a db connection and return
+     *
+     * @param idx $index
+     *
+     * @return object
+     */
+    public static function getConnection($key)
+    {
+        return array_key_exists($key, self::$connectionPool) ? self::$connectionPool[$key] : false;
+    }
     
     /**
      * Exec a db connection and return
@@ -17,10 +30,12 @@ class DbFactory
      *
      * @return object
      */
-    public static function connection($connectionString)
+    public static function connect($connectionString)
     {
+        if (array_key_exists($connectionString, self::$connectionIndex)) {
+            return self::$connectionPool[self::$connectionIndex[$connectionString]];
+        }
         $type = strtok($connectionString, ':');
- 
         switch ($type) {
             case 'oracle':
                 $databaseConnection = new DbOci($connectionString);
@@ -29,10 +44,14 @@ class DbFactory
                 $databaseConnection = new DbPdo($connectionString);
                 break;
         }
+        
         //Exec connection
-        if ($databaseConnection->connect()) {
-            return self::$connectionPool[$connectionString] = $databaseConnection;
-        }
-        return false;
+        $res = $databaseConnection->connect();
+        
+        $currentIndex = count(self::$connectionPool);
+        self::$connectionIndex[$connectionString] = $currentIndex;
+        self::$connectionPool[$currentIndex] = $databaseConnection;
+        
+        return $databaseConnection;
     }
 }
