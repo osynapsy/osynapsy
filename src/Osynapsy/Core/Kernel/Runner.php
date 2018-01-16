@@ -3,8 +3,7 @@ namespace Osynapsy\Core\Kernel;
 
 use Osynapsy\Core\Lib\Dictionary;
 use Osynapsy\Core\Kernel\Router;
-use Osynapsy\Core\Data\Driver\DbPdo;
-use Osynapsy\Core\Data\Driver\DbOci;
+use Osynapsy\Core\Data\Driver\DbFactory;
 
 /**
  * Description of Runner
@@ -16,7 +15,6 @@ class Runner
     private $env;
     private $router;
     private $applicationId;
-    private $databaseConnections = [];
     
     public function __construct(Dictionary &$env, Router $router)
     {
@@ -66,7 +64,7 @@ class Runner
         }
         //If app has applicationController instance it before recall route controller;        
         $this->appController = new $applicationController(
-            array_values($this->databaseConnections)[0], 
+            DbFactory::getConnection(0), 
             $this->router->getRoute()
         );
         if (!$this->appController->run()) {
@@ -79,11 +77,7 @@ class Runner
         if (empty($classController)) {
             throw \Exception('Route not found', '404');
         }
-        $this->controller = new $classController(
-            $this->env, 
-            array_values($this->databaseConnections)[0], 
-            $this->appController
-        );
+        $this->controller = new $classController($this->env, DbFactory::getConnection(0), $this->appController);
         return (string) $this->controller->run();
     }
     
@@ -91,22 +85,9 @@ class Runner
     {            
         $listDatasource = $this->env->search('db',"env.app.{$this->applicationId}.datasources");
         foreach ($listDatasource as $datasource) {
-            $connectionStr = $datasource['dbValue'];
-            $connectionSha1 = sha1($connectionStr);
-            if (array_key_exists($connectionSha1, $this->databaseConnections)) {
-                continue;
-            }
-            $this->databaseConnections[$connectionSha1] = $this->getDatabaseConnection($connectionStr);               
-            $this->databaseConnections[$connectionSha1]->connect();                        
+            $connectionString = $datasource['dbValue'];
+            DbFactory::connect($connectionString);                       
         }
-    }
-    
-    private function getDatabaseConnection($connectionString)
-    {        
-        if (strpos($connectionString, 'oracle') !== false) {
-            return new DbOci($connectionString);
-        } 
-        return new DbPdo($connectionString);
     }
     
     public function pageNotFound($message = 'Page not found')
