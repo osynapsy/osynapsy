@@ -30,7 +30,7 @@ class DbFactory
      *
      * @return object
      */
-    public function buildConnection($connectionString)
+    public function createConnection($connectionString)
     {
         if (array_key_exists($connectionString, $this->connectionIndex)) {
             return $this->connectionPool[$this->connectionIndex[$connectionString]];

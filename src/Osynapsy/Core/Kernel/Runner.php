@@ -88,7 +88,7 @@ class Runner
         $this->dbFactory = new DbFactory();
         foreach ($listDatasource as $datasource) {
             $connectionString = $datasource['dbValue'];
-            $this->dbFactory->buildConnection($connectionString);                       
+            $this->dbFactory->createConnection($connectionString);                       
         }
     }
     
