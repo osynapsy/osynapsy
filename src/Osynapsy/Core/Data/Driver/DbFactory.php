@@ -8,8 +8,8 @@ namespace Osynapsy\Core\Data\Driver;
  */
 class DbFactory
 {    
-    private static $connectionPool = [];
-    private static $connectionIndex = [];
+    private $connectionPool = [];
+    private $connectionIndex = [];
     
     /**
      * get a db connection and return
@@ -18,9 +18,9 @@ class DbFactory
      *
      * @return object
      */
-    public static function getConnection($key)
+    public function getConnection($key)
     {
-        return array_key_exists($key, self::$connectionPool) ? self::$connectionPool[$key] : false;
+        return array_key_exists($key, $this->connectionPool) ? $this->connectionPool[$key] : false;
     }
     
     /**
@@ -30,10 +30,10 @@ class DbFactory
      *
      * @return object
      */
-    public static function connect($connectionString)
+    public function buildConnection($connectionString)
     {
-        if (array_key_exists($connectionString, self::$connectionIndex)) {
-            return self::$connectionPool[self::$connectionIndex[$connectionString]];
+        if (array_key_exists($connectionString, $this->connectionIndex)) {
+            return $this->connectionPool[$this->connectionIndex[$connectionString]];
         }
         $type = strtok($connectionString, ':');
         switch ($type) {
@@ -48,9 +48,9 @@ class DbFactory
         //Exec connection
         $res = $databaseConnection->connect();
         
-        $currentIndex = count(self::$connectionPool);
-        self::$connectionIndex[$connectionString] = $currentIndex;
-        self::$connectionPool[$currentIndex] = $databaseConnection;
+        $currentIndex = count($this->connectionPool);
+        $this->connectionIndex[$connectionString] = $currentIndex;
+        $this->connectionPool[$currentIndex] = $databaseConnection;
         
         return $databaseConnection;
     }

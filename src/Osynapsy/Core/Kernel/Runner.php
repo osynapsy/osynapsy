@@ -15,6 +15,7 @@ class Runner
     private $env;
     private $router;
     private $applicationId;
+    private $dbFactory;
     
     public function __construct(Dictionary &$env, Router $router)
     {
@@ -64,7 +65,7 @@ class Runner
         }
         //If app has applicationController instance it before recall route controller;        
         $this->appController = new $applicationController(
-            DbFactory::getConnection(0), 
+            $this->dbFactory->getConnection(0), 
             $this->router->getRoute()
         );
         if (!$this->appController->run()) {
@@ -77,16 +78,17 @@ class Runner
         if (empty($classController)) {
             throw \Exception('Route not found', '404');
         }
-        $this->controller = new $classController($this->env, DbFactory::getConnection(0), $this->appController);
+        $this->controller = new $classController($this->env, $this->dbFactory, $this->appController);
         return (string) $this->controller->run();
     }
     
     private function loadDatasources()
     {            
         $listDatasource = $this->env->search('db',"env.app.{$this->applicationId}.datasources");
+        $this->dbFactory = new DbFactory();
         foreach ($listDatasource as $datasource) {
             $connectionString = $datasource['dbValue'];
-            DbFactory::connect($connectionString);                       
+            $this->dbFactory->buildConnection($connectionString);                       
         }
     }
     

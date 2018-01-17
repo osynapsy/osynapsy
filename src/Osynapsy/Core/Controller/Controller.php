@@ -7,6 +7,7 @@ use Osynapsy\Core\Response\Response;
 use Osynapsy\Core\Response\JsonResponse;
 use Osynapsy\Core\Observer\InterfaceSubject;
 use Osynapsy\Core\Event\Dispatcher;
+use Osynapsy\Core\Data\Driver\DbFactory;
 
 abstract class Controller implements InterfaceController, InterfaceSubject
 {
@@ -16,12 +17,13 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     private $parameters;
     private $templateId;
     private $dispatcher;
+    private $dbFactory;
     public $model;
     public $request;
     public $response;
     public $app;
-        
-    public function __construct(Request $request = null, $db = null, $appController = null)
+    
+    public function __construct(Request $request = null, DbFactory $db = null, $appController = null)
     {
         $this->templateId = $request->get('page.templateId');
         $this->parameters = $request->get('page.parameters');        
@@ -70,9 +72,9 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         return $this->app;
     }
     
-    public function getDb()
+    public function getDb($key = 0)
     {
-        return $this->db;
+        return $this->dbFactory->getConnection($key);
     }
     
     public function getDispacther()
@@ -142,9 +144,10 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         }
     }
     
-    public function setDbHandler($db)
+    public function setDbHandler($dbFactory)
     {
-        $this->db = $db;
+        $this->dbFactory = $dbFactory;
+        $this->db = $this->dbFactory->getConnection(0);
     }
     
     public function setResponse(Response $response)
