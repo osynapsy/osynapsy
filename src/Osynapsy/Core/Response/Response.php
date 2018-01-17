@@ -130,18 +130,19 @@ abstract class Response
      * @param string $vval
      * @param date $sca
      */
-    public static function cookie($vid, $vval, $sca = null)
+    public static function cookie($valueId, $value, $expiry = null, $excludeThirdLevel = true)
     {        
-        $dom = filter_input(\INPUT_SERVER,'SERVER_NAME');        
-        $app = explode('.',$dom);
-        if (count($app) == 3){ 
-            $dom = ".".$app[1].".".$app[2];            
-        }        
-        if (empty($sca)) {
-            $sca = mktime(0,0,0,date('m'),date('d'),date('Y')+1);
+        $domain = filter_input(\INPUT_SERVER,'SERVER_NAME');
+        if ($excludeThirdLevel) {
+            $app = explode('.',$domain);
+            if (count($app) == 3){ 
+                $domain = ".".$app[1].".".$app[2];
+            }
         }
-        setcookie($vid, $vval, $sca, "/", $dom);
-        return $dom;
+        if (empty($expiry)) {
+            $expiry = time() + (86400 * 365);
+        }
+        return setcookie($valueId, $value, $expiry, "/", $domain);        
     }
     
     /**
