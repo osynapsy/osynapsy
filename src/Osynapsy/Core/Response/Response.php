@@ -126,9 +126,9 @@ abstract class Response
     /**
      * Set cookie
      * 
-     * @param string $vid
-     * @param string $vval
-     * @param date $sca
+     * @param string $valueId
+     * @param string $value
+     * @param unixdatetime $expiry
      */
     public static function cookie($valueId, $value, $expiry = null, $excludeThirdLevel = true)
     {        
