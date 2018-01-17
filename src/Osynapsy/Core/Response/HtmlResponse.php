@@ -2,8 +2,6 @@
 namespace Osynapsy\Core\Response;
 
 use Osynapsy\Core\Response\Response as Response;
-use Osynapsy\Core\Lib\Tag;
-use Osynapsy\Core\Kernel as Kernel;
 
 class HtmlResponse extends Response
 {
