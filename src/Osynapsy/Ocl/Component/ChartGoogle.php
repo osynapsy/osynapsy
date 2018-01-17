@@ -63,7 +63,7 @@ class ChartGoogle extends Component
     {                    
         $row = array();
         foreach ($raw as $value) {
-            $row[] = is_string($value) ? "'".$value."'" : $value;
+            $row[] = is_string($value) ? "'".addslashes($value)."'" : $value;
         }
         $this->rows[] = "[".implode(',',$row)."]";
     }
