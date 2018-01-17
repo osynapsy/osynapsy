@@ -69,14 +69,14 @@ class Runner
             $this->router->getRoute()
         );
         if (!$this->appController->run()) {
-            throw \Exception('App not running (access denied)','501');
+            throw new \Exception('App not running (access denied)','501');
         }
     }
     
     private function runRouteController($classController)
     {
         if (empty($classController)) {
-            throw \Exception('Route not found', '404');
+            throw new \Exception('Route not found', '404');
         }
         $this->controller = new $classController($this->env, $this->dbFactory, $this->appController);
         return (string) $this->controller->run();
