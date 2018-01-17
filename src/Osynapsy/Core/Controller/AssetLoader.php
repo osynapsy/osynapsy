@@ -42,6 +42,9 @@ class AssetLoader extends Controller
             if (empty($dir)) {
                 continue;
             }
+            if (!is_writeable($currentPath)) {
+                return false;
+            }
             $currentPath .= $dir.'/';            
             //If first directory (__assets) not exists or isn't writable abort copy
             if ($isFirst === true && !is_writable($currentPath)) {                
@@ -51,6 +54,7 @@ class AssetLoader extends Controller
             if (file_exists($currentPath)) {
                 continue;
             }
+            
             mkdir($currentPath);
         }
         $currentPath .= $file;
