@@ -4,6 +4,7 @@ namespace Osynapsy\Core\Kernel;
 use Osynapsy\Core\Lib\Dictionary;
 use Osynapsy\Core\Kernel\Router;
 use Osynapsy\Core\Data\Driver\DbFactory;
+use Osynapsy\Core\Kernel\KernelException;
 
 /**
  * Description of Runner
@@ -27,10 +28,10 @@ class Runner
     private function checks()
     {
         if (empty($this->route)) {
-            throw new \Exception('No route to destination', 404);
+            throw new KernelException('No route to destination ('.$this->env->get('server.REQUEST_URI').')', 404);
         }
         if (empty($this->route['application'])) {
-            throw new \Exception('No application defined', 405);
+            throw new KernelException('No application defined', 405);
         }
         $this->applicationId = $this->route['application'];
     }
@@ -47,14 +48,21 @@ class Runner
             if ($response !== false) {
                 return $response;
             }
-        } catch (\Exception $e) {
-            switch($e->getCode()) {
-                case '404':
-                    return $this->pageNotFound();
-                default :
-                    return $this->pageOops($e->getMessage(), $e->getTrace());                 
-            }            
-        }        
+        } catch (KernelException $e) {
+            return $this->dispatchKernelException($e);
+        } catch(\Exception $e) {
+            return $this->pageOops($e->getMessage(), $e->getTrace()); 
+        }   
+    }
+    
+    private function dispatchKernelException(KernelException $e)
+    {
+        switch($e->getCode()) {
+            case '404':
+                return $this->pageNotFound($e->getMessage());
+            default :
+                return $this->pageOops($e->getMessage(), $e->getTrace());                 
+        }
     }
     
     private function runApplicationController()
@@ -69,14 +77,14 @@ class Runner
             $this->router->getRoute()
         );
         if (!$this->appController->run()) {
-            throw new \Exception('App not running (access denied)','501');
+            throw new KernelException('App not running (access denied)','501');
         }
     }
     
     private function runRouteController($classController)
     {
         if (empty($classController)) {
-            throw new \Exception('Route not found', '404');
+            throw new KernelException('Route not found', '404');
         }
         $this->controller = new $classController($this->env, $this->dbFactory, $this->appController);
         return (string) $this->controller->run();
