@@ -48,6 +48,11 @@ class DataGrid2 extends Component
         $tr = new Tag('div');
         $tr->att('class', 'row bcl-datagrid-thead');
         foreach($this->columns as $label => $properties) {
+            if (empty($label)) {
+                continue;
+            } elseif ($label[0] == '_') {
+                continue;
+            }
             $tr->add(new Tag('div'))
                ->att('class', $properties['class'].' hidden-xs bcl-datagrid-th')               
                ->add($label);
@@ -89,7 +94,13 @@ class DataGrid2 extends Component
             $cell = $tr->add(new Tag('div'))
                        ->att('class', 'bcl-datagrid-td');            
             $cell->add(
-                $this->valueFormatting($value, $cell, $properties)
+                $this->valueFormatting(
+                    $value, 
+                    $cell, 
+                    $properties,
+                    $row,
+                    $tr
+                )
             );
         }
         if (!empty($row['_url_detail'])) {
@@ -98,13 +109,16 @@ class DataGrid2 extends Component
         return $tr;
     }
     
-    private function valueFormatting($value, &$cell, $properties)
+    private function valueFormatting($value, &$cell, $properties, $rec, &$tr)
     {        
-        switch($properties['type']) {
+        switch($properties['type']) {            
             case 'money':
                 $value = number_format($value, 2, ',', '.');
                 $properties['class'] .= ' text-right';
                 break;
+        }        
+        if (!empty($properties['function'])) {
+            $value = $properties['function']($value, $cell, $rec, $tr);    
         }
         if (!empty($properties['class'])) {
             $cell->att('class', $properties['class'], true);
