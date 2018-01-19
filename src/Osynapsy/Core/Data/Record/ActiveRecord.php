@@ -152,7 +152,7 @@ abstract class ActiveRecord
         if (!in_array($field, $this->fields)) {
             throw new \Exception('Field do not exist');
         }
-        $this->activeRecord[$field] = !$value ? $defaultValue : $value;
+        $this->activeRecord[$field] = ($value !== '0' && $value !== 0 && empty($value))  ? $defaultValue : $value;        
         return $this;
     }
     
