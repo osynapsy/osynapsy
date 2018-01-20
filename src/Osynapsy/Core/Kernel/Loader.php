@@ -15,15 +15,37 @@ class Loader
     
     public function __construct($path)
     {            
-        $this->path = $path;
+        $this->path = realpath($path);        
         $this->repo = new Dictionary();
         $this->repo->set('configuration', $this->load());
         $this->loadAppConfiguration();
     }
     
+    private function load()
+    {    
+        $array = [];
+        if (is_file($this->path)) {
+            $array = $this->loadFile($this->path);
+        } elseif (is_dir($this->path)) {
+            $array = $this->loadDir($this->path);        
+        }
+        return $array;
+    }
+    
     private function loadDir($path)
     {
-        return [];
+        $files = scandir($path);
+        $array = [];
+        if (empty($files) || !is_array($files)) {
+            return $array;
+        }        
+        foreach ($files as $file){
+            if (strpos($file,'.xml') === false) {
+                continue;
+            }
+            $array = array_merge_recursive($array, $this->loadFile($path.'/'.$file));
+        }
+        return $array;
     }
 
     private function loadFile($path)
@@ -35,8 +57,12 @@ class Loader
     private function loadAppConfiguration()
     {
         $apps = $this->repo->get('configuration.app');
+        if (empty($apps)) {
+            return;
+        }
         foreach(array_keys($apps) as $app) {
-            $path = '../vendor/'.str_replace("_", "/", $app).'/etc/config.xml';
+            $path = is_dir($this->path) ? $this->path : dirname($this->path);
+            $path .= '/../vendor/'.str_replace("_", "/", $app).'/etc/config.xml';
             if (is_file($path)) {
                 $this->repo->append('configuration.app.'.$app, $this->loadFile($path));
             }
@@ -65,17 +91,6 @@ class Loader
             ];
             $element += $raw['@attributes'];
             $array[$key][] = $element;
-        }
-        return $array;
-    }
-    
-    private function load()
-    {    
-        $array = [];
-        if (is_file($this->path)) {
-            $array = $this->loadFile($this->path);
-        } elseif (is_dir($this->path)) {
-            $array = $this->loadDir();        
         }
         return $array;
     }
