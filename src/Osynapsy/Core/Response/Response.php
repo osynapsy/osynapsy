@@ -132,6 +132,9 @@ abstract class Response
      */
     public static function cookie($valueId, $value, $expiry = null, $excludeThirdLevel = true)
     {        
+        if (headers_sent()) {
+           return false; 
+        }
         $domain = filter_input(\INPUT_SERVER,'SERVER_NAME');
         if ($excludeThirdLevel) {
             $app = explode('.',$domain);
@@ -150,6 +153,9 @@ abstract class Response
      */
     protected function sendHeader()
     {
+        if (headers_sent()) {
+            return;
+        }
         foreach ($this->repo['header'] as $key => $value) {
             header($key.': '.$value);
         }
