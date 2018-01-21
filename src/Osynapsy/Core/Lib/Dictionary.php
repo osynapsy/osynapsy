@@ -164,8 +164,8 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
         $data = is_array($searchPath) ? $searchPath : $this->get($searchPath); 
         if (empty($data)) {
             return [];
-        }
-        foreach($data as $key => $value){
+        }        
+        foreach($data as $key => $value){            
             if ($key === $keySearch) {
                 $result += $value;
             } elseif (is_array($value)) {

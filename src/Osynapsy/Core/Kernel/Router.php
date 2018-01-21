@@ -19,20 +19,19 @@ class Router
         '/'  => '\\/'
     );
     
-    public function __construct($requestRoute, Request &$request)
+    public function __construct(Request &$request)
     {
-        $this->requestRoute = empty($requestRoute) ? '/' : $requestRoute;
         $this->request = $request;
         $this->routes = new RouteCollection();        
     }
     
-    private function isCurrentRoute($url, $ctl, $tpl, $app, $attr=null)
+    private function matchRoute($url)
     {
-        $out = array();
+        $output = [];
         switch (substr_count($url, '?')) {
             case 0:
                 if ($url === $this->requestRoute) {
-                    $out[] = $url;  
+                    $output[] = $url;  
                 }
                 break;
             default:
@@ -41,21 +40,11 @@ class Router
                     array_values($this->patternPlaceholder),
                     $url
                 );
-                preg_match('|^'.$pattern.'$|', $this->requestRoute, $out);
+                preg_match('|^'.$pattern.'$|', $this->requestRoute, $output);
                 break;
         }
         
-        if (empty($out)){
-            return;
-        }
-        
-        $this->routes->set('current.url', array_shift($out));
-        $this->routes->set('current.controller', $ctl); 
-        $this->routes->set('current.templateId', $tpl);
-        $this->routes->set('current.application', $app);
-        $this->routes->set('current.parameters', $out);
-        $this->routes->set('current.attributes', $attr);
-        $this->request->set('page', $this->routes->get('current'));
+        return empty($output) ? false : $output;
     }
 
     public function get($key)
@@ -65,8 +54,28 @@ class Router
     
     public function addRoute($id, $url, $controller, $templateId, $application, $attributes=array())
     {    
-        $this->routes->addRoute($id, $url, $controller, $templateId);
-        $this->isCurrentRoute($url, $controller, $templateId, $application, $attributes);        
+        $this->routes->addRoute($id, $url, $application, $controller, $templateId, $attributes);        
+    }
+    
+    public function dispatchRoute($uriToMatch)
+    {
+        $this->requestRoute = empty($uriToMatch) ? '/' : $uriToMatch;
+        $routes = $this->routes->get('routes');
+        if (!is_array($routes)) {
+            return false;
+        }
+        foreach($routes as $route) {
+            $uriDecoded = $this->matchRoute($route['path']);
+            if (!$uriDecoded) {
+                continue;
+            }
+            $this->routes->set('current', $route); 
+            $this->routes->set('current.url', array_shift($uriDecoded));
+            $this->routes->set('current.parameters', $uriDecoded);
+            $this->request->set('page', $this->routes->get('current'));
+            return true;
+        }
+        return false;
     }
     
     public function getRoute($key='')

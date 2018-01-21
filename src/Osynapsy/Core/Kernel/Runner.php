@@ -18,10 +18,11 @@ class Runner
     private $applicationId;
     private $dbFactory;
     
-    public function __construct(Dictionary &$env, Router $router)
+    public function __construct(Dictionary &$env, Router $router, $requestUri)
     {
         $this->env = $env;
         $this->router = $router;
+        $this->router->dispatchRoute($requestUri);
         $this->route = $this->router->getRoute();        
     }
     

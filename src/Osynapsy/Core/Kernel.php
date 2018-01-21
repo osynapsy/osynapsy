@@ -15,11 +15,8 @@ class Kernel
     public $appController;
     private $loader;    
 
-    public function __construct($fileconf, $requestRoute = null)
-    {        
-        if (is_null($requestRoute)) {
-            $requestRoute = strtok(filter_input(INPUT_SERVER, 'REQUEST_URI'),'?');
-        }
+    public function __construct($fileconf)
+    {                
         $this->loader = new Loader($fileconf);
         $this->request = new Request($_GET, $_POST, array(), $_COOKIE, $_FILES, $_SERVER);
         $this->request->set(
@@ -42,10 +39,7 @@ class Kernel
             'listeners',
             $this->loadConfig('listener', 'listenerValue', 'event')
         );
-        $this->router = new Router(
-            $requestRoute,
-            $this->request
-        );
+        $this->router = new Router($this->request);
         $this->loadRoutes();        
     }
     
@@ -68,16 +62,13 @@ class Kernel
     {        
         $applicationList = array_keys($this->loader->get('app'));
         foreach($applicationList as $applicationId) {
-            $routes = $this->loader->search(
-                'route',
-                "app.{$applicationId}"
-            );
+            $routes = $this->loader->search('route', "app.{$applicationId}");
             foreach ($routes as $route) {
                 $id = $route['id'];
-                $url = $route['path'];
-                $ctl = trim(str_replace(':', '\\', $route['routeValue']));
-                $tpl = $route['template'];
-                $this->router->addRoute($id, $url, $ctl, $tpl, $applicationId, $route);                
+                $uri = $route['path'];
+                $controller = trim(str_replace(':', '\\', $route['routeValue']));
+                $template = $route['template'];
+                $this->router->addRoute($id, $uri, $controller, $template, $applicationId, $route);                
             }
         }        
         $this->router->addRoute(
@@ -89,9 +80,12 @@ class Kernel
         );
     }
     
-    public function run()
+    public function run($requestRoute = null)
     {
-        $runner = new Runner($this->request, $this->router);
+        if (is_null($requestRoute)) {
+            $requestRoute = strtok(filter_input(INPUT_SERVER, 'REQUEST_URI'),'?');
+        }
+        $runner = new Runner($this->request, $this->router, $requestRoute);
         return $runner->run();        
     }            
 }

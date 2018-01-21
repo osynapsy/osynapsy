@@ -17,14 +17,17 @@ class RouteCollection extends Dictionary
         );
     }
     
-    public function addRoute($id, $route, $controller, $templateId = null)
+    public function addRoute($id, $route, $application, $controller, $templateId = null, $attributes = array())
     {
         $this->set(
             'routes.'.$id,
             array(
                 'path' => $route,
+                'application' => $application,
                 'controller' => $controller,
-                'templateId' => $templateId
+                'templateId' => $templateId,
+                'attributes' => $attributes,
+                'parameters' => []
             )
         );
     }
