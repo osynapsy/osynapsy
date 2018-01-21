@@ -77,6 +77,11 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         return $this->dbFactory->getConnection($key);
     }
     
+    public function getDbFactory()
+    {
+        return $this->dbFactory;
+    }
+    
     public function getDispacther()
     {
         return $this->dispatcher;
