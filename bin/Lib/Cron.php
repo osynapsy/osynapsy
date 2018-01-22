@@ -1,6 +1,7 @@
 <?php
 
 use Osynapsy\Core\Kernel\Loader;
+use Osynapsy\Core\Kernel\Route;
 use Osynapsy\Core\Kernel;
 
 /**
@@ -12,18 +13,12 @@ class Cron
 {
     private $argv;
     private $script;
-
+    private $kernel;
+    
     public function __construct(array $argv)
     {
         $this->script = array_shift($argv);
         $this->argv = $argv;
-    }
-    
-    public function run()
-    {
-        $jobs = $this->load($this->loadConfiguration());
-        $this->exec($jobs);
-        return print_r($cron, true);
     }
     
     private function load($configuration)
@@ -41,21 +36,6 @@ class Cron
         return $jobs;
     }
     
-    private function exec($jobs)
-    {
-        if (empty($jobs)) {
-            return;
-        }
-        $Kernel = new Kernel($this->argv[0]);
-        foreach($jobs as $appId => $appJobs) {            
-            foreach($appJobs as $jobId => $jobUri){
-                ob_start();
-                echo $Kernel->run($jobUri);
-                ob_end_flush();
-            }
-        }
-    }
-    
     private function loadConfiguration()
     {
         if (!is_dir($this->argv[0])) {
@@ -63,5 +43,33 @@ class Cron
         }
         $loader = new Loader($this->argv[0]);
         return $loader->search('app');
+    }
+    
+    public function run()
+    {
+        $this->exec(
+            $this->load(
+                $this->loadConfiguration()
+            )
+        );
+    }
+    
+    private function exec($jobs)
+    {
+        if (empty($jobs)) {
+            return;
+        }
+        $this->kernel = new Kernel($this->argv[0]);
+        foreach($jobs as $appId => $appJobs) {            
+            foreach($appJobs as $jobId => $jobController){
+                $this->execJob($jobId , $appId, $jobController);
+            }
+        }
+    }
+    
+    private function execJob($jobId, $application, $controller)
+    {
+        $job = new Route($jobId, null, $application, $controller);
+        echo $this->kernel->followRoute($job);
     }
 }
