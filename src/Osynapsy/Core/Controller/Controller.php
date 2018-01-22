@@ -15,7 +15,6 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     
     protected $db;
     private $parameters;
-    private $templateId;
     private $dispatcher;
     private $dbFactory;
     public $model;
@@ -25,7 +24,6 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     
     public function __construct(Request $request = null, DbFactory $db = null, $appController = null)
     {        
-        $this->templateId = $request->get('page')->template;
         $this->parameters = $request->get('page')->parameters;        
         $this->request = $request;
         $this->setDbHandler($db);
@@ -128,7 +126,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
             return $this->execAction($cmd);
         }        
         $this->setResponse(new HtmlResponse());
-        $layoutPath = $this->request->get('app.layouts.'.$this->templateId);
+        $layoutPath = $this->request->get('page')->template;
         if (!empty($layoutPath)) {
             $this->response->template = $this->response->getBuffer($layoutPath, $this);            
         }
