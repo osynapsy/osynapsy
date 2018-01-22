@@ -1,13 +1,11 @@
 <?php
 namespace Osynapsy\Core\Kernel;
 
-use Osynapsy\Core\Network\Request;
-
 class Router
 {
-    public $request;
     private $routes;
     private $requestRoute;
+    private $matchedRoute;
     //Rispettare l'ordine
     private $patternPlaceholder = array(
         '?i' => '([\\d]+){1}', 
@@ -19,10 +17,39 @@ class Router
         '/'  => '\\/'
     );
     
-    public function __construct(Request &$request)
+    public function __construct()
     {
-        $this->request = $request;
-        $this->routes = new RouteCollection();        
+        $this->routes = new RouteCollection();
+        $this->matchedRoute = new Route('matched');
+    }
+    
+    public function get($key)
+    {
+        return $this->routes->get($key);
+    }
+    
+    public function addRoute($id, $url, $controller, $templateId, $application, $attributes=array())
+    {    
+        $this->routes->addRoute($id, $url, $application, $controller, $templateId, $attributes);        
+    }
+    
+    public function dispatchRoute($uriToMatch)
+    {
+        $this->requestRoute = empty($uriToMatch) ? '/' : $uriToMatch;
+        $routes = $this->routes->get('routes');
+        if (!is_array($routes)) {
+            return false;
+        }
+        foreach($routes as $route) {
+            $uriDecoded = $this->matchRoute($route->uri);
+            if (!$uriDecoded) {
+                continue;
+            }
+            $this->matchedRoute = $route;
+            $this->matchedRoute->uri = array_shift($uriDecoded);
+            $this->matchedRoute->parameters = $uriDecoded;
+        }
+        return $this->getRoute();
     }
     
     private function matchRoute($url)
@@ -46,43 +73,9 @@ class Router
         
         return empty($output) ? false : $output;
     }
-
-    public function get($key)
-    {
-        return $this->routes->get($key);
-    }
     
-    public function addRoute($id, $url, $controller, $templateId, $application, $attributes=array())
-    {    
-        $this->routes->addRoute($id, $url, $application, $controller, $templateId, $attributes);        
-    }
-    
-    public function dispatchRoute($uriToMatch)
+    public function getRoute()
     {
-        $this->requestRoute = empty($uriToMatch) ? '/' : $uriToMatch;
-        $routes = $this->routes->get('routes');
-        if (!is_array($routes)) {
-            return false;
-        }
-        foreach($routes as $route) {
-            $uriDecoded = $this->matchRoute($route['path']);
-            if (!$uriDecoded) {
-                continue;
-            }
-            $this->routes->set('current', $route); 
-            $this->routes->set('current.url', array_shift($uriDecoded));
-            $this->routes->set('current.parameters', $uriDecoded);
-            $this->request->set('page', $this->routes->get('current'));
-            return true;
-        }
-        return false;
-    }
-    
-    public function getRoute($key='')
-    {
-        if (!empty($key)){
-            $key = '.'.$key;
-        }
-        return $this->get('current'.$key);
+        return $this->matchedRoute;
     }
 }

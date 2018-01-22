@@ -3,6 +3,7 @@ namespace Osynapsy\Core;
 
 use Osynapsy\Core\Kernel\Loader;
 use Osynapsy\Core\Kernel\Router;
+use Osynapsy\Core\Kernel\Route;
 use Osynapsy\Core\Kernel\Runner;
 use Osynapsy\Core\Network\Request;
 
@@ -66,7 +67,7 @@ class Kernel
             foreach ($routes as $route) {
                 $id = $route['id'];
                 $uri = $route['path'];
-                $controller = trim(str_replace(':', '\\', $route['routeValue']));
+                $controller = $route['routeValue'];
                 $template = $route['template'];
                 $this->router->addRoute($id, $uri, $controller, $template, $applicationId, $route);                
             }
@@ -80,12 +81,19 @@ class Kernel
         );
     }
     
-    public function run($requestRoute = null)
+    public function run($requestUri = null)
     {
-        if (is_null($requestRoute)) {
-            $requestRoute = strtok(filter_input(INPUT_SERVER, 'REQUEST_URI'),'?');
+        if (is_null($requestUri)) {
+            $requestUri = strtok(filter_input(INPUT_SERVER, 'REQUEST_URI'),'?');
         }
-        $runner = new Runner($this->request, $this->router, $requestRoute);
-        return $runner->run();        
-    }            
+        $route = $this->router->dispatchRoute($requestUri);
+        $this->request->set('page', $route);
+        return $this->runController($route);
+    }
+    
+    public function runController(Route $route)
+    {
+        $runner = new Runner($this->request, $route);
+        return $runner->run();  
+    }
 }

@@ -2,7 +2,6 @@
 namespace Osynapsy\Core\Kernel;
 
 use Osynapsy\Core\Lib\Dictionary;
-use Osynapsy\Core\Kernel\Router;
 use Osynapsy\Core\Data\Driver\DbFactory;
 use Osynapsy\Core\Kernel\KernelException;
 
@@ -14,27 +13,23 @@ use Osynapsy\Core\Kernel\KernelException;
 class Runner
 {
     private $env;
-    private $router;
-    private $applicationId;
+    private $route;
     private $dbFactory;
     
-    public function __construct(Dictionary &$env, Router $router, $requestUri)
+    public function __construct(Dictionary &$env, $currentRoute)
     {
         $this->env = $env;
-        $this->router = $router;
-        $this->router->dispatchRoute($requestUri);
-        $this->route = $this->router->getRoute();        
+        $this->route = $currentRoute;
     }
     
     private function checks()
     {
-        if (empty($this->route)) {
+        if (!$this->route->controller) {
             throw new KernelException('No route to destination ('.$this->env->get('server.REQUEST_URI').')', 404);
         }
-        if (empty($this->route['application'])) {
+        if (!$this->route->application) {
             throw new KernelException('No application defined', 405);
         }
-        $this->applicationId = $this->route['application'];
     }
     
     public function run()
@@ -44,7 +39,7 @@ class Runner
             $this->loadDatasources();
             $this->runApplicationController();
             $response = $this->runRouteController(
-                $this->router->getRoute('controller')
+                $this->route->controller
             );
             if ($response !== false) {
                 return $response;
@@ -68,14 +63,14 @@ class Runner
     
     private function runApplicationController()
     {        
-        $applicationController = str_replace(':', '\\', $this->env->get("env.app.{$this->applicationId}.controller"));
+        $applicationController = str_replace(':', '\\', $this->env->get("env.app.{$this->route->application}.controller"));
         if (empty($applicationController)) {
             return true;
         }
         //If app has applicationController instance it before recall route controller;        
         $this->appController = new $applicationController(
             $this->dbFactory->getConnection(0), 
-            $this->router->getRoute()
+            $this->route
         );
         if (!$this->appController->run()) {
             throw new KernelException('App not running (access denied)','501');
@@ -93,7 +88,7 @@ class Runner
     
     private function loadDatasources()
     {            
-        $listDatasource = $this->env->search('db',"env.app.{$this->applicationId}.datasources");
+        $listDatasource = $this->env->search('db',"env.app.{$this->route->application}.datasources");
         $this->dbFactory = new DbFactory();
         foreach ($listDatasource as $datasource) {
             $connectionString = $datasource['dbValue'];
