@@ -3,7 +3,7 @@ namespace Osynapsy\Core\Model;
 
 use Osynapsy\Core\Lib\Dictionary;
 use Osynapsy\Core\Model\ModelField;
-use Osynapsy\Core\Helper\UploadManager;
+use Osynapsy\Helper\Network\UploadManager;
 
 abstract class Model
 {
