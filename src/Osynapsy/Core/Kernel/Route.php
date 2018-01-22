@@ -13,18 +13,17 @@ class Route
         'uri' => null,
         'application' => null,
         'controller' => null,
-        'template' => null,
-        'attributes' => []
+        'template' => null
     ];
     
-    public function __construct($id = '', $uri = '', $application = '', $controller = '', $template = '', $attributes = [])
+    public function __construct($id = '', $uri = '', $application = '', $controller = '', $template = '',array $attributes = [])
     {
         $this->id = empty($id) ? sha1($uri) : $id;
         $this->uri = $uri;
         $this->application = trim($application);
         $this->controller = trim(str_replace(':','\\',$controller));
         $this->template = $template;
-        $this->attributes = $attributes;
+        $this->route += $attributes;
     }
     
     public function __get($key)
