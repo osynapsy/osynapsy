@@ -1,7 +1,7 @@
 <?php
 namespace Osynapsy\Bcl\Component;
 
-use Osynapsy\Core\Helper\Image;
+use Osynapsy\Helper\ImageProcessing\Image;
 use Osynapsy\Ocl\Component\Component;
 use Osynapsy\Core\Lib\Tag;
 
