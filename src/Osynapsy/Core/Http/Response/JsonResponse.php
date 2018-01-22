@@ -1,7 +1,7 @@
 <?php
-namespace Osynapsy\Core\Response;
+namespace Osynapsy\Core\Http\Response;
 
-use Osynapsy\Core\Response\Response;
+use Osynapsy\Core\Http\Response\Response;
 
 /**
  * Implements Json response

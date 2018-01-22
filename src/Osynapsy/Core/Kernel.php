@@ -5,7 +5,8 @@ use Osynapsy\Core\Kernel\Loader;
 use Osynapsy\Core\Kernel\Router;
 use Osynapsy\Core\Kernel\Route;
 use Osynapsy\Core\Kernel\Runner;
-use Osynapsy\Core\Network\Request;
+use Osynapsy\Core\Http\Request\Request;
+use Osynapsy\Core\Kernel\KernelException;
 
 class Kernel
 {
@@ -15,9 +16,11 @@ class Kernel
     public $controller;
     public $appController;
     private $loader;    
-
-    public function __construct($fileconf)
+    private $composer;
+    
+    public function __construct($fileconf, $composer = '')
     {                
+        $this->composer = $composer;
         $this->loader = new Loader($fileconf);
         $this->request = new Request($_GET, $_POST, array(), $_COOKIE, $_FILES, $_SERVER);
         $this->request->set(
@@ -39,8 +42,7 @@ class Kernel
         $this->request->set(
             'listeners',
             $this->loadConfig('listener', 'listenerValue', 'event')
-        );        
-        $this->loadRoutes();        
+        );                
     }
     
     private function loadConfig($key, $name, $value)
@@ -68,8 +70,11 @@ class Kernel
             '',
             'Osynapsy'
         );
-        $applicationList = array_keys($this->loader->get('app'));
-        foreach($applicationList as $applicationId) {
+        $applications = array_keys($this->loader->get('app'));
+        if (empty($applications)) {
+            throw new KernelException('No app configuration found');
+        }
+        foreach(array_keys($applications) as $applicationId) {
             $routes = $this->loader->search('route', "app.{$applicationId}");
             foreach ($routes as $route) {
                 $id = $route['id'];
@@ -86,6 +91,7 @@ class Kernel
         if (is_null($requestUri)) {
             $requestUri = strtok(filter_input(INPUT_SERVER, 'REQUEST_URI'),'?');
         }
+        $this->loadRoutes();
         return $this->followRoute(
             $this->router->dispatchRoute($requestUri)
         );
