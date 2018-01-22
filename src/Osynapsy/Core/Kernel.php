@@ -70,7 +70,7 @@ class Kernel
             '',
             'Osynapsy'
         );
-        $applications = array_keys($this->loader->get('app'));
+        $applications = $this->loader->get('app');
         if (empty($applications)) {
             throw new KernelException('No app configuration found');
         }
