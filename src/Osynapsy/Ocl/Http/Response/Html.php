@@ -1,7 +1,7 @@
 <?php
-namespace Osynapsy\Ocl\Response;
+namespace Osynapsy\Ocl\Http\Response;
 
-use Osynapsy\Core\Response\HtmlResponse;
+use Osynapsy\Core\Http\Response\HtmlResponse;
 use Osynapsy\Core\Lib\Tag;
 use Osynapsy\Ocl\Component\Component;
 
