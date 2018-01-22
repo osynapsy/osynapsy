@@ -39,8 +39,7 @@ class Kernel
         $this->request->set(
             'listeners',
             $this->loadConfig('listener', 'listenerValue', 'event')
-        );
-        $this->router = new Router($this->request);
+        );        
         $this->loadRoutes();        
     }
     
@@ -61,17 +60,7 @@ class Kernel
      */
     private function loadRoutes()
     {        
-        $applicationList = array_keys($this->loader->get('app'));
-        foreach($applicationList as $applicationId) {
-            $routes = $this->loader->search('route', "app.{$applicationId}");
-            foreach ($routes as $route) {
-                $id = $route['id'];
-                $uri = $route['path'];
-                $controller = $route['routeValue'];
-                $template = $route['template'];
-                $this->router->addRoute($id, $uri, $controller, $template, $applicationId, $route);                
-            }
-        }        
+        $this->router = new Router($this->request);
         $this->router->addRoute(
             'OsynapsyAssetsManager',
             '/__assets/osynapsy/?*',
@@ -79,6 +68,17 @@ class Kernel
             '',
             'Osynapsy'
         );
+        $applicationList = array_keys($this->loader->get('app'));
+        foreach($applicationList as $applicationId) {
+            $routes = $this->loader->search('route', "app.{$applicationId}");
+            foreach ($routes as $route) {
+                $id = $route['id'];
+                $uri = $route['path'];
+                $controller = $route['routeValue'];
+                $template = !empty($route['template']) ? $this->request->get('app.layouts.'.$route['template']) : '';
+                $this->router->addRoute($id, $uri, $controller, $template, $applicationId, $route);                
+            }
+        }        
     }
     
     public function run($requestUri = null)
@@ -86,13 +86,14 @@ class Kernel
         if (is_null($requestUri)) {
             $requestUri = strtok(filter_input(INPUT_SERVER, 'REQUEST_URI'),'?');
         }
-        $route = $this->router->dispatchRoute($requestUri);
-        $this->request->set('page', $route);
-        return $this->runController($route);
+        return $this->followRoute(
+            $this->router->dispatchRoute($requestUri)
+        );
     }
     
-    public function runController(Route $route)
+    public function followRoute(Route $route)
     {
+        $this->request->set('page', $route);
         $runner = new Runner($this->request, $route);
         return $runner->run();  
     }
