@@ -20,7 +20,7 @@ class RouteCollection extends Dictionary
     public function addRoute($id, $route, $application, $controller, $templateId = null, $attributes = array())
     {
         $this->set(
-            'routes.'.$id,
+            'routes.'.(empty($id) ? sha1($route) : $id),
             array(
                 'path' => $route,
                 'application' => $application,
