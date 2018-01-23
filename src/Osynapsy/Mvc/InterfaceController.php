@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Core\Controller;
+namespace Osynapsy\Mvc;
 
 use Osynapsy\Http\Request;
 use Osynapsy\Db\DbFactory;

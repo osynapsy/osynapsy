@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Core\Model;
+namespace Osynapsy\Mvc;
 
 class ModelField 
 {

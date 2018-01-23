@@ -1,7 +1,7 @@
 <?php
 namespace Osynapsy\Html\Ocl;
 
-use Osynapsy\Core\Controller\Controller;
+use Osynapsy\Mvc\Controller;
 
 abstract class BaseView
 {

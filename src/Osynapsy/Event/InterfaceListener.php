@@ -1,7 +1,7 @@
 <?php
 namespace Osynapsy\Event;
 
-use Osynapsy\Core\Controller\Controller;
+use Osynapsy\Mvc\Controller;
 
 /**
  * Description of Listener

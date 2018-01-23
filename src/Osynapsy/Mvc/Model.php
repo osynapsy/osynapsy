@@ -1,8 +1,8 @@
 <?php
-namespace Osynapsy\Core\Model;
+namespace Osynapsy\Mvc;
 
 use Osynapsy\Data\Dictionary;
-use Osynapsy\Core\Model\ModelField;
+use Osynapsy\Mvc\ModelField;
 use Osynapsy\Network\UploadManager;
 
 abstract class Model

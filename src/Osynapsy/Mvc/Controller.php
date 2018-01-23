@@ -1,13 +1,13 @@
 <?php
-namespace Osynapsy\Core\Controller;
+namespace Osynapsy\Mvc;
 
 use Osynapsy\Db\DbFactory;
 use Osynapsy\Event\Dispatcher;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response;
-use Osynapsy\Http\JsonResponse;
+use Osynapsy\Http\ResponseJson as JsonResponse;
+use Osynapsy\Http\ResponseHtmlOcl as HtmlResponse;
 use Osynapsy\Observer\InterfaceSubject;
-use Osynapsy\Html\Ocl\Http\Response\Html as HtmlResponse;
 
 abstract class Controller implements InterfaceController, InterfaceSubject
 {

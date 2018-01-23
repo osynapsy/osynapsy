@@ -6,7 +6,7 @@ namespace Osynapsy\Http;
  * 
  * @author Pietro Celeste <p.celeste@spinit.it>
  */
-class JsonResponse extends Response 
+class ResponseJson extends Response 
 {
     public function __construct()
     {
