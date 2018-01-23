@@ -22,7 +22,7 @@ namespace Osynapsy\Ocl\Component;
  * @date-creation   31/10/2014
  * @date-update     31/10/2014
  */
- 
+use Osynapsy\Html\Component; 
 
 class MapGoogleBox extends Component
 {

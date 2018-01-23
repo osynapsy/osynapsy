@@ -1,7 +1,7 @@
 <?php
 namespace Osynapsy\Bcl\Component;
 
-use Osynapsy\Ocl\Component\Component;
+use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
 
 class DataGrid2 extends Component

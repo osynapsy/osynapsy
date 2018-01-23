@@ -24,7 +24,7 @@
 namespace Osynapsy\Ocl\Component;
 
 use Osynapsy\Html\Tag as Tag;
-use Osynapsy\Ocl\Component\Component as Component;
+use Osynapsy\Html\Component as Component;
 use Osynapsy\Ocl\Component\HiddenBox as HiddenBox;
 
 class DataGrid extends Component

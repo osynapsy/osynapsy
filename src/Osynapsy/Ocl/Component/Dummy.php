@@ -1,6 +1,8 @@
 <?php
 namespace Osynapsy\Ocl\Component;
 
+use Osynapsy\Html\Component;
+
 class Dummy extends Component
 {
     public function __construct($name,$id=null)

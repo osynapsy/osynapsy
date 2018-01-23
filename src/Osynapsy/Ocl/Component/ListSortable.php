@@ -2,7 +2,7 @@
 namespace Osynapsy\Ocl\Component;
 
 use Osynapsy\Html\Tag;
-
+use Osynapsy\Html\Component;
 /**
  * Description of ListView
  *

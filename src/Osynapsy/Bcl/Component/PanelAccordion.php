@@ -1,7 +1,7 @@
 <?php
 namespace Osynapsy\Bcl\Component;
 
-use Osynapsy\Ocl\Component\Component as Component;
+use Osynapsy\Html\Component as Component;
 
 //Costruttore del pannello html
 class PanelAccordion extends Component

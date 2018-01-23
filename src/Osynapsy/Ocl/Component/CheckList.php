@@ -2,6 +2,7 @@
 namespace Osynapsy\Ocl\Component;
 
 use Osynapsy\Html\Tag;
+use Osynapsy\Html\Component;
 
 class CheckList extends Component
 {

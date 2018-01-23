@@ -1,8 +1,7 @@
 <?php
 namespace Osynapsy\Ocl\Component;
 
-use Osynapsy\Html\Tag as Tag;
-use Osynapsy\Ocl\Component\Component as Component;
+use Osynapsy\Html\Component as Component;
 
 //Costruttore del pannello html
 class Panel extends Component
@@ -110,54 +109,5 @@ class Panel extends Component
     public function put($lbl, $obj, $row = 0, $col = 0)
     {
         $this->cells[$row][$col][] = array('lbl'=>$lbl,'obj'=>$obj);
-    }
-    
-    public function buildPdf($pdf, $xwidth=190, $xstart=10)
-    {
-        //Scorro le righe;
-        ksort($this->cells);
-        foreach ($this->cells as $k => $row){
-            if (!is_array($row)) continue;
-            ksort($row);
-            $ncel = count($row);
-            $wcel = $xwidth / $ncel;
-            $cury = $pdf->GetY();
-            $h = 0;
-            foreach($row as $i => $cels)
-            {
-                foreach($cels as $j => $obj)
-                {
-                    $pdf->SetXY($wcel * $h+$xstart,$cury);
-                    $pdf->setFont('helvetica','B',10);
-                    if (is_object($obj['obj']) && method_exists($obj['obj'],'build_pdf')){
-                        $pdf->SetFillColor(230,230,230);
-                        $pdf->Cell($wcel,7,strtoupper($obj['lbl']),($ncel == ($h+1) ? 'LTR' : 'LT'),0,'C',1);
-                    } else {
-                        $pdf->Cell($wcel,7,$obj['lbl'],($ncel == ($h+1) ? 'LTR' : 'LT'),0,'L',0);
-                    }
-                    $pdf->SetFillColor(0);
-                    $pdf->setFont('helvetica','',12);
-                    $pdf->Ln();
-                    if (is_object($obj['obj']) && method_exists($obj['obj'],'build_pdf')){
-                        $obj['obj']->build_pdf($pdf,$wcel,$wcel*$h+$xstart);
-                        continue;
-                    }
-                    $val = '';
-                    if (is_object($obj['obj']) && method_exists($obj['obj'],'get_value'))
-                    {
-                        $val = $obj['obj']->get_value();
-                        $wdt = $pdf->GetStringWidth($val);
-                        if ($wcel < $wdt){
-                            $min = floor(($wcel / $wdt) * strlen($val));
-                            $val = substr($val,0,$min);
-                        }
-                    }
-                    $pdf->SetX($wcel * $h + $xstart);
-                    $pdf->Cell($wcel,7,$val,($ncel == ($h+1) ? 'LRB' : 'LB'));
-                    $pdf->Ln();
-                }
-                $h++;
-            }
-        }
-    }
+    }        
 }

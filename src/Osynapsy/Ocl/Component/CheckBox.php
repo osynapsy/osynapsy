@@ -1,6 +1,8 @@
 <?php
 namespace Osynapsy\Ocl\Component;
 
+use Osynapsy\Html\Component;
+
 class CheckBox extends Component
 {
     private $hidden = null;

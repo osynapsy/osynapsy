@@ -3,6 +3,7 @@ namespace Osynapsy\Ocl\Component;
 
 use SVGGraph;
 use Osynapsy\Data\Dictionary;
+use Osynapsy\Html\Component;
 
 /**
  * Description of SVGGraph

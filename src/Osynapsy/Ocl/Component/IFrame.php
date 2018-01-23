@@ -1,6 +1,8 @@
 <?php
 namespace Osynpasy\Ocl\Component;
 
+use Osynapsy\Html\Component;
+
 //Field iframe
 class Iframe extends Component
 {

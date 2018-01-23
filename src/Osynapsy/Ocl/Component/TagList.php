@@ -1,6 +1,8 @@
 <?php
 namespace Osynapsy\Ocl\Component;
 
+use Osynapsy\Html\Component;
+
 class TagList extends Component
 {
     public function __construct($id=null)

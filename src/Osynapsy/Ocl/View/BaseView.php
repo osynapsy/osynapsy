@@ -3,7 +3,7 @@ namespace Osynapsy\Ocl\View;
 
 use Osynapsy\Core\Controller\Controller;
 use Osynapsy\Ocl\Response\Html as HtmlResponse;
-use Osynapsy\Ocl\Component\Component;
+use Osynapsy\Html\Component;
 
 abstract class BaseView
 {

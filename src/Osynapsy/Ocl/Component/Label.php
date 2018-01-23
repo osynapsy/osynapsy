@@ -1,6 +1,8 @@
 <?php
 namespace Osynapsy\Ocl\Component;
 
+use Osynapsy\Html\Component;
+
 class Label extends Component
 {
     public function __construct($name)
@@ -30,41 +32,5 @@ class Label extends Component
 		} else {
         	$this->add(nvl($val,'&nbsp;'));
 		}
-    }
-    
-    public static function get_from_datasource($val,$lst,$db=null)
-    {
-        $lbl = $val;
-        if (!is_array($lst) && !is_null($db))
-        {
-            try
-            {
-				$lst = $db->exec_query($lst,null,'NUM');
-            }
-             catch(Exception $e)
-            {
-               echo $lst;
-			   $this->att(0,'dummy');
-               $this->add('<div class="osy-error" id="'.$this->id.'">SQL ERROR - [LABEL]</div>');
-               $this->add('<div class="osy-error-msg">'.($e->getMessage()).'</div>');
-               return;
-            }
-        }
-        
-        if ($val == '[get-first-value]')
-        {
-            return !empty($lst[0]) ? nvl($lst[0][1],$lst[0][0]) : null;
-        }
-         elseif (is_array($lst))
-        {
-            foreach($lst as $k => $rec)
-            {
-                if ($rec[0] == $val)
-                {
-                    return nvl($rec[1],$rec[0]);
-                }
-            }
-        }
-        return $lbl;
-     }
+    }        
 }

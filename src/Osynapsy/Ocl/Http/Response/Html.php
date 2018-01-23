@@ -3,7 +3,7 @@ namespace Osynapsy\Ocl\Http\Response;
 
 use Osynapsy\Http\HtmlResponse;
 use Osynapsy\Html\Tag;
-use Osynapsy\Ocl\Component\Component;
+use Osynapsy\Html\Component;
 
 class Html extends HtmlResponse
 {

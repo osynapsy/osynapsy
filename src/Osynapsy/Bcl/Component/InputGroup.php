@@ -2,7 +2,7 @@
 namespace Osynapsy\Bcl\Component;
 
 use Osynapsy\Html\Tag;
-use Osynapsy\Ocl\Component\Component;
+use Osynapsy\Html\Component;
 
 class InputGroup extends Component
 {

@@ -1,8 +1,6 @@
 <?php
 namespace Osynapsy\Ocl\Component;
 
-use Osynapsy\Ocl\Component\InputBox;
-
 //costruttore del text box
 class TextBox extends InputBox
 {

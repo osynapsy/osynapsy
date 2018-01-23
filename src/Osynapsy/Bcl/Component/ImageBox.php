@@ -2,7 +2,7 @@
 namespace Osynapsy\Bcl\Component;
 
 use Osynapsy\Helper\ImageProcessing\Image;
-use Osynapsy\Ocl\Component\Component;
+use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
 
 class ImageBox extends Component

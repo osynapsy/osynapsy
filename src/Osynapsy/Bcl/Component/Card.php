@@ -1,7 +1,7 @@
 <?php
 namespace Osynapsy\Bcl\Component;
 
-use Osynapsy\Ocl\Component\Component as OclComponent;
+use Osynapsy\Html\Component as OclComponent;
 use Osynapsy\Html\Tag;
 
 /**

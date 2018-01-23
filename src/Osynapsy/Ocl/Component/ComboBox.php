@@ -2,6 +2,7 @@
 namespace Osynapsy\Ocl\Component;
 
 use Osynapsy\Html\Tag as Tag;
+use Osynapsy\Html\Component;
 
 //costruttore del combo box
 class ComboBox extends Component

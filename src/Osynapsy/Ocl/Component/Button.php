@@ -1,5 +1,7 @@
 <?php
 namespace Osynapsy\Ocl\Component;
+
+use Osynapsy\Html\Component;
 /*
  * Button component
  */

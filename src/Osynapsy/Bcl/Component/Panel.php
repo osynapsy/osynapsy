@@ -2,7 +2,7 @@
 namespace Osynapsy\Bcl\Component;
 
 use Osynapsy\Html\Tag as Tag;
-use Osynapsy\Ocl\Component\Component as Component;
+use Osynapsy\Html\Component as Component;
 
 //Costruttore del pannello html
 class Panel extends Component
