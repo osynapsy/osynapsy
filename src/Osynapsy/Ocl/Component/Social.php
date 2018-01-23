@@ -7,7 +7,7 @@ namespace Osynapsy\Bcl\Component;
  * @author Peter
  */
 
-use Opensymap\Lib\Tag;
+use Opensymap\Html\Tag;
 use Opensymap\Ocl\Component\Component;
 use Opensymap\Ocl\Component\TextArea;
 use Opensymap\Ocl\Component\Button;

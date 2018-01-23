@@ -1,7 +1,7 @@
 <?php
 namespace Osynapsy\Ocl\Component;
 
-use Osynapsy\Core\Lib\Tag;
+use Osynapsy\Html\Tag;
 /**
  * Description of ChartEJS
  *

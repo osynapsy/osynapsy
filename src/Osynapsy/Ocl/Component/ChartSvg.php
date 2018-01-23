@@ -2,8 +2,7 @@
 namespace Osynapsy\Ocl\Component;
 
 use SVGGraph;
-use Osynapsy\Core\Request\Request;
-use Osynapsy\Core\Lib\Dictionary;
+use Osynapsy\Data\Dictionary;
 
 /**
  * Description of SVGGraph

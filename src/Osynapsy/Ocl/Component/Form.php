@@ -1,9 +1,7 @@
 <?php
 namespace Osynapsy\Ocl\Component;
 
-use Osynapsy\Core\Lib\Tag as Tag;
-use Osynapsy\Ocl\Component\Component as Component;
-use Osynapsy\Ocl\Component\Panel as Panel;
+use Osynapsy\Html\Tag;
 
 class Form extends Component
 {
@@ -15,7 +13,7 @@ class Form extends Component
         parent::__construct('form',$nam);
         $this->att('name',$nam)->att('method','post');
         /*
-         * Creo una div cornice che conterrà il panel principale in modo da avere
+         * Creo una div cornice che conterrï¿½ il panel principale in modo da avere
          * un componente a cui poter assegnare un altezza fissa e quindi far comparire
          * le barre di scorrimento
          */

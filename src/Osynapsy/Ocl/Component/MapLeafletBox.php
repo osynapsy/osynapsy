@@ -23,7 +23,7 @@ namespace Osynapsy\Ocl\Component;
  * @date-update     31/10/2014
  */
  
-use Osynapsy\Core\Lib\Tag;
+use Osynapsy\Html\Tag;
 
 class MapLeafletBox extends Component
 {

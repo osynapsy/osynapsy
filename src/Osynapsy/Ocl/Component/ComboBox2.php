@@ -8,7 +8,7 @@
 
 namespace Osynapsy\Ocl\Component;
 
-use Osynapsy\Core\Lib\Tag as Tag;
+use Osynapsy\Html\Tag as Tag;
 /**
  * Description of ComboBox2
  *

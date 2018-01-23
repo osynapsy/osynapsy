@@ -23,7 +23,7 @@
  */
 namespace Osynapsy\Ocl\Component;
 
-use Osynapsy\Core\Lib\Tag as Tag;
+use Osynapsy\Html\Tag as Tag;
 use Osynapsy\Ocl\Component\Component as Component;
 use Osynapsy\Ocl\Component\HiddenBox as HiddenBox;
 

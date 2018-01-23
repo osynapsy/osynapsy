@@ -1,8 +1,6 @@
 <?php
 namespace Osynapsy\Ocl\Component;
 
-use Osynapsy\Ocl\Component\InputBox as InputBox;
-
 //Field hidden
 class HiddenBox extends InputBox
 {
