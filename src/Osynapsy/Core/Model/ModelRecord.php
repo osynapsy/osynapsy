@@ -1,9 +1,9 @@
 <?php
 namespace Osynapsy\Core\Model;
 
-use Osynapsy\Core\Lib\Dictionary;
+use Osynapsy\Data\Dictionary;
 use Osynapsy\Core\Model\ModelField;
-use Osynapsy\Helper\Network\UploadManager;
+use Osynapsy\Network\UploadManager;
 
 abstract class ModelRecord
 {
