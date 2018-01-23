@@ -1,12 +1,12 @@
 <?php
-namespace Osynapsy\Geo;
+namespace Osynapsy\Action;
 
 /**
- * Description of GoogleMaps
+ * Description of Geoocoding
  *
  * @author p.celeste@osynapsy.net
  */
-class GoogleMaps 
+class AddressGeoocoding 
 {
     //put your code here
     public static function getLatLng($address)
