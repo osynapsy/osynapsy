@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Core\Kernel;
+namespace Osynapsy\Core;
 
 /**
  * Description of Route

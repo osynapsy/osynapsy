@@ -1,9 +1,8 @@
 <?php
-namespace Osynapsy\Core\Kernel;
+namespace Osynapsy\Core;
 
 use Osynapsy\Data\Dictionary;
 use Osynapsy\Db\DbFactory;
-use Osynapsy\Core\Kernel\KernelException;
 
 /**
  * Description of Runner

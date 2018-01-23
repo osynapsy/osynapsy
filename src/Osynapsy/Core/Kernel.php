@@ -1,11 +1,6 @@
 <?php
 namespace Osynapsy\Core;
 
-use Osynapsy\Core\Kernel\Loader;
-use Osynapsy\Core\Kernel\Router;
-use Osynapsy\Core\Kernel\Route;
-use Osynapsy\Core\Kernel\Runner;
-use Osynapsy\Core\Kernel\KernelException;
 use Osynapsy\Http\Request;
 
 class Kernel
