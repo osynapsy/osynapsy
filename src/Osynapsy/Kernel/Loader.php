@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Core;
+namespace Osynapsy\Kernel;
 
 use Osynapsy\Data\Dictionary;
 

@@ -1,7 +1,11 @@
 <?php
-namespace Osynapsy\Core;
+namespace Osynapsy;
 
 use Osynapsy\Http\Request;
+use Osynapsy\Kernel\Loader;
+use Osynapsy\Kernel\Route;
+use Osynapsy\Kernel\Router;
+use Osynapsy\Kernel\Runner;
 
 class Kernel
 {
