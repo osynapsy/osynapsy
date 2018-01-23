@@ -10,17 +10,26 @@ class SqlQuery
 {
     private $debug;
     private $part = [
-        'SELECT' => ['separator' => ','.PHP_EOL],
-        'JOIN'   => ['separator' => ' '.PHP_EOL,'postfix' => PHP_EOL],
-        'WHERE'  => ['separator' => ' '],
-        'ORDER BY' => ['separator' => ','.PHP_EOL]
+        'SELECT' => [
+            'separator' => ','.PHP_EOL
+        ],
+        'JOIN' => [
+            'separator' => ' '.PHP_EOL,
+            'postfix' => PHP_EOL
+        ],
+        'WHERE' => [
+            'separator' => ' '
+        ],
+        'ORDER BY' => [
+            'separator' => ','.PHP_EOL
+        ]
     ];
     private $elements = [
-        'SELECT' => array(),
-        'FROM' => array(),
-        'JOIN' => array(),
-        'WHERE' => array(),
-        'ORDER BY' => array()
+        'SELECT' => [],
+        'FROM' => [],
+        'JOIN' => [],
+        'WHERE' => [],
+        'ORDER BY' => []
     ];
     private $parameters = [];
     
