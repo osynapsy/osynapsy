@@ -2,9 +2,8 @@
 namespace Osynapsy\Bcl\Component;
 
 use Osynapsy\Ocl\Component\Component;
-use Osynapsy\Ocl\Component\HiddenBox;
-use Osynapsy\Core\Lib\Tag as Tag;
-use Osynapsy\Core\Lib\Dictionary;
+use Osynapsy\Html\Tag;
+use Osynapsy\Data\Dictionary;
 use Osynapsy\Bcl\Component\Panel as Panel;
 use Osynapsy\Bcl\Component\Tab;
 use Osynapsy\Bcl\Component\Column;
