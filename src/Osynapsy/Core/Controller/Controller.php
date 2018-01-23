@@ -7,7 +7,7 @@ use Osynapsy\Http\Request;
 use Osynapsy\Http\Response;
 use Osynapsy\Http\JsonResponse;
 use Osynapsy\Observer\InterfaceSubject;
-use Osynapsy\Ocl\Http\Response\Html as HtmlResponse;
+use Osynapsy\Html\Ocl\Http\Response\Html as HtmlResponse;
 
 abstract class Controller implements InterfaceController, InterfaceSubject
 {
