@@ -1,7 +1,7 @@
 <?php
 namespace Osynapsy\Mvc;
 
-use Osynapsy\Core\Route;
+use Osynapsy\Kernel\Route;
 
 interface InterfaceApplication
 {
