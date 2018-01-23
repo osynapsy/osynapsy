@@ -11,7 +11,7 @@ use Osynapsy\Ocl\Http\Response\Html as HtmlResponse;
 
 abstract class Controller implements InterfaceController, InterfaceSubject
 {
-    use \Osynapsy\Core\Observer\Subject;
+    use \Osynapsy\Observer\Subject;
     
     protected $db;
     private $parameters;
