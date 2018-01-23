@@ -1,9 +1,6 @@
 <?php
 require '../../autoload.php';
-require 'Lib/Installer.php';
 
-use Installer\Lib\Installer;
-
-$installer = new Installer();
+$installer = new \Osynapsy\Console\Installer();
 $installer->run();
 
