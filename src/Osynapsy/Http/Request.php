@@ -1,7 +1,7 @@
 <?php
-namespace Osynapsy\Core\Http\Request;
+namespace Osynapsy\Http\Request;
 
-use Osynapsy\Core\Lib\Dictionary;
+use Osynapsy\Data\Dictionary;
 
 class Request extends Dictionary
 {
