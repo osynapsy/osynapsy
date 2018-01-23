@@ -46,8 +46,7 @@ class Component extends Tag
         }
         $names = explode('[',str_replace(']','',$nam));
         $res = false;
-        foreach($names as $nam)
-        {
+        foreach($names as $nam) {
             if (!array_key_exists($nam,$array)) {
                 continue;            
             }
@@ -78,8 +77,8 @@ class Component extends Tag
 
     private static function requireFile($file,$type)
     {
-        if (!array_key_exists($type,self::$require)) {
-            self::$require[$type] = array();
+        if (!array_key_exists($type, self::$require)) {
+            self::$require[$type] = [];
         }
         if (!in_array($file, self::$require[$type])) {
             self::$require[$type][] = $file;
@@ -88,7 +87,7 @@ class Component extends Tag
     
     public static function requireJs($file)
     {
-        self::requireFile($file,'js');
+        self::requireFile($file, 'js');
     }
     
     public static function requireJsCode($code)
@@ -98,7 +97,7 @@ class Component extends Tag
     
     public static function requireCss($file)
     {
-        self::requireFile($file,'css');
+        self::requireFile($file, 'css');
     }
     
     public function getParameter($key)
@@ -106,14 +105,14 @@ class Component extends Tag
         return array_key_exists($key, $this->__par) ? $this->__par[$key] : null;
     }
     
+    public function setClass($class, $append = true)
+    {
+        return $this->att('class',' '.$class, $append);
+    }
+    
     public function setData($data)
     {
         $this->data = $data;
         return $this;
-    }
-    
-    public function setClass($class, $append = true)
-    {
-        return $this->att('class',' '.$class, $append);
     }
 }
