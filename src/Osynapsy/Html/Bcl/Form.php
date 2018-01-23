@@ -34,7 +34,7 @@ class Form extends Component
         $this->att('name',$name)
              ->att('method','post')
              ->att('role','form');
-        $mainComponent = '\\Osynapsy\\Bcl\\Component\\'.$mainComponent;
+        $mainComponent = '\\Osynapsy\\Html\\Bcl\\'.$mainComponent;
         $this->appendFootToMain = ($mainComponent === 'Panel');
         //Body setting
         $this->body = new $mainComponent($name.'_panel', 'div');
