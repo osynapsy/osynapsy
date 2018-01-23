@@ -1,7 +1,7 @@
 <?php
 namespace Osynapsy\Core\Controller;
 
-use Osynapsy\Core\Http\Request\Request;
+use Osynapsy\Http\Request;
 use Osynapsy\Db\DbFactory;
 
 interface InterfaceController
