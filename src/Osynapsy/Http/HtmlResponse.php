@@ -1,7 +1,7 @@
 <?php
 namespace Osynapsy\Http;
 
-use Osynapsy\Response;
+use Osynapsy\Http\Response;
 
 class HtmlResponse extends Response
 {
