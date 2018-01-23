@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\ImageProcessing;
+namespace Osynapsy\Action;
 
 use Osynapsy\ImageProcessing\Image;
 

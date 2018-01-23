@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Mvc;
+namespace Osynapsy\Assets;
 
 use Osynapsy\Mvc\Controller;
 
