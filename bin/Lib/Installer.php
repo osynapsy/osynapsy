@@ -1,8 +1,8 @@
 <?php
 namespace Installer\Lib;
 
-use Osynapsy\Core\Data\Driver\DbFactory;
-use Osynapsy\Core\Helper\Terminal;
+use Osynapsy\Db\DbFactory;
+use Osynapsy\Console\Terminal;
 
 class Installer
 {
