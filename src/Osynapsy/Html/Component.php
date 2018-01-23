@@ -1,17 +1,15 @@
 <?php
 namespace Osynapsy\Html;
 
-use Osynapsy\Html\Tag as Tag;
-
 /*
  * Master class component
  */
 class Component extends Tag
-{
-    protected $data = array();
-    protected static $require = array();    
-    protected static $ids = array();
-    protected $__par = array();
+{    
+    protected static $require = [];    
+    protected static $ids = [];
+    protected $data = [];
+    protected $__par = [];
 
     public function __construct($tag, $id = null)
     {
@@ -114,7 +112,7 @@ class Component extends Tag
         return $this;
     }
     
-    public function setClass($class, $append=true)
+    public function setClass($class, $append = true)
     {
         return $this->att('class',' '.$class, $append);
     }
