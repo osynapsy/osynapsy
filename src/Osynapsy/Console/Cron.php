@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Console\Cron;
+namespace Osynapsy\Console;
 
 use Osynapsy\Kernel\Loader;
 use Osynapsy\Kernel\Route;
