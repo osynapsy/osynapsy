@@ -1,7 +1,9 @@
 <?php
 namespace Osynapsy\Mvc;
 
-class AssetLoader extends Controller
+use Osynapsy\Mvc\Controller;
+
+class Loader extends Controller
 {
     protected $path;
     protected $basePath;
