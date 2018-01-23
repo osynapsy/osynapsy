@@ -2,7 +2,7 @@
 namespace Osynapsy\Core\Kernel;
 
 use Osynapsy\Core\Lib\Dictionary;
-use Osynapsy\Core\Data\Driver\DbFactory;
+use Osynapsy\Db\DbFactory;
 use Osynapsy\Core\Kernel\KernelException;
 
 /**

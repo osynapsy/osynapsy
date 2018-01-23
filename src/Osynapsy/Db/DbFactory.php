@@ -1,5 +1,8 @@
 <?php
-namespace Osynapsy\Core\Data\Driver;
+namespace Osynapsy\Db;
+
+use Osynapsy\Db\Driver\DbOci;
+use Osynapsy\Db\Driver\DbPdo;
 
 /**
  * Description of DbFactory

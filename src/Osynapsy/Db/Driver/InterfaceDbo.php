@@ -11,7 +11,7 @@
  * @link     http://docs.osynapsy.org/ref/InterfaceDbo
  */
 
-namespace Osynapsy\Core\Data\Driver;
+namespace Osynapsy\Db\Driver;
 
 define('Osynapsy\Core\Driver\DBPDO_NUM', 1);
 define('Osynapsy\Core\Driver\DBPDO_ASSOC', 2);

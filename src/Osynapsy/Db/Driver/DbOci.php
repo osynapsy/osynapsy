@@ -10,7 +10,7 @@
  * @license  GPL http://www.gnu.org/licenses/gpl-3.0.en.html
  * @link     http://docs.osynapsy.org/ref/DbOci
  */
-namespace Osynapsy\Core\Data\Driver;
+namespace Osynapsy\Db\Driver;
 
 class DbOci implements InterfaceDbo
 {
