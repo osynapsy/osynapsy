@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Core\Http\Response;
+namespace Osynapsy\Http;
 
 /**
  * Abstract Response
