@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Core\Lib;
+namespace Osynapsy\Html;
 
 class Tag
 {

@@ -1,5 +1,5 @@
 <?php 
-namespace Osynapsy\Core\Lib;
+namespace Osynapsy\Data;
 
 class Dictionary implements \ArrayAccess, \Iterator, \Countable
 {   
