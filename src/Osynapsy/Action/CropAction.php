@@ -1,12 +1,14 @@
 <?php
 namespace Osynapsy\ImageProcessing;
 
+use Osynapsy\ImageProcessing\Image;
+
 /**
  * Description of CropTrait
  *
  * @author Pietro Celeste <p.celeste@spinit.it>
  */
-class CropAction
+class Crop
 {
     private $db;
     private $table;
