@@ -9,7 +9,8 @@ use Osynapsy\Kernel\Runner;
 
 class Kernel
 {
-    const VERSION = '0.3-DEV';
+    const VERSION = '0.4.1-DEV';
+    
     public $router;
     public $request;
     public $controller;
