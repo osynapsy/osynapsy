@@ -2,7 +2,7 @@
 namespace Osynapsy\Ocl\Component;
 
 use Osynapsy\Core\Kernel as Kernel;
-use Osynapsy\Core\Lib\Tag as Tag;
+use Osynapsy\Html\Tag as Tag;
 
 class ImageBox extends Component
 {
