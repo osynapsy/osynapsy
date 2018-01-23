@@ -2,12 +2,12 @@
 namespace Osynapsy\Helper\Language;
 
 /**
- * Description of Sql
+ * Description of SqlQuery
  *
  * @author Peter
  */
-class Sql {
-    //put your code here
+class SqlQuery 
+{
     private $debug;
     private $part = [
         'SELECT' => ['separator' => ','.PHP_EOL],
