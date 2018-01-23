@@ -388,7 +388,7 @@ class DataGrid extends Component
             }
             //Formatto tipi di dati particolari
             if (!empty($opt['row']['prefix'])){
-                $cel->add2($opt['row']['prefix']);
+                $cel->addFromArray($opt['row']['prefix']);
                 $opt['row']['prefix'] = array();
             }
             if (!empty($this->__col[$i]) && is_array($this->__col[$i])){

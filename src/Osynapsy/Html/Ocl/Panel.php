@@ -14,7 +14,7 @@ class Panel extends Component
     
     public function __construct($id, $tag = 'table', $rowClass = null, $cellClass = null)
     {
-        parent::__construct($tag,$id);
+        parent::__construct($tag, $id);
         $this->par('label-position','outside');
         if (!empty($rowClass)) {
             $this->rowClass = $rowClass;
@@ -94,15 +94,19 @@ class Panel extends Component
         return $this->crows = $this->add(tag::create($this->tag[0]))->att('class',$this->rowClass);
     }
     
-    private function cells($content=null,$colspan=null)
+    private function cells($content = null, $colspan = null)
     {
-        if (is_null($content)) return;
+        if (is_null($content)) {
+            return;
+        }
         $cel = $this->crows->add(tag::create($this->tag[1]));
         if (!empty($this->cellClass)) {
             $cel->att('class',$this->cellClass);
         }
-        if (!empty($colspan)) $cel->att('colspan',$colspan);
-        $cel->add2($content);
+        if (!empty($colspan)) {
+            $cel->att('colspan', $colspan);
+        }
+        $cel->addFromArray($content);
         return $cel;
     }
 

@@ -3,14 +3,14 @@ namespace Osynapsy\Html;
 
 class Tag
 {
-    private $att = array();
-    private $cnt = array();
+    private $att = [];
+    private $cnt = [];
     
     public $ref = array(); 
     public $tagdep = 0;
     public $parent = null;
     
-    public function __construct($tag='dummy', $id = null)
+    public function __construct($tag = 'dummy', $id = null)
     {
         $this->att(0,$tag);
         if (!empty($id)) {
@@ -57,7 +57,7 @@ class Tag
         return $a;
     }
     
-    public function add2($a)
+    public function addFromArray($a)
     {
         if (!is_array($a)) {
             return $this->add($a);

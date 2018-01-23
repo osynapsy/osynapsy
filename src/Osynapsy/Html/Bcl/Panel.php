@@ -70,12 +70,12 @@ class Panel extends Component
     protected function __build_extra__()
     {
         ksort($this->cells);
-        foreach($this->cells as $iRow => $Row) {
+        foreach($this->cells as $Row) {
             ksort($Row);
             $this->addRow();
-            foreach ($Row as $iColumn => $Column) {
+            foreach ($Row as $Column) {
                 //ksort($col);
-                foreach ($Column as $iCell => $Cell) {
+                foreach ($Column as $Cell) {
                     $width = max($Cell['width'],1);
                     $this->buildLabel($Cell, $colspan);
                     switch ($this->formType) {
@@ -122,10 +122,19 @@ class Panel extends Component
                 $width += 4;
                 break;
         }
-        $class = 'col-sm-' . $width.' col-lg-'.$width;
-        $class .= empty($cell['offset']) ? '' : ' col-lg-offset-'.$cell['offset'];
-        $class .= empty($cell['class']) ? '' : ' '.$cell['class'];
-        $formGroup = $cel->att('class', $class)->add(new Tag('div'))->att('class','form-group');
+        $class = [
+            'col-sm-'.$width, 
+            ' col-lg-'.$width
+        ];
+        if (!empty($cell['offset'])) {
+            $class[] = ' col-lg-offset-'.$cell['offset'];
+        }
+        if (!empty($cell['class'])) {
+            $class[] =  $cell['class'];
+        }
+        $formGroup = $cel->att('class', implode(' ',$class))
+                         ->add(new Tag('div'))
+                         ->att('class','form-group');
         
         if (!empty($this->cellClass)) {
             $cel->att('class',$this->cellClass);
@@ -134,7 +143,7 @@ class Panel extends Component
         unset($cell['width']);
         unset($cell['class']);
         unset($cell['offset']);
-        $formGroup->add2($cell);
+        $formGroup->addFromArray($cell);
         
         return $cel;
     }
@@ -154,17 +163,8 @@ class Panel extends Component
             return;
         }
         $labelText = $obj['lbl'];
-        if (is_object($obj['obj'])){
-            if ($prefix = $obj['obj']->get_par('label-prefix')){
-                $labelText = '<span class="label-prefix">'.$prefix.'</span>'.$labelText;
-            }
-            if ($postfix = $obj['obj']->get_par('label-postfix')){
-                $labelText .= '<span class="label-postfix">'.$postfix.'</span>';
-            }
-        }
         $label = new Tag('label');
         $label->att('class',($obj['obj'] instanceof panel ? 'osy-form-panel-label' : 'osy-component-label'))
-              ->att('class',(is_object($obj['obj']) ? $obj['obj']->get_par('label-class') : ''),true)
               ->att('for',$obj['obj']->id)              
               ->add(trim($labelText));
         if (!empty($style)) {
