@@ -61,7 +61,7 @@ class Kernel
         $this->router->addRoute(
             'OsynapsyAssetsManager',
             '/__assets/osynapsy/?*',
-            'Osynapsy\\Controller\\AssetLoader',
+            'Osynapsy\\Mvc\\AssetLoader',
             '',
             'Osynapsy'
         );
