@@ -1,7 +1,7 @@
 <?php
 
-use Osynapsy\Core\Kernel\Loader;
-use Osynapsy\Core\Kernel\Route;
+use Osynapsy\Core\Loader;
+use Osynapsy\Core\Route;
 use Osynapsy\Core\Kernel;
 
 /**
