@@ -1,9 +1,9 @@
 <?php
-namespace Osynapsy\Core\Helper;
+namespace Osynapsy\Data;
 
 use PHPExcel;
 
-class Xls 
+class XlsToArray
 {
     private $db;
     private $error = array();
