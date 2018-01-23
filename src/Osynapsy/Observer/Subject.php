@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Core\Observer;
+namespace Osynapsy\Observer;
 
 /**
  * Description of Observer

@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Core\Event;
+namespace Osynapsy\Event;
 
 use Osynapsy\Core\Controller\Controller;
 

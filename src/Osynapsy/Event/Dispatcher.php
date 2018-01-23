@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Core\Event;
+namespace Osynapsy\Event;
 
 /**
  * Description of Dispatcher
