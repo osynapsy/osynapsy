@@ -8,7 +8,7 @@ use Osynapsy\ImageProcessing\Image;
  *
  * @author Pietro Celeste <p.celeste@spinit.it>
  */
-class Crop
+class ImageCrop
 {
     private $db;
     private $table;
