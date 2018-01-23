@@ -8,37 +8,35 @@ class Panel extends Component
 {
     private $cells = array();
     private $crows = null;
-    private $tag = array('tr','td');
+    private $tag = array('tr', 'td');
     private $rowClass = 'row';
     private $cellClass;
     
     public function __construct($id, $tag = 'table', $rowClass = null, $cellClass = null)
     {
         parent::__construct($tag, $id);
-        $this->par('label-position','outside');
+        $this->par('label-position', 'outside');
         if (!empty($rowClass)) {
             $this->rowClass = $rowClass;
         }
         if (!empty($cellClass)) {
             $this->cellClass = $cellClass;
+        }        
+        if ($tag === 'div') {
+            $this->tag = array('div','div');
         }
-        
-        if ($tag=='div') $this->tag = array('div','div');
     }
     
     protected function __build_extra__()
     {
         ksort($this->cells);
         
-        foreach($this->cells as $irow => $row)
-        {
+        foreach ($this->cells as $irow => $row){
             ksort($row);
             $this->__row();
-            foreach($row as $icol => $col)
-            {
+            foreach($row as $icol => $col){
                 //ksort($col);
-                foreach($col as $icnt => $obj)
-                {
+                foreach($col as $icnt => $obj) {
                     $colspan=null;
                     if (is_object($obj['obj']) && ($obj['obj']->tag == 'button' || $obj['obj']->get_par('label-hidden') == '1')) {
                         unset($obj['lbl']);
