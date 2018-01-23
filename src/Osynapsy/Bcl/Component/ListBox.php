@@ -3,7 +3,7 @@ namespace Osynapsy\Bcl\Component;
 
 use Osynapsy\Ocl\Component\Component;
 use Osynapsy\Ocl\Component\HiddenBox;
-use Osynapsy\Core\Lib\Tag;
+use Osynapsy\Html\Tag;
 
 class ListBox extends Component
 {

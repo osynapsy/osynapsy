@@ -1,7 +1,6 @@
 <?php
 namespace Osynapsy\Bcl\Component;
 
-use Osynapsy\Core\Lib\Tag as Tag;
 use Osynapsy\Ocl\Component\Component as Component;
 
 //Costruttore del pannello html

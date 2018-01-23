@@ -1,8 +1,7 @@
 <?php
 namespace Osynapsy\Bcl\Component;
 
-use Osynapsy\Ocl\Component\Component;
-use Osynapsy\Core\Lib\Tag;
+use Osynapsy\Html\Tag;
 
 class Container extends Tag
 {

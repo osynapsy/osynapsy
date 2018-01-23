@@ -2,7 +2,7 @@
 namespace Osynapsy\Bcl\Component;
 
 use Osynapsy\Ocl\Component\Component as OclComponent;
-use Osynapsy\Core\Lib\Tag;
+use Osynapsy\Html\Tag;
 
 /**
  * Build a card
