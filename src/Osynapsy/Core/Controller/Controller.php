@@ -6,7 +6,7 @@ use Osynapsy\Core\Http\Response\Response;
 use Osynapsy\Core\Http\Response\JsonResponse;
 use Osynapsy\Ocl\Http\Response\Html as HtmlResponse;
 use Osynapsy\Core\Observer\InterfaceSubject;
-use Osynapsy\Core\Data\Driver\DbFactory;
+use Osynapsy\Db\DbFactory;
 use Osynapsy\Core\Event\Dispatcher;
 
 abstract class Controller implements InterfaceController, InterfaceSubject

@@ -2,7 +2,7 @@
 namespace Osynapsy\Core\Controller;
 
 use Osynapsy\Core\Http\Request\Request;
-use Osynapsy\Core\Data\Driver\DbFactory;
+use Osynapsy\Db\DbFactory;
 
 interface InterfaceController
 {
