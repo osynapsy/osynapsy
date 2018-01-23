@@ -1,8 +1,8 @@
 <?php
 namespace Osynapsy\Ocl\Http\Response;
 
-use Osynapsy\Core\Http\Response\HtmlResponse;
-use Osynapsy\Core\Lib\Tag;
+use Osynapsy\Http\HtmlResponse;
+use Osynapsy\Html\Tag;
 use Osynapsy\Ocl\Component\Component;
 
 class Html extends HtmlResponse

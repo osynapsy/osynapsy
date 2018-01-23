@@ -1,7 +1,7 @@
 <?php
 namespace Osynapsy\Core\Kernel;
 
-use Osynapsy\Core\Lib\Dictionary;
+use Osynapsy\Data\Dictionary;
 
 /**
  * 

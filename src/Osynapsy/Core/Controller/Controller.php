@@ -1,9 +1,9 @@
 <?php
 namespace Osynapsy\Core\Controller;
 
-use Osynapsy\Core\Http\Request\Request;
-use Osynapsy\Core\Http\Response\Response;
-use Osynapsy\Core\Http\Response\JsonResponse;
+use Osynapsy\Http\Request;
+use Osynapsy\Http\Response;
+use Osynapsy\Http\JsonResponse;
 use Osynapsy\Ocl\Http\Response\Html as HtmlResponse;
 use Osynapsy\Core\Observer\InterfaceSubject;
 use Osynapsy\Db\DbFactory;
