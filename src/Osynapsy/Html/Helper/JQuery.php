@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Html;
+namespace Osynapsy\Html\Helper;
 
 /**
  * Description of JQuery
