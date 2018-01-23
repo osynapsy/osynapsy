@@ -172,6 +172,10 @@ class Image
     
     public function save($path)
     {        
+        $dirpath = dirname($path);
+        if (!file_exists($dirpath)) {
+            mkdir($dirpath, 0777, true);
+        }
         imagepng($this->image, $path);
         $this->path = $path;
     }
