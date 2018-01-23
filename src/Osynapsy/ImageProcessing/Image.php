@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Helper\ImageProcessing;
+namespace Osynapsy\ImageProcessing;
 
 class Image
 {

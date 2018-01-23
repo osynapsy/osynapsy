@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Core\Validator;
+namespace Osynapsy\Data\Validator;
 
 class IsTaxCodeIt extends Validator
 {

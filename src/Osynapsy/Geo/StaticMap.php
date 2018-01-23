@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Core\Helper\Geo;
+namespace Osynapsy\Geo;
 /**
  * staticMapLite 0.3.1
  *

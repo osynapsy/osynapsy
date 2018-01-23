@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Helper\Network;
+namespace Osynapsy\Network;
 
 /**
  * KM_Mailer is a SMTP Class for PHP, Version 1.5

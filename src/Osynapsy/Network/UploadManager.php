@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Helper\Network;
+namespace Osynapsy\Network;
 
 class UploadManager
 {    
