@@ -45,8 +45,7 @@ class DataGrid extends Component
         parent::__construct('div',$name);       
         $this->att('class','osy-datagrid-2');
         $this->__par['type'] = 'datagrid';
-        $this->__par['row-num'] = 10;
-        $this->__par['pkey'] = array();
+        $this->__par['row-num'] = 10;        
         $this->__par['max_wdt_per'] = 96;
         $this->__par['column-object'] = array();
         $this->__sta['col_len'] = array();
@@ -54,10 +53,7 @@ class DataGrid extends Component
         $this->__par['error-in-sql'] = false;
         $this->__par['record-add'] = null;
         $this->__par['record-add-label'] = '<span class="glyphicon glyphicon-plus"></span>';
-        $this->__par['datasource-sql-par'] = array();
-        $this->__par['record-update'] = null;
-        $this->__par['layout'] = null;
-        $this->__par['div-stat'] = null;
+        $this->__par['datasource-sql-par'] = array();        
         $this->__par['head-hide'] = 0;
         $this->__par['border'] = 'on';
     }
@@ -244,12 +240,7 @@ class DataGrid extends Component
                         case '_rad'   :
                             $opt['title'] = '&nbsp;';
                             $opt['print'] = true;
-                            break;
-                        case '_pivot' :
-                            $this->dataPivot($tr);
-                            $thead->add($tr);
-                            return;
-                            break;
+                            break;                        
                         case '_!html' :
                             $opt['class'] .= ' text-center';
                         case '_button':
@@ -299,11 +290,6 @@ class DataGrid extends Component
                     }
                 }
             }
-        }
-        if (($this->get_par('record-add') || $this->get_par('record-update')) && $this->get_par('print-pencil')) {
-            $cnt = $this->get_par('record-add') ?  $this->__par['record-add-label'] : '&nbsp;';
-            $tr->add(new Tag('th'))->add($cnt);
-            $this->__par['cols_vis'] += 1;
         }
         if (!$this->get_par('head-hide')){
             $thead->add($tr);
@@ -410,13 +396,7 @@ class DataGrid extends Component
             foreach ($opt['row']['attr'] as $item){
               $orw->att($item[0],$item[1]);
             }
-        }
-        if ($this->get_par('print-pencil') && $this->get_par('record-update')) {
-            $orw->add(new Tag('td'))
-                ->att('class','center')
-                ->att('style','padding: 3px 3px; vertical-align: middle;')
-                ->add('<span class="fa fa-pencil cmd-upd fa-lg" style="color: transparent;"></span>');
-        }
+        }        
         $grd->add($orw.'');
     }
     
@@ -675,53 +655,6 @@ class DataGrid extends Component
             }
         }       
         $this->__dat = $dat;
-    }
-
-    private function dataPivot($tr)
-    {
-       $data = array();
-       $hcol = array();
-       $hrow = array();
-       $fcol = null;
-       foreach ($this->__dat as $i => $rec){
-           $col = $row = null;
-           foreach ($rec as $fld=>$val){
-               if ($fld == '_pivot'){
-                   $col = $val;
-                   if (!in_array($col,$hcol)){
-                       $hcol[] = $col;
-                   }
-               } elseif (is_null($col)){
-                   if (empty($i)) {
-                       $hcol[0] = $fld;
-                   }
-                   $row = $val;
-                   if (!in_array($row,$hrow)) $hrow[] = $row;
-               } else {
-                   $data[$col][$row][] = $val;
-               }
-           }
-       }
-
-       $data_pivot = array();
-       ksort($hrow); ksort($hcol);
-       foreach ($hrow as $row){
-           foreach ($hcol as $i => $col){
-               if (empty($i)){
-                   $drow[$col] = $row; //Aggiuno la label della riga
-               } else {
-                   $drow[$col] = array_key_exists($row,$data[$col]) ? array_sum($data[$col][$row]) : '0';
-               }
-           }
-           $data_pivot[] = $drow;
-       }
-       $this->__dat = $data_pivot;
-       $ncol = array();
-       foreach ($hcol as $i => $col){
-          if (empty($i)) continue;
-          $tr->add(tag::create('th'))->att('class','no-order')->add($col);
-       }
-       //return ; //Restituisco il record contenente l'header delle colonne in
     }
 
     public function getColumns()
