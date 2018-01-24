@@ -296,7 +296,7 @@ class DataGrid extends Component
         }
     }
 
-    private function buildRow(&$grd,$row,$lev=null,$pos=null,$ico_arr=null)
+    private function buildRow(&$grd, $row, $lev = null, $pos = null, $ico_arr = null)
     {
         $t = $i = 0;
         $orw = tag::create('tr');
