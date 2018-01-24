@@ -1,17 +1,24 @@
 <?php
+
+/*
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Osynapsy\Html\Bcl;
 
 use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
 use Osynapsy\Data\Dictionary;
-use Osynapsy\Html\Bcl\Panel as Panel;
-use Osynapsy\Html\Bcl\Tab;
 use Osynapsy\Html\Bcl\Column;
 use Osynapsy\Html\Bcl\Alert;
 
 class Form extends Component
-{
-    private $components = array();
+{    
     private $head;
     public  $headClass = 'row';
     private $alert;
@@ -39,8 +46,7 @@ class Form extends Component
         //Body setting
         $this->body = new $mainComponent($name.'_panel', 'div');
         $this->body->par('label-position','inside');
-        $this->body->tagdep =& $this->tagdep;  
-        
+        $this->body->tagdep =& $this->tagdep;         
     }
     
     protected function __build_extra__()
