@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Helper\Language;
+namespace Osynapsy\Db;
 
 /**
  * Description of SqlQuery
