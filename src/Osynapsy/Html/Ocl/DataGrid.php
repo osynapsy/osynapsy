@@ -44,18 +44,18 @@ class DataGrid extends Component
         $this->requireCss('/__assets/osynapsy/Ocl/DataGrid/style.css');
         parent::__construct('div',$name);       
         $this->att('class','osy-datagrid-2');
-        $this->__par['type'] = 'datagrid';
-        $this->__par['row-num'] = 10;        
-        $this->__par['max_wdt_per'] = 96;
-        $this->__par['column-object'] = array();
-        $this->__sta['col_len'] = array();
-        $this->__par['paging'] = true;
-        $this->__par['error-in-sql'] = false;
-        $this->__par['record-add'] = null;
-        $this->__par['record-add-label'] = '<span class="glyphicon glyphicon-plus"></span>';
-        $this->__par['datasource-sql-par'] = array();        
-        $this->__par['head-hide'] = 0;
-        $this->__par['border'] = 'on';
+        $this->setParameter('type', 'datagrid');
+        $this->setParameter('row-num', 10);
+        $this->setParameter('max_wdt_per', 96);
+        $this->setParameter('column-object', array());
+        $this->setParameter('col_len', array());
+        $this->setParameter('paging', true);
+        $this->setParameter('error-in-sql', false);
+        $this->setParameter('record-add', null);
+        $this->setParameter('record-add-label', '<span class="glyphicon glyphicon-plus"></span>');
+        $this->setParameter('datasource-sql-par', array());
+        $this->setParameter('head-hide', 0);
+        $this->setParameter('border', 'on');
     }
 
     public function toolbarAppend($cnt, $label='&nbsp;')
@@ -135,7 +135,7 @@ class DataGrid extends Component
             $p = ($this->__par['max_wdt_per'] * $l) / max($t,1);
         }
         //Setto il tipo di componente come classe css in modo da poterlo testare via js.
-        $this->att('class',$this->getParameter('type'),true);
+        $this->att('class', $this->getParameter('type'), true);
 
         $this->buildPaging();
     }
@@ -255,7 +255,7 @@ class DataGrid extends Component
                             break;
                         case '_pk'  :
                         case '_rowid':
-                            $this->par('rowid',$k);
+                            $this->setParameter('rowid',$k);
                             break;
                     }
                     break;
@@ -563,7 +563,7 @@ class DataGrid extends Component
             $this->__par['rec_num'] = $this->db->execUnique($sql_cnt,$this->getParameter('datasource-sql-par'));
             $this->att('data-row-num',$this->__par['rec_num']);
         } catch(\Exception $e) {
-            $this->par('error-in-sql','<pre>'.$sql_cnt."\n".$e->getMessage().'</pre>');
+            $this->setParameter('error-in-sql','<pre>'.$sql_cnt."\n".$e->getMessage().'</pre>');
             return;
         }
 
@@ -644,7 +644,7 @@ class DataGrid extends Component
 
     private function dataGroup()
     {
-        $this->par('type','treegrid');
+        $this->setParameter('type','treegrid');
         $dat = [];
         foreach ($this->__dat as $k => $v) {
             @list($oid, $gid) = explode(',',$v['_tree']);
