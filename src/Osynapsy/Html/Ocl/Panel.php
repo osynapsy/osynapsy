@@ -15,7 +15,7 @@ class Panel extends Component
     public function __construct($id, $tag = 'table', $rowClass = null, $cellClass = null)
     {
         parent::__construct($tag, $id);
-        $this->par('label-position', 'outside');
+        $this->setParameter('label-position', 'outside');
         if (!empty($rowClass)) {
             $this->rowClass = $rowClass;
         }
