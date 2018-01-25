@@ -34,9 +34,9 @@ class Component extends Tag
         $this->__par[$key] = $val;
     }
     
-    public function get_par($key)
+    public static function getById($id)
     {
-        return key_exists($key,$this->__par) ? $this->__par[$key] : null;
+        return array_key_exists($id, self::$ids) ? self::$ids[$id] : null;
     }
     
     public function getGlobal($nam, $array)
@@ -60,9 +60,9 @@ class Component extends Tag
         return $res;
     }
     
-    public static function getById($id)
+    public function getParameter($key)
     {
-        return array_key_exists($id, self::$ids) ? self::$ids[$id] : null;
+        return array_key_exists($key, $this->__par) ? $this->__par[$key] : null;
     }
     
     public static function getRequire()
@@ -98,11 +98,6 @@ class Component extends Tag
     public static function requireCss($file)
     {
         self::requireFile($file, 'css');
-    }
-    
-    public function getParameter($key)
-    {
-        return array_key_exists($key, $this->__par) ? $this->__par[$key] : null;
     }
     
     public function setClass($class, $append = true)
