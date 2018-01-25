@@ -1,4 +1,20 @@
 <?php
+
+/*
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Osynapsy\Db\Driver;
+
+define('Osynapsy\Core\Driver\DBPDO_NUM', 1);
+define('Osynapsy\Core\Driver\DBPDO_ASSOC', 2);
+define('Osynapsy\Core\Driver\DBPDO_BOTH', 3);
+
 /**
  * Interface for Db class driver
  *
@@ -9,16 +25,6 @@
  * @author   Pietro Celeste <p.celeste@osynapsy.org>
  * @license  GPL http://www.gnu.org/licenses/gpl-3.0.en.html
  * @link     http://docs.osynapsy.org/ref/InterfaceDbo
- */
-
-namespace Osynapsy\Db\Driver;
-
-define('Osynapsy\Core\Driver\DBPDO_NUM', 1);
-define('Osynapsy\Core\Driver\DBPDO_ASSOC', 2);
-define('Osynapsy\Core\Driver\DBPDO_BOTH', 3);
-/**
- *
- * @author Peter
  */
 interface InterfaceDbo
 {

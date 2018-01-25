@@ -1,27 +1,15 @@
 <?php
-namespace Osynapsy\Html\Ocl;
+
 /*
- +-----------------------------------------------------------------------+
- | lib/components/omapgrid.php                                           |
- |                                                                       |
- | This file is part of the Opensymap                                    |
- | Copyright (C) 2005-2013, Pietro Celeste - Italy                       |
- | Licensed under the GNU GPL                                            |
- |                                                                       |
- | PURPOSE:                                                              |
- |   Create page form for generate datagrid and treegrid                 |
- |                                                                       |
- +-----------------------------------------------------------------------+
- | Author: Pietro Celeste <pietro.celeste@gmail.com>                     |
- +-----------------------------------------------------------------------+
-
- $Id:  $
-
-/**
- * @email           pietro.celeste@opensymap.org
- * @date-creation   31/10/2014
- * @date-update     31/10/2014
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
+namespace Osynapsy\Html\Ocl;
  
 use Osynapsy\Html\Tag;
 use Osynapsy\Html\Component;

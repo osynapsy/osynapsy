@@ -1,27 +1,16 @@
 <?php
-namespace Osynapsy\Html\Ocl;
+
 /*
- +-----------------------------------------------------------------------+
- | Osynapsy\Html\Ocl\Componen\GMapBox.php                                     |
- |                                                                       |
- | This file is part of the Osynapsy                                     |
- | Copyright (C) 2005-2013, Pietro Celeste - Italy                       |
- | Licensed under the GNU GPL                                            |
- |                                                                       |
- | PURPOSE:                                                              |
- |   Create page form for generate GMapBox                               |
- |                                                                       |
- +-----------------------------------------------------------------------+
- | Author: Pietro Celeste <pietro.celeste@gmail.com>                     |
- +-----------------------------------------------------------------------+
-
- $Id:  $
-
-/**
- * @email           pietro.celeste@osynapsy.org
- * @date-creation   31/10/2014
- * @date-update     31/10/2014
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
+namespace Osynapsy\Html\Ocl;
+
 use Osynapsy\Html\Component; 
 
 class MapGoogleBox extends Component

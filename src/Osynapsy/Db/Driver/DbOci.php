@@ -1,4 +1,16 @@
 <?php
+
+/*
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Osynapsy\Db\Driver;
+
 /**
  * Oci wrap class
  *
@@ -10,8 +22,6 @@
  * @license  GPL http://www.gnu.org/licenses/gpl-3.0.en.html
  * @link     http://docs.osynapsy.org/ref/DbOci
  */
-namespace Osynapsy\Db\Driver;
-
 class DbOci implements InterfaceDbo
 {
     private $__par = array();
