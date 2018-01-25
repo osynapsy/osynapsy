@@ -17,6 +17,11 @@ use Osynapsy\Data\Dictionary;
 use Osynapsy\Html\Bcl\Column;
 use Osynapsy\Html\Bcl\Alert;
 
+/**
+ * Represents a Html Form.
+ *
+ * @author Pietro Celeste <p.celeste@osynapsy.org>
+ */
 class Form extends Component
 {    
     private $head;
@@ -45,7 +50,7 @@ class Form extends Component
         $this->appendFootToMain = ($mainComponent === 'Panel');
         //Body setting
         $this->body = new $mainComponent($name.'_panel', 'div');
-        $this->body->par('label-position','inside');
+        $this->body->setParameter('label-position','inside');
         $this->body->tagdep =& $this->tagdep;         
     }
     
