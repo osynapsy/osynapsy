@@ -22,7 +22,7 @@ class Panel extends Component
     {
         parent::__construct('fieldset', $id);
         $this->att('class','panel')
-             ->par('label-position','outside');
+             ->setParameter('label-position','outside');
         if (!empty($rowClass)) {
             $this->rowClass = $rowClass;
         }
