@@ -16,6 +16,6 @@ class Multiselect extends ComboBox
         $this->requireJs('/__assets/osynapsy/Lib/boostrap-multiselect-2.0/bootstrap-multiselect.js');
         $this->requireJs('/__assets/osynapsy/Bcl/Multiselect/script.js');        
         $this->setClass('osy-multiselect')->att('multiple','multiple');
-        $this->par('option-select-disable',true);
+        $this->setParameter('option-select-disable',true);
     }
 }
