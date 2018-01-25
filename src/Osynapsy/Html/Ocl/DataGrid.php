@@ -532,7 +532,10 @@ class DataGrid extends Component
         $foot = '<div class="osy-datagrid-2-foot text-center">';
         $foot .= '<button type="button" name="btn_pag" data-mov="start" value="&lt;&lt;" class="btn btn-primary btn-xs osy-datagrid-2-paging">&lt;&lt;</button>';
         $foot .= '<button type="button" name="btn_pag" data-mov="-1" value="&lt;" class="btn btn-primary btn-xs  osy-datagrid-2-paging">&lt;</button>';
-        $foot .= '<span>&nbsp;<input type="hidden" name="'.$this->id.'_pag" id="'.$this->id.'_pag" value="'.$this->__par['pag_cur'].'" class="osy-datagrid-2-pagval history-param" data-pagtot="'.$this->__par['pag_tot'].'"> Pagina '.$this->__par['pag_cur'].' di <span id="_pag_tot">'.$this->__par['pag_tot'].'</span>&nbsp;</span>';
+        $foot .= '<span>&nbsp;';
+        $foot .= '<input type="hidden" name="'.$this->id.'_pag" id="'.$this->id.'_pag" value="'.$this->getParameter('pag_cur').'" class="osy-datagrid-2-pagval history-param" data-pagtot="'.$this->getParameter('pag_tot').'"> ';
+        $foot .= 'Pagina '.$this->getParameter('pag_cur').' di <span id="_pag_tot">'.$this->getParameter('pag_tot').'</span>';
+        $foot .= '&nbsp;</span>';
         $foot .= '<button type="button" name="btn_pag" data-mov="+1" value="&gt;" class="btn btn-primary btn-xs  osy-datagrid-2-paging">&gt;</button>';
         $foot .= '<button type="button" name="btn_pag" data-mov="end" value="&gt;&gt;" class="btn btn-primary btn-xs  osy-datagrid-2-paging">&gt;&gt;</button>';
         $foot .= '</div>';
@@ -558,8 +561,7 @@ class DataGrid extends Component
             $this->__par['pag_tot'] = ceil($this->__par['rec_num'] / $this->__par['row-num']);
             $this->__par['pag_cur'] = !empty($_REQUEST[$this->id.'_pag']) ? min($_REQUEST[$this->id.'_pag']+0,$this->__par['pag_tot']) : 1;
 
-            if (!empty($_REQUEST['btn_pag']))
-            {
+            if (!empty($_REQUEST['btn_pag'])) {
                 switch ($_REQUEST['btn_pag']) {
                     case '<<':
                         $this->__par['pag_cur'] = 1;
