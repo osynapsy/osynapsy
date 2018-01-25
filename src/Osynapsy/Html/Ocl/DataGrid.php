@@ -29,10 +29,8 @@ use Osynapsy\Html\Ocl\HiddenBox as HiddenBox;
 
 class DataGrid extends Component
 {
-    private $__col = array();
-    private $__dat = array();
-    private $__grp = array(); //array contenente i dati raggruppati
-    private $__sta = array();
+    private $__col = array();      
+    private $dataGroups = array(); //array contenente i dati raggruppati    
     private $db  = null;
     private $toolbar;
     private $columns = array();
@@ -92,47 +90,37 @@ class DataGrid extends Component
         $this->add(new HiddenBox($this->id.'_order'));
         //Aggiungo il campo che conterrà il ramo selezionato.
         $this->add(new HiddenBox($this->id,$this->id.'_sel'));
-        $tbl_cnt = $this->add(tag::create('div'))
-                        ->att('id',$this->id.'-body')
-                        ->att('class','osy-datagrid-2-body table-responsive')
-                        ->att('data-rows-num',$this->__par['rec_num']);
-        $this->buildAddButton($tbl_cnt);
-        $hgt = $this->getParameter('cell-height');
-
-        if (!empty($this->__par['row-num']) && !empty($hgt))
-        {
-            $hgt = str_replace('px','', $hgt);
-            $tbl_cnt->att('style','height : '. ($hgt-30) . 'px',true);
-        } elseif(!empty($hgt)) {
-            $hgt = str_replace('px','', $hgt);
-            $tbl_cnt->att('style','height : '. $hgt . 'px',true);
-        }
-
-        $tbl = $tbl_cnt->add(tag::create('table'));
-
-        $tbl->att('data-toggle','table')
-            ->att('data-show-columns',"false")
-            ->att('data-search','false')
-            ->att('data-toolbar','#'.$this->id.'_toolbar')
-            ->att('class','display table table-bordered dataTable no-footer border-'.$this->__par['border']);
-        if ($err = $this->getParameter('error-in-sql')) {
-            $tbl->add(tag::create('tr'))->add(tag::create('td'))->add($err);
+        $tableContainer = $this->add(new Tag('div'))->att([
+            'id' => $this->id.'-body',
+            'class' => 'osy-datagrid-2-body table-responsive',
+            'data-rows-num' => $this->getParameter('rec_num')
+        ]);
+        $this->buildAddButton($tableContainer);        
+        $table = $tableContainer->add(new Tag('table'));
+        $table->att([
+            'data-toggle' => 'table',
+            'data-show-columns' => "false",
+            'data-search' => 'false',
+            'data-toolbar' => '#'.$this->id.'_toolbar',
+            'class' => 'display table table-bordered dataTable no-footer border-'.$this->getParameter('border')
+        ]);
+        if ($this->getParameter('error-in-sql')) {
+            $table->add(new Tag('tr'))->add(new Tag('td'))->add($this->getParameter('error-in-sql'));
             return;
         }
-        if (is_array($this->getParameter('cols'))) {
-            $tbl_hd = $tbl->add(tag::create('thead'));
-            $this->buildHead($tbl_hd);
+        if (is_array($this->getParameter('cols'))) {            
+            $this->buildHead(
+                $table->add(new Tag('thead'))
+            );
         }
-        if (is_array($this->__dat) && !empty($this->__dat)) {
-            $tbl_bod = $tbl->add(tag::create('tbody'));
-            $lev = ($this->getParameter('type') == 'datagrid') ? null : 0;
-            $this->buildBody($tbl_bod,$this->__dat,$lev);
+        if (is_array($this->data) && !empty($this->data)) {            
+            $this->buildBody(
+                $table->add(new Tag('tbody')),
+                $this->data,
+                ($this->getParameter('type') == 'datagrid' ? null : 0)
+            );
         } else {
-            $tbl->add(tag::create('td'))->att('class','no-data text-center')->att('colspan',$this->__par['cols_vis'])->add('Nessun dato presente');
-        }
-        $t = array_sum($this->__sta['col_len']);
-        foreach ($this->__sta['col_len'] as $k => $l) {
-            $p = ($this->__par['max_wdt_per'] * $l) / max($t,1);
+            $table->add(new Tag('td'))->att('class','no-data text-center')->att('colspan', $this->getParameter('cols_vis'))->add('Nessun dato presente');
         }
         //Setto il tipo di componente come classe css in modo da poterlo testare via js.
         $this->att('class', $this->getParameter('type'), true);
@@ -154,14 +142,14 @@ class DataGrid extends Component
 
     private function buildAddButton($cnt)
     {
-        if ($view = $this->__par['record-add']){
+        if ($view = $this->getParameter('record-add')){
             $this->getToolbar()
                  ->add(new Tag('button'))
                  ->att('id',$this->id.'_add')
                  ->att('type','button')
                  ->att('class','btn btn-primary cmd-add pull-right')
-                 ->att('data-view',$view)
-                 ->add($this->__par['record-add-label']);
+                 ->att('data-view', $view)
+                 ->add($this->getParameter('record-add-label'));
         }
     }
     
@@ -190,7 +178,7 @@ class DataGrid extends Component
             $this->buildRow($container,$row,$lev,$ico_tre,$ico_arr);
             if ($this->getParameter('type') == 'treegrid') {
                 @list($item_id,$group_id) = explode(',',$row['_tree']);
-                $this->buildBody($container,@$this->__grp[$item_id],$lev+1,$ico_arr);
+                $this->buildBody($container,@$this->dataGroups[$item_id],$lev+1,$ico_arr);
             }
             $i++;
         }
@@ -206,7 +194,7 @@ class DataGrid extends Component
         $tr = new Tag('tr');
         $cols = $this->getParameter('cols');
         foreach ($cols as $k => $col) {            
-            $opt = array(
+            $opt = [
                 'alignment'=> '',
                 'class'    => $this->getColumnProperty($k, 'class'),
                 'color'    => '',
@@ -216,7 +204,7 @@ class DataGrid extends Component
                 'realname' => strip_tags($col['name']),
                 'style'    => $this->getColumnProperty($k, 'style'),
                 'title'    => $col['name']
-            );
+            ];
             
             switch ($opt['title'][0]) {
                 case '_':
@@ -259,7 +247,6 @@ class DataGrid extends Component
                             break;
                     }
                     break;
-
                case '!':
                     $opt['class'] .= ' text-center';
                case '$':
@@ -269,31 +256,36 @@ class DataGrid extends Component
             
             $opt = $this->formatOption($opt);
             
-            if ($opt['print']) {
-                $this->__par['cols_vis'] += 1;
-                $cel = $tr->add(new Tag('th'))
-                          ->att('real_name',$opt['realname'])
-                          ->att('data-ord',$k+1);
-                if ($opt['class']) {
-                     $cel->att('class',trim($opt['class']),true);
-                }
+            if (!$opt['print']) {
+                continue;
+            }            
+            $this->__par['cols_vis'] += 1;
+            $cel = $tr->add(new Tag('th'))
+                      ->att('real_name',$opt['realname'])
+                      ->att('data-ord',$k+1);
+            if ($opt['class']) {
+                $cel->att('class',trim($opt['class']),true);
+            }
 
-                $cel->att('data-type',$col['native_type'])
-                    ->add('<span>'.$opt['title'].'</span>');
-                if (!empty($_REQUEST[$this->id.'_order'])) {
-                    if (strpos($_REQUEST[$this->id.'_order'],'['.($k+1).']') !== false) {
-                        $cel->att('class','osy-datagrid-asc');
-                        $cel->add(' <span class="orderIcon glyphicon glyphicon-sort-by-alphabet"></span>');
-                    } elseif (strpos($_REQUEST[$this->id.'_order'],'['.($k+1).' DESC]') !== false) {
-                        $cel->att('class','osy-datagrid-desc');
-                        $cel->add(' <span class="orderIcon glyphicon glyphicon-sort-by-alphabet-alt"></span>');
-                    }
-                }
+            $cel->att('data-type', $col['native_type'])
+                ->add('<span>'.$opt['title'].'</span>');
+            if (empty($_REQUEST[$this->id.'_order'])) {
+                continue;
+            }
+            if (strpos($_REQUEST[$this->id.'_order'],'['.($k+1).']') !== false) {
+                $cel->att('class','osy-datagrid-asc');
+                $cel->add(' <span class="orderIcon glyphicon glyphicon-sort-by-alphabet"></span>');
+                continue;
+            } 
+            if (strpos($_REQUEST[$this->id.'_order'],'['.($k+1).' DESC]') !== false) {
+                $cel->att('class','osy-datagrid-desc');
+                $cel->add(' <span class="orderIcon glyphicon glyphicon-sort-by-alphabet-alt"></span>');
             }
         }
-        if (!$this->getParameter('head-hide')){
-            $thead->add($tr);
+        if ($this->getParameter('head-hide')){
+           return;
         }
+        $thead->add($tr);
     }
 
     private function buildRow(&$grd, $row, $lev = null, $pos = null, $ico_arr = null)
@@ -379,12 +371,7 @@ class DataGrid extends Component
             }
             if (!empty($this->__col[$i]) && is_array($this->__col[$i])){
                 $this->__build_attr($cel,$this->__col[$i]);
-            }
-            if (array_key_exists($i,$this->__sta['col_len'])){
-                $this->__sta['col_len'][$i] = max(strlen($opt['cell']['rawvalue']),$this->__sta['col_len'][$i]);
-            } else {
-                $this->__sta['col_len'][$i] = strlen($opt['cell']['rawvalue']);
-            }
+            }            
             $cel->add(($opt['cell']['value'] !== '0' && empty($opt['cell']['value'])) ? '&nbsp;' : nl2br($opt['cell']['value']));
             $orw->add($cel);
             $i++;//Incremento l'indice delle colonne visibili
@@ -475,7 +462,7 @@ class DataGrid extends Component
                     $cls  = empty($ico_arr[$ii]) ? 'tree-null' : ' tree-con-'.$ico_arr[$ii];
                     $ico .= '<span class="tree '.$cls.'">&nbsp;</span>';
                 }
-                $ico .= array_key_exists($tree_id,$this->__grp)
+                $ico .= array_key_exists($tree_id,$this->dataGroups)
                        ? '<span class="tree tree-plus-'.$pos.'">&nbsp;</span>'
                        : '<span class="tree tree-con-'.$pos.'">&nbsp;</span>';
                 $opt['row']['prefix'][] = $ico;
@@ -629,32 +616,37 @@ class DataGrid extends Component
         }
         //Eseguo la query        
         try {
-            $this->__dat = $this->db->execQuery($sql,$this->getParameter('datasource-sql-par'),'ASSOC');
+            $this->setData(
+                $this->db->execQuery(
+                    $sql, 
+                    $this->getParameter('datasource-sql-par'),
+                    'ASSOC'
+                )
+            );
         } catch (\Exception $e) {
             die($sql.$e->getMessage());
         }
         //Salvo le colonne in un option
-        $this->__par['cols'] = $this->db->getColumns();
-        $this->__par['cols_tot'] = count($this->__par['cols']);
-        $this->__par['cols_vis'] = 0;
-        if (is_array($this->__par['cols'])) {
-            $this->__par['cols_tot'] = count($this->__par['cols']);
+        $this->setParameter('cols', $this->db->getColumns());       
+        $this->setParameter('cols_vis', 0);
+        if (is_array($this->getParameter('cols'))) {
+            $this->setParameter('cols_tot', count($this->getParameter('cols')));
         }        
     }
 
     private function dataGroup()
     {
         $this->setParameter('type','treegrid');
-        $dat = [];
-        foreach ($this->__dat as $k => $v) {
-            @list($oid, $gid) = explode(',',$v['_tree']);
-            if (!empty($gid)) {
-                $this->__grp[$gid][] = $v;
-            } else {
-                $dat[] = $v;
-            }
+        $data = [];
+        foreach ($this->data as $k => $value) {
+            @list($oid, $groupId) = explode(',', $value['_tree']);
+            if (!empty($groupId)) {
+                $this->dataGroups[$groupId][] = $value;
+                continue;
+            } 
+            $data[] = $value;
         }       
-        $this->__dat = $dat;
+        $this->data = $data;
     }
 
     public function getColumns()
@@ -664,10 +656,10 @@ class DataGrid extends Component
 
     public function setDatasource($array)
     {
-        $this->__dat = $array;
+        $this->data = $array;
     }
 
-    public function setColumn($id, $name=null, $idx=null)
+    public function setColumn($id, $name = null, $idx = null)
     {
         $name = empty($name) ? $id : $name;
         $idx = is_null($idx) ? count($this->__par['cols']) : $idx;
@@ -696,7 +688,7 @@ class DataGrid extends Component
     public function SetSql($db, $sql, $par=array())
     {
         $this->db = $db;
-        $this->__par['datasource-sql'] = $sql;
-        $this->__par['datasource-sql-par'] = $par;
+        $this->setParameter('datasource-sql', $sql);
+        $this->setParameter('datasource-sql-par', $par);
     }
 }
