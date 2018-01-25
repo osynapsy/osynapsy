@@ -1,4 +1,14 @@
 <?php
+
+/*
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Osynapsy;
 
 use Osynapsy\Http\Request;
@@ -7,6 +17,13 @@ use Osynapsy\Kernel\Route;
 use Osynapsy\Kernel\Router;
 use Osynapsy\Kernel\Runner;
 
+/**
+ * The Kernel is the core of Osynapsy
+ * 
+ * It init Http request e translate it in response
+ *
+ * @author Pietro Celeste <p.celeste@osynapsy.org>
+ */
 class Kernel
 {
     const VERSION = '0.4.1-DEV';
@@ -18,7 +35,13 @@ class Kernel
     private $loader;    
     private $composer;
     
-    public function __construct($fileconf, $composer = '')
+    /**
+     * Kernel costructor
+     * 
+     * @param string $fileconf path of the instance configuration file
+     * @param object $composer Instance of composer loader
+     */
+    public function __construct($fileconf, $composer = null)
     {                
         $this->composer = $composer;
         $this->loader = new Loader($fileconf);
@@ -57,8 +80,6 @@ class Kernel
     
     /**
      * Load in router object all route of application present in config file
-     * 
-     * 
      */
     private function loadRoutes()
     {        
@@ -86,6 +107,12 @@ class Kernel
         }        
     }
     
+    /**
+     * Run process to get response starting to request uri
+     * 
+     * @param string $requestUri is Uri requested from 
+     * @return string 
+     */
     public function run($requestUri = null)
     {
         if (is_null($requestUri)) {
@@ -97,6 +124,11 @@ class Kernel
         );
     }
     
+    /**
+     * 
+     * @param Route $route
+     * @return string
+     */
     public function followRoute(Route $route)
     {
         $this->request->set('page', $route);
