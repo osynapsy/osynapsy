@@ -14,7 +14,7 @@ class Dummy extends Component
     protected function __build_extra__()
     {
         if (!($txt = $this->getGlobal($this->id, $_REQUEST))) {
-            $txt = $this->get_par('text');            
+            $txt = $this->getParameter('text');            
         }
         $this->add($txt);
     }

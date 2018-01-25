@@ -26,14 +26,14 @@ class ComboBox extends Component
             $this->currentValue = $this->defaultValue;
         }
         if (!empty($this->data) && $this->isTree && array_key_exists(2,$this->data[0])) {
-            if (!$this->get_par('option-select-disable')){
+            if (!$this->getParameter('option-select-disable')){
                 array_unshift($this->data, array('','- select -','_group'=>''));                
             }
             $this->buildTree($this->data);
             return;
         } 
-        if (!$this->get_par('option-select-disable')){ 
-            if ($lbl = $this->get_par('label-inside')){
+        if (!$this->getParameter('option-select-disable')){ 
+            if ($lbl = $this->getParameter('label-inside')){
                 $this->placeholder = $lbl;
             }
             array_unshift($this->data, array('', $this->placeholder)); 

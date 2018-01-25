@@ -56,7 +56,7 @@ class MapGoogleBox extends Component
             $res = array(array('lat'=>41.9100711,'lng'=>12.5359979));
             $_REQUEST[$this->id.'_center'] = $res[0]['lat'].','.$res[0]['lng'];
         }
-        if ($grid = $this->get_par('datagrid-parent')) {
+        if ($grid = $this->getParameter('datagrid-parent')) {
             $this->map->att('data-datagrid-parent',$grid);
         }
     }

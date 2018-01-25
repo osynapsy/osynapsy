@@ -13,7 +13,7 @@ class Iframe extends Component
     }
 
     protected function __build_extra__(){
-        $src = $this->get_par('src');
+        $src = $this->getParameter('src');
         if (!array_key_exists($this->id,$_REQUEST) && !empty($src)){
             $_REQUEST[$this->id] = $src;
         }

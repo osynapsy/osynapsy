@@ -19,12 +19,12 @@ class TagList extends Component
 			$this->__ajax_exec__();
 		}
         $build_tag_from_datasource = false;
-		if ($this->get_par('database-save-parameters')){
+		if ($this->getParameter('database-save-parameters')){
 			$this->att('class','osy-taglist-onextab',true);
             $build_tag_from_datasource = true;
 		}
 		$ul = $this->add(tag::create('ul'));
-		if ($sql = $this->get_par('datasource-sql'))
+		if ($sql = $this->getParameter('datasource-sql'))
 		{
 			$sql = kkernel::replacevariable($sql);
             $res = kkernel::$dba->exec_query($sql,null,'NUM');
@@ -63,14 +63,14 @@ class TagList extends Component
 
 		if (!array_key_exists('pkey',$_REQUEST)) die('PKey empty');
 		$tag_lst = array();
-		if ($sql = $this->get_par('datasource-sql'))
+		if ($sql = $this->getParameter('datasource-sql'))
 		{
 			$res = kkernel::$dba->exec_query($sql,null,'NUM');
 			foreach($res as $k => $rec){
 				$tag_lst[$rec[1]] = $rec[0];
 			}
 		}
-		if ($raw_par = $this->get_par('database-save-parameters'))
+		if ($raw_par = $this->getParameter('database-save-parameters'))
 		{
 		    $sql_par = array();
 			$raw_par = explode(',',$raw_par);

@@ -49,7 +49,7 @@ class ListSortable extends Component
 	
 	protected function buildHead()
 	{
-        if ($this->get_par('height')) {
+        if ($this->getParameter('height')) {
             $this->att('style','height : '.$this->par('height').'px; overflow:auto;');
         }       
 	}

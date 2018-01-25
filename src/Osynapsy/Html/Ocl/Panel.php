@@ -38,23 +38,23 @@ class Panel extends Component
                 //ksort($col);
                 foreach($col as $icnt => $obj) {
                     $colspan=null;
-                    if (is_object($obj['obj']) && ($obj['obj']->tag == 'button' || $obj['obj']->get_par('label-hidden') == '1')) {
+                    if (is_object($obj['obj']) && ($obj['obj']->tag == 'button' || $obj['obj']->getParameter('label-hidden') == '1')) {
                         unset($obj['lbl']);
-                        if ($this->get_par('label-position') == 'outside') $colspan=2;
+                        if ($this->getParameter('label-position') == 'outside') $colspan=2;
                     } elseif (!empty($obj['lbl'])) {
                        $label_text = $obj['lbl'];
                        if (is_object($obj['obj'])){
-                           if ($prefix = $obj['obj']->get_par('label-prefix')){
+                           if ($prefix = $obj['obj']->getParameter('label-prefix')){
                                $label_text = '<span class="label-prefix">'.$prefix.'</span>'.$label_text;
                            }
-                           if ($postfix = $obj['obj']->get_par('label-postfix')){
+                           if ($postfix = $obj['obj']->getParameter('label-postfix')){
                                $label_text .= '<span class="label-postfix">'.$postfix.'</span>';
                            }
                        }
                        //$obj['lbl'] = '<label class="'.(get_class($obj['obj']) == 'panel' ? 'osy-form-panel-label' : 'osy-component-label').'">'.$prefix.$obj['lbl'].'</label>';
                        $obj['lbl'] = new tag('label');
                        $obj['lbl']->att('class',($obj['obj'] instanceof panel ? 'osy-form-panel-label' : 'osy-component-label'))
-                                  ->att('class',(is_object($obj['obj']) ? $obj['obj']->get_par('label-class') : ''),true)
+                                  ->att('class',(is_object($obj['obj']) ? $obj['obj']->getParameter('label-class') : ''),true)
                                   ->add(trim($label_text));
                     }
                     switch ($this->__par['label-position']) {
@@ -62,10 +62,10 @@ class Panel extends Component
                             if (key_exists('lbl',$obj)){
                                 $cl = $this->cells($obj['lbl']);
                                 if (is_object($obj['obj'])){
-                                    if ($cls = $obj['obj']->get_par('label-cell-class')){
+                                    if ($cls = $obj['obj']->getParameter('label-cell-class')){
                                         $cl->att('class',$cls,true);
                                     }
-                                    if ($sty = $obj['obj']->get_par('label-cell-style')){
+                                    if ($sty = $obj['obj']->getParameter('label-cell-style')){
                                         $cl->att('style',$sty);
                                     }
                                 }

@@ -17,7 +17,7 @@ class Button extends Component
     
     protected function __build_extra__()
     {
-        if ($label = $this->get_par('label')) {
+        if ($label = $this->getParameter('label')) {
             $this->add('<span>'.$label.'</span>');
         }
     }

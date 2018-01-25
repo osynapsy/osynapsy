@@ -75,16 +75,16 @@ class DataGrid extends Component
         if ($this->rows) {
             $this->__par['row-num'] = $this->rows;
         }
-        if ($this->get_par('datasource-sql')) {
+        if ($this->getParameter('datasource-sql')) {
             $this->dataLoad();
         }
-        if ($par = $this->get_par('mapgrid-parent')) {
+        if ($par = $this->getParameter('mapgrid-parent')) {
             $this->att('data-mapgrid', $par);
         }
-        if ($this->get_par('mapgrid-parent-refresh')) {
+        if ($this->getParameter('mapgrid-parent-refresh')) {
             $this->att('class','mapgrid-refreshable',true);
         }
-        if ($par = $this->get_par('mapgrid-infowindow-format')) {
+        if ($par = $this->getParameter('mapgrid-infowindow-format')) {
             $this->att('data-mapgrid-infowindow-format', $par);
         }
         //Aggiungo il campo che conterrà i rami aperti dell'albero.
@@ -97,7 +97,7 @@ class DataGrid extends Component
                         ->att('class','osy-datagrid-2-body table-responsive')
                         ->att('data-rows-num',$this->__par['rec_num']);
         $this->buildAddButton($tbl_cnt);
-        $hgt = $this->get_par('cell-height');
+        $hgt = $this->getParameter('cell-height');
 
         if (!empty($this->__par['row-num']) && !empty($hgt))
         {
@@ -115,17 +115,17 @@ class DataGrid extends Component
             ->att('data-search','false')
             ->att('data-toolbar','#'.$this->id.'_toolbar')
             ->att('class','display table table-bordered dataTable no-footer border-'.$this->__par['border']);
-        if ($err = $this->get_par('error-in-sql')) {
+        if ($err = $this->getParameter('error-in-sql')) {
             $tbl->add(tag::create('tr'))->add(tag::create('td'))->add($err);
             return;
         }
-        if (is_array($this->get_par('cols'))) {
+        if (is_array($this->getParameter('cols'))) {
             $tbl_hd = $tbl->add(tag::create('thead'));
             $this->buildHead($tbl_hd);
         }
         if (is_array($this->__dat) && !empty($this->__dat)) {
             $tbl_bod = $tbl->add(tag::create('tbody'));
-            $lev = ($this->get_par('type') == 'datagrid') ? null : 0;
+            $lev = ($this->getParameter('type') == 'datagrid') ? null : 0;
             $this->buildBody($tbl_bod,$this->__dat,$lev);
         } else {
             $tbl->add(tag::create('td'))->att('class','no-data text-center')->att('colspan',$this->__par['cols_vis'])->add('Nessun dato presente');
@@ -135,7 +135,7 @@ class DataGrid extends Component
             $p = ($this->__par['max_wdt_per'] * $l) / max($t,1);
         }
         //Setto il tipo di componente come classe css in modo da poterlo testare via js.
-        $this->att('class',$this->get_par('type'),true);
+        $this->att('class',$this->getParameter('type'),true);
 
         $this->buildPaging();
     }
@@ -188,7 +188,7 @@ class DataGrid extends Component
                 }
             }
             $this->buildRow($container,$row,$lev,$ico_tre,$ico_arr);
-            if ($this->get_par('type') == 'treegrid') {
+            if ($this->getParameter('type') == 'treegrid') {
                 @list($item_id,$group_id) = explode(',',$row['_tree']);
                 $this->buildBody($container,@$this->__grp[$item_id],$lev+1,$ico_arr);
             }
@@ -204,7 +204,7 @@ class DataGrid extends Component
     private function buildHead($thead)
     {
         $tr = new Tag('tr');
-        $cols = $this->get_par('cols');
+        $cols = $this->getParameter('cols');
         foreach ($cols as $k => $col) {            
             $opt = array(
                 'alignment'=> '',
@@ -291,7 +291,7 @@ class DataGrid extends Component
                 }
             }
         }
-        if (!$this->get_par('head-hide')){
+        if (!$this->getParameter('head-hide')){
             $thead->add($tr);
         }
     }
@@ -554,13 +554,13 @@ class DataGrid extends Component
 
     private function dataLoad()
     {
-        $sql = $this->get_par('datasource-sql');
+        $sql = $this->getParameter('datasource-sql');
         if (empty($sql)) {
             return;
         }
         try {
             $sql_cnt = "SELECT COUNT(*) FROM (\n{$sql}\n) a ".$whr;
-            $this->__par['rec_num'] = $this->db->execUnique($sql_cnt,$this->get_par('datasource-sql-par'));
+            $this->__par['rec_num'] = $this->db->execUnique($sql_cnt,$this->getParameter('datasource-sql-par'));
             $this->att('data-row-num',$this->__par['rec_num']);
         } catch(\Exception $e) {
             $this->par('error-in-sql','<pre>'.$sql_cnt."\n".$e->getMessage().'</pre>');
@@ -622,14 +622,14 @@ class DataGrid extends Component
                     $row_sta = (($this->__par['pag_cur'] - 1) * $this->__par['row-num']);
                     $row_sta =  $row_sta < 0 ? 0 : $row_sta;
                     $sql .= ($this->db->getType() == 'pgsql')
-                           ? "\nLIMIT ".$this->get_par('row-num')." OFFSET ".$row_sta
-                           : "\nLIMIT $row_sta , ".$this->get_par('row-num');
+                           ? "\nLIMIT ".$this->getParameter('row-num')." OFFSET ".$row_sta
+                           : "\nLIMIT $row_sta , ".$this->getParameter('row-num');
                 }
                 break;
         }
         //Eseguo la query        
         try {
-            $this->__dat = $this->db->execQuery($sql,$this->get_par('datasource-sql-par'),'ASSOC');
+            $this->__dat = $this->db->execQuery($sql,$this->getParameter('datasource-sql-par'),'ASSOC');
         } catch (\Exception $e) {
             die($sql.$e->getMessage());
         }

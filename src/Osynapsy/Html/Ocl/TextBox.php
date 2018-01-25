@@ -13,7 +13,7 @@ class TextBox extends InputBox
     protected function __build_extra__()
     {
         parent::__build_extra__();
-        if ($this->get_par('field-control') == 'is_number'){
+        if ($this->getParameter('field-control') == 'is_number'){
             $this->att('type','number')
                  ->att('class','right osy-number',true);
         }

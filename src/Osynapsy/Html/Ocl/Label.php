@@ -15,7 +15,7 @@ class Label extends Component
     protected function __build_extra__()
     {
         $val = get_global($this->id,$_REQUEST);
-        if ($pointer = $this->get_par('global-pointer'))
+        if ($pointer = $this->getParameter('global-pointer'))
         {
             $ref = array(&$GLOBALS,&$_REQUEST,&$_POST);
             foreach ($ref as $global_arr)
