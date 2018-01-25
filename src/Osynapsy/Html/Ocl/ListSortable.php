@@ -27,12 +27,12 @@ class ListSortable extends Component
         $this->att('class','osy-listsortable')
              ->att('data-action','sortList')
              ->att('data-action-parameters','#'.$id.'_order');
-        $this->par('record-add','1');
-		$this->par('command-add-label','+ Aggiungi');
-        $this->par('add_position','header');
-        $this->par('num_row',0);
-        $this->par('list_height',false);
-        $this->par('cols_width',false);        
+        $this->setParameter('record-add','1');
+		$this->setParameter('command-add-label','+ Aggiungi');
+        $this->setParameter('add_position','header');
+        $this->setParameter('num_row',0);
+        $this->setParameter('list_height',false);
+        $this->setParameter('cols_width',false);        
     }
 
     protected function __build_extra__()
@@ -50,7 +50,7 @@ class ListSortable extends Component
 	protected function buildHead()
 	{
         if ($this->getParameter('height')) {
-            $this->att('style','height : '.$this->par('height').'px; overflow:auto;');
+            $this->att('style','height : '.$this->setParameter('height').'px; overflow:auto;');
         }       
 	}
 	
@@ -169,7 +169,7 @@ class ListSortable extends Component
     public function setSql($db, $sql, $par = array())
     {
         $rs =  $db->execQuery($sql, $par, 'ASSOC');        
-		$this->par('num_row',count($rs));
+		$this->setParameter('num_row',count($rs));
 
         foreach($rs as $rec) {
             if(array_key_exists('_parent',$rec) && !empty($rec['_parent'])) {
