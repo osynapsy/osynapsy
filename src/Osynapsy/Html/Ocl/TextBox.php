@@ -7,7 +7,7 @@ class TextBox extends InputBox
     public function __construct($nam, $id = null)
     {
         parent::__construct('text', $nam, $this->nvl($id,$nam));
-        $this->par('get-request-value',$nam);
+        $this->setParameter('get-request-value',$nam);
     }
 
     protected function __build_extra__()
