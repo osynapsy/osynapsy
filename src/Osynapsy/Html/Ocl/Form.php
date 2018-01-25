@@ -28,7 +28,7 @@ class Form extends Component
         $this->components[0] = $this->corner->add(
             new Panel($nam.'-panel', $tag, $rowClass, $cellClass)
         );
-        $this->components[0]->par('label-position','inside');
+        $this->components[0]->setParameter('label-position','inside');
     }
 
     public function put($obj,$lbl,$nam,$x=0,$y=0,$par=0)
