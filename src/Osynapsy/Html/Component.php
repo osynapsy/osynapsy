@@ -28,12 +28,7 @@ class Component extends Tag
     protected function __build_extra__()
     {
     }
-    
-    public function par($key, $val = null)
-    {
-        $this->__par[$key] = $val;
-    }
-    
+            
     public static function getById($id)
     {
         return array_key_exists($id, self::$ids) ? self::$ids[$id] : null;
