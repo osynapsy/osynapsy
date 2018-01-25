@@ -68,7 +68,7 @@ class Form extends Component
             $this->add($this->alert);
         }
         
-        $container = $this->add(new Tag('div')); //->att('class','content');
+        $container = $this->add(new Tag('div'))->att('class','content');
         $container->add($this->body);
         //Append foot
         if (!$this->foot) {
