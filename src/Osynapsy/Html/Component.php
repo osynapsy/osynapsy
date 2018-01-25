@@ -110,4 +110,9 @@ class Component extends Tag
         $this->data = $data;
         return $this;
     }
+    
+    public function setParameter($key, $value = null)
+    {
+        $this->__par[$key] = $value;
+    }
 }
