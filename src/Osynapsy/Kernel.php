@@ -16,6 +16,7 @@ use Osynapsy\Kernel\Loader;
 use Osynapsy\Kernel\Route;
 use Osynapsy\Kernel\Router;
 use Osynapsy\Kernel\Runner;
+use Osynapsy\Kernel\KernelException;
 
 /**
  * The Kernel is the core of Osynapsy
