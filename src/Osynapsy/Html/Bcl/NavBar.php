@@ -71,25 +71,45 @@ class NavBar extends Component
             }
             $li->att('class','dropdown')
                 ->add(new Tag('a'))
-                ->att(['class' => 'dropdown-toggle', 'href' => '#'])
+                ->att(['class' => 'dropdown-toggle', 'href' => '#', 'data-toggle' => 'dropdown'])
                 ->add($label.' <span class="caret"></span>');
             $this->buildUlMenu($li, $menu, $level + 1);
         }
         return $ul;
     }
     
+    /**
+     * Decide if use fluid (true) or static container (false)
+     * 
+     * @param type $bool 
+     * @return $this
+     */
     public function setContainerFluid($bool = true)
     {
         $this->setParameter('containerClass','container'.($bool ? '-fluid' : ''));
         return $this;
     }
     
-    public function setBrand($label, $href)
+    /**
+     * Set brand identity (logo, promo etc) to start menù    
+     * 
+     * @param string $label is visual part of brand
+     * @param string $href is url where user will be send if click brand
+     * @return $this
+     */
+    public function setBrand($label, $href = '#')
     {
         $this->setParameter('brand', [$label, $href]);
         return $this;
     }
     
+    /**
+     * Set data necessary for build NavBar.     
+     * 
+     * @param array $primary set main menu data (near brand) 
+     * @param array $secondary set second menù aligned to right
+     * @return $this Navbar component
+     */
     public function setData(array $primary, array $secondary = [])
     {
         $this->data['primary'] = $primary;
