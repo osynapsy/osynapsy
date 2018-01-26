@@ -32,31 +32,59 @@ class NavBar extends Component
         $this->setData([],[]);
     }
     
+    /**
+     * Main builder of navbar
+     * 
+     */
     public function __build_extra__()
     {
         $this->setClass('navbar navbar-default');
         $container = $this->add(new Tag('div'));
         $container->att('class', $this->getParameter('containerClass'));
         
-        $this->buildBrand($container);
-        $this->buildUlMenu($container, $this->data['primary'])->att('class','nav navbar-nav'); 
-        $this->buildUlMenu($container, $this->data['secondary'])->att('class','nav navbar-nav pull-right');
+        $this->buildHeader($container);
+        $collapse = $container->add(new Tag('div',$this->id.'_collapse'))->att('class','collapse navbar-collapse');
+        $this->buildUlMenu($collapse, $this->data['primary'])->att('class','nav navbar-nav'); 
+        $this->buildUlMenu($collapse, $this->data['secondary'])->att('class','nav navbar-nav pull-right');
     }
     
-    private function buildBrand($container)
-    {
+    /**
+     * Internal method for build header part of navbar
+     * 
+     * @param type $container
+     * @return type
+     */
+    private function buildHeader($container)
+    {                
+        $header = $container->add(new Tag('div'))
+                  ->att('class','navbar-header');
+        $header->add(
+            '<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#'.$this->id.'_collapse" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>'
+        );
         $brand = $this->getParameter('brand');
         if (empty($brand)) {
             return;
         }
-        $container->add(new Tag('div'))
-                  ->att('class','navbar-header')
-                  ->add(new Tag('a'))
-                  ->att('href', $brand[1])
-                  ->add($brand[0]);
+        $header->add(new Tag('a'))
+               ->att('href', $brand[1])
+               ->att('class','navbar-brand')
+               ->add($brand[0]);
     }
     
-    private function buildUlMenu($container, $data, $level = 0)
+    /**
+     * Internal method for build a unordered list menù (recursive)
+     * 
+     * @param object $container of ul
+     * @param array $data 
+     * @param int $level
+     * @return type
+     */
+    private function buildUlMenu($container, array $data, $level = 0)
     {
         $ul = $container->add(new Tag('ul'))
                         ->att('class', ($level > 0 ? 'dropdown-menu' : ''));
@@ -114,6 +142,17 @@ class NavBar extends Component
     {
         $this->data['primary'] = $primary;
         $this->data['secondary'] = $secondary;
+        return $this;
+    }
+    
+    /**
+     * Fix navigation bar on the top of page (navbar-fixed-top class on main div)
+     * 
+     * @return $this
+     */
+    public function setFixedOnTop()
+    {
+        $this->att('class','navbar-fixed-top',true);
         return $this;
     }
 }
