@@ -19,13 +19,17 @@ class XlsToArray
     private $error = array();
     private $delimiter = null;
     private $lineending = null;
+    public $max = [
+        'row' => 0, 
+        'col' => 0
+    ];
     
     public function __construct($db)
     {
         $this->db = $db;        
     }
     
-    public function loadExcel($fileName,$grabNumRow=null)
+    public function loadExcel($fileName, $grabNumRow = null)
     {
         try {
             $fileType = \PHPExcel_IOFactory::identify($fileName);           
@@ -35,26 +39,23 @@ class XlsToArray
                     if (!is_null($this->delimiter)) {
                         $reader->setDelimiter($this->delimiter);
                     }
-                    //if (!is_null($this->lineending)) {
-                        //$reader->setLineEnding($this->lineending);
-                    //}
                     break;
             }            
             $excel = $reader->load($fileName);
             //  Get worksheet dimensions
             $sheet = $excel->getSheet(0); 
-            $maxRow = $sheet->getHighestRow(); 
-            $maxCol = $sheet->getHighestDataColumn();
+            $this->max['row'] = $sheet->getHighestRow(); 
+            $this->max['col'] = $sheet->getHighestDataColumn();
             $data = array();
-            for ($row = 1; $row <= $maxRow; $row++) {
-                $data[] = $sheet->rangeToArray('A' . $row . ':' . $maxCol . $row, NULL, TRUE, FALSE);
+            for ($row = 1; $row <= $this->max['row']; $row++) {
+                $data[] = $sheet->rangeToArray('A' . $row . ':' . $this->max['col'] . $row, NULL, TRUE, FALSE);
                 if (!empty($grabNumRow) && $row <= $grabNumRow){
                     break;
                 }
             }
             return $data;
         } catch (\Exception $e) {
-            return $maxCol.'Errore nell\'apertura del file "'.pathinfo($fileName,PATHINFO_BASENAME).'": '.$e->getMessage();
+            return 'Errore nell\'apertura del file "'.pathinfo($fileName,PATHINFO_BASENAME).'": '.$e->getMessage();
         }
     }
     
