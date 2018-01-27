@@ -53,22 +53,27 @@ abstract class BaseView
     
     public function setTitle($title)
     {
-        $this->controller->response->addContent($title,'title');
+        $this->getController()->getResponse()->addContent($title,'title');
     }
     
     public function addJs($path)
     {    
-        $this->controller->response->addJs($path);
+        $this->getController()->getResponse()->addJs($path);
     }
     
     public function addCss($path)
     {    
-        $this->controller->response->addCss($path);
+        $this->getController()->getResponse()->addCss($path);
     }
     
     public function addJsCode($code)
     {
-        $this->controller->response->addJsCode($code);
+        $this->getController()->getResponse()->addJsCode($code);
+    }
+    
+    public function addStyle($style)
+    {
+        $this->getController()->getResponse()->addStyle($style);
     }
     
     public function __toString()
