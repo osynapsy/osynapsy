@@ -132,7 +132,7 @@ class Kernel
      */
     public function followRoute(Route $route)
     {
-        $this->request->set('page', $route);
+        $this->request->set('page.route', $route);
         $runner = new Runner($this->request, $route);
         return $runner->run();  
     }
