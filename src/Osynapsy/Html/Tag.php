@@ -114,7 +114,7 @@ class Tag
             }
             $strTag .= '>';
         }
-        if (!in_array($tag, array('input','img','link'))) {
+        if (!in_array($tag, array('input', 'img', 'link', 'meta'))) {
             $spaces2 = $this->tagdep < 0 ? $spaces : '';
             $strTag .= $strContent . (!empty($tag) ? $spaces2."</{$tag}>" : '');
         }
