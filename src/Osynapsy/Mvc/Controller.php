@@ -34,7 +34,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     
     public function __construct(Request $request = null, DbFactory $db = null, $appController = null)
     {        
-        $this->parameters = $request->get('page')->parameters;        
+        $this->parameters = $request->get('page.route')->parameters;        
         $this->request = $request;
         $this->setDbHandler($db);
         $this->app = $appController;
