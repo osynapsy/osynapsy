@@ -136,7 +136,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
             return $this->execAction($cmd);
         }        
         $this->setResponse(new HtmlResponse());
-        $layoutPath = $this->request->get('page')->template;
+        $layoutPath = $this->request->get('page.route')->template;
         if (!empty($layoutPath)) {
             $this->response->template = $this->response->getBuffer($layoutPath, $this);            
         }
