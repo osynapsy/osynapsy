@@ -27,7 +27,7 @@ class Loader
     {            
         $this->path = realpath($path);        
         $this->repo = new Dictionary();
-        $this->repo->set('configuration', $this->load());
+        $this->repo->set('configuration', $this->load());        
         $this->loadAppConfiguration();
     }
     
@@ -60,7 +60,7 @@ class Loader
 
     private function loadFile($path)
     {
-        $xml = new \SimpleXMLIterator($path,null,true);
+        $xml = new \SimpleXMLIterator($path, null, true);
         return $this->parseXml($xml);
     }
     
@@ -82,7 +82,7 @@ class Loader
     private function parseXml($xml, &$array = [])
     {                                
         for($xml->rewind(); $xml->valid(); $xml->next() ) {
-            $key = $xml->key();
+            $key = $xml->key();            
             if (!array_key_exists($key, $array)) {
                 $array[$key] = [];
             }
