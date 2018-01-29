@@ -54,7 +54,7 @@ class Kernel
         $this->request->set(
             'env',
             $this->loader->get()
-        );
+        );        
         $this->request->set(
             'app.layouts',
             $this->loadConfig('layout', 'name', 'path')
