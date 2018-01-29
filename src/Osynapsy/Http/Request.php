@@ -40,8 +40,9 @@ class Request extends Dictionary
         $rawHost = (isset($server['HTTPS']) && $server['HTTPS'] == 'on') ? 'https://' : 'http://';
         $rawHost .= $this->get('server.HTTP_HOST');
         $url = $rawHost.$this->get('server.REQUEST_URI');
-        $this->set('page.url',$url);
-        $this->set('server.RAW_URL_PAGE',$url);
-        $this->set('server.RAW_URL_SITE',$rawHost);
+        $this->set('page.url', $url);
+        $this->set('server.RAW_URL_PAGE', $url);
+        $this->set('server.RAW_URL_SITE', $rawHost);
+        $this->set('server.url', $rawHost);
     }
 }
