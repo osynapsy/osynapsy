@@ -10,17 +10,17 @@ OclMapLeafletBox = {
     {
         self = this;
         $('.osy-mapgrid-leaflet').each(function(){
-            mid = $(this).attr('id');
-            cnt = $('#' + mid + '_center').val().split(',');	
+            var mapId = $(this).attr('id');
+            cnt = $('#' + mapId + '_center').val().split(',');	
             zom = 10;
-            if (document.getElementById(mid + '_zoom').value>0){
-                    zom = document.getElementById(mid + '_zoom').value;			
+            if (document.getElementById(mapId + '_zoom').value>0){
+                    zom = document.getElementById(mapId + '_zoom').value;			
             }
             cnt[0] = parseFloat(cnt[0]);
             cnt[1] = parseFloat(cnt[1]);
-            var map = L.map(mid).setView(cnt, zom);
-            map.mapid = mid;
-            self.maplist[mid] = map;
+            var map = L.map(mapId).setView(cnt, zom);
+            map.mapid = mapId;
+            self.maplist[mapId] = map;
             L.tileLayer(
                 'http://{s}.tile.osm.org/{z}/{x}/{y}.png', 
                 { attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' }
@@ -32,11 +32,7 @@ OclMapLeafletBox = {
             map.on('moveend', function(e) {
                 OclMapLeafletBox.set_vertex(map);
                 OclMapLeafletBox.refresh_datagrid(map);
-            });
-                /*map.addLayer(new L.FreeDraw({
-                mode: L.FreeDraw.MODES.CREATE | L.FreeDraw.MODES.EDIT
-                }));*/
-
+            });                
             var LeafIcon = L.Icon.extend({
                 options: {
                     shadowUrl: 'http://leafletjs.com/docs/images/leaf-shadow.png',
@@ -103,23 +99,21 @@ OclMapLeafletBox = {
                         layer.bindPopup('A popup!');
                 }
                 drawnItems.addLayer(layer);
-            });
-            map.on('draw:drawstop', function (e) {
+            }).on('draw:drawstop', function (e) {
                 alert('finito');
-            });
-            map.on('zoomend',function(e){
+            }).on('zoomend',function(e){
                 $('#'+this.mapid+'_zoom').val(this.getZoom());
             });
             if ($(this).attr('coostart')){			
-                mrk = $(this).attr('coostart').split(',');				
+                var mrk = $(this).attr('coostart').split(',');				
                 OclMapLeafletBox.markers_add(
-                    mid,
+                    mapId,
                     'start-layer',
                     [
                         {
                             lat : parseFloat(mrk[0]),
                             lng : parseFloat(mrk[1]),
-                            oid : mid+'-start',
+                            oid : mapId + '-start',
                             ico : {text : mrk[2],color:'green'},
                             popup : 'MAIN'
                         }
@@ -192,130 +186,145 @@ OclMapLeafletBox = {
             this.calc_perc(mapid,data);
         }
    },
-   layer_get : function(mid, lid, clean)
+   getLayer : function(mapId, layerId, clean)
    {
-        if (!(lid in this.layerlist)){
-            this.layerlist[lid] = new L.FeatureGroup();
-            this.maplist[mid].addLayer(this.layerlist[lid]);
+        if (!(layerId in this.layerlist)){
+            this.layerlist[layerId] = new L.FeatureGroup();
+            this.maplist[mapId].addLayer(this.layerlist[layerId]);
         } else if (clean){
-            this.layer_clean(mid,lid);
+            this.cleanLayer(layerId);
         }
-        return this.layerlist[lid];
+        return this.layerlist[layerId];
    },   
-   layer_clean : function(mid, lid)
+   cleanLayer : function(layerId)
    {
-        if (lid in this.layerlist){
-            this.layerlist[lid].clearLayers();
+        if (layerId in this.layerlist){
+            this.layerlist[layerId].clearLayers();
 	}
-   },
-   marker_add : function(lid, mid, mrk)
-   {
-        if (!(lid in this.layermarker)){
-            this.layermarker[lid] = {};
-        }		 
-        this.layermarker[lid][mid] = mrk;
-        this.layerlist[lid].addLayer(mrk);
-   },
+   },   
    markersClean : function(mapid)
    {
    },
-   markers_add : function(mid, lid, dat)
+   markersAdd : function(mapId, layerId, markers)
    {
-        if (!(dat instanceof Array)){ 
+        if (!(markers instanceof Array)){ 
             return; 
-        } 
-        layer = this.layer_get(mid, lid, false);
-        for (i in dat){		
-            if (dat[i].ico !== undefined && dat[i].ico) {							
-                if (dat[i].ico.text.indexOf('fa-') == 0){
-                    ico = L.AwesomeMarkers.icon({icon: dat[i].ico.text, prefix: 'fa', markerColor: dat[i].ico.color, spin:false});  
+        }        
+        for (var i in markers){
+            var marker = markers[i];
+            if (marker.ico !== undefined && marker.ico) {
+                if (marker.ico.text.indexOf('fa-') === 0){
+                    ico = L.AwesomeMarkers.icon({icon: marker.ico.text, prefix: 'fa', markerColor: marker.ico.color, spin:false});  
                 } else {
-                    ico = L.divIcon({className: lid+'-icon', html : dat[i].ico.text, iconSize:null});
+                    ico = L.divIcon({className: layerId+'-icon', html : marker.ico.text, iconSize:null});
                 }
-                marker = L.marker(
-                    [dat[i].lat, dat[i].lng],
+                var markerObject = L.marker(
+                    [marker.lat, marker.lng],
                     {icon: ico}
                 );
-                if (dat[i].popup !== undefined){
-                    marker.bindPopup(dat[i].popup);
+                if (marker.popup !== undefined){
+                    markerObject.bindPopup(marker.popup);
                 }
-                this.marker_add(lid, dat[i].oid, marker);
+                this.markerAppend(layerId, mapId, markerObject);
             }
         }
    },
-   polyline : function(mapid,layerid,dat,pcolor)
+   markerAppend : function(layerId, mapId, marker)
    {
-        if (pcolor === undefined || pcolor == null) {
-            pcolor = 'red';
-        }
-        console.log(pcolor);
-        if (mapid in this.maplist) {
-            var layer = this.layer_get(mapid,layerid,false);
-            var pol = new L.polyline(dat,{color : pcolor});
-            pol.addTo(layer);	  	
+        if (!(layerId in this.layermarker)){
+            this.layermarker[layerId] = {};
+        }		 
+        this.layermarker[layerId][mapId] = marker;
+        this.layerlist[layerId].addLayer(marker);
+   },
+   polyline : function(mapId, layerId, dataset, polylineColor)
+   {
+        if (polylineColor === undefined || polylineColor === null) {
+            polylineColor = 'red';
+        }        
+        if (mapId in this.maplist) {
+            var layer = this.getLayer(mapId, layerId, false);
+            var polyline = new L.polyline(dataset, {color : polylineColor});
+            polyline.addTo(layer);	  	
         } 
    },   
    refresh_datagrid : function(map, div)
    {
-        if (this.datagrid.length > 0) {
-            for( i in this.datagrid ) {
-                var gid = this.datagrid[i]; //Datagrid id
-                var mid = $(div).attr('id'); //Map id
-                ODataGrid.refreshAjax($('#'+gid),null/*,function(){OclMapLeafletBox.refresh_markers(mid)}*/);
-            }
+        if (this.datagrid.length === 0) {
+            return;
+        }
+        for(var i in this.datagrid ) {
+            var gridId = this.datagrid[i]; //Datagrid id
+            var mapId = $(div).attr('id'); //Map id
+            ODataGrid.refreshAjax($('#'+gridId),null/*,function(){OclMapLeafletBox.refresh_markers(mid)}*/);
         }
    },
-   refreshMarkers : function(mid, gid)
+   refreshMarkers : function(mapId, dataGridId)
    {        
-        if (this.datagrid.length == 0){ 
+        if (this.datagrid.length === 0){ 
             return; 
 	}
-	var gob = $('#'+gid);
-	if (!(f = gob.data('mapgrid-infowindow-format'))) {
+	var dataGrid = $('#'+dataGridId);
+	if (!(f = dataGrid.data('mapgrid-infowindow-format'))) {
             f = null;
-       	}
-	layer = this.layer_get(mid, gid, true);		
-	var dataset = [];			
-        $('tr',gob).each(
-            function(){
-                var frm = f;               
-                var i = 1;
-		$(this).children().each(function(){
-		   if (f){
-                       if (frm.indexOf('['+i+']') > -1) { 
-                           frm = frm.replace('['+i+']',$(this).html());
-                        }
-                    } else {
-                        frm += $(this).text() + '<br>';
+        }
+	var dataset = [];
+        //Creo un nuovo layer
+        this.getLayer(mapId, dataGridId, true);
+        $('tr',dataGrid).each(function(){
+            var frm = f;               
+            var i = 1;
+            $(this).children().each(function(){
+               if (f){
+                   if (frm.indexOf('['+i+']') > -1) { 
+                       frm = frm.replace('['+i+']',$(this).html());
                     }
-                    i++;
-	    	});   		
-                if ($(this).attr('lat')){
-                    dataset.push({
-                        lat : parseFloat($(this).attr('lat')),
-			lng : parseFloat($(this).attr('lng')), 
-			oid : $(this).attr('oid'), 
-			ico : {text : 'fa-circle-o', color: 'blue'},
-			popup : '<div style="width: 250px; height: 120px; overflow: hidden;">'+ frm +'</div>'
-                    });
-                }			   
-            }
-        );
-        this.markers_add(mid, gid, dataset);
-        this.dataset_add(gid, dataset);
+                } else {
+                    frm += $(this).text() + '<br>';
+                }
+                i++;
+            });   		
+            if ($(this).attr('lat')){
+                dataset.push({
+                    lat : parseFloat($(this).attr('lat')),
+                    lng : parseFloat($(this).attr('lng')), 
+                    oid : $(this).attr('oid'), 
+                    ico : {text : 'fa-circle-o', color: 'blue'},
+                    popup : '<div style="width: 250px; height: 120px; overflow: hidden;">'+ frm +'</div>'
+                });
+            }			   
+        });
+        this.computeCenter(mapId, dataset);
+        this.markersAdd(mapId, dataGridId, dataset);
+        this.dataset_add(dataGridId, dataset);
+    },
+    computeCenter : function(mapId, dataset)
+    {
+        if (dataset.length === 0) {
+            return;
+        }
+        var center = {'lat' : 0, 'lng' : 0};
+        for (var i in dataset) {
+            var rec = dataset[i];
+            center.lat += rec['lat'];
+            center.lng += rec['lng'];
+        }
+        center.lat = center.lat / (parseInt(i) + 1);
+        center.lng = center.lng / (parseInt(i) + 1);        
+        this.setCenter(mapId, center);
     },
     set_vertex : function(map){
-	var mid = map.getContainer().getAttribute('id');
+	var mapId = map.getContainer().getAttribute('id');
 	var bounds = map.getBounds();		
 	var ne = bounds.getNorthEast();
 	var sw = bounds.getSouthWest();
-	$('#'+mid+'_ne_lat').val(ne.lat);
-	$('#'+mid+'_ne_lng').val(ne.lng);
-	$('#'+mid+'_sw_lat').val(sw.lat);
-	$('#'+mid+'_sw_lng').val(sw.lng); 
-	$('#'+mid+'_center').val(map.getCenter().toString().replace('LatLng(','').replace(')','')); 
-	$('#'+mid+'_cnt_lat').val((sw.lat + ne.lat) / 2); 
-	$('#'+mid+'_cnt_lng').val((sw.lng + ne.lng) / 2); 
+	$('#'+mapId+'_ne_lat').val(ne.lat);
+	$('#'+mapId+'_ne_lng').val(ne.lng);
+	$('#'+mapId+'_sw_lat').val(sw.lat);
+	$('#'+mapId+'_sw_lng').val(sw.lng); 
+	$('#'+mapId+'_center').val(map.getCenter().toString().replace('LatLng(','').replace(')','')); 
+	$('#'+mapId+'_cnt_lat').val((sw.lat + ne.lat) / 2); 
+	$('#'+mapId+'_cnt_lng').val((sw.lng + ne.lng) / 2); 
     },	  
     open_id : function(oid,lid){
    	console.log(oid,lid)   		
@@ -333,7 +342,7 @@ OclMapLeafletBox = {
             this.maplist[mapid].invalidateSize();
 	}
     },
-    set_center: function(mid,cnt,zom)
+    setCenter: function(mid,cnt,zom)
     {
    	self.maplist[mid].setView(cnt,zom);
     }
