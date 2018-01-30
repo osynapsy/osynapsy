@@ -6,6 +6,7 @@ OclMapLeafletBox = {
     layerlist : {},
     polylinelist : {},
     datasets : {},
+    moving : false,
     init : function()
     {
         self = this;
@@ -30,6 +31,7 @@ OclMapLeafletBox = {
                 OclMapLeafletBox.datagrid.push($(this).attr('id'));
             });
             map.on('moveend', function(e) {
+                OclMapLeafletBox.moving = true;
                 OclMapLeafletBox.set_vertex(map);
                 OclMapLeafletBox.refresh_datagrid(map);
             });                
@@ -294,9 +296,12 @@ OclMapLeafletBox = {
                 });
             }			   
         });
-        this.computeCenter(mapId, dataset);
+        if (!this.moving) {
+           this.computeCenter(mapId, dataset);
+        }
         this.markersAdd(mapId, dataGridId, dataset);
         this.dataset_add(dataGridId, dataset);
+        this.moving = false;
     },
     computeCenter : function(mapId, dataset)
     {
