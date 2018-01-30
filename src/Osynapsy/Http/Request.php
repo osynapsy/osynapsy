@@ -18,9 +18,9 @@ class Request extends Dictionary
     /**
      * Constructor.
      *
-     * @param array           $query      The GET parameters
-     * @param array           $request    The POST parameters
-     * @param array           $attributes The request attributes (parameters parsed from the PATH_INFO, ...)
+     * @param array           $get        The GET parameters
+     * @param array           $post       The POST parameters
+     * @param array           $request    The REQUEST attributes (parameters parsed from the PATH_INFO, ...)
      * @param array           $cookies    The COOKIE parameters
      * @param array           $files      The FILES parameters
      * @param array           $server     The SERVER parameters
@@ -28,11 +28,11 @@ class Request extends Dictionary
      *
      * @api
      */
-    public function __construct(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null)
+    public function __construct(array $get = [], array $post = [], array $request = [], array $cookies = [], array $files = [], array $server = [], $content = null)
     {
-        $this->set('query', $query)
+        $this->set('get', $get)
+             ->set('post', $post)
              ->set('request', $request)
-             ->set('attributes', $attributes)
              ->set('cookies', $cookies)
              ->set('files', $files)
              ->set('server', $server)
