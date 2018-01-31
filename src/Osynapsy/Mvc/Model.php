@@ -377,7 +377,7 @@ abstract class Model
     {
     }
     
-    protected function afterInsert()
+    protected function afterInsert($id)
     {
     }
     
