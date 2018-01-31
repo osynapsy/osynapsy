@@ -204,7 +204,7 @@ class DbPdo extends \PDO implements InterfaceDbo
             $whr[] = "$k = ?";
             $val[] = $v;
         }
-        $cmd .= 'update '.$tbl.' set '.implode(', ', $fld).' where '.implode(' and ', $whr);
+        $cmd = 'update '.$tbl.' set '.implode(', ', $fld).' where '.implode(' and ', $whr);
         // mail('p.celeste@spinit.it','query',$cmd."\n".print_r($val,true));
         return $this->execCommand($cmd,$val);
     }
