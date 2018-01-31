@@ -16,10 +16,10 @@ namespace Osynapsy\Http;
  */
 abstract class Response 
 {
-    protected $repo = array(
-        'content' => array(),
-        'header' => array()
-    );
+    protected $repo = [
+        'content' => [],
+        'header' => []
+    ];
     
     /**
      * Init response with the content type
@@ -45,10 +45,13 @@ abstract class Response
      * @return mixed
      */
     public function addContent($content, $part = 'main', $checkUnique = false)
-    {
-        if ($checkUnique && !empty($this->repo['content'][$part]) && in_array($content,$this->repo['content'][$part])) {
+    {        
+        if ($checkUnique && !empty($this->repo['content'][$part]) && in_array($content, $this->repo['content'][$part])) {
             return;
-        }
+        }        
+        if (!array_key_exists($part, $this->repo['content'])) {
+            $this->repo['content'][$part] = [];             
+        }        
         $this->repo['content'][$part][] = $content;
     }
     
@@ -109,7 +112,7 @@ abstract class Response
      */
     public function resetContent($part = 'main')
     {
-        $this->repo['content'][$part] = array();
+        $this->repo['content'][$part] = [];
     }
     
     /**
