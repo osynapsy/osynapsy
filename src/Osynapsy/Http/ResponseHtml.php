@@ -20,7 +20,9 @@ class ResponseHtml extends Response
     public function __construct()
     {
         parent::__construct('text/html');
-        $this->repo['content'] = array('main' => '');        
+        $this->repo['content'] = [
+            'main' => []
+        ];        
     }
     
     public function addBufferToContent($path = null, $part = 'main')
