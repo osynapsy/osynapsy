@@ -87,7 +87,7 @@ class Panel extends Component
                 //ksort($col);
                 foreach ($Column as $Cell) {
                     $width = max($Cell['width'],1);
-                    $this->buildLabel($Cell, $colspan);
+                    $this->buildLabel($Cell);
                     switch ($this->formType) {
                         case 'horizontal':
                             $div = new Tag('div');
@@ -158,7 +158,7 @@ class Panel extends Component
         return $cel;
     }
     
-    public function buildLabel(&$obj, $colspan)
+    public function buildLabel(&$obj)
     {
         $style='';
         if ($obj['lbl'] === false) {
