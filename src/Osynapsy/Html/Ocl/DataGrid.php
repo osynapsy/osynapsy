@@ -454,7 +454,7 @@ class DataGrid extends Component
                        ? '<span class="tree tree-plus-'.$pos.'">&nbsp;</span>'
                        : '<span class="tree tree-con-'.$pos.'">&nbsp;</span>';
                 $opt['row']['prefix'][] = $ico;
-                if (!empty($lev) && strpos($_REQUEST[$this->id.'_open'], '['.base64_encode($tree_group).']') === false){
+                if (!empty($lev) && !isset($_REQUEST[$this->id.'_open']) && strpos($_REQUEST[$this->id.'_open'], '['.base64_encode($tree_group).']') === false){
                     $opt['row']['class'][] = 'hide';
                 }
                 break;           
