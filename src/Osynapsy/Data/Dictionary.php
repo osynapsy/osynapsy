@@ -79,7 +79,8 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
         $target =& $this->repo;
         foreach ($ksearch as $k) { 
             if (!array_key_exists($k, $target)) {
-                 return null;
+                $app = null;
+                return $app;
             } 
             $target =& $target[$k];
         }
