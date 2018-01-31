@@ -60,7 +60,7 @@ class ListTree extends ListBox
         return $ul;
     }
     
-    public function SetData(array $rawData)
+    public function SetData($rawData)
     {
         $this->data = array();
         foreach ($rawData as $k => $rec) {
@@ -70,6 +70,6 @@ class ListTree extends ListBox
                 $this->groups[$rec[2]][] = $rec;
             }
         }
-        $this->buildBranch($dat);
+        //$this->buildBranch($this->data);
     }
 }
