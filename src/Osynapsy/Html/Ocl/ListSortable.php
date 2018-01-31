@@ -152,7 +152,7 @@ class ListSortable extends Component
                 break;
         }
         if ($print) {
-            return "<div class=\"cell\" style=\"width: {$wdt}\">$fieldValue</div>";
+            return "<div class=\"cell\">$fieldValue</div>";
         }
     }
     
