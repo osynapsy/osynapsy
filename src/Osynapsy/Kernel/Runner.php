@@ -24,6 +24,7 @@ class Runner
     private $env;
     private $route;
     private $dbFactory;
+    private $appController;
     
     public function __construct(Dictionary &$env, $currentRoute)
     {
