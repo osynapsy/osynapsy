@@ -60,7 +60,7 @@ trait Subject
     
     protected function getObservers()
     {
-        if (is_null($this->observer)) {
+        if (is_null($this->observers)) {
             $this->observers = new \SplObjectStorage();
         }
         return $this->observers;
