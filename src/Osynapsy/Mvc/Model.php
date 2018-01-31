@@ -218,7 +218,10 @@ abstract class Model
     public function map($htmlField, $dbField = null, $value = null, $type = 'string')
     {
         $modelField = new ModelField($this, $dbField, $htmlField, $type);
-        $modelField->setValue($_REQUEST[$modelField->html],$value);
+        $modelField->setValue(
+            isset($_REQUEST[$modelField->html]) ? $_REQUEST[$modelField->html] : null, 
+            $value
+        );
         $this->repo->set('fields.'.$modelField->html, $modelField);
         return $modelField;
     }
