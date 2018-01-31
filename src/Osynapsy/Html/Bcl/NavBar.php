@@ -138,7 +138,7 @@ class NavBar extends Component
      * @param array $secondary set second menù aligned to right
      * @return $this Navbar component
      */
-    public function setData(array $primary, array $secondary = [])
+    public function setDataMenu(array $primary, array $secondary = [])
     {
         $this->data['primary'] = $primary;
         $this->data['secondary'] = $secondary;
