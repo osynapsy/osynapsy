@@ -46,7 +46,7 @@ class LabelBox extends Component
     public function __build_extra__()
     {
         if (is_null($this->label)) {
-            $this->add($_REQUEST[$this->hiddenBox->id]);
+            $this->add(isset($_REQUEST[$this->hiddenBox->id]) ? $_REQUEST[$this->hiddenBox->id] : null);
         } else {
             $this->add('<span>'.$this->label.'</span>');
         }
