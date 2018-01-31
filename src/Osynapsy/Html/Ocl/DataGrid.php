@@ -537,7 +537,7 @@ class DataGrid extends Component
             return;
         }
         try {
-            $sql_cnt = "SELECT COUNT(*) FROM (\n{$sql}\n) a ".$whr;
+            $sql_cnt = "SELECT COUNT(*) FROM (\n{$sql}\n) a ";
             $this->__par['rec_num'] = $this->db->execUnique($sql_cnt,$this->getParameter('datasource-sql-par'));
             $this->att('data-row-num',$this->__par['rec_num']);
         } catch(\Exception $e) {
@@ -590,7 +590,7 @@ class DataGrid extends Component
                 }
                 break;
             default:
-                $sql = "SELECT a.* FROM ({$sql}) a {$whr} ";
+                $sql = "SELECT a.* FROM ({$sql}) a ";
                 if (!empty($_REQUEST[$this->id.'_order'])) {
                     $sql .= ' ORDER BY '.str_replace(array('][','[',']'),array(',','',''),$_REQUEST[$this->id.'_order']);
                 }
