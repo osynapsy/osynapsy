@@ -31,7 +31,7 @@ class ResponseHtmlOcl extends ResponseHtml
                 $response->add(Component::getById($id));                    
             }
             $this->addContent($response);       
-            return $this->response;
+            return;
         }
         if (!$requires = Component::getRequire()) {
             return;
