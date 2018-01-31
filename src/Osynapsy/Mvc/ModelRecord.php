@@ -316,7 +316,7 @@ abstract class ModelRecord
     {
     }
     
-    protected function afterInsert()
+    protected function afterInsert($id)
     {
     }
     
