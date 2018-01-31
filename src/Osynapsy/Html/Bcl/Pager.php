@@ -57,7 +57,7 @@ class Pager extends Component
     
     public function __build_extra__()
     {
-        if (!$loaded) {
+        if (!$this->loaded) {
             $this->loadData;
         }
         $this->add(new HiddenBox($this->id));
