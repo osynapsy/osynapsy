@@ -166,7 +166,7 @@ class Panel extends Component
         } elseif (is_object($obj['obj']) && ($obj['obj']->tag == 'button')) {
             $obj['lbl'] = '&nbsp';
             $style = 'display: block';
-        } elseif (strpos($obj['obj']->class, 'label-block') !== false) {
+        } elseif (is_object($obj['obj']) && strpos($obj['obj']->class, 'label-block') !== false) {
             $style = 'display: block'; 
         }
         if (empty($obj['lbl'])) {
@@ -175,7 +175,7 @@ class Panel extends Component
         $labelText = $obj['lbl'];
         $label = new Tag('label');
         $label->att('class',($obj['obj'] instanceof panel ? 'osy-form-panel-label' : 'osy-component-label'))
-              ->att('for',$obj['obj']->id)              
+              ->att('for',is_object($obj['obj']) ? $obj['obj']->id : '')              
               ->add(trim($labelText));
         if (!empty($style)) {
             $label->att('style',$style);
