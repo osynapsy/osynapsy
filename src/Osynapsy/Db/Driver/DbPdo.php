@@ -225,7 +225,7 @@ class DbPdo extends \PDO implements InterfaceDbo
     
     private function buildSelect($table, array $fields, array $conditions)
     {
-        $sql .= 'SELECT '. implode(',', $fields) . ' FROM ' . $table;
+        $sql = 'SELECT '. implode(',', $fields) . ' FROM ' . $table;
         if (empty($conditions)) {
             return $sql;
         }
