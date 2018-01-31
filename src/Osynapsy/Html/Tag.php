@@ -105,7 +105,7 @@ class Tag
         if ($tag == 'dummy') {
             return $strContent;
         }
-        $strTag = '';
+        $spaces = $strTag = '';
         if (!empty($tag)){
             $spaces = $this->tagdep != 0 ? "\n".str_repeat("  ",abs($this->tagdep)) : '';
             $strTag = $spaces.'<'.$tag;
