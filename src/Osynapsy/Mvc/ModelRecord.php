@@ -286,7 +286,7 @@ abstract class ModelRecord
             $this->getController()->getResponse()->error('alert', $e->getMessage());
             $field->readonly = true;            
         }
-        $this->afterUpload($this->value, $field);
+        $this->afterUpload($field->value, $field);
         $this->set('actions.after-update','refresh');
         $this->set('actions.after-insert','refresh');
         return $field->value;
