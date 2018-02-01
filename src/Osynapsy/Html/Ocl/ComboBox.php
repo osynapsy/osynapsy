@@ -49,7 +49,11 @@ class ComboBox extends Component
             array_unshift($this->data, array('', $this->placeholder)); 
         }                     
         foreach ($this->data as $k => $item) {
-            $this->addOption($item[0], $item[1]);            
+            if (!is_array($item)) {
+                continue;
+            }
+            $item = array_values($item);
+            $this->addOption($item[0], (isset($item[1]) ? $item[1] : $item[0]));            
         }
     }
     
