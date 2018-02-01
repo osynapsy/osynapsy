@@ -61,7 +61,9 @@ class MapLeafletBox extends Component
                 )
             );	
 		}
-		$this->map->att('coostart', $res[0]['lat'].','.$res[0]['lng'].','.$res[0]['ico']);
+        $coordinateStart = $res[0]['lat'].','.$res[0]['lng'];
+        $coordinateStart .= isset($res[0]['ico']) ? ','.$res[0]['ico'] : '';
+		$this->map->att('coostart', $coordinateStart);
 		if (empty($_REQUEST[$this->id.'_center'])) {
 			$_REQUEST[$this->id.'_center'] = $res[0]['lat'].','.$res[0]['lng'];
 		}
