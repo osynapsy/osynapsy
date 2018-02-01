@@ -219,7 +219,7 @@ class DbPdo extends \PDO implements InterfaceDbo
             $whr[] = "{$k} = ?";
             $val[] = $v;
         }
-        $cmd .= 'delete from '.$tbl.' where '.implode(' and ',$whr);
+        $cmd = 'delete from '.$tbl.' where '.implode(' and ',$whr);
         $this->execCommand($cmd, $val);
     }
     
