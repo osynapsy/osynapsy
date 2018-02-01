@@ -99,7 +99,10 @@ class Kernel
         foreach(array_keys($applications) as $applicationId) {
             $routes = $this->loader->search('route', "app.{$applicationId}");
             foreach ($routes as $route) {
-                $id = $route['id'];
+                if (!isset($route['path'])) {
+                    continue;
+                }
+                $id = isset($route['id']) ? $route['id'] : uniqid();
                 $uri = $route['path'];
                 $controller = $route['routeValue'];
                 $template = !empty($route['template']) ? $this->request->get('app.layouts.'.$route['template']) : '';
