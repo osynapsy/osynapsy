@@ -142,12 +142,13 @@ class SqlQuery
     
     private function prefix($word)
     {
-        return array_key_exists($word, $this->part) ? $this->part[$word][0] : ' ';
+        //return array_key_exists($word, $this->part) ? $this->part[$word][0] : ' ';
+        return isset($this->part[$word]) && isset($this->part[$word]['prefix']) ? $this->part[$word]['prefix'] : ' ';
     }
     
     private function postfix($word)
     {
-        return array_key_exists($word, $this->part) ? $this->part[$word][1] : ' ';
+        return isset($this->part[$word]) && isset($this->part[$word]['postfix']) ? $this->part[$word]['postfix'] : ' ';
     }
     
     private function getSeparator($word)
