@@ -186,8 +186,8 @@ class Pager extends Component
     }
 
     private function calcPage($requestPage)
-    {        
-        $this->page['current'] = max(1, $requestPage+0);        
+    {                
+        $this->page['current'] = max(1,(int) $requestPage);
         if ($this->total['rows'] == 0 || empty($this->page['dimension'])) {
             return;
         }
