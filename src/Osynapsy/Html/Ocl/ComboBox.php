@@ -31,8 +31,8 @@ class ComboBox extends Component
     
     protected function __build_extra__()
     {        
-        $this->currentValue = $this->getGlobal($this->name, $_REQUEST);
-        if (!$this->currentValue) {
+        $this->currentValue = $this->getGlobal($this->name, $_REQUEST);        
+        if (empty($this->currentValue) && $this->currentValue != '0') {
             $this->currentValue = $this->defaultValue;
         }
         if (!empty($this->data) && $this->isTree && array_key_exists(2,$this->data[0])) {
@@ -61,8 +61,9 @@ class ComboBox extends Component
     {               
         $option = $this->add(new Tag('option'))->att('value', $optionValue);
         $option->add($this->nvl($label, $optionValue));
+        
         if ($this->currentValue == $optionValue) {
-            $option->att('selected','selected');
+            $option->att('selected', 'selected');
         }
     }
     
