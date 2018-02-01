@@ -418,9 +418,9 @@ class DataGrid extends Component
                 $opt['cell']['print'] = true;
                 break;
             case '_chk':
-                list($v,$sel) = explode('#',$opt['cell']['rawvalue']);                
-                if ($v === '0' || !empty($v)) {
-                    $opt['cell']['value'] = "<input type=\"checkbox\" name=\"chk_{$this->id}[]\" value=\"{$v}\"".(empty($sel) ? '' : ' checked').">";
+                $val = explode('#',$opt['cell']['rawvalue']);                
+                if ($val[0] === '0' || !empty($val[0])) {
+                    $opt['cell']['value'] = "<input type=\"checkbox\" name=\"chk_{$this->id}[]\" value=\"{$val[0]}\"".(empty($val[1]) ? '' : ' checked').">";
                 }
                 $opt['cell']['class'][] = 'center';
                 $opt['cell']['print'] = true;
