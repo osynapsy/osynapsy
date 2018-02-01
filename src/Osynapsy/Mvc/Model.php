@@ -344,7 +344,7 @@ abstract class Model
         }
         $this->set('actions.after-update','refresh');
         $this->set('actions.after-insert','refresh');
-        $this->afterUpload($this->value, $field);
+        $this->afterUpload($field->value, $field);
         return $field->value;
     }
     
