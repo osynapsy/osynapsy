@@ -261,7 +261,7 @@ class DbOci implements InterfaceDbo
             $where[] = "$field = :WHERE_{$field}";
             $values['WHERE_'.$field] = $value;
         }
-        $cmd .= 'UPDATE '.$table.' SET ';
+        $cmd = 'UPDATE '.$table.' SET ';
         $cmd .= implode(', ',$fields);
         $cmd .= ' WHERE ';
         $cmd .= implode(' AND ',$where);
