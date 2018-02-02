@@ -18,7 +18,7 @@ class DatePicker extends Component
     private $text;
     private $datePickerId;
     private $dateComponent;
-    private $format = 'DD/MM/YYYYY';
+    private $format = 'DD/MM/YYYY';
     
     public function __construct($id)
     {
