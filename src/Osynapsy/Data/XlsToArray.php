@@ -129,14 +129,12 @@ class XlsToArray
     
     public function export($data, $title = 'Data export', $basePath = '/upload/export/')
     {
-        $xls = $this->buildXls($title);
-        
-        $letters = array_unshift(range('A','Z'),'');
-        $cell = '';
-        
+        $xls = $this->buildXls($title);                        
         function getColumnId($n) {
             $l = range('A','Z');
-            if ($n <= 26) return $l[$n-1];
+            if ($n <= 26) {
+                return $l[$n-1];
+            }
             $r = ($n % 26);
             $i = (($n - $r) / 26) - (empty($r) ? 1 : 0);
             return getColumnId($i).(!empty($r) ? getColumnId($r) : 'Z');
