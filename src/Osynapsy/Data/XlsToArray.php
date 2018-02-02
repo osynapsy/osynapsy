@@ -114,7 +114,7 @@ class XlsToArray
         return $insert;
     }
     
-    private function buildXls()
+    private function buildXls($title)
     {
         $xls = new \PHPExcel();
         
@@ -129,7 +129,7 @@ class XlsToArray
     
     public function export($data, $title = 'Data export', $basePath = '/upload/export/')
     {
-        $xls = $this->buildXls();
+        $xls = $this->buildXls($title);
         
         $letters = array_unshift(range('A','Z'),'');
         $cell = '';
