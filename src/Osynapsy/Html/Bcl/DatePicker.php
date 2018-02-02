@@ -37,9 +37,8 @@ class DatePicker extends Component
     protected function __build_extra__()
     {
         $this->dateComponent->att('data-format', $this->format);
-        if (!empty($_REQUEST[$this->datePickerId])) {
-            $data = $_REQUEST[$this->datePickerId];
-            $data = explode('-',$data);
+        if (!empty($_REQUEST[$this->datePickerId])) {            
+            $data = explode('-', $_REQUEST[$this->datePickerId]);
             if (count($data) >= 3 && strlen($data[0]) == 4) {
                 $_REQUEST[$this->datePickerId] = $data[2].'/'.$data[1].'/'.$data[0];
             }
