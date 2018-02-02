@@ -65,6 +65,7 @@ class ComboBox extends Component
         if ($this->currentValue == $optionValue) {
             $option->att('selected', 'selected');
         }
+        return $option;
     }
     
     private function buildTree($res)
@@ -84,25 +85,16 @@ class ComboBox extends Component
     {
         if (empty($dat)) {
             return;
-        }
-        $len = count($dat) - 1;        
+        }        
         foreach ($dat as $k => $rec) {
             $val = array();
             foreach ($rec as $j => $v) {
-                if (!is_numeric($j)) {
+                if (!is_numeric($j) || count($val) === 2) {
                     continue;
-                } elseif (count($val) == 2) {
-                    continue;
-                }               
+                }
                 $val[] = empty($val) ? $v : str_repeat('&nbsp;',$lev*5).$v;
-            }           
-            $opt = $this->add(new Tag)
-                        ->att('value',$val[0]);
-            $opt->add($this->nvl($val[1],$val[0]));
-            if ($this->currentValue == $val[0]) {
-                $opt->att('selected','selected');
-            }
-            //$this->add('<option value="'.$val[0].'"'.$sel.'>'.nvl($val[1],$val[0])."</option>\n");
+            }            
+            $this->addOption($val[0], $val[1]);
             if (array_key_exists($val[0],$this->__grp)) {
                 $this->buildBranch($this->__grp[$val[0]],$lev+1);
             }
