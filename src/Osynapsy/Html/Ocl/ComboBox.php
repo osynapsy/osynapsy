@@ -57,12 +57,11 @@ class ComboBox extends Component
         }
     }
     
-    public function addOption($optionValue, $label)
+    public function addOption($value, $label)
     {               
-        $option = $this->add(new Tag('option'))->att('value', $optionValue);
-        $option->add($this->nvl($label, $optionValue));
-        
-        if ($this->currentValue == $optionValue) {
+        $option = $this->add(new Tag('option'))->att('value', $value);
+        $option->add($this->nvl($label, $value));        
+        if ($this->currentValue == $value) {
             $option->att('selected', 'selected');
         }
         return $option;
