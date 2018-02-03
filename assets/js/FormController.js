@@ -1,12 +1,12 @@
 window.locationPost = function(url,vars){
-  f = $('<form method="post" action="'+e.url+'"></form>');
-  if (arguments.length > 1) {
-      for (k in arguments[1]) {
-        $('<input type="hidden" name="'+k+'" value="'+arguments[1][k]+'">').appendTo(f);
-      }
-  }
-  $('body').append(f);
-  f.submit();
+    var f = $('<form method="post" action="'+e.url+'"></form>');
+    if (arguments.length > 1) {
+        for (var k in arguments[1]) {
+          $('<input type="hidden" name="'+k+'" value="'+arguments[1][k]+'">').appendTo(f);
+        }
+    }
+    $('body').append(f);
+    f.submit();
 }
 
 var FormController = 
@@ -222,7 +222,7 @@ var FormController =
           ajaxpar['data'] = $(obj).closest('form').serialize()+'&'+extraData;
         }
         $.ajax(ajaxpar);
-                console.log(ajaxpar);
+        console.log(ajaxpar);
     },
     execCode : function(code) {
         eval(code.replace(/(\r\n|\n|\r)/gm,""));
