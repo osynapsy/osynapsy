@@ -143,19 +143,19 @@ class Form extends Component
         return $this->body;
     }
     
-    public function setCommand($delete=false, $save=true, $back=true)
+    public function setCommand($delete = false, $save = true, $back = true)
     {
         if ($save) {
-            $this->foot(new Button('btn_save'))
-                 ->att('class','cmd-execute btn btn-primary pull-right')
-                 ->att('data-action','save')
+            $this->foot(new Button('btn_save', 'button', 'btn-primary pull-right'))
+                 ->setAction('save')
                  ->att('style','min-width: 100px; margin-right: 10px;')
-                 ->add(($save === true ? '<span class="glyphicon glyphicon-floppy-disk"></span> Salva' : $save));
+                 ->add($save === true ? '<span class="glyphicon glyphicon-floppy-disk"></span> Salva' : $save);
         }
         
         if ($delete) {
-            $this->foot(new Button('btn_delete'))
-                 ->att('class','btn btn-danger pull-right cmd-delete')                 
+            $this->foot(new Button('btn_delete', 'button', 'btn-danger pull-right'))
+                 ->setAction('delete')
+                 ->att('data-confirm', 'Sei sicuro di voler eliminare il record corrente?')                 
                  ->att('style','min-width: 100px; margin-right: 10px;')
                  ->add('<span class="glyphicon glyphicon-trash"></span> Elimina');
         }
