@@ -225,7 +225,7 @@ var FormController =
                 console.log(ajaxpar);
     },
     execCode : function(code) {
-        eval(code);
+        eval(code.replace(/(\r\n|\n|\r)/gm,""));
     },
     observe : function(target, fnc){
         var observer = new MutationObserver(fnc);
