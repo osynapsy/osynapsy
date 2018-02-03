@@ -1,62 +1,169 @@
-window.locationPost = function(url,vars){
+window.locationPost = function(url, vars){
     var f = $('<form method="post" action="'+e.url+'"></form>');
     if (arguments.length > 1) {
         for (var k in arguments[1]) {
-          $('<input type="hidden" name="'+k+'" value="'+arguments[1][k]+'">').appendTo(f);
+            $('<input type="hidden" name="'+k+'" value="'+arguments[1][k]+'">').appendTo(f);
         }
     }
     $('body').append(f);
     f.submit();
-}
+};
 
-var FormController = 
+var Action = 
 {
-    repo : 
+    execute : function(object)
     {
-        event : { init : {} },
-        componentInit : {}
+        var form = $(object).closest('form');
+        var action = $(object).data('action');        
+        if (!action) {
+            alert('Attribute data-action don\'t set.');
+            return;
+        }
+        if ($(object).data('confirm')) {
+            if (!confirm($(object).data('confirm'))) {
+                return;
+            }   
+        }        
+        var actionParameters = this.grabActionParameters(object);
+        if (actionParameters === false) {
+            this.remoteExecute(action, form);
+        }
+        this.remoteExecute(action, form, actionParameters);
     },
-    init : function()
+    grabActionParameters : function(object)
     {
-        $('body').on('click','.cmd-execute, .click-execute',function() {
-            FormController.execute(this);
-        }).on('change','.change-execute',function(){
-            FormController.execute(this);
-        }).on('click','a.open-modal',function(e){
-            e.preventDefault();            
-            FormController.modalWindow(
-                'amodal', 
-                $(this).attr('title'), 
-                $(this).attr('href'), 
-                $(this).attr('modal-width') ? $(this).attr('modal-width') : '75%',
-                $(this).attr('modal-height') ? $(this).attr('modal-height') : ($(window).innerHeight() - 250) + 'px'
-            );
-        }).on('click','.cmd-delete',function(){
-            if (confirm('Sei sicuro di voler eliminare il record corrente?')){
-                FormController.exec(this,'delete');
+        if (!$(object).data('action-parameters')) {            
+            return false;
+        }
+        var values = [];        
+        var params = String($(object).data('action-parameters')).split(',');
+        for (var i in params) {
+            var value = params[i];
+            if (value === 'this.value'){
+                value = $(object).val();
+            } else if (value.charAt(0) === '#' && $(value).length > 0) {
+                value = $(value).val();
+            } 
+            values.push('actionParameters[]=' + encodeURIComponent(value));
+        }
+        return params.join('&')
+    },
+    remoteExecute : function(action, form)
+    {
+        var extraData = (arguments.length > 2) ? arguments[2] : '';
+        alert(action);
+        $('.field-in-error').removeClass('field-in-error');
+        var callParameters = {
+            url  : $(form).attr('action'),
+            headers: {
+                'Osynapsy-Action': action
+            },
+            type : 'post',
+            dataType : 'json',
+            success : function(response){            
+                WaitMask.remove();
+                ResponseDispatcher.dispatch(response);
+            },
+            error: function(xhr, status, error) {                
+                WaitMask.remove();
+                console.log(status);
+                console.log(error);
+                console.log(xhr);
+                alert(xhr.responseText);
             }
-        }).on('click','.cmd-back',function(){        
-            FormController.back();
-        }).on('click','.save-history',function(){
-            FormController.saveHistory();
-        });
-        this.fire('init');
+        };                        
+        if (!this.checkForUpload()) {
+            WaitMask.show();
+            var options = {
+                data : $(form).serialize()+'&'+extraData
+            };
+        } else {
+            WaitMask.showProgress();
+            var options  = {
+                //Se devo effettuare un upload personalizzo il metodo jquery $.ajax per fargli spedire il FormData
+                data :  new FormData($(form)[0]), 
+                xhr  : function() {  // Custom XMLHttpRequest
+                    var myXhr = $.ajaxSettings.xhr();
+                    if(myXhr.upload) { // Check if upload property exists
+                        myXhr.upload.addEventListener('progress', WaitMask.uploadProgress, false); // For handling the progress of the upload
+                    }
+                    return myXhr;
+                },
+                mimeType : "multipart/form-data",
+                contentType : false,
+                cache : false,
+                processData :false
+            };        
+        }
+        $.extend(callParameters, options);
+        $.ajax(callParameters);
+        console.log(callParameters);
     },
-    back : function()
+    checkForUpload : function()
     {
-        if (!sessionStorage.history) {
-            history.back();
+        if (!window.FormData){            
+            return false; //No file to upload or IE9,IE8,etc browser
         }
-        var hst = JSON.parse(sessionStorage.history);
-        var stp = hst.pop();        
-        var frm = $('<form method="post" action="'+stp.url+'"></form>');
-        for (k in stp.parameters) {
-            var fld = stp.parameters[k];
-            $('<input type="hidden" name="'+fld[0]+'" value="'+fld[1]+'">').appendTo(frm);
+        var upload = false;
+        $('input[type=file]').each(function(){
+            //Carico il metodo per effettuare l'upload solo se c'è almeno un campo file pieno
+            if ($(this).val() != '') {
+                upload = true; 
+                return false ;
+            }
+        });
+        return upload;        
+    }
+};
+
+var ResponseDispatcher = 
+{
+    response : null,
+    dispatch : function (response)
+    {
+        this.response = response;
+        if (!FormController.isObject(this.response)){
+            console.log('Resp is not an object : ', this.response);
+            return;
+        }       
+        this.dispatchErrors();
+        this.dispatchCommands();
+    },
+    dispatchErrors : function()
+    {
+        if (!('errors' in this.response)){
+            return;
         }
-        sessionStorage.history = JSON.stringify(hst);
-        $('body').append(frm);
-        frm.submit();
+        var errorMessage = '';
+        $.each(this.response.errors, function(idx, val){
+            if (val[0] === 'alert'){
+                alert(val[1]);
+            } else if (!$('#'+val[0]).hasClass('field-in-error')){                                        
+                var cmp = $('#'+val[0]);                    
+                if (cmp.length > 0){
+                    errorMessage += DispatcherKernelResponse.showErrorOnLabel(cmp, val[1]);                        
+                } else {
+                    errorMessage += val[1] + '\n';
+                }
+            }
+        });
+        if (errorMessage !== '') {
+            FormController.modalAlert(
+                'Si sono verificati i seguenti errori',
+                '<pre>' + errorMessage +'</pre>'
+            );
+        }        
+    },
+    dispatchCommands : function()
+    {
+        if (!('command' in this.response)) {
+            return;
+        }
+        $.each(this.response.command, function(idx, val){            
+            if (val[0] in FormController) {
+                FormController[val[0]](val[1]);
+            }
+        });
     },
     showErrorOnLabel : function(elm, err)
     {
@@ -74,41 +181,98 @@ var FormController =
             $('span.error',par).remove();
             par.removeClass('has-error');
         });
+    }
+};
+
+var WaitMask = 
+{    
+    build : function(message, parent, position)
+    {                        
+        var mask = $('<div id="waitMask" class="wait"><div class="message">'+message+'</div></div>');
+        mask.width($(parent).width())
+            .height($(parent).height())
+            .css('top', position.top+'px')
+            .css('left',position.left+'px');
+        $('body').append(mask);
     },
-    dispatchKernelResp : function(resp)
+    show : function()
+    {        
+        var message = 'PLEASE WAIT <span class="fa fa-refresh fa-spin"></span>';
+        var position = {top : '0px', left : '0px'};
+        var parent = document;
+        if (arguments.length > 0) {
+            parent = arguments[0];
+            position = $(parent).offset();
+        }
+        this.build(message, parent, position);
+    },
+    showProgress : function()
     {
-        //console.log(resp);
-        if (!this.isObject(resp)){
-            console.log('Resp is not an object : ',resp);
-            return;
-        }
-        if ('errors' in resp){
-            var errorMessage = '';
-            $.each(resp.errors, function(idx, val){
-                if (val[0] === 'alert'){
-                    alert(val[1]);
-                } else if (!$('#'+val[0]).hasClass('field-in-error')){                                        
-                    var cmp = $('#'+val[0]);                    
-                    if (cmp.length > 0){
-                        errorMessage += FormController.showErrorOnLabel(cmp, val[1]);                        
-                    } else {
-                        errorMessage += val[1] + '\n';
-                    }
-                }
-            });
-            if (errorMessage !== '') {
-                FormController.modalAlert('Si sono verificati i seguenti errori', '<pre>' + errorMessage +'</pre>');
-            }
-        }
-        if ('command' in resp){
-            $.each(resp.command, function(idx,val){
-                //if (idx in this) {
-                if (val[0] in FormController) {
-                    FormController[val[0]](val[1]);
-                }
-            });
-        }
+        var message = '';
+        message += '<div class="progress_msg">Upload in progress .... <span id="progress_idx">0%</span> completed</div>';
+        message += '<div class="progress"><div id="progress_bar" style="background-color: #ceddef; width: 0%;">&nbsp;</div></div>';
+        this.build(message, document, {top : '0px', left : '0px'})
     },
+    remove : function()
+    {        
+        $('#waitMask').remove();     
+    },
+    uploadProgress : function(a){
+        if ($('#progress_idx').length > 0){
+            //if (console) console.log(a);
+            var pos = a.loaded ? a.loaded : a.position;
+            var t = Math.round((pos / a.total) * 100);
+            $('#progress_bar').css('width',t +'%');
+            $('#progress_idx').text(t +'%');
+        }
+    }
+};
+
+var FormController = 
+{
+    repo : 
+    {
+        event : { init : {} },
+        componentInit : {}
+    },
+    init : function()
+    {
+        $('body').on('change','.change-execute',function(){
+            Action.execute(this);
+        }).on('click','.cmd-execute, .click-execute',function() {
+            Action.execute(this);
+        }).on('click','.cmd-back',function(){        
+            FormController.back();
+        }).on('click','.save-history',function(){
+            FormController.saveHistory();
+        }).on('click','a.open-modal',function(e){
+            e.preventDefault();            
+            FormController.modalWindow(
+                'amodal', 
+                $(this).attr('title'), 
+                $(this).attr('href'), 
+                $(this).attr('modal-width') ? $(this).attr('modal-width') : '75%',
+                $(this).attr('modal-height') ? $(this).attr('modal-height') : ($(window).innerHeight() - 250) + 'px'
+            );
+        });
+        this.fire('init');
+    },
+    back : function()
+    {
+        if (!sessionStorage.history) {
+            history.back();
+        }
+        var hst = JSON.parse(sessionStorage.history);
+        var stp = hst.pop();        
+        var frm = $('<form method="post" action="'+stp.url+'"></form>');
+        for (var k in stp.parameters) {
+            var fld = stp.parameters[k];
+            $('<input type="hidden" name="'+fld[0]+'" value="'+fld[1]+'">').appendTo(frm);
+        }
+        sessionStorage.history = JSON.stringify(hst);
+        $('body').append(frm);
+        frm.submit();
+    },    
     fire : function(evt)
     {
         if (evt in this.repo['event']){
@@ -145,85 +309,15 @@ var FormController =
         }
         $('body').append(frm);
         frm.submit();
-    },
-    
+    },    
     isObject : function(v)
     {
         return v instanceof Object;
     },
     execute : function(obj)
     {
-        if (!$(obj).data('action')) {
-            alert('Attribute data-action don\'t set.');
-        }
-        if (!$(obj).data('action-parameters')) {
-            FormController.exec(obj, $(obj).data('action'));
-            return;
-        }
-        var parameterLst = [];        
-        var parameterRaw = String($(obj).data('action-parameters')).split(',');
-        for (i in parameterRaw) {
-            var parameterValue = parameterRaw[i];
-            if (parameterValue === 'this.value'){
-                parameterValue = $(obj).val();
-            } else if (parameterValue.charAt(0) === '#' && $(parameterValue).length > 0) {
-                parameterValue = $(parameterValue).val();
-            } 
-            parameterLst.push('actionParameters[]=' + encodeURIComponent(parameterValue));
-        }        
-        FormController.exec(obj, $(obj).data('action'), parameterLst.join('&'));
-    },
-    exec : function(obj, cmd)
-    {
-        var extraData = (arguments.length > 2) ? arguments[2] : '';
-        var funcDispatcher = (arguments.length > 3) ? arguments[3] : function(resp){            
-            FormController.waitMask('remove');
-            FormController.dispatchKernelResp(resp);
-        };
-        $('.field-in-error').removeClass('field-in-error');
-        var ajaxpar = {
-            url  : $(obj).closest('form').attr('action'),
-            headers: {'Osynapsy-Action': cmd},
-            type : 'post',
-            dataType : 'json',
-            success : funcDispatcher,
-            error: function(xhr, status, error) {
-                FormController.waitMask('remove');
-                console.log(error);
-                console.log(xhr);
-                alert(xhr.responseText);
-            }
-        }
-        var upload = false;
-        if (window.FormData){
-            $('input[type=file]').each(function(){
-                //Carico il metodo per effettuare l'upload solo se c'è almeno un campo file pieno
-                if ($(this).val() != '') {
-                    upload = true; return false ;
-                }
-            });
-        }
-        if (upload){ //Se devo effettuare un upload personalizzo il metodo jquery $.ajax per fargli spedire il FormData
-          this.waitMask('open','progress');
-          ajaxpar['data'] = new FormData($(obj).closest('form')[0]);
-          ajaxpar['xhr'] = function(){  // Custom XMLHttpRequest
-             var myXhr = $.ajaxSettings.xhr();
-             if(myXhr.upload) { // Check if upload property exists
-                myXhr.upload.addEventListener('progress',FormController.uploadProgress, false); // For handling the progress of the upload
-             }
-             return myXhr;
-          }
-          ajaxpar['mimeType'] = "multipart/form-data";
-          ajaxpar['contentType'] = false;
-          ajaxpar['cache'] = false;
-          ajaxpar['processData'] = false;
-        } else { //No file to upload or IE9,IE8,etc browser
-          this.waitMask('open');
-          ajaxpar['data'] = $(obj).closest('form').serialize()+'&'+extraData;
-        }
-        $.ajax(ajaxpar);
-        console.log(ajaxpar);
-    },
+        Action.execute(obj);
+    },    
     execCode : function(code) {
         eval(code.replace(/(\r\n|\n|\r)/gm,""));
     },
@@ -240,22 +334,22 @@ var FormController =
     {
         var data  = $('form').serialize();
             data += (arguments.length > 1 && arguments[1]) ? '&'+arguments[1] : '';
-        if (!(typeof component === 'object')) {
-            FormController.waitMask('open','wait',component);
+        if (!(typeof component === 'object')) {            
+            WaitMask.show(component);
             component = Array(component);
-        } else if ($(component).is(':visible')) {
-            FormController.waitMask('open','wait');
+        } else if ($(component).is(':visible')) {           
+            WaitMask.show();
         }
-        for (i in component) {
+        for (var i in component) {
             data += '&ajax[]=' + $(component[i]).attr('id');
         }
         $.ajax({
             type : 'post',
             data : data,
             success : function(rsp) {
-                console.log(rsp);
-                FormController.waitMask('remove');
-                for (i in component) {
+                console.log(rsp);                
+                WaitMask.remove();
+                for (var i in component) {
                     var cid = '#'+$(component[i]).attr('id');
                     var cmp = $(rsp).find(cid);
                     //$(cid).html(cmp.html());
@@ -292,49 +386,15 @@ var FormController =
         });
         hst.push({url : window.location.href, parameters : arr});        
         sessionStorage.history = JSON.stringify(hst);        
-    },
-    waitMask : function(cmd, typ)
-    {
-        if (cmd == 'remove') {
-            $('#waitMask').remove();
-            return;
-        }
-        var maskParent = document;
-        var maskPosition = {top : '0px', left : '0px'};
-        if (arguments.length > 2) {
-            maskParent = arguments[2];
-            maskPosition = $(maskParent).offset();
-        }
-        var maskMessage = 'PLEASE WAIT <span class="fa fa-refresh fa-spin"></span>';
-        switch (typ) {
-            case 'progress':
-                maskMessage = '<div class="progress_msg">Upload in progress .... <span id="progress_idx">0%</span> completed</div>';
-                maskMessage += '<div class="progress"><div id="progress_bar" style="background-color: #ceddef; width: 0%;">&nbsp;</div></div>';
-                break;
-        }
-        var d = $('<div id="waitMask" class="wait"><div class="message">'+maskMessage+'</div></div>');
-            d.width($(maskParent).width())
-             .height($(maskParent).height())
-             .css('top', maskPosition.top+'px')
-             .css('left', maskPosition.left+'px');
-        $('body').append(d);
-    },
-    uploadProgress : function(a){
-        if ($('#progress_idx').length>0){
-            //if (console) console.log(a);
-            pos = a.loaded ? a.loaded : a.position;
-            t = Math.round((pos / a.total) * 100);
-            $('#progress_bar').css('width',t +'%');
-            $('#progress_idx').text(t +'%');
-        }
-    },
+    },    
     setValue : function(k,v)
     {
         if ($('#'+k).length > 0){
             $('#'+k).val(v);
         }
     },
-    modal : function(id, title, body, actionConfirm, actionCancel){
+    modal : function(id, title, body, actionConfirm, actionCancel)
+    {
         $('.modal').remove();
         var btnCloseClass = '';
         var win  = '<div id="' + id + '" class="modal fade" role="dialog">\n';
