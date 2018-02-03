@@ -14,7 +14,8 @@ var Action =
     execute : function(object)
     {
         var form = $(object).closest('form');
-        var action = $(object).data('action');        
+        var action = $(object).data('action');
+        console.trace();
         if (!action) {
             alert('Attribute data-action don\'t set.');
             return;
@@ -27,8 +28,9 @@ var Action =
         var actionParameters = this.grabActionParameters(object);
         if (actionParameters === false) {
             this.remoteExecute(action, form);
-        }
-        this.remoteExecute(action, form, actionParameters);
+            return;
+        } 
+        this.remoteExecute(action, form, actionParameters);        
     },
     grabActionParameters : function(object)
     {
@@ -50,8 +52,7 @@ var Action =
     },
     remoteExecute : function(action, form)
     {
-        var extraData = (arguments.length > 2) ? arguments[2] : '';
-        alert(action);
+        var extraData = (arguments.length > 2) ? arguments[2] : '';        
         $('.field-in-error').removeClass('field-in-error');
         var callParameters = {
             url  : $(form).attr('action'),
@@ -240,6 +241,7 @@ var FormController =
         $('body').on('change','.change-execute',function(){
             Action.execute(this);
         }).on('click','.cmd-execute, .click-execute',function() {
+            console.log($(this).attr('id'));
             Action.execute(this);
         }).on('click','.cmd-back',function(){        
             FormController.back();
@@ -313,11 +315,7 @@ var FormController =
     isObject : function(v)
     {
         return v instanceof Object;
-    },
-    execute : function(obj)
-    {
-        Action.execute(obj);
-    },    
+    },  
     execCode : function(code) {
         eval(code.replace(/(\r\n|\n|\r)/gm,""));
     },
