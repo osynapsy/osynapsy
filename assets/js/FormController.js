@@ -14,8 +14,7 @@ var Action =
     execute : function(object)
     {
         var form = $(object).closest('form');
-        var action = $(object).data('action');
-        console.trace();
+        var action = $(object).data('action');        
         if (!action) {
             alert('Attribute data-action don\'t set.');
             return;
@@ -24,13 +23,8 @@ var Action =
             if (!confirm($(object).data('confirm'))) {
                 return;
             }   
-        }        
-        var actionParameters = this.grabActionParameters(object);
-        if (actionParameters === false) {
-            this.remoteExecute(action, form);
-            return;
-        } 
-        this.remoteExecute(action, form, actionParameters);        
+        }          
+        this.remoteExecute(action, form, this.grabActionParameters(object));
     },
     grabActionParameters : function(object)
     {
@@ -52,7 +46,7 @@ var Action =
     },
     remoteExecute : function(action, form)
     {
-        var extraData = (arguments.length > 2) ? arguments[2] : '';        
+        var extraData = (arguments.length > 2 && arguments[2]) ? arguments[2] : '';        
         $('.field-in-error').removeClass('field-in-error');
         var callParameters = {
             url  : $(form).attr('action'),
