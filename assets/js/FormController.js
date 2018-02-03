@@ -309,7 +309,11 @@ var FormController =
     isObject : function(v)
     {
         return v instanceof Object;
-    },  
+    },
+    execute  : function(object)
+    {
+        Action.execute(object);
+    },
     execCode : function(code) {
         eval(code.replace(/(\r\n|\n|\r)/gm,""));
     },
