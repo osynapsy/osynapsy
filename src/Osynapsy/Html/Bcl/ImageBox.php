@@ -135,11 +135,6 @@ class ImageBox extends Component
         $this->toolbar->add('<button type="button" class="crop-command btn btn-info btn-sm"><span class="fa fa-crop"></span></button> ');
         $this->toolbar->add('<button type="button" class="zoomin-command btn btn-info btn-sm"><span class="fa fa-search-plus"></span></button> ');
         $this->toolbar->add('<button type="button" class="zoomout-command btn btn-info btn-sm"><span class="fa fa-search-minus"></span></button> ');
-    }        
-    
-    public function setAction($action)
-    {
-        $this->att('data-action', $action);
     }
     
     public function setDomain($domain)
