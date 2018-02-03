@@ -35,22 +35,5 @@ class Button extends OclButton
         if (!empty($label)) {
             $this->add($label);
         }
-    }
-    
-    /**
-     * Set action to recall via ajax
-     * 
-     * @param string $action name of the action without Action final
-     * @param string $parameters parameters list (comma separated) to pass action
-     * @return $this
-     */
-    public function setAction($action, $parameters = null)
-    {
-        $this->att('class','cmd-execute',true)
-             ->att('data-action',$action);
-        if (!empty($parameters)) {
-            $this->att('data-action-parameters',$parameters);
-        }
-        return $this;
-    }    
+    }        
 }
