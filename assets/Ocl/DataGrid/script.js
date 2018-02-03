@@ -155,7 +155,7 @@ ODataGrid =
     refreshAjax : function(grid)
     {
         if ($(grid).is(':visible')) {
-            FormController.waitMask('open','wait',grid);
+            WaitMask.show(grid);
         }
         var data  = $('form').serialize();
             data += '&ajax=' + $(grid).attr('id');
@@ -165,7 +165,7 @@ ODataGrid =
             context : grid,
             data : data,
             success : function(rsp){
-                FormController.waitMask('remove');
+                WaitMask.remove();
                 if (rsp) {
                     var id = '#'+$(this).attr('id');
                     var grid = $(rsp).find(id);
