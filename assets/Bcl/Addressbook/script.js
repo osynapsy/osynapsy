@@ -8,7 +8,7 @@ BclAddressbook =
             $(this).toggleClass('osy-addressbook-item-selected');
         });
         $('.osy-addressbook').parent().on('click','a.osy-addressbook-link',function(evt){
-            FormController.saveHistory();
+            Osynapsy.history.save();
             evt.stopPropagation();
         });
     }
