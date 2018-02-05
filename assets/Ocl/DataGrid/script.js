@@ -100,7 +100,7 @@ ODataGrid =
     initAdd : function()
     {
         $('.osy-datagrid-2 .cmd-add').click(function(){
-            FormController.saveHistory();
+            Osynapsy.history.save();
             window.location = $(this).data('view');
         });
     },
@@ -155,7 +155,7 @@ ODataGrid =
     refreshAjax : function(grid)
     {
         if ($(grid).is(':visible')) {
-            WaitMask.show(grid);
+            Osynapsy.waitMask.show(grid);
         }
         var data  = $('form').serialize();
             data += '&ajax=' + $(grid).attr('id');
@@ -165,7 +165,7 @@ ODataGrid =
             context : grid,
             data : data,
             success : function(rsp){
-                WaitMask.remove();
+                Osynapsy.waitMask.remove();
                 if (rsp) {
                     var id = '#'+$(this).attr('id');
                     var grid = $(rsp).find(id);
