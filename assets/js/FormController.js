@@ -306,6 +306,31 @@ var Osynapsy = new (function(){
         }
     };
     
+    pub.page = {
+        init : function()
+        {
+            $('body').on('change','.change-execute',function(){
+                Osynapsy.action.execute(this);
+            }).on('click','.cmd-execute, .click-execute',function() {
+                Osynapsy.action.execute(this);
+            }).on('click','.cmd-back',function(){        
+                Osynapsy.history.back();
+            }).on('click','.save-history',function(){
+                Osynapsy.history.save();
+            }).on('click','a.open-modal',function(e){
+                e.preventDefault();            
+                FormController.modalWindow(
+                    'amodal', 
+                    $(this).attr('title'), 
+                    $(this).attr('href'), 
+                    $(this).attr('modal-width') ? $(this).attr('modal-width') : '75%',
+                    $(this).attr('modal-height') ? $(this).attr('modal-height') : ($(window).innerHeight() - 250) + 'px'
+                );
+            });
+            FormController.fire('init');
+        }
+    };
+    
     pub.post = function(url, vars)
     {
         var form = $('<form method="post" action="'+url+'"></form>');
@@ -375,25 +400,7 @@ var FormController =
     },
     init : function()
     {
-        $('body').on('change','.change-execute',function(){
-            Osynapsy.action.execute(this);
-        }).on('click','.cmd-execute, .click-execute',function() {
-            Osynapsy.action.execute(this);
-        }).on('click','.cmd-back',function(){        
-            Osynapsy.history.back();
-        }).on('click','.save-history',function(){
-            Osynapsy.history.save();
-        }).on('click','a.open-modal',function(e){
-            e.preventDefault();            
-            FormController.modalWindow(
-                'amodal', 
-                $(this).attr('title'), 
-                $(this).attr('href'), 
-                $(this).attr('modal-width') ? $(this).attr('modal-width') : '75%',
-                $(this).attr('modal-height') ? $(this).attr('modal-height') : ($(window).innerHeight() - 250) + 'px'
-            );
-        });
-        this.fire('init');
+        Osynapsy.page.init();
     },
     back : function()
     {
