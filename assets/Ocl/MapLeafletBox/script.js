@@ -12,14 +12,14 @@ OclMapLeafletBox = {
         self = this;
         $('.osy-mapgrid-leaflet').each(function(){
             var mapId = $(this).attr('id');
-            cnt = $('#' + mapId + '_center').val().split(',');	
-            zom = 10;
+            var center = $('#' + mapId + '_center').val().split(',');	
+            var zoom = 10;
             if (document.getElementById(mapId + '_zoom').value>0){
-                    zom = document.getElementById(mapId + '_zoom').value;			
+                    zoom = document.getElementById(mapId + '_zoom').value;			
             }
-            cnt[0] = parseFloat(cnt[0]);
-            cnt[1] = parseFloat(cnt[1]);
-            var map = L.map(mapId).setView(cnt, zom);
+            center[0] = parseFloat(center[0]);
+            center[1] = parseFloat(center[1]);
+            var map = L.map(mapId).setView(center, zoom);
             map.mapid = mapId;
             self.maplist[mapId] = map;
             L.tileLayer(
@@ -30,101 +30,117 @@ OclMapLeafletBox = {
             $('div[data-mapgrid=' + $(this).attr('id') +']').each(function(){
                 OclMapLeafletBox.datagrid.push($(this).attr('id'));
             });
+            
+            //Enable listener moveend event
             map.on('moveend', function(e) {
                 OclMapLeafletBox.autocenter = false;
                 OclMapLeafletBox.set_vertex(map);
                 OclMapLeafletBox.refresh_datagrid(map);
-            });                
-            var LeafIcon = L.Icon.extend({
-                options: {
-                    shadowUrl: 'http://leafletjs.com/docs/images/leaf-shadow.png',
-                    iconSize:     [38, 95],
-                    shadowSize:   [50, 64],
-                    iconAnchor:   [22, 94],
-                    shadowAnchor: [4, 62],
-                    popupAnchor:  [-3, -76]
-                }			
             });
-
-            var greenIcon = new LeafIcon({
-                iconUrl: 'http://leafletjs.com/docs/images/leaf-green.png'
-            });
-
-            var drawnItems = new L.FeatureGroup();
-            map.addLayer(drawnItems);						
-
-            var drawControl = new L.Control.Draw({
-                position: 'topright',
-                draw: {
-                    polygon: {
-                        shapeOptions: {
-                                color: 'purple'
-                        },
-                        allowIntersection: false,
-                        drawError: {
-                                color: 'orange',
-                                timeout: 1000
-                        },
-                        showArea: true,
-                        metric: false,
-                        repeatMode: true
-                    },
-                    polyline: {
-                        shapeOptions: {
-                                color: 'red'
-                        }
-                    },
-                    rect: {
-                        shapeOptions: {
-                                color: 'green'
-                        }
-                    },
-                    circle: {
-                        shapeOptions: {
-                                color: 'steelblue'
-                        }
-                    },
-                    marker: {
-                        icon: greenIcon
-                    }
-                },
-                edit: {
-                    featureGroup: drawnItems
-                }
-            });
-            map.addControl(drawControl);
-
-            map.on('draw:created', function (e) {
-                var type = e.layerType,
-                    layer = e.layer;
-                if (type === 'marker') {
-                        layer.bindPopup('A popup!');
-                }
-                drawnItems.addLayer(layer);
-            }).on('draw:drawstop', function (e) {
-                alert('finito');
-            }).on('zoomend',function(e){
-                $('#'+this.mapid+'_zoom').val(this.getZoom());
-            });
+            
+            if (!Osynapsy.isEmpty($(this).data('draw-plugin'))) {            
+               self.activateDrawPlugin(map);
+            }
+            if (!Osynapsy.isEmpty($(this).data('routing-plugin'))) {
+               self.activateRoutingPlugin(map);
+            }
             if ($(this).attr('coostart')){                
-                var mrk = $(this).attr('coostart').split(',');				
-                OclMapLeafletBox.markersAdd(
-                    mapId,
-                    'start-layer',
-                    [
-                        {
-                            lat : parseFloat(mrk[0]),
-                            lng : parseFloat(mrk[1]),
-                            oid : mapId + '-start',
-                            ico : {text : mrk[2],color:'green'},
-                            popup : 'MAIN'
-                        }
-                    ]
-                );                
+                var start = $(this).attr('coostart').split(',');				
+                OclMapLeafletBox.markersAdd(mapId,'start-layer',[{
+                    lat : parseFloat(start[0]),
+                    lng : parseFloat(start[1]),
+                    oid : mapId + '-start',
+                    ico : {
+                        text : start[2],
+                        color:'green'
+                    },
+                    popup : 'MAIN'
+                }]);                
             }
         });		
 	this.refresh_datagrid();
     },
+    activateRoutingPlugin : function(map){
+        return;
+        L.Routing.control({
+            waypoints: [
+                L.latLng(57.74, 11.94),
+                L.latLng(57.6792, 11.949)
+            ]
+        }).addTo(map);
+    },
+    activateDrawPlugin : function(map) {
+        var LeafIcon = L.Icon.extend({
+            options: {
+                shadowUrl: 'http://leafletjs.com/docs/images/leaf-shadow.png',
+                iconSize:     [38, 95],
+                shadowSize:   [50, 64],
+                iconAnchor:   [22, 94],
+                shadowAnchor: [4, 62],
+                popupAnchor:  [-3, -76]
+            }			
+        });
+        var greenIcon = new LeafIcon({
+                iconUrl: 'http://leafletjs.com/docs/images/leaf-green.png'
+        });
+        
+        var drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);						
+
+        var drawControl = new L.Control.Draw({
+            position: 'topright',
+            draw: {
+                polygon: {
+                    shapeOptions: {
+                            color: 'purple'
+                    },
+                    allowIntersection: false,
+                    drawError: {
+                            color: 'orange',
+                            timeout: 1000
+                    },
+                    showArea: true,
+                    metric: false,
+                    repeatMode: true
+                },
+                polyline: {
+                    shapeOptions: {
+                            color: 'red'
+                    }
+                },
+                rect: {
+                    shapeOptions: {
+                            color: 'green'
+                    }
+                },
+                circle: {
+                    shapeOptions: {
+                            color: 'steelblue'
+                    }
+                },
+                marker: {
+                    icon: greenIcon
+                }
+            },
+            edit: {
+                featureGroup: drawnItems
+            }
+        });
+        map.addControl(drawControl);
+        
+        map.on('draw:created', function (e) {
+            var type = e.layerType,
+                layer = e.layer;
+            if (type === 'marker') {
+                    layer.bindPopup('A popup!');
+            }
+            drawnItems.addLayer(layer);
+        }).on('draw:drawstop', function (e) {
+            alert('finito');
+        }).on('zoomend',function(e){
+            $('#'+this.mapid+'_zoom').val(this.getZoom());
+        });
+    },    
     calc_dist : function(sta, end)
     {
 	var a = L.latLng(sta);
