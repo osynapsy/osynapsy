@@ -1,4 +1,5 @@
-OclMapLeafletBox = {
+OclMapLeafletBox = 
+{
     datagrid : [],
     maplist  : {},
     markerlist : {},
@@ -14,8 +15,8 @@ OclMapLeafletBox = {
             var mapId = $(this).attr('id');
             var center = $('#' + mapId + '_center').val().split(',');	
             var zoom = 10;
-            if (document.getElementById(mapId + '_zoom').value>0){
-                    zoom = document.getElementById(mapId + '_zoom').value;			
+            if (document.getElementById(mapId + '_zoom').value > 0){
+                zoom = document.getElementById(mapId + '_zoom').value;			
             }
             center[0] = parseFloat(center[0]);
             center[1] = parseFloat(center[1]);
@@ -26,7 +27,7 @@ OclMapLeafletBox = {
                 'http://{s}.tile.osm.org/{z}/{x}/{y}.png', 
                 { attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' }
             ).addTo(map);
-            self.set_vertex(map);
+            self.setVertex(map);
             $('div[data-mapgrid=' + $(this).attr('id') +']').each(function(){
                 OclMapLeafletBox.datagrid.push($(this).attr('id'));
             });
@@ -34,8 +35,8 @@ OclMapLeafletBox = {
             //Enable listener moveend event
             map.on('moveend', function(e) {
                 OclMapLeafletBox.autocenter = false;
-                OclMapLeafletBox.set_vertex(map);
-                OclMapLeafletBox.refresh_datagrid(map);
+                OclMapLeafletBox.setVertex(map);
+                //OclMapLeafletBox.refreshDatagrid(map);
             });
             
             if (!Osynapsy.isEmpty($(this).data('draw-plugin'))) {            
@@ -58,9 +59,10 @@ OclMapLeafletBox = {
                 }]);                
             }
         });		
-	this.refresh_datagrid();
+	//this.refreshDatagrid();
     },
-    activateRoutingPlugin : function(map){
+    activateRoutingPlugin : function(map)
+    {
         return;
         L.Routing.control({
             waypoints: [
@@ -69,7 +71,8 @@ OclMapLeafletBox = {
             ]
         }).addTo(map);
     },
-    activateDrawPlugin : function(map) {
+    activateDrawPlugin : function(map)
+    {
         var LeafIcon = L.Icon.extend({
             options: {
                 shadowUrl: 'http://leafletjs.com/docs/images/leaf-shadow.png',
@@ -81,7 +84,7 @@ OclMapLeafletBox = {
             }			
         });
         var greenIcon = new LeafIcon({
-                iconUrl: 'http://leafletjs.com/docs/images/leaf-green.png'
+            iconUrl: 'http://leafletjs.com/docs/images/leaf-green.png'
         });
         
         var drawnItems = new L.FeatureGroup();
@@ -161,7 +164,7 @@ OclMapLeafletBox = {
             }
 	}
 	return coo_min;
-   },
+    },
     calc_perc : function(mapid, dat)
     {
         var polid = 'prova';
@@ -189,13 +192,13 @@ OclMapLeafletBox = {
             this.polylinelist[polid].addTo(this.maplist[mapid]);
             //this.layerlist[map].addLayer(pol);
 	}      
-   },   
-   dataset_add : function(datid,dats)
-   {
+    },   
+    datasetAdd : function(datid,dats)
+    {
    	this.datasets[datid] = dats;
-   },
-   dataset_calc_route : function(mapid, datid, sta)
-   {
+    },
+    dataset_calc_route : function(mapid, datid, sta)
+    {
         if (datid in this.datasets) {
             var data = this.datasets[datid].slice();			
             if (sta){ 
@@ -203,9 +206,9 @@ OclMapLeafletBox = {
             }
             this.calc_perc(mapid,data);
         }
-   },
-   getLayer : function(mapId, layerId, clean)
-   {
+    },
+    getLayer : function(mapId, layerId, clean)
+    {
         if (!(layerId in this.layerlist)){
             this.layerlist[layerId] = new L.FeatureGroup();
             this.maplist[mapId].addLayer(this.layerlist[layerId]);
@@ -213,13 +216,28 @@ OclMapLeafletBox = {
             this.cleanLayer(layerId);
         }
         return this.layerlist[layerId];
-   },   
-   cleanLayer : function(layerId)
-   {
+    },   
+    cleanLayer : function(layerId)
+    {
         if (layerId in this.layerlist){
             this.layerlist[layerId].clearLayers();
 	}
-   },   
+    },
+    computeCenter : function(mapId, dataset)
+    {
+        if (dataset.length === 0) {
+            return;
+        }
+        var center = {'lat' : 0, 'lng' : 0};
+        for (var i in dataset) {
+            var rec = dataset[i];
+            center.lat += rec['lat'];
+            center.lng += rec['lng'];
+        }
+        center.lat = center.lat / (parseInt(i) + 1);
+        center.lng = center.lng / (parseInt(i) + 1);        
+        this.setCenter(mapId, center);
+    },
    markersClean : function(mapid)
    {
    },
@@ -267,15 +285,14 @@ OclMapLeafletBox = {
             polyline.addTo(layer);	  	
         } 
    },   
-   refresh_datagrid : function(map, div)
+   refreshDatagrid : function()
    {
         if (this.datagrid.length === 0) {
             return;
         }
-        for(var i in this.datagrid ) {
+        for(var i in this.datagrid) {
             var gridId = this.datagrid[i]; //Datagrid id
-            var mapId = $(div).attr('id'); //Map id
-            ODataGrid.refreshAjax($('#'+gridId),null/*,function(){OclMapLeafletBox.refresh_markers(mid)}*/);
+            ODataGrid.refreshAjax($('#'+gridId));
         }
    },
    refreshMarkers : function(mapId, dataGridId)
@@ -308,7 +325,10 @@ OclMapLeafletBox = {
                     lat : parseFloat($(this).attr('lat')),
                     lng : parseFloat($(this).attr('lng')), 
                     oid : $(this).attr('oid'), 
-                    ico : {text : 'fa-circle-o', color: 'blue'},
+                    ico : {
+                        text : 'fa-circle-o',
+                        color: 'blue'
+                    },
                     popup : '<div style="width: 250px; height: 120px; overflow: hidden;">'+ frm +'</div>'
                 });
             }			   
@@ -317,25 +337,11 @@ OclMapLeafletBox = {
            this.computeCenter(mapId, dataset);
         }
         this.markersAdd(mapId, dataGridId, dataset);
-        this.dataset_add(dataGridId, dataset);
+        this.datasetAdd(dataGridId, dataset);
         this.autocenter = true;
-    },
-    computeCenter : function(mapId, dataset)
+    },    
+    setVertex : function(map)
     {
-        if (dataset.length === 0) {
-            return;
-        }
-        var center = {'lat' : 0, 'lng' : 0};
-        for (var i in dataset) {
-            var rec = dataset[i];
-            center.lat += rec['lat'];
-            center.lng += rec['lng'];
-        }
-        center.lat = center.lat / (parseInt(i) + 1);
-        center.lng = center.lng / (parseInt(i) + 1);        
-        this.setCenter(mapId, center);
-    },
-    set_vertex : function(map){
 	var mapId = map.getContainer().getAttribute('id');
 	var bounds = map.getBounds();		
 	var ne = bounds.getNorthEast();
@@ -348,7 +354,8 @@ OclMapLeafletBox = {
 	$('#'+mapId+'_cnt_lat').val((sw.lat + ne.lat) / 2); 
 	$('#'+mapId+'_cnt_lng').val((sw.lng + ne.lng) / 2); 
     },	  
-    open_id : function(oid,lid){
+    openId : function(oid,lid)
+    {
    	console.log(oid,lid)   		
    	if (lid){
             if ((lid in this.layermarker) && (oid in this.layermarker[lid])){
@@ -358,15 +365,15 @@ OclMapLeafletBox = {
             this.markerlist[oid].openPopup();          
 	}
     },
-    resize : function(mapid)
+    resize : function(mapId)
     {
-   	if (mapid in this.maplist){
-            this.maplist[mapid].invalidateSize();
+        if (mapId in this.maplist){
+            this.maplist[mapId].invalidateSize();
 	}
     },
-    setCenter: function(mid,cnt,zom)
+    setCenter: function(mapId, cnt, zoom)
     {
-   	self.maplist[mid].setView(cnt,zom);
+   	self.maplist[mapId].setView(cnt, zoom);
     }
 }
 
