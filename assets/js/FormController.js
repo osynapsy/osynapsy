@@ -412,8 +412,8 @@ var FormController =
             for (var i in this.repo['event'][evt] ){
                 try{
                     this.repo['event'][evt][i]();
-                } catch(err) {
-                    console.log(i+' : '+err);
+                } catch(err) {                    
+                    console.log(err);
                 }
             }
         }
