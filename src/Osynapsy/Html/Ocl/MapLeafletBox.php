@@ -19,20 +19,26 @@ class MapLeafletBox extends Component
 	private $map;
 	private $datagridParent;
     
-	public function __construct($name)
+	public function __construct($name, $draw = true, $routing = true)
 	{
 		parent::__construct('dummy',$name);
-		$this->requireCss('Lib/leaflet-0.7.3/leaflet.css');
-		$this->requireCss('Lib/leaflet-0.7.3/leaflet.draw.css');
-		$this->requireJs('Lib/leaflet-0.7.3/leaflet.js');
-		$this->requireJs('Lib/leaflet-0.7.3/leaflet.awesome-markers.min.js');
-		$this->requireJs('Lib/leaflet-0.7.3/leaflet.draw.js');
+        $this->map = $this->add(new Tag('div'))->att([
+            'id' => $name,
+            'style' => 'width: 100%; min-height: 600px;',
+            'class' => 'osy-mapgrid-leaflet'
+        ]);
+		$this->requireCss('Lib/leaflet-1.3.1/leaflet.css');        
+		$this->requireJs('Lib/leaflet-1.3.1/leaflet.js');
+		$this->includeAwesomeMarkersPlugin();                
+        if ($draw) {
+            $this->includeDrawPlugin();
+        }
+        if ($routing) {
+            $this->includeRoutingPlugin();
+        }
 		$this->requireJs('Ocl/MapLeafletBox/script.js');
 
-		$this->map = $this->add(new Tag('div'))
-                          ->att('id',$name)
-                          ->att('style','width: 100%; min-height: 600px;')
-                          ->att('class','osy-mapgrid-leaflet');
+		
 		$this->add(new HiddenBox($this->id.'_ne_lat'));
         $this->add(new HiddenBox($this->id.'_ne_lng'));
         $this->add(new HiddenBox($this->id.'_sw_lat'));
@@ -43,6 +49,48 @@ class MapLeafletBox extends Component
 		$this->add(new HiddenBox($this->id.'_zoom'));
 	}
 	
+    private function includeAwesomeMarkersPlugin()
+    {
+        $this->requireCss('Lib/leaflet-awesome-markers-2.0.1/leaflet.awesome-markers.css');
+		$this->requireJs('Lib/leaflet-awesome-markers-2.0.1/leaflet.awesome-markers.min.js');		
+    }
+    
+    private function includeRoutingPlugin()
+    {
+        $this->map->att('data-routing-plugin', true);
+        $this->requireCss('Lib/leaflet-routing-machine-3.2.7/leaflet-routing-machine.css');
+		$this->requireJs('Lib/leaflet-routing-machine-3.2.7/leaflet-routing-machine.min.js');		
+    }
+    
+    private function includeDrawPlugin()
+    {
+        $this->map->att('data-draw-plugin', true);
+        $this->requireCss('Lib/leaflet-draw-0.4.2/leaflet.draw.css');                                    
+        $this->requireJs('Lib/leaflet-draw-0.4.2/Control.Draw.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/Leaflet.draw.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/Leaflet.Draw.Event.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/Toolbar.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/Tooltip.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/ext/GeometryUtil.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/ext/LatLngUtil.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/ext/LineUtil.Intersect.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/ext/Polygon.Intersect.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/ext/Polyline.Intersect.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/ext/TouchEvents.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/draw/DrawToolbar.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/draw/handler/Draw.Feature.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/draw/handler/Draw.SimpleShape.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/draw/handler/Draw.Polyline.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/draw/handler/Draw.Marker.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/draw/handler/Draw.Circle.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/draw/handler/Draw.CircleMarker.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/draw/handler/Draw.Polygon.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/draw/handler/Draw.Rectangle.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/edit/EditToolbar.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/edit/handler/EditToolbar.Edit.js');
+        $this->requireJs('Lib/leaflet-draw-0.4.2/edit/handler/EditToolbar.Delete.js');
+    }
+    
 	public function __build_extra__()
 	{
 		
