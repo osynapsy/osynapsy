@@ -184,8 +184,8 @@ ODataGrid =
     refreshAjaxAfter : function(obj)
     {
         if ((map = $(obj).data('mapgrid')) && window.OclMapLeafletBox){
-            OclMapLeafletBox.markersClean(map);
-            OclMapLeafletBox.refreshMarkers(map,$(obj).attr('id'));
+            //OclMapLeafletBox.markersClean(map);
+            OclMapLeafletBox.refreshMarkers(map, $(obj).attr('id'));
             return;
         }
         if ((map = $(obj).data('mapgrid')) && window.OclMapGridGoogle){
