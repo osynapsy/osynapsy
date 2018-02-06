@@ -6,7 +6,7 @@ OclMapLeafletBox = {
     layerlist : {},
     polylinelist : {},
     datasets : {},
-    moving : false,
+    autocenter : true,
     init : function()
     {
         self = this;
@@ -31,7 +31,7 @@ OclMapLeafletBox = {
                 OclMapLeafletBox.datagrid.push($(this).attr('id'));
             });
             map.on('moveend', function(e) {
-                OclMapLeafletBox.moving = true;
+                OclMapLeafletBox.autocenter = false;
                 OclMapLeafletBox.set_vertex(map);
                 OclMapLeafletBox.refresh_datagrid(map);
             });                
@@ -106,9 +106,9 @@ OclMapLeafletBox = {
             }).on('zoomend',function(e){
                 $('#'+this.mapid+'_zoom').val(this.getZoom());
             });
-            if ($(this).attr('coostart')){			
+            if ($(this).attr('coostart')){                
                 var mrk = $(this).attr('coostart').split(',');				
-                OclMapLeafletBox.markers_add(
+                OclMapLeafletBox.markersAdd(
                     mapId,
                     'start-layer',
                     [
@@ -120,7 +120,7 @@ OclMapLeafletBox = {
                             popup : 'MAIN'
                         }
                     ]
-                );
+                );                
             }
         });		
 	this.refresh_datagrid();
@@ -214,30 +214,31 @@ OclMapLeafletBox = {
         }        
         for (var i in markers){
             var marker = markers[i];
-            if (marker.ico !== undefined && marker.ico) {
-                if (marker.ico.text.indexOf('fa-') === 0){
-                    ico = L.AwesomeMarkers.icon({icon: marker.ico.text, prefix: 'fa', markerColor: marker.ico.color, spin:false});  
-                } else {
-                    ico = L.divIcon({className: layerId+'-icon', html : marker.ico.text, iconSize:null});
-                }
-                var markerObject = L.marker(
-                    [marker.lat, marker.lng],
-                    {icon: ico}
-                );
-                if (marker.popup !== undefined){
-                    markerObject.bindPopup(marker.popup);
-                }
-                this.markerAppend(layerId, mapId, markerObject);
+            if (Osynapsy.isEmpty(marker.ico)) {                
+                continue;
             }
+            if (!Osynapsy.isEmpty(marker.ico.text) && marker.ico.text.indexOf('fa-') === 0){
+                var ico = L.AwesomeMarkers.icon({icon: marker.ico.text, prefix: 'fa', markerColor: marker.ico.color, spin:false});  
+            } else {
+                var ico = L.divIcon({className: layerId+'-icon', html : marker.ico.text, iconSize:null});
+            }
+            var markerObject = L.marker(
+                [marker.lat, marker.lng],
+                {icon: ico}
+            );
+            if (marker.popup !== undefined){
+                markerObject.bindPopup(marker.popup);
+            }
+            this.markerAppend(mapId, layerId, markerObject);
         }
    },
-   markerAppend : function(layerId, mapId, marker)
-   {
+   markerAppend : function(mapId, layerId, marker)
+   {        
         if (!(layerId in this.layermarker)){
             this.layermarker[layerId] = {};
-        }		 
-        this.layermarker[layerId][mapId] = marker;
-        this.layerlist[layerId].addLayer(marker);
+        }
+        this.layermarker[layerId][mapId] = marker; 
+        this.getLayer(mapId, layerId).addLayer(marker);
    },
    polyline : function(mapId, layerId, dataset, polylineColor)
    {
@@ -271,8 +272,8 @@ OclMapLeafletBox = {
             f = null;
         }
 	var dataset = [];
-        //Creo un nuovo layer
-        this.getLayer(mapId, dataGridId, true);
+        //Se esiste pulisco il layer corrente
+        this.cleanLayer(dataGridId);
         $('tr',dataGrid).each(function(){
             var frm = f;               
             var i = 1;
@@ -296,12 +297,12 @@ OclMapLeafletBox = {
                 });
             }			   
         });
-        if (!this.moving) {
+        if (this.autocenter) {
            this.computeCenter(mapId, dataset);
         }
         this.markersAdd(mapId, dataGridId, dataset);
         this.dataset_add(dataGridId, dataset);
-        this.moving = false;
+        this.autocenter = true;
     },
     computeCenter : function(mapId, dataset)
     {
