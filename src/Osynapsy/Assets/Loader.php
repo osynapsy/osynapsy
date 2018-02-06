@@ -20,7 +20,7 @@ class Loader extends Controller
 
     public function init()
     {
-        $this->path = $this->getParameter(0);
+        $this->path = $this->getParameter(0);        
         $this->basePath = __DIR__ . '/../../../assets/';
     }
     
@@ -35,7 +35,7 @@ class Loader extends Controller
     {
         if (!is_file($filename)) {
             return false;
-        }        
+        }
         $this->copyFileToCache($this->request->get('page.url'), $filename);        
         $this->sendFile($filename);
         return true;

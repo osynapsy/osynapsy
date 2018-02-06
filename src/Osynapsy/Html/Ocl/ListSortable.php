@@ -29,10 +29,10 @@ class ListSortable extends Component
     {
         parent::__construct('div', $id);
         
-        $this->requireCss('/__assets/osynapsy/Ocl/ListSortable/style.css');
-        //$this->requireJs('/__assets/osynapsy/Lib/jquery-sortable-0.9.13/jquery-sortable.js');  
-        $this->requireJs('/__assets/osynapsy/Lib/html5-sortable/jquery-sortable.js');
-		$this->requireJs('/__assets/osynapsy/Ocl/ListSortable/script.js');
+        $this->requireCss('Ocl/ListSortable/style.css');
+        //$this->requireJs('Lib/jquery-sortable-0.9.13/jquery-sortable.js');  
+        $this->requireJs('Lib/html5-sortable/jquery-sortable.js');
+		$this->requireJs('Ocl/ListSortable/script.js');
         $this->add('<input type="hidden" id="'.$id.'_order" name="'.$id.'">');
         $this->att('class','osy-listsortable')
              ->att('data-action','sortList')

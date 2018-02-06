@@ -45,7 +45,7 @@ class Pager extends Component
         if (!empty($infiniteContainer)) {
             $this->setInfiniteScroll($infiniteContainer);
         }
-        $this->requireJs('/__assets/osynapsy/Bcl/Pager/script.js');
+        $this->requireJs('Bcl/Pager/script.js');
         $this->att('class','BclPager',true);
         if ($tag == 'form') {
             $this->att('method','post');

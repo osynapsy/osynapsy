@@ -22,12 +22,12 @@ class MapLeafletBox extends Component
 	public function __construct($name)
 	{
 		parent::__construct('dummy',$name);
-		$this->requireCss('/__assets/osynapsy/Lib/leaflet-0.7.3/leaflet.css');
-		$this->requireCss('/__assets/osynapsy/Lib/leaflet-0.7.3/leaflet.draw.css');
-		$this->requireJs('/__assets/osynapsy/Lib/leaflet-0.7.3/leaflet.js');
-		$this->requireJs('/__assets/osynapsy/Lib/leaflet-0.7.3/leaflet.awesome-markers.min.js');
-		$this->requireJs('/__assets/osynapsy/Lib/leaflet-0.7.3/leaflet.draw.js');
-		$this->requireJs('/__assets/osynapsy/Ocl/MapLeafletBox/script.js');
+		$this->requireCss('Lib/leaflet-0.7.3/leaflet.css');
+		$this->requireCss('Lib/leaflet-0.7.3/leaflet.draw.css');
+		$this->requireJs('Lib/leaflet-0.7.3/leaflet.js');
+		$this->requireJs('Lib/leaflet-0.7.3/leaflet.awesome-markers.min.js');
+		$this->requireJs('Lib/leaflet-0.7.3/leaflet.draw.js');
+		$this->requireJs('Ocl/MapLeafletBox/script.js');
 
 		$this->map = $this->add(new Tag('div'))
                           ->att('id',$name)

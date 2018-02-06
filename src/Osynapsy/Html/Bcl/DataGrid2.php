@@ -24,8 +24,8 @@ class DataGrid2 extends Component
     {
         parent::__construct('div', $name);
         $this->att('class','bcl-datagrid');
-        $this->requireCss('/__assets/osynapsy/Bcl/DataGrid/style.css');
-        $this->requireJs('/__assets/osynapsy/Bcl/DataGrid/script.js');
+        $this->requireCss('Bcl/DataGrid/style.css');
+        $this->requireJs('Bcl/DataGrid/script.js');
     }
     
     public function __build_extra__()

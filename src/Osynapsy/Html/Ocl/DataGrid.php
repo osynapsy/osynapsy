@@ -26,8 +26,8 @@ class DataGrid extends Component
 
     public function __construct($name)
     {
-        $this->requireJs('/__assets/osynapsy/Ocl/DataGrid/script.js');
-        $this->requireCss('/__assets/osynapsy/Ocl/DataGrid/style.css');
+        $this->requireJs('Ocl/DataGrid/script.js');
+        $this->requireCss('Ocl/DataGrid/style.css');
         parent::__construct('div',$name);       
         $this->att('class','osy-datagrid-2');
         $this->setParameter('type', 'datagrid');

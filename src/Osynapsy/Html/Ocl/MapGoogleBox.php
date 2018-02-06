@@ -20,10 +20,10 @@ class MapGoogleBox extends Component
     public function __construct($name)
     {
         parent::__construct('dummy',$name);
-        $this->requireCss('/__assets/osynapsy/Ocl/GMapBox/style.css');
-        $this->requireJs('http://maps.google.com/maps/api/js?sensor=false&amp;language=en&libraries=drawing');
-        $this->requireJs('/__assets/osynapsy/Lib/gmap3-6.0.0/gmap3.min.js');
-        $this->requireJs('/__assets/osynapsy/Ocl/GMapBox/script.js');
+        $this->requireCss('Ocl/GMapBox/style.css');
+        $this->requireJs('//maps.google.com/maps/api/js?sensor=false&amp;language=en&libraries=drawing');
+        $this->requireJs('Lib/gmap3-6.0.0/gmap3.min.js');
+        $this->requireJs('Ocl/GMapBox/script.js');
         $this->map = $this->add(new Tag('div'))->att('class','osy-mapgrid');
         $this->add(new HiddenBox($this->id.'_ne_lat'));
         $this->add(new HiddenBox($this->id.'_ne_lng'));

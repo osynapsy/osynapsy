@@ -19,7 +19,7 @@ class Slider extends Component
     {
         parent::__construct('div', $id);
 		$this->att('class', 'osy-slider');
-		$this->requireJs('/__assets/osynapsy/OclSlider/script.js');
+		$this->requireJs('Ocl/Slider/script.js');
     }
 	
 	protected function __build_extra__()

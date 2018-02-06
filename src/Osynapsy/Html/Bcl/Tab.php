@@ -28,7 +28,7 @@ class Tab extends Component
     {
         parent::__construct('dummy');
         $this->id = $id;
-        $this->requireJs('/__assets/osynapsy/Bcl/Tab/script.js');
+        $this->requireJs('Bcl/Tab/script.js');
         $this->add(new HiddenBox($id));
         $this->ul = $this->add(new Tag('ul'));
         $this->ul->att([

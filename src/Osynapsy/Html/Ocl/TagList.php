@@ -19,7 +19,7 @@ class TagList extends Component
     {
         parent::__construct('div',$id);
         $this->class = 'osy-taglist';
-        $this->requireJs('/__assets/osynapsy/Ocl/TagList/script.js');
+        $this->requireJs('Ocl/TagList/script.js');
     }
     
 	protected function __build_extra__()

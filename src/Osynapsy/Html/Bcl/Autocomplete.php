@@ -22,8 +22,8 @@ class Autocomplete extends Component
     
     public function __construct($id)
     {
-        $this->requireJs('/__assets/osynapsy/Bcl/Autocomplete/script.js');
-        $this->requireCss('/__assets/osynapsy/Bcl/Autocomplete/style.css');
+        $this->requireJs('Bcl/Autocomplete/script.js');
+        $this->requireCss('Bcl/Autocomplete/style.css');
         parent::__construct('div', $id);
     }
     

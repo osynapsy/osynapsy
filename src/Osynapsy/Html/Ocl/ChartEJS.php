@@ -32,8 +32,8 @@ class ChartEJS extends Component
         parent::__construct('div', $id);
         $this->att('class','OclChartEJS')
              ->att('style','width: '.$width.'px; height: '.$height.'px');
-        $this->requireCss('/__assets/osynapsy/Lib/ejscharts-2.1.3/EJSChart.css');
-        $this->requireJs('/__assets/osynapsy/Lib/ejscharts-2.1.3/EJSChart.min.js');        
+        $this->requireCss('Lib/ejscharts-2.1.3/EJSChart.css');
+        $this->requireJs('Lib/ejscharts-2.1.3/EJSChart.min.js');        
     }
     
     public function __build_extra__()

@@ -11,6 +11,7 @@
 
 namespace Osynapsy\Http;
 
+use Osynapsy\Kernel;
 use Osynapsy\Http\Response;
 
 class ResponseHtml extends Response
@@ -96,5 +97,11 @@ class ResponseHtml extends Response
     public function resetTemplate()
     {
         $this->template = '';
+    }
+    
+    public function appendFormController()
+    {
+        $this->addJs('/assets/osynapsy/'.Kernel::VERSION.'/js/FormController.js');
+        $this->addCss('/assets/osynapsy/'.Kernel::VERSION.'/css/style.css');
     }
 }

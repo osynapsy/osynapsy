@@ -11,6 +11,8 @@
 
 namespace Osynapsy\Html;
 
+use Osynapsy\Kernel;
+
 /*
  * Master class component
  */
@@ -115,7 +117,7 @@ class Component extends Tag
             self::$require[$type] = [];
         }
         if (!in_array($file, self::$require[$type])) {
-            self::$require[$type][] = $file;
+            self::$require[$type][] = '/assets/osynapsy/'.Kernel::VERSION.'/'.$file;
         }
     }
     

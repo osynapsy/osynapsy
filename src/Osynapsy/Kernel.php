@@ -87,7 +87,7 @@ class Kernel
         $this->router = new Router($this->request);
         $this->router->addRoute(
             'OsynapsyAssetsManager',
-            '/__assets/osynapsy/?*',
+            '/assets/osynapsy/'.self::VERSION.'/?*',
             'Osynapsy\\Assets\\Loader',
             '',
             'Osynapsy'
