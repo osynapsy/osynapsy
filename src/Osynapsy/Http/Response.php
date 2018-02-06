@@ -74,7 +74,7 @@ abstract class Response
      * @return string
      * @throws \Exception
      */
-    public static function getBuffer($path = null, $controller)
+    public static function getBuffer($path = null, $controller = null)
     {
         $buffer = 1;
         if (!empty($path)) {

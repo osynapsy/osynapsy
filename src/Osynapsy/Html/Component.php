@@ -117,7 +117,8 @@ class Component extends Tag
             self::$require[$type] = [];
         }
         if (!in_array($file, self::$require[$type])) {
-            self::$require[$type][] = '/assets/osynapsy/'.Kernel::VERSION.'/'.$file;
+            $fullPath = in_array($file[0], ['/','h']) ? $file : '/assets/osynapsy/'.Kernel::VERSION.'/'.$file;
+            self::$require[$type][] = $fullPath;
         }
     }
     

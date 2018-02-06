@@ -121,8 +121,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     
     public function loadView($path, $params = array(), $return = false)
     {
-        $params = array('Db' => $this->db, 'controller' => $this);
-        $view = $this->response->getBuffer($path, $params);
+        $view = $this->response->getBuffer($path, $this);
         if ($return) {
             return $view;
         }
