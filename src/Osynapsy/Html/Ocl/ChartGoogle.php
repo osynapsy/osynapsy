@@ -34,7 +34,7 @@ class ChartGoogle extends Component
         $this->type = $type;
         $this->att('class','OclChartGoogle');
         $this->setOption('title', $title);
-        $this->requireJs('https://www.gstatic.com/charts/loader.js');        
+        $this->requireJs('//www.gstatic.com/charts/loader.js');        
     }
     
     public function __build_extra__()
