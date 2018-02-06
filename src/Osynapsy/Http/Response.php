@@ -74,17 +74,12 @@ abstract class Response
      * @return string
      * @throws \Exception
      */
-    public static function getBuffer($path = null, $params = array())
+    public static function getBuffer($path = null, $controller)
     {
         $buffer = 1;
         if (!empty($path)) {
             if (!is_file($path)) {
                 throw new \Exception('File '.$path.' not exists');                
-            }
-            if (!empty($params)) {
-                foreach($params as $key => $val){
-                    $$key = $val;
-                }
             }
             $buffer = include $path;
         }
