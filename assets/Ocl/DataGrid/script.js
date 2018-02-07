@@ -187,6 +187,9 @@ ODataGrid =
             //OclMapLeafletBox.markersClean(map);
             OclMapLeafletBox.refreshMarkers(map, $(obj).attr('id'));
             return;
+        } else if((map = $(obj).data('mapgrid')) && window.OclMapTomtomBox){            
+            OclMapTomtomBox.refreshMarkers(map, $(obj).attr('id'));
+            return;
         }
         if ((map = $(obj).data('mapgrid')) && window.OclMapGridGoogle){
             omapgrid.clear_markers(map);
