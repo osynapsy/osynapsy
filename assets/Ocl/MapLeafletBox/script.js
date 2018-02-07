@@ -59,7 +59,7 @@ OclMapLeafletBox =
                 }]);                
             }
         });		
-	//this.refreshDatagrid();
+	this.refreshDatagrid();
     },
     activateRoutingPlugin : function(map)
     {
@@ -327,7 +327,7 @@ OclMapLeafletBox =
                     oid : $(this).attr('oid'), 
                     ico : {
                         text : 'fa-circle-o',
-                        color: 'blue'
+                        color: (Osynapsy.isEmpty($(this).attr('mrk')) ? 'blue' : $(this).attr('mrk'))
                     },
                     popup : '<div style="width: 250px; height: 120px; overflow: hidden;">'+ frm +'</div>'
                 });
