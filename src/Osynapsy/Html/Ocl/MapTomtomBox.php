@@ -23,7 +23,8 @@ class MapTomtomBox extends Component
 	{
 		parent::__construct('dummy',$name);        
 		$this->requireCss('/sdk/map.css');		   				
-		$this->requireJs('/sdk/tomtom.min.js');		
+		$this->requireJs('/sdk/tomtom.min.js');
+        $this->requireCss('Ocl/MapTomtomBox/style.css');
         $this->requireJs('Ocl/MapTomtomBox/script.js');
         $this->setParameter('center', ['lat'=>41.9100711, 'lng'=>12.5359979]);
         $this->includeAwesomeMarkersPlugin();
