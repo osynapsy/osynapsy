@@ -17,7 +17,7 @@ use Osynapsy\Html\Component;
 class MapLeafletBox extends Component
 {
 	private $map;
-	private $datagridParent;
+	private $dataGridParent = [];
     
 	public function __construct($name, $draw = true, $routing = true)
 	{
@@ -25,7 +25,7 @@ class MapLeafletBox extends Component
         $this->map = $this->add(new Tag('div'))->att([
             'id' => $name,
             'style' => 'width: 100%; min-height: 600px;',
-            'class' => 'osy-mapgrid-leaflet'
+            'class' => 'osy-mapgrid osy-mapgrid-leaflet'
         ]);
 		$this->requireCss('Lib/leaflet-1.3.1/leaflet.css');        
 		$this->requireJs('Lib/leaflet-1.3.1/leaflet.js');
@@ -37,8 +37,7 @@ class MapLeafletBox extends Component
             $this->includeRoutingPlugin();
         }
 		$this->requireJs('Ocl/MapLeafletBox/script.js');
-
-		
+        
 		$this->add(new HiddenBox($this->id.'_ne_lat'));
         $this->add(new HiddenBox($this->id.'_ne_lng'));
         $this->add(new HiddenBox($this->id.'_sw_lat'));
@@ -116,11 +115,11 @@ class MapLeafletBox extends Component
 			$_REQUEST[$this->id.'_center'] = $res[0]['lat'].','.$res[0]['lng'];
 		}
         
-        $this->map->att('data-datagrid-parent', '#'.$this->datagridParent);        
+        $this->map->att('data-datagrid-parent', json_encode($this->dataGridParent));        
 	}
     
-    public function setGridParent($gridName)
+    public function setGridParent($gridId, $refreshOnMove = true)
     {
-        $this->datagridParent = $gridName;
+        $this->dataGridParent[] = ['id' => '#'.$gridId, 'refresh' => $refreshOnMove];
     }
 }
