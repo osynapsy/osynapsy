@@ -369,7 +369,7 @@ class DataGrid extends Component
         }
         if (!empty($opt['row']['attr'])){
             foreach ($opt['row']['attr'] as $item){
-              $orw->att($item[0],$item[1]);
+                $orw->att($item[0],$item[1]);
             }
         }        
         $grd->add($orw.'');
@@ -400,6 +400,9 @@ class DataGrid extends Component
             case '_color2':
             case '_color3':
                 $opt['row']['cell-style-inc'][] = 'color: '.$opt['cell']['value'].';';
+                break;
+            case '_data':            
+                $opt['row']['attr'][] = array('data-'.$opt['cell']['title'], $opt['cell']['value']);
                 break;
             case 'date':
                 $dat = date_create($opt['cell']['rawvalue']);
