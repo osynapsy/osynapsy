@@ -1,0 +1,94 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 7-feb-2018, 12.15.36
+    Author     : Pietro Celeste <p.celeste@spinit.it>
+*/
+.osy-mapgrid-marker {
+    background: url('markers-background.png') no-repeat 0 0;
+    padding-top: 7px;
+    text-align: center;
+    width: 35px;
+    height: 46px;
+    font-weight: bold;
+    color: white;        
+}
+
+.osy-mapgrid-marker-red {
+  background-position: 0 0;
+}
+
+.osy-mapgrid-marker-darkred {
+  background-position: -180px 0;
+}
+
+.osy-mapgrid-marker-lightred {
+  background-position: -360px 0;
+}
+
+.osy-mapgrid-marker-orange {
+  background-position: -36px 0;
+}
+
+.osy-mapgrid-marker-beige {
+  background-position: -396px 0;
+}
+
+.osy-mapgrid-marker-green {
+  background-position: -72px 0;
+}
+
+.osy-mapgrid-marker-darkgreen {
+  background-position: -252px 0;
+}
+
+.osy-mapgrid-marker-lightgreen {
+  background-position: -432px 0;
+}
+
+.osy-mapgrid-marker-blue {
+  background-position: -108px 0;
+}
+
+.osy-mapgrid-marker-darkblue {
+  background-position: -216px 0;
+}
+
+.osy-mapgrid-marker-lightblue {
+  background-position: -468px 0;
+}
+
+.osy-mapgrid-marker-purple {
+  background-position: -144px 0;
+}
+
+.osy-mapgrid-marker-darkpurple {
+  background-position: -288px 0;
+}
+
+.osy-mapgrid-marker-pink {
+  background-position: -504px 0;
+}
+
+.osy-mapgrid-marker-cadetblue {
+  background-position: -324px 0;
+}
+
+.osy-mapgrid-marker-white {
+  background-position: -574px 0;
+}
+
+.osy-mapgrid-marker-gray {
+  background-position: -648px 0;
+}
+
+.osy-mapgrid-marker-lightgray {
+  background-position: -612px 0;
+}
+
+.osy-mapgrid-marker-black {
+  background-position: -682px 0;
+}
