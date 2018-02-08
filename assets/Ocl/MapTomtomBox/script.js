@@ -12,110 +12,35 @@ OclMapTomtomBox = {
         self = this;
         $('.osy-mapgrid-tomtom').each(function(){
             var mapId = $(this).attr('id');
-            var center = $('#' + mapId + '_center').val().split(',');	
-            var zoom = 10;
-            tomtom.setProductInfo('MapsWebSDKExamples', '4.20.0');
-            var map = tomtom.map('map', {
+            var zoom = 10;            
+            tomtom.setProductInfo('OclTomtomBox', '0.1');
+            var map = tomtom.map(mapId, {
                 key: 'EXwWaZDiKa0BcXEsHT8NiJxm2Z8GosTj',
                 source: 'vector',
-                basePath: '/maps-sdk-js/4.20.0/examples/sdk'
+                basePath: '/sdk'
             });
-            return;
-            var mapId = $(this).attr('id');
-            cnt = $('#' + mapId + '_center').val().split(',');	
-            zom = 10;
-            if (document.getElementById(mapId + '_zoom').value>0){
-                    zom = document.getElementById(mapId + '_zoom').value;			
+            map.mapId = mapId;
+            self.maplist[mapId] = map;            
+            if (document.getElementById(mapId + '_zoom').value > 0){
+                zoom = document.getElementById(mapId + '_zoom').value;			
             }
-            cnt[0] = parseFloat(cnt[0]);
-            cnt[1] = parseFloat(cnt[1]);
-            var map = L.map(mapId).setView(cnt, zom);
-            map.mapid = mapId;
-            self.maplist[mapId] = map;
-            L.tileLayer(
-                'http://{s}.tile.osm.org/{z}/{x}/{y}.png', 
-                { attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' }
-            ).addTo(map);
-            self.set_vertex(map);
+            if (!Osynapsy.isEmpty( $('#' + mapId + '_center').val())) {                
+                var center = $('#' + mapId + '_center').val().split(',');                        
+                center[0] = parseFloat(center[0]);
+                center[1] = parseFloat(center[1]);
+                map.setView(center, zoom);
+            }                        
             $('div[data-mapgrid=' + $(this).attr('id') +']').each(function(){
-                OclMapLeafletBox.datagrid.push($(this).attr('id'));
+                OclMapTomtomBox.datagrid.push($(this).attr('id'));
             });
+            self.setVertex(map);
             map.on('moveend', function(e) {
-                OclMapLeafletBox.autocenter = false;
-                OclMapLeafletBox.set_vertex(map);
-                OclMapLeafletBox.refresh_datagrid(map);
-            });                
-            var LeafIcon = L.Icon.extend({
-                options: {
-                    shadowUrl: 'http://leafletjs.com/docs/images/leaf-shadow.png',
-                    iconSize:     [38, 95],
-                    shadowSize:   [50, 64],
-                    iconAnchor:   [22, 94],
-                    shadowAnchor: [4, 62],
-                    popupAnchor:  [-3, -76]
-                }			
-            });
-
-            var greenIcon = new LeafIcon({
-                iconUrl: 'http://leafletjs.com/docs/images/leaf-green.png'
-            });
-
-            var drawnItems = new L.FeatureGroup();
-            map.addLayer(drawnItems);						
-
-            var drawControl = new L.Control.Draw({
-                position: 'topright',
-                draw: {
-                    polygon: {
-                        shapeOptions: {
-                                color: 'purple'
-                        },
-                        allowIntersection: false,
-                        drawError: {
-                                color: 'orange',
-                                timeout: 1000
-                        },
-                        showArea: true,
-                        metric: false,
-                        repeatMode: true
-                    },
-                    polyline: {
-                        shapeOptions: {
-                                color: 'red'
-                        }
-                    },
-                    rect: {
-                        shapeOptions: {
-                                color: 'green'
-                        }
-                    },
-                    circle: {
-                        shapeOptions: {
-                                color: 'steelblue'
-                        }
-                    },
-                    marker: {
-                        icon: greenIcon
-                    }
-                },
-                edit: {
-                    featureGroup: drawnItems
-                }
-            });
-            map.addControl(drawControl);
-
-            map.on('draw:created', function (e) {
-                var type = e.layerType,
-                    layer = e.layer;
-                if (type === 'marker') {
-                        layer.bindPopup('A popup!');
-                }
-                drawnItems.addLayer(layer);
-            }).on('draw:drawstop', function (e) {
-                alert('finito');
-            }).on('zoomend',function(e){
-                $('#'+this.mapid+'_zoom').val(this.getZoom());
-            });
+                OclMapTomtomBox.autocenter = false;
+                OclMapTomtomBox.setVertex(map);
+                //OclMapTomtomBox.refreshDatagrid(map);
+            });  
+            return;            
+                                                                                                                        						                       
             if ($(this).attr('coostart')){                
                 var mrk = $(this).attr('coostart').split(',');				
                 OclMapLeafletBox.markersAdd(
@@ -133,7 +58,7 @@ OclMapTomtomBox = {
                 );                
             }
         });		
-	this.refresh_datagrid();
+	this.refreshDatagrid();
     },
     calc_dist : function(sta, end)
     {
@@ -223,20 +148,29 @@ OclMapTomtomBox = {
             return; 
         }        
         for (var i in markers){
-            var marker = markers[i];
+            var marker = markers[i];            
             if (Osynapsy.isEmpty(marker.ico)) {                
                 continue;
             }
-            if (!Osynapsy.isEmpty(marker.ico.text) && marker.ico.text.indexOf('fa-') === 0){
-                var ico = L.AwesomeMarkers.icon({icon: marker.ico.text, prefix: 'fa', markerColor: marker.ico.color, spin:false});  
+            if (!Osynapsy.isEmpty(marker.ico.class) && marker.ico.class.indexOf('fa-') === 0){
+                var ico = L.AwesomeMarkers.icon({
+                    icon : marker.ico.class,
+                    prefix : 'fa', 
+                    markerColor : marker.ico.color, 
+                    spin : false
+                });  
             } else {
-                var ico = L.divIcon({className: layerId+'-icon', html : marker.ico.text, iconSize:null});
+                var ico = L.divIcon({
+                    className: Osynapsy.isEmpty(marker.ico.class) ? 'osy-mapgrid-marker-blue' : marker.ico.class, 
+                    html : marker.ico.text, 
+                    iconSize : null
+                });
             }
             var markerObject = L.marker(
                 [marker.lat, marker.lng],
                 {icon: ico}
             );
-            if (marker.popup !== undefined){
+            if (!Osynapsy.isEmpty(marker.popup)){
                 markerObject.bindPopup(marker.popup);
             }
             this.markerAppend(mapId, layerId, markerObject);
@@ -261,15 +195,13 @@ OclMapTomtomBox = {
             polyline.addTo(layer);	  	
         } 
    },   
-   refresh_datagrid : function(map, div)
+   refreshDatagrid : function()
    {
         if (this.datagrid.length === 0) {
             return;
         }
-        for(var i in this.datagrid ) {
-            var gridId = this.datagrid[i]; //Datagrid id
-            var mapId = $(div).attr('id'); //Map id
-            ODataGrid.refreshAjax($('#'+gridId),null/*,function(){OclMapLeafletBox.refresh_markers(mid)}*/);
+        for(var i in this.datagrid) {                        
+            ODataGrid.refreshAjax($('#'+this.datagrid[i]),null);
         }
    },
    refreshMarkers : function(mapId, dataGridId)
@@ -278,34 +210,38 @@ OclMapTomtomBox = {
             return; 
 	}
 	var dataGrid = $('#'+dataGridId);
-	if (!(f = dataGrid.data('mapgrid-infowindow-format'))) {
-            f = null;
-        }
+        var infoFormat = dataGrid.data('mapgrid-infowindow-format');
 	var dataset = [];
         //Se esiste pulisco il layer corrente
         this.cleanLayer(dataGridId);
-        $('tr',dataGrid).each(function(){
-            var frm = f;               
-            var i = 1;
+        $('tr', dataGrid).each(function(){
+            if (Osynapsy.isEmpty($(this).data('marker'))) {
+                return true;
+            }
+            var infoWindow = infoFormat, i = 1;
             $(this).children().each(function(){
-               if (f){
-                   if (frm.indexOf('['+i+']') > -1) { 
-                       frm = frm.replace('['+i+']',$(this).html());
-                    }
-                } else {
-                    frm += $(this).text() + '<br>';
+               if (Osynapsy.isEmpty(infoFormat)){
+                   infoWindow += $(this).text() + '<br>';
+                } else if (infoWindow.indexOf('['+i+']') > -1) { 
+                   infoWindow = infoWindow.replace('['+i+']',$(this).html());
                 }
                 i++;
-            });   		
-            if ($(this).attr('lat')){
-                dataset.push({
-                    lat : parseFloat($(this).attr('lat')),
-                    lng : parseFloat($(this).attr('lng')), 
-                    oid : $(this).attr('oid'), 
-                    ico : {text : 'fa-circle-o', color: 'blue'},
-                    popup : '<div style="width: 250px; height: 120px; overflow: hidden;">'+ frm +'</div>'
-                });
-            }			   
+            });
+            infoWindow = '<div style="width: 250px; height: 120px; overflow: hidden;">'+ infoWindow +'</div>';
+            var rawMarker = $(this).data('marker').split(',');           
+            var marker = {
+                lat : Osynapsy.isEmpty(rawMarker[0]) ? null : parseFloat(rawMarker[0]),
+                lng : Osynapsy.isEmpty(rawMarker[1]) ? null : parseFloat(rawMarker[1]),
+                ico : {
+                    class : Osynapsy.isEmpty(rawMarker[2]) ? 'fa-circle' : rawMarker[2],
+                    text  : Osynapsy.isEmpty(rawMarker[3]) ? '' : rawMarker[3],
+                    color : Osynapsy.isEmpty(rawMarker[4]) ? 'blue' : rawMarker[4]
+                },                
+                popup : infoWindow
+            };            
+            if (!Osynapsy.isEmpty(marker.lat) && !Osynapsy.isEmpty(marker.lng)){               
+                dataset.push(marker);
+            }            
         });
         if (this.autocenter) {
            this.computeCenter(mapId, dataset);
@@ -329,16 +265,21 @@ OclMapTomtomBox = {
         center.lng = center.lng / (parseInt(i) + 1);        
         this.setCenter(mapId, center);
     },
-    set_vertex : function(map){
-	var mapId = map.getContainer().getAttribute('id');
-	var bounds = map.getBounds();		
+    setVertex : function(map){
+	var mapId = map.mapId;
+	var bounds = map.getBounds();
+        
 	var ne = bounds.getNorthEast();
 	var sw = bounds.getSouthWest();
+        var center = map.getCenter();
+        //console.log(ne,sw,center.toString(), map.getContainer().getAttribute('id'));
+        
 	$('#'+mapId+'_ne_lat').val(ne.lat);
 	$('#'+mapId+'_ne_lng').val(ne.lng);
 	$('#'+mapId+'_sw_lat').val(sw.lat);
 	$('#'+mapId+'_sw_lng').val(sw.lng); 
-	$('#'+mapId+'_center').val(map.getCenter().toString().replace('LatLng(','').replace(')','')); 
+        //return;
+	//$('#'+mapId+'_center').val(map.getCenter().toString().replace('LatLng(','').replace(')','')); 
 	$('#'+mapId+'_cnt_lat').val((sw.lat + ne.lat) / 2); 
 	$('#'+mapId+'_cnt_lng').val((sw.lng + ne.lng) / 2); 
     },	  
