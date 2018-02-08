@@ -161,7 +161,7 @@ OclMapTomtomBox = {
                 });  
             } else {
                 var ico = L.divIcon({
-                    className: Osynapsy.isEmpty(marker.ico.class) ? 'osy-mapgrid-marker-blue' : marker.ico.class, 
+                    className: 'osy-mapgrid-marker ' + (Osynapsy.isEmpty(marker.ico.class) ? 'osy-mapgrid-marker-blue' : marker.ico.class), 
                     html : marker.ico.text, 
                     iconSize : null
                 });
