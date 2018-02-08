@@ -2,7 +2,8 @@ var Osynapsy = new (function(){
     
     var pub = {
         kernel : {},
-        history : {}
+        history : {},
+        plugin : {}
     };
     
     pub.action = 
