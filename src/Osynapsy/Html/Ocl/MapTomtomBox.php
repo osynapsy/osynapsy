@@ -54,9 +54,8 @@ class MapTomtomBox extends Component
         if (empty($_REQUEST[$this->id.'_center'])) {
 			$_REQUEST[$this->id.'_center'] = $defaultCenter['lat'].','.$defaultCenter['lng'];
 		}
-        $coordinateStart = $defaultCenter['lat'].','.$defaultCenter['lng'];
-        $coordinateStart .= isset($defaultCenter['ico']) ? ','.$defaultCenter['ico'] : '';
-		$this->map->att('coostart', $coordinateStart);		        
+        $coordinateStart = implode(',', array_values($this->getParameter('center')));        
+		$this->map->att('data-marker', $coordinateStart);		        
         $this->map->att('data-datagrid-parent', '#'.$this->datagridParent);        
 	}
     
@@ -65,8 +64,8 @@ class MapTomtomBox extends Component
         $this->datagridParent = $gridName;
     }
     
-    public function setStartCoordinate($lat, $lng)
+    public function setStartPoint($lat, $lng, $marker = 'fa-building')
     {
-        $this->setParameter('center', ['lat' => $lat, 'lng' => $lng]);
-    }
+        $this->setParameter('center', ['lat' => $lat, 'lng' => $lng, 'marker' => $marker]);
+    }        
 }
