@@ -201,6 +201,38 @@ OclMapTomtomBox = {
             ODataGrid.refreshAjax($('#'+this.datagrid[i]),null);
         }
    },
+   refreshMarkersFromDataset : function(mapId, dataGridId, dataset, autocenter = false, routing = false)
+   {
+        this.cleanLayer(dataGridId);
+        if (Osynapsy.isEmpty(dataset)) {
+           return;
+        }       
+        var markers = [];       
+        for (var i in dataset) {  
+            var infoWindow = '';
+            infoWindow = '<div style="width: 250px; height: 120px; overflow: hidden;">'+ infoWindow +'</div>';
+            var rawMarker = dataset[i].split(',');             
+            var marker = {
+                lat : Osynapsy.isEmpty(rawMarker[0]) ? null : parseFloat(rawMarker[0]),
+                lng : Osynapsy.isEmpty(rawMarker[1]) ? null : parseFloat(rawMarker[1]),
+                ico : {
+                    class : Osynapsy.isEmpty(rawMarker[2]) ? 'fa-circle' : rawMarker[2],
+                    text  : Osynapsy.isEmpty(rawMarker[3]) ? '' : rawMarker[3],
+                    color : Osynapsy.isEmpty(rawMarker[4]) ? 'blue' : rawMarker[4]
+                },                
+                popup : infoWindow
+            };            
+            if (!Osynapsy.isEmpty(marker.lat) && !Osynapsy.isEmpty(marker.lng)){               
+                markers.push(marker);
+            }
+        }        
+        this.markersAdd(mapId, dataGridId, markers);                        
+        if (routing) {
+            this.routing(mapId, markers);
+        } else if (autocenter) {
+            this.computeCenter(mapId, markers);
+        }
+   },
    refreshMarkers : function(mapId, dataGridId)
    {        
         if (this.datagrid.length === 0){ 
@@ -264,7 +296,7 @@ OclMapTomtomBox = {
             coordinates.push(step.lat + ',' + step.lng);
         }        
         var locations = coordinates.join(':');
-        console.log(locations);
+        //console.log(locations);
         var self = this;
         tomtom.routing()
               .locations(locations)
