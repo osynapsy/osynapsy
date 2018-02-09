@@ -1,18 +1,18 @@
 OTree = {
-    branchClose : function(gid)
+    branchClose : function(parentNodeId)
     {
-        $('tr[gid="'+gid+'"]').each(function(){
-            OTree.branchClose($(this).attr('oid'));
+        $('tr[treeParentNodeId="'+parentNodeId+'"]').each(function(){
+            OTree.branchClose($(this).attr('treeNodeId'));
             $(this).addClass('hide');
         });
     },
-    branchOpen : function(gid)
+    branchOpen : function(parentNodeId)
     {
-        if ($('tr[oid="'+gid+'"]').is(':visible')){ //Serve a bloccare le aperture su refresh
-            $('tr[gid="'+gid+'"]').each(function(){
+        if ($('tr[treeNodeId="'+parentNodeId+'"]').is(':visible')){ //Serve a bloccare le aperture su refresh
+            $('tr[treeParentNodeId="'+parentNodeId+'"]').each(function(){
                 $(this).removeClass('hide');
                 if ($(this).attr('__state') === 'open') {
-                    OTree.branchOpen($(this).attr('oid'));
+                    OTree.branchOpen($(this).attr('treeNodeId'));
                 }
             });
         }
@@ -40,19 +40,19 @@ OTree = {
     parentOpen : function()
     {
         $('div.osy-treegrid').each(function(){
-            var did = $(this).attr('id');
-            var sel = $('#'+did+'_sel',this).val().split('][')[0];
+            var dataGridId = $(this).attr('id');
+            var sel = $('#'+dataGridId+'_sel',this).val().split('][')[0];
             if (sel){
                 sel = sel.replace('[','').replace(']','');
                 $('tr[oid="'+sel+'"]',this).addClass('sel');
             }
-            var obj_opn = $('input[name='+ $(this).attr('id') + '_open]');
-            var val_opn = obj_opn.val().split('][');
-            for (var i in val_opn) {
-                var gid = val_opn[i].replace('[','').replace(']','');
-                $('tr[oid="'+gid+'"]').attr('__state','open');
-                $('span[class*=tree-plus]','tr[oid="'+gid+'"]').addClass('minus');
-                OTree.branchOpen(gid);
+            var nodeOpenObj = $('input[name='+ $(this).attr('id') + '_open]');
+            var nodeOpenVal = nodeOpenObj.val().split('][');
+            for (var i in nodeOpenVal) {
+                var parentNodeId = nodeOpenVal[i].replace('[','').replace(']','');
+                $('tr[treeNodeId="'+parentNodeId+'"]').attr('__state','open');
+                $('span[class*=tree-plus]','tr[treeNodeId="'+parentNodeId+'"]').addClass('minus');
+                OTree.branchOpen(parentNodeId);
             }
         });
     },    
@@ -66,17 +66,17 @@ OTree = {
             function (event){
                 event.stopPropagation();
                 var tr = $(this).closest('tr');
-                var dt = $(this).closest('div.osy-datagrid-2');
-                var obj_opn = $('input[name='+ dt.attr('id') + '_open]');
-                var val_opn = obj_opn.val();
-                var gid = tr.attr('oid');
+                var dataGrid = $(this).closest('div.osy-datagrid-2');
+                var nodeOpenObj = $('input[name='+ dataGrid.attr('id') + '_open]');
+                var nodeOpenVal = nodeOpenObj.val();
+                var targetNodeId = tr.attr('treeNodeId');
                 if ($(this).hasClass('minus')){
-                    obj_opn.val(val_opn.replace('['+gid+']',''));
-                    OTree.branchClose(gid);
+                    nodeOpenObj.val(nodeOpenVal.replace('['+targetNodeId+']',''));
+                    OTree.branchClose(targetNodeId);
                     tr.attr('__state','close');
                 } else {
-                    obj_opn.val(val_opn+'['+gid+']');
-                    OTree.branchOpen(gid);
+                    nodeOpenObj.val(nodeOpenVal+'['+targetNodeId+']');
+                    OTree.branchOpen(targetNodeId);
                     tr.attr('__state','open');
                 }
                 $(this).toggleClass('minus');
