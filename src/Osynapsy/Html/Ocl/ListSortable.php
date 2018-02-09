@@ -170,12 +170,7 @@ class ListSortable extends Component
         $this->head->att('class','clearfix ocl-listsortable-head');
         return $this->head;
     }
-    
-    public function setAction($action, $parameters = null)
-    {
-        $this->att('data-action', $action);        
-    }
-    
+
     public function setSql($db, $sql, $par = array())
     {
         $rs =  $db->execQuery($sql, $par, 'ASSOC');        
