@@ -211,7 +211,7 @@ OclMapTomtomBox = {
         for (var i in dataset) {  
             var infoWindow = '';
             infoWindow = '<div style="width: 250px; height: 120px; overflow: hidden;">'+ infoWindow +'</div>';
-            var rawMarker = dataset[i].split(',');             
+            var rawMarker = Array.isArray(dataset[i]) ? dataset[i] : dataset[i].split(',');             
             var marker = {
                 lat : Osynapsy.isEmpty(rawMarker[0]) ? null : parseFloat(rawMarker[0]),
                 lng : Osynapsy.isEmpty(rawMarker[1]) ? null : parseFloat(rawMarker[1]),
