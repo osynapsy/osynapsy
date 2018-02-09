@@ -369,7 +369,7 @@ class DataGrid extends Component
         }
         if (!empty($opt['row']['attr'])){
             foreach ($opt['row']['attr'] as $item){
-                $orw->att($item[0],$item[1]);
+                $orw->att($item[0], $item[1], true);
             }
         }        
         $grd->add($orw.'');
