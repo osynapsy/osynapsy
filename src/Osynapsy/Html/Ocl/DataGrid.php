@@ -437,12 +437,11 @@ class DataGrid extends Component
                 break;
             case '_tree':
                 //Il primo elemento deve essere l'id dell'item il secondo l'id del gruppo di appartenenza
-                @list($tree_id, $tree_group) = explode(',',$opt['cell']['rawvalue']);
-               // var_dump($v);
-                $opt['row']['attr'][] = array('oid',base64_encode($tree_id));
-                $opt['row']['attr'][] = array('gid',base64_encode($tree_group));
-                $opt['row']['attr'][] = array('data-treedeep',$lev);
-                if (array_key_exists($this->id,$_REQUEST) && $_REQUEST[$this->id] == '['.$tree_id.']'){
+                list($nodeId, $parentNodeId) = \array_pad(explode(',',$opt['cell']['rawvalue']),2,null);               
+                $opt['row']['attr'][] = ['treeNodeId', $nodeId];
+                $opt['row']['attr'][] = ['treeParentNodeId', $parentNodeId];
+                $opt['row']['attr'][] = ['data-treedeep', $lev];
+                if (array_key_exists($this->id, $_REQUEST) && $_REQUEST[$this->id] == '['.$nodeId.']'){
                     $opt['row']['class'][] = 'sel';
                 }
                 if (is_null($lev)) {
@@ -453,13 +452,11 @@ class DataGrid extends Component
                     $cls  = empty($ico_arr[$ii]) ? 'tree-null' : ' tree-con-'.$ico_arr[$ii];
                     $ico .= '<span class="tree '.$cls.'">&nbsp;</span>';
                 }
-                $ico .= array_key_exists($tree_id,$this->dataGroups)
-                       ? '<span class="tree tree-plus-'.$pos.'">&nbsp;</span>'
-                       : '<span class="tree tree-con-'.$pos.'">&nbsp;</span>';
+                $ico .= '<span class="tree '.(array_key_exists($nodeId, $this->dataGroups) ? 'tree-plus-' : 'tree-con-').$pos.'">&nbsp;</span>';                       
                 $opt['row']['prefix'][] = $ico;
                 if (!empty($lev) && !isset($_REQUEST[$this->id.'_open'])) {
                     $opt['row']['class'][] = 'hide';
-                } elseif (!empty($lev) && strpos($_REQUEST[$this->id.'_open'], '['.base64_encode($tree_group).']') === false){
+                } elseif (!empty($lev) && strpos($_REQUEST[$this->id.'_open'], '['.base64_encode($parentNodeId).']') === false){
                     $opt['row']['class'][] = 'hide';
                 }
                 break;           
@@ -475,9 +472,6 @@ class DataGrid extends Component
                 break;
             case '_faico'  :
                 $opt['row']['prefix'][] = "<span class=\"fa {$opt['cell']['rawvalue']}\"></span>&nbsp;";
-                break;
-           case '_pk'   :
-                $opt['row']['attr'][] = array('_pk',$opt['cell']['rawvalue']);
                 break;
             case '_img':
                 $opt['cell']['print'] = true;
