@@ -40,7 +40,7 @@ var Osynapsy = new (function(){
                 values.push('actionParameters[]=' + encodeURIComponent(value));
             }
             return values.join('&');
-        },
+        },        
         remoteExecute : function(action, form, actionParameters)
         {
             var extraData = Osynapsy.isEmpty(actionParameters) ? '' : actionParameters;
@@ -122,6 +122,19 @@ var Osynapsy = new (function(){
             }
         }
         return null;
+    };
+    
+    pub.hashCode = function(string) {
+        var hash = 0, i, chr;
+        if (string.length === 0) {
+            return hash;
+        }
+        for (i = 0; i < string.length; i++) {
+            chr   = string.charCodeAt(i);
+            hash  = ((hash << 5) - hash) + chr;
+            hash |= 0; // Convert to 32bit integer
+        }
+        return hash;
     };
     
     pub.history = 
@@ -276,12 +289,12 @@ var Osynapsy = new (function(){
                 win += body;
                 win += '            </div>';
                 win += '            <div class="modal-footer">';
-                if (actionConfirm) {
+                if (!Osynapsy.isEmpty(actionConfirm)) {
                     var action = actionConfirm.replace(')','').split('(');
                     btnCloseClass = ' pull-left';
                     win += '<button type="button" class="btn btn-default click-execute pull-right" data-dismiss="modal" data-action="'+ action[0] +'" data-action-parameters="' + (action[1] === 'undefined' ? '' : action[1]) +'">Conferma</button>';
                 }
-                if (actionCancel) {
+                if (!Osynapsy.isEmpty(actionCancel)) {
                     win += '<button type="button" class="btn btn-default'+btnCloseClass+' click-execute" data-action="'+ actionCancel +'" data-dismiss="modal">Annulla</button>';
                 } else {
                     win += '<button type="button" class="btn btn-default'+btnCloseClass+'" data-dismiss="modal">Annulla</button>';
@@ -304,6 +317,10 @@ var Osynapsy = new (function(){
             if (!title) { title = 'Alert'; }
             var modalId = actionConfirm !== null ? 'alert' : 'confirm';
             return this.build(modalId, title, message, actionConfirm, actionCancel);
+        },
+        confirm : function(object)
+        {
+            return this.build('confirm','Confirm',object.data('confirm'), object.data('action'));
         }
     };
     
