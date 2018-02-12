@@ -77,7 +77,7 @@ OclMapTomtomBox = {
             }
 	}
 	return coo_min;
-   },
+    },
     calc_perc : function(mapid, dat)
     {
         var polid = 'prova';
@@ -105,13 +105,13 @@ OclMapTomtomBox = {
             this.polylinelist[polid].addTo(this.maplist[mapid]);
             //this.layerlist[map].addLayer(pol);
 	}      
-   },   
-   dataset_add : function(datid,dats)
-   {
+    },   
+    dataset_add : function(datid,dats)
+    {
    	this.datasets[datid] = dats;
-   },
-   dataset_calc_route : function(mapid, datid, sta)
-   {
+    },
+    dataset_calc_route : function(mapid, datid, sta)
+    {
         if (datid in this.datasets) {
             var data = this.datasets[datid].slice();			
             if (sta){ 
@@ -119,9 +119,9 @@ OclMapTomtomBox = {
             }
             this.calc_perc(mapid,data);
         }
-   },
-   getLayer : function(mapId, layerId, clean)
-   {
+    },
+    getLayer : function(mapId, layerId, clean)
+    {
         if (!(layerId in this.layerlist)){
             this.layerlist[layerId] = new L.FeatureGroup();
             this.maplist[mapId].addLayer(this.layerlist[layerId]);
@@ -129,23 +129,28 @@ OclMapTomtomBox = {
             this.cleanLayer(layerId);
         }
         return this.layerlist[layerId];
-   },   
-   cleanLayer : function(layerId)
-   {
+    },   
+    cleanLayer : function(layerId)
+    {
         if (layerId in this.layerlist){
             this.layerlist[layerId].clearLayers();
 	}
-   },   
-   markersClean : function(mapid)
-   {
-   },
-   markersAdd : function(mapId, layerId, markers)
-   {
+    },
+    getMarkerId : function(lat, lng, txt)
+    {
+        var string = lat + ',' + lng + ','+ txt;        
+        return Osynapsy.hashCode(string);
+    },
+    markersClean : function(mapid)
+    {
+    },
+    markersAdd : function(mapId, layerId, markers)
+    {
         if (!(markers instanceof Array)){ 
             return; 
         }        
         for (var i in markers){
-            var marker = markers[i];            
+            var marker = markers[i];           
             if (Osynapsy.isEmpty(marker.ico)) {                
                 continue;
             }
@@ -170,19 +175,20 @@ OclMapTomtomBox = {
             if (!Osynapsy.isEmpty(marker.popup)){
                 markerObject.bindPopup(marker.popup);
             }
-            this.markerAppend(mapId, layerId, markerObject);
+            this.markerAppend(mapId, layerId, marker['id'], markerObject);
         }        
-   },
-   markerAppend : function(mapId, layerId, marker)
-   {        
+    },
+    markerAppend : function(mapId, layerId, markerId, markerObject)
+    {        
         if (!(layerId in this.layermarker)){
             this.layermarker[layerId] = {};
         }
-        this.layermarker[layerId][mapId] = marker; 
-        this.getLayer(mapId, layerId).addLayer(marker);
-   },
-   polyline : function(mapId, layerId, dataset, polylineColor)
-   {
+        console.log(mapId, layerId, markerId);
+        this.layermarker[layerId][markerId] = markerObject; 
+        this.getLayer(mapId, layerId).addLayer(markerObject);
+    },
+    polyline : function(mapId, layerId, dataset, polylineColor)
+    {
         if (polylineColor === undefined || polylineColor === null) {
             polylineColor = 'red';
         }        
@@ -191,24 +197,24 @@ OclMapTomtomBox = {
             var polyline = new L.polyline(dataset, {color : polylineColor});
             polyline.addTo(layer);	  	
         } 
-   },   
-   refreshDatagrid : function()
-   {
+    },   
+    refreshDatagrid : function()
+    {
         if (this.datagrid.length === 0) {
             return;
         }
         for(var i in this.datagrid) {                        
             ODataGrid.refreshAjax($('#'+this.datagrid[i]),null);
         }
-   },
-   refreshMarkersFromDataset : function(mapId, dataGridId, dataset, autocenter = false, routing = false)
-   {
+    },
+    refreshMarkersFromDataset : function(mapId, dataGridId, dataset, autocenter = false, routing = false)
+    {
         this.cleanLayer(dataGridId);
         if (Osynapsy.isEmpty(dataset)) {
            return;
         }       
         var markers = [];       
-        for (var i in dataset) {  
+        for (var i in dataset) {            
             var infoWindow = '';
             infoWindow = '<div style="width: 250px; height: 120px; overflow: hidden;">'+ infoWindow +'</div>';
             var rawMarker = Array.isArray(dataset[i]) ? dataset[i] : dataset[i].split(',');             
@@ -220,8 +226,10 @@ OclMapTomtomBox = {
                     text  : Osynapsy.isEmpty(rawMarker[3]) ? '' : rawMarker[3],
                     color : Osynapsy.isEmpty(rawMarker[4]) ? 'blue' : rawMarker[4]
                 },                
-                popup : infoWindow
-            };            
+                popup : infoWindow,
+                id : null
+            };
+            marker['id'] = this.getMarkerId(marker.lat, marker.lng, marker.ico.text);
             if (!Osynapsy.isEmpty(marker.lat) && !Osynapsy.isEmpty(marker.lng)){               
                 markers.push(marker);
             }
@@ -232,14 +240,15 @@ OclMapTomtomBox = {
         } else if (autocenter) {
             this.computeCenter(mapId, markers);
         }
-   },
-   refreshMarkers : function(mapId, dataGridId)
-   {        
+    },
+    refreshMarkers : function(mapId, dataGridId)
+    {        
         if (this.datagrid.length === 0){ 
             return; 
 	}
+        var self = this;
 	var dataGrid = $('#'+dataGridId);
-        var infoFormat = dataGrid.data('mapgrid-infowindow-format');
+        var infoFormat = dataGrid.data('mapgrid-infowindow');
 	var dataset = [];
         //Se esiste pulisco il layer corrente
         this.cleanLayer(dataGridId);
@@ -267,7 +276,8 @@ OclMapTomtomBox = {
                     color : Osynapsy.isEmpty(rawMarker[4]) ? 'blue' : rawMarker[4]
                 },                
                 popup : infoWindow
-            };            
+            };
+            marker['id'] = self.getMarkerId(marker.lat, marker.lng, marker.ico.text);
             if (!Osynapsy.isEmpty(marker.lat) && !Osynapsy.isEmpty(marker.lng)){               
                 dataset.push(marker);
             }            
@@ -346,15 +356,17 @@ OclMapTomtomBox = {
 	$('#'+mapId+'_cnt_lat').val((sw.lat + ne.lat) / 2); 
 	$('#'+mapId+'_cnt_lng').val((sw.lng + ne.lng) / 2); 
     },	  
-    open_id : function(oid,lid){
-   	console.log(oid,lid)   		
-   	if (lid){
-            if ((lid in this.layermarker) && (oid in this.layermarker[lid])){
-		this.layermarker[lid][oid].openPopup();
-            }
-	} else {
-            this.markerlist[oid].openPopup();          
+    openId : function(markerId, layerId)
+    {   	 		
+   	if (Osynapsy.isEmpty(layerId)){
+            this.markerlist[markerId].openPopup();
+            return;
 	}
+        console.log(this.layermarker);
+        if ((layerId in this.layermarker) && (markerId in this.layermarker[layerId])){
+            console.log(markerId, layerId); 
+            this.layermarker[layerId][markerId].openPopup();
+        }
     },
     resize : function(mapid)
     {
