@@ -21,7 +21,7 @@ use Osynapsy\Html\Ocl\ComboBox2;
 class Select extends ComboBox2
 {
     //put your code here
-    public function __construct($name, $multiple=false)
+    public function __construct($name, $multiple = false, $title = null)
     {        
         parent::__construct($name);
         $this->class = 'osy-select';
@@ -31,6 +31,9 @@ class Select extends ComboBox2
         //$this->setParameter('option-select-disable',false);
         if ($multiple) {
             $this->setMultiSelect();
+        }
+        if ($title) {
+            $this->title = $title;
         }
     }
     
