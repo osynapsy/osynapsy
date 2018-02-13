@@ -456,7 +456,7 @@ class DataGrid extends Component
                 $opt['row']['prefix'][] = $ico;
                 if (!empty($lev) && !isset($_REQUEST[$this->id.'_open'])) {
                     $opt['row']['class'][] = 'hide';
-                } elseif (!empty($lev) && strpos($_REQUEST[$this->id.'_open'], '['.base64_encode($parentNodeId).']') === false){
+                } elseif (!empty($lev) && strpos($_REQUEST[$this->id.'_open'], '['.$parentNodeId.']') === false){
                     $opt['row']['class'][] = 'hide';
                 }
                 break;           
