@@ -136,6 +136,30 @@ OclMapTomtomBox = {
             this.layerlist[layerId].clearLayers();
 	}
     },
+    displayInstructions : function (routeJson, resultsContainer)
+    {
+        var guidance = routeJson.features[0].properties.guidance;
+        guidance.instructionGroups.forEach(function(instructionGroup) {
+            // Print name of the group
+            var groupEl = tomtom.L.DomUtil.create('p', 'tt-results__groupname');
+            groupEl.innerHTML = instructionGroup.groupMessage;
+            resultsContainer.appendChild(groupEl);
+            // Print steps of the group
+            var stepsEl = tomtom.L.DomUtil.create('p', 'tt-results__steps');
+            stepsEl.innerHTML = this.formatGroupSteps(guidance.instructions, instructionGroup);
+            resultsContainer.appendChild(stepsEl);
+        });
+        return routeJson;
+    },
+    formatGroupSteps : function(instructions, instructionGroup)
+    {
+        var firstStep = instructionGroup.firstInstructionIndex,
+            lastStep = instructionGroup.lastInstructionIndex + 1,
+            steps = instructions.slice(firstStep, lastStep).map(function(step) {
+                return step.message;
+            });
+        return '<ol start=\'' + (firstStep + 1) + '\'><li>' + steps.join('</li><li>') + '</li></ol>';
+    },
     getMarkerId : function(lat, lng, txt)
     {
         var string = lat + ',' + lng + ','+ txt;        
