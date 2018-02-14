@@ -152,7 +152,7 @@ ODataGrid =
             $('form').submit();
         });
     },
-    refreshAjax : function(grid)
+    refreshAjax : function(grid, afterRefresh)
     {
         if ($(grid).is(':visible')) {
             Osynapsy.waitMask.show(grid);
@@ -164,11 +164,11 @@ ODataGrid =
             type : 'post',
             context : grid,
             data : data,
-            success : function(rsp){
+            success : function(response){
                 Osynapsy.waitMask.remove();
-                if (rsp) {
+                if (response) {
                     var id = '#'+$(this).attr('id');
-                    var grid = $(rsp).find(id);
+                    var grid = $(response).find(id);
                     var body = $('.osy-datagrid-2-body', grid).html();
                     var foot = $('.osy-datagrid-2-foot', grid).html();
                     $('.osy-datagrid-2-body',this).html(body);
@@ -177,6 +177,9 @@ ODataGrid =
                     if ($(this).hasClass('osy-treegrid')){
                         OTree.parentOpen();
                     }
+                }
+                if (!Osynapsy.isEmpty(afterRefresh)) {
+                    afterRefresh(response);
                 }
             }
         });
