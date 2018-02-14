@@ -329,7 +329,8 @@ var Osynapsy = new (function(){
         {
             $('body').on('change','.change-execute',function(){
                 Osynapsy.action.execute(this);
-            }).on('click','.cmd-execute, .click-execute',function() {
+            }).on('click','.cmd-execute, .click-execute',function(event) {
+                event.stopPropagation();
                 Osynapsy.action.execute(this);
             }).on('click','.cmd-back',function(){        
                 Osynapsy.history.back();
