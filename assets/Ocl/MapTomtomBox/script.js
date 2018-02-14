@@ -182,8 +182,7 @@ OclMapTomtomBox = {
     {        
         if (!(layerId in this.layermarker)){
             this.layermarker[layerId] = {};
-        }
-        console.log(mapId, layerId, markerId);
+        }        
         this.layermarker[layerId][markerId] = markerObject; 
         this.getLayer(mapId, layerId).addLayer(markerObject);
     },
@@ -294,31 +293,31 @@ OclMapTomtomBox = {
     },
     routing : function(mapId, dataset)
     {
-        if (Osynapsy.isEmpty(dataset) || dataset.length < 2) {
-            return;
-        }
+        //Init routing layer
+        if (!('routing' in this.layerlist)) {
+            var map = this.maplist[mapId];
+            this.layerlist['routing'] = tomtom.L.geoJson().addTo(map);
+            this.layerlist['routing'].setStyle({style: {color: '#00d7ff', opacity: 0.8}});
+        } else {
+            this.layerlist['routing'].clearLayers();
+        }        
         var coordinates = [];
         if (!Osynapsy.isEmpty(this.startMarker)) {         
             coordinates.push(this.startMarker[0] + ',' + this.startMarker[1]);
         }
+        if (Osynapsy.isEmpty(dataset) || (dataset.length + coordinates.length) < 2) {
+            console.log('No route tracing. Dataset contains ' + dataset.length + ' item');
+            return;
+        }
         for (var i in dataset) {
-            var step = dataset[i];
-            coordinates.push(step.lat + ',' + step.lng);
-        }        
-        var locations = coordinates.join(':');
+            coordinates.push(dataset[i].lat + ',' + dataset[i].lng);
+        }
         //console.log(locations);
         var self = this;
         tomtom.routing()
-              .locations(locations)
+              .locations(coordinates.join(':'))
               .go()
-              .then(function(routeJson) {
-                    var map = self.maplist[mapId];
-                    if (!('routing' in self.layerlist)) {
-                        self.layerlist['routing'] = tomtom.L.geoJson().addTo(map);
-                        self.layerlist['routing'].setStyle({style: {color: '#00d7ff', opacity: 0.8}});
-                    } else {
-                        self.layerlist['routing'].clearLayers();
-                    }
+              .then(function(routeJson) {                                        
                     self.layerlist['routing'].addData(routeJson);
                     map.fitBounds(self.layerlist['routing'].getBounds(), {padding: [5, 5]});
                });
