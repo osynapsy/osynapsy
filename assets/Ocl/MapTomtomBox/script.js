@@ -240,7 +240,7 @@ OclMapTomtomBox = {
         for (var i in dataset) {                                    
             var rawMarker = Array.isArray(dataset[i]) ? dataset[i] : dataset[i].split(',');
             var infoWindow = rawMarker.length == 6 ? rawMarker[5] : '';  
-            infoWindow = '<div class="infoWindow" style="width: 250px; height: 120px;">'+ infoWindow +'</div>';            
+            infoWindow = '<div class="infoWindow" style="width: 250px;">'+ infoWindow +'</div>';            
             var marker = {
                 lat : Osynapsy.isEmpty(rawMarker[0]) ? null : parseFloat(rawMarker[0]),
                 lng : Osynapsy.isEmpty(rawMarker[1]) ? null : parseFloat(rawMarker[1]),
@@ -288,7 +288,7 @@ OclMapTomtomBox = {
                 }
                 i++;
             });
-            infoWindow = '<div class="infoWindow" style="width: 250px; height: 120px;">'+ infoWindow +'</div>';
+            infoWindow = '<div class="infoWindow" style="width: 250px;">'+ infoWindow +'</div>';
             var rawMarker = $(this).data('marker').split(',');           
             var marker = {
                 lat : Osynapsy.isEmpty(rawMarker[0]) ? null : parseFloat(rawMarker[0]),
