@@ -104,7 +104,7 @@ class Kernel
                 }
                 $id = isset($route['id']) ? $route['id'] : uniqid();
                 $uri = $route['path'];
-                $controller = $route['routeValue'];
+                $controller = $route['@value'];
                 $template = !empty($route['template']) ? $this->request->get('app.layouts.'.$route['template']) : '';
                 $this->router->addRoute($id, $uri, $controller, $template, $applicationId, $route);                
             }

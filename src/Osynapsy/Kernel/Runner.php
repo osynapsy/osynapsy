@@ -101,7 +101,7 @@ class Runner
         $listDatasource = $this->env->search('db',"env.app.{$this->route->application}.datasources");
         $this->dbFactory = new DbFactory();
         foreach ($listDatasource as $datasource) {
-            $connectionString = $datasource['dbValue'];
+            $connectionString = $datasource['@value'];
             $this->dbFactory->createConnection($connectionString);                       
         }
     }

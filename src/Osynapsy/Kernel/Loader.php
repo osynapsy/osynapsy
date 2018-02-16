@@ -95,11 +95,7 @@ class Loader
                $tree[$nodeKey] = trim(strval($xml->current()));
                continue;
             }
-            $element = [
-                $nodeKey.'Value' => trim(strval($xml->current()))
-            ];
-            $element += $attributes['@attributes'];
-            $tree[$nodeKey][] = $element;
+            $tree[$nodeKey][] = ['@value' => \trim(\strval($xml->current()))] + $attributes['@attributes'];
         }
         return $tree;
     }
