@@ -680,4 +680,12 @@ class DataGrid extends Component
         $this->setParameter('datasource-sql', $sql);
         $this->setParameter('datasource-sql-par', $par);
     }
+    
+    public function setDefaultOrderBy($column)
+    {
+        if (!isset($_REQUEST[$this->id.'_order'])) {
+            $_REQUEST[$this->id.'_order'] = $column;
+        }        
+        return $this;
+    }
 }
