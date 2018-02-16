@@ -17,6 +17,7 @@ use Osynapsy\Html\Component;
 class InputGroup extends Component
 {
     protected $textBox;
+    protected $postfix;
     
     public function __construct($name, $prefix = '', $postfix = '')
     {
@@ -36,14 +37,17 @@ class InputGroup extends Component
         }
         
         if ($postfix) {
-            $this->add(new Tag('span'))
-                 ->att('class', 'input-group-addon')
-                 ->add($postfix);
+            $this->postfix = $this->add(new Tag('span'))->att('class', 'input-group-addon')->add($postfix);
         }
     }
     
     public function getTextBox()
     {
         return $this->textBox;
-    }    
+    }
+    
+    public function getPostfix()
+    {
+        return $this->postfix;
+    }
 }
