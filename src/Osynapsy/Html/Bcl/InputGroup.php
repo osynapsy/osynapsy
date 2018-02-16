@@ -37,7 +37,8 @@ class InputGroup extends Component
         }
         
         if ($postfix) {
-            $this->postfix = $this->add(new Tag('span'))->att('class', 'input-group-addon')->add($postfix);
+            $this->postfix = $this->add(new Tag('span'))->att('class', 'input-group-addon');
+            $this->postfix->add($postfix);
         }
     }
     
