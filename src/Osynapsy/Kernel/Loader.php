@@ -79,30 +79,29 @@ class Loader
         }
     }
     
-    private function parseXml($xml, &$array = [])
+    private function parseXml($xml, &$tree = [])
     {                                
         for($xml->rewind(); $xml->valid(); $xml->next() ) {
-            $key = $xml->key();            
-            if (!array_key_exists($key, $array)) {
-                $array[$key] = [];
+            $nodeKey = $xml->key();            
+            if (!array_key_exists($nodeKey, $tree)) {
+                $tree[$nodeKey] = [];
             }
+            $attributes = (array) $xml->current()->attributes();
             if ($xml->hasChildren()){
-                $this->parseXml($xml->current(), $array[$key]);
+                $this->parseXml($xml->current(), $tree[$nodeKey]);
                 continue;
             }
-            
-            $raw = (array) $xml->current()->attributes();
-            if (empty($raw)) {
-               $array[$key] =  trim(strval($xml->current()));
+            if (empty($attributes)) {
+               $tree[$nodeKey] = trim(strval($xml->current()));
                continue;
             }
             $element = [
-                $key.'Value' => trim(strval($xml->current()))
+                $nodeKey.'Value' => trim(strval($xml->current()))
             ];
-            $element += $raw['@attributes'];
-            $array[$key][] = $element;
+            $element += $attributes['@attributes'];
+            $tree[$nodeKey][] = $element;
         }
-        return $array;
+        return $tree;
     }
     
     public function get($key = '')
