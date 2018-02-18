@@ -12,6 +12,7 @@
 namespace Osynapsy\Html\Ocl;
 
 use Osynapsy\Html\Component;
+use Osynapsy\Html\Tag;
 
 class CheckBox extends Component
 {    
