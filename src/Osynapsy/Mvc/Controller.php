@@ -97,7 +97,16 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     
     public function getParameter($key)
     {
-        return (is_array($this->parameters) && array_key_exists($key,$this->parameters)) ? $this->parameters[$key] : null;
+        if (!is_array($this->parameters)) {
+            return null;
+        }
+        if (!array_key_exists($key, $this->parameters)) {
+            return null;
+        }
+        if ($this->parameters[$key] === '') {
+            return null;
+        }
+        return $this->parameters[$key];
     }
     
     public function getResponse()
