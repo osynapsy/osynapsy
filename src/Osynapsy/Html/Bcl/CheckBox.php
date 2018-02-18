@@ -12,7 +12,6 @@
 namespace Osynapsy\Html\Bcl;
 
 use Osynapsy\Html\Component;
-use Osynapsy\Html\Ocl\HiddenBox;
 use Osynapsy\Html\Tag;
 
 /**
@@ -28,8 +27,7 @@ class CheckBox extends Component
     public function __construct($id, $label, $value='1')
     {
         parent::__construct('label', $id.'_parent');
-        $this->att('class','form-check-label');        
-        $this->hidden = $this->add(new HiddenBox($id))->att('value', '');
+        $this->att('class','form-check-label')->add('<input type="hidden" name="'.$id.'" value="0">');
         $this->checkbox = $this->add(new Tag('input'))->att([
             'id' => $id,
             'type' => 'checkbox',
@@ -40,7 +38,7 @@ class CheckBox extends Component
     }
     
     public function getCheckBox()
-    {
+    {        
         return $this->checkbox;
     }
 }
