@@ -54,6 +54,9 @@ class ImageCrop
     
     public function deleteImageAction()
     {        
+        if (empty($this->targetFile)) {
+            return;
+        }
         unlink('.'.$this->targetFile);
         $this->updateRecord(null);
     }
