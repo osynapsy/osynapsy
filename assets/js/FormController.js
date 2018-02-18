@@ -223,6 +223,7 @@ var Osynapsy = new (function(){
                 return;
             }
             var errors = [];
+            var self = this;
             $.each(response.errors, function(idx, val){
                 if (val[0] === 'alert'){
                     alert(val[1]);
@@ -232,7 +233,7 @@ var Osynapsy = new (function(){
                 if ($(cmp).hasClass('field-in-error')){
                     return true;                
                 }            
-                errors.push(cmp.length > 0 ? this.showErrorOnLabel(cmp, val[1]) : val[1]);
+                errors.push(cmp.length > 0 ? self.showErrorOnLabel(cmp, val[1]) : val[1]);
             });
             if (errors.length === 0) {
                 return;
