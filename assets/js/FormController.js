@@ -238,7 +238,7 @@ var Osynapsy = new (function(){
             if (errors.length === 0) {
                 return;
             }
-            this.modal.show(
+            pub.modal.show(
                 'Si sono verificati i seguenti errori',
                 '<pre>' + errors.join('\n') +'</pre>'
             );
