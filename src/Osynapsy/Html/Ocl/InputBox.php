@@ -24,6 +24,8 @@ class InputBox extends Component
 
     protected function __build_extra__()
     {
-        $this->att('value', $this->getGlobal($this->name, $_REQUEST));   
+        if ($value = $this->getGlobal($this->name, $_REQUEST)) {
+            $this->att('value', $value);
+        }
     }
 }
