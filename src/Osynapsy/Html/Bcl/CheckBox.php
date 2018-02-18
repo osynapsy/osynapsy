@@ -21,8 +21,7 @@ use Osynapsy\Html\Tag;
  */
 class CheckBox extends Component
 {
-    private $checkbox;
-    private $hidden;
+    private $checkbox;    
     
     public function __construct($id, $label, $value='1')
     {
@@ -40,6 +39,13 @@ class CheckBox extends Component
     public function getCheckBox()
     {        
         return $this->checkbox;
+    }
+    
+    protected function __build_extra__()
+    {
+        if (!empty($_REQUEST[$this->checkbox->id])) {
+            $this->checkbox->att('checked','checked');
+        }
     }
 }
 
