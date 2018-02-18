@@ -25,6 +25,7 @@ class ImageCrop
     private $field;
     private $where;
     private $targetFile;
+    private $pathinfo = [];
     
     public function __construct($db, $table, $field, array $where)
     {
@@ -33,6 +34,10 @@ class ImageCrop
         $this->field = $field;
         $this->where = $where;
         $this->targetFile = $this->db->selectOne($table, $where, [$field], 'NUM');
+        if (empty($this->targetFile)) {
+            return;
+        }
+        $this->pathinfo = pathinfo($this->targetFile);        
     }
 
     public function cropAction($newWidth, $newHeight, $cropX, $cropY, $cropWidth, $cropHeight, $filename)
@@ -62,5 +67,12 @@ class ImageCrop
     public function getTarget()
     {
         return $this->targetFile;
+    }
+    
+    public function getInfo($key)
+    {
+        if (array_key_exists($key, $this->pathinfo)) {
+            return $this->pathinfo[$key];
+        }
     }
 }
