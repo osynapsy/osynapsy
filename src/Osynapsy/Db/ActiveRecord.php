@@ -250,10 +250,18 @@ abstract class ActiveRecord
         if (empty($this->searchCondition)) {
             throw new \Exception('Primary key is empty');
         }
-        $this->dbConnection->delete(
-            $this->table,
-            $this->searchCondition
-        );
+        if (!empty($this->softDelete) && is_array($this->softDelete)) {
+            $this->dbConnection->update(
+                $this->table,
+                $this->softDelete,
+                $this->searchCondition
+            );
+        } else {
+            $this->dbConnection->delete(
+                $this->table,
+                $this->searchCondition
+            );
+        }
         $this->afterDelete();
     }
     
