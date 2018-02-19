@@ -177,7 +177,7 @@ OclMapTomtomBox = {
             var marker = markers[i];           
             if (Osynapsy.isEmpty(marker.ico)) {                
                 continue;
-            }
+            }            
             if (!Osynapsy.isEmpty(marker.ico.class) && marker.ico.class.indexOf('fa-') === 0){
                 var ico = L.AwesomeMarkers.icon({
                     icon : marker.ico.class,
@@ -189,7 +189,8 @@ OclMapTomtomBox = {
                 var ico = L.divIcon({
                     className: 'osy-mapgrid-marker ' + (Osynapsy.isEmpty(marker.ico.class) ? 'osy-mapgrid-marker-blue' : marker.ico.class), 
                     html : marker.ico.text, 
-                    iconSize : null
+                    iconSize : null,
+                    popupAnchor : [0, -35]
                 });
             }
             var markerObject = L.marker(
@@ -236,26 +237,25 @@ OclMapTomtomBox = {
         if (Osynapsy.isEmpty(dataset)) {
            return;
         }       
-        var markers = [];       
-        for (var i in dataset) {                                    
+        var markers = [];
+        for (var i in dataset) {            
             var rawMarker = Array.isArray(dataset[i]) ? dataset[i] : dataset[i].split(',');
-            var infoWindow = rawMarker.length == 6 ? rawMarker[5] : '';  
+            var infoWindow = rawMarker.length === 7 ? rawMarker[6] : '';  
             infoWindow = '<div class="infoWindow" style="width: 250px;">'+ infoWindow +'</div>';            
             var marker = {
-                lat : Osynapsy.isEmpty(rawMarker[0]) ? null : parseFloat(rawMarker[0]),
-                lng : Osynapsy.isEmpty(rawMarker[1]) ? null : parseFloat(rawMarker[1]),
+                id  : rawMarker[0],
+                lat : Osynapsy.isEmpty(rawMarker[1]) ? null : parseFloat(rawMarker[1]),
+                lng : Osynapsy.isEmpty(rawMarker[2]) ? null : parseFloat(rawMarker[2]),
                 ico : {
-                    class : Osynapsy.isEmpty(rawMarker[2]) ? 'fa-circle' : rawMarker[2],
-                    text  : Osynapsy.isEmpty(rawMarker[3]) ? '' : rawMarker[3],
-                    color : Osynapsy.isEmpty(rawMarker[4]) ? 'blue' : rawMarker[4]
+                    class : Osynapsy.isEmpty(rawMarker[3]) ? 'fa-circle' : rawMarker[3],
+                    text  : Osynapsy.isEmpty(rawMarker[4]) ? '' : rawMarker[4],
+                    color : Osynapsy.isEmpty(rawMarker[5]) ? 'blue' : rawMarker[5]
                 },                
-                popup : infoWindow,
-                id : null
-            };
-            marker['id'] = this.getMarkerId(marker.lat, marker.lng, marker.ico.text);
+                popup : infoWindow                
+            };                       
             if (!Osynapsy.isEmpty(marker.lat) && !Osynapsy.isEmpty(marker.lng)){               
                 markers.push(marker);
-            }
+            }            
         }        
         this.markersAdd(mapId, dataGridId, markers);                        
         if (routing) {
@@ -268,8 +268,7 @@ OclMapTomtomBox = {
     {        
         if (this.datagrid.length === 0){ 
             return; 
-	}
-        var self = this;
+	}        
 	var dataGrid = $('#'+dataGridId);
         var infoFormat = dataGrid.data('mapgrid-infowindow');
 	var dataset = [];
@@ -291,16 +290,16 @@ OclMapTomtomBox = {
             infoWindow = '<div class="infoWindow" style="width: 250px;">'+ infoWindow +'</div>';
             var rawMarker = $(this).data('marker').split(',');           
             var marker = {
-                lat : Osynapsy.isEmpty(rawMarker[0]) ? null : parseFloat(rawMarker[0]),
-                lng : Osynapsy.isEmpty(rawMarker[1]) ? null : parseFloat(rawMarker[1]),
+                id  : rawMarker[0],
+                lat : Osynapsy.isEmpty(rawMarker[0]) ? null : parseFloat(rawMarker[1]),
+                lng : Osynapsy.isEmpty(rawMarker[1]) ? null : parseFloat(rawMarker[2]),
                 ico : {
-                    class : Osynapsy.isEmpty(rawMarker[2]) ? 'fa-circle' : rawMarker[2],
-                    text  : Osynapsy.isEmpty(rawMarker[3]) ? '' : rawMarker[3],
-                    color : Osynapsy.isEmpty(rawMarker[4]) ? 'blue' : rawMarker[4]
+                    class : Osynapsy.isEmpty(rawMarker[3]) ? 'fa-circle' : rawMarker[3],
+                    text  : Osynapsy.isEmpty(rawMarker[4]) ? '' : rawMarker[4],
+                    color : Osynapsy.isEmpty(rawMarker[5]) ? 'blue' : rawMarker[5]
                 },                
                 popup : infoWindow
-            };
-            marker['id'] = self.getMarkerId(marker.lat, marker.lng, marker.ico.text);
+            };            
             if (!Osynapsy.isEmpty(marker.lat) && !Osynapsy.isEmpty(marker.lng)){               
                 dataset.push(marker);
             }            
@@ -386,7 +385,7 @@ OclMapTomtomBox = {
             this.markerlist[markerId].openPopup();
             return;
 	}
-        console.log(this.layermarker);
+        console.log('Open markerId :', markerId);
         if ((layerId in this.layermarker) && (markerId in this.layermarker[layerId])){
             console.log(markerId, layerId); 
             this.layermarker[layerId][markerId].openPopup();
