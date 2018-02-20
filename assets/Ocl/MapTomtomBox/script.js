@@ -89,14 +89,12 @@ OclMapTomtomBox = {
 	while ((dat.length > 0) && (i < 1000)){
             nxt = this.calc_next(nxt,dat);
             try{
-            arr.push([parseFloat(nxt.lat),parseFloat(nxt.lng)]);
-                    dat.splice( dat.indexOf(nxt),1);
-            } catch (err){
-                    //console.log(err,nxt,arr);
-                    i = 100;
+                arr.push([parseFloat(nxt.lat),parseFloat(nxt.lng)]);
+                dat.splice( dat.indexOf(nxt),1);
+            } catch (err){         
+                i = 100;
             }		
-	}
-	  //console.log(arr);
+	}	  
 	if (mapid in this.maplist){
 	    if (polid in this.polylinelist){
                 this.maplist[mapid].removeLayer(this.polylinelist[polid]);
@@ -394,10 +392,8 @@ OclMapTomtomBox = {
    	if (Osynapsy.isEmpty(layerId)){
             this.markerlist[markerId].openPopup();
             return;
-	}
-        console.log('Open markerId :', markerId);
-        if ((layerId in this.layermarker) && (markerId in this.layermarker[layerId])){
-            console.log(markerId, layerId); 
+	}        
+        if ((layerId in this.layermarker) && (markerId in this.layermarker[layerId])){            
             this.layermarker[layerId][markerId].openPopup();
         }
     },
