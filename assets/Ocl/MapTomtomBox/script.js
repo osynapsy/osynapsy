@@ -231,9 +231,9 @@ OclMapTomtomBox = {
             ODataGrid.refreshAjax($('#'+this.datagrid[i]),null);
         }
     },
-    refreshMarkersFromDataset : function(mapId, dataGridId, dataset, autocenter = false, routing = false)
+    refreshMarkersFromDataset : function(mapId, layerId, dataset, autoCenter = false, colorRoute = false)
     {
-        this.cleanLayer(dataGridId);
+        this.cleanLayer(layerId);
         if (Osynapsy.isEmpty(dataset)) {
            return;
         }       
@@ -257,10 +257,10 @@ OclMapTomtomBox = {
                 markers.push(marker);
             }            
         }        
-        this.markersAdd(mapId, dataGridId, markers);                        
-        if (routing) {
-            this.routing(mapId, markers);
-        } else if (autocenter) {
+        this.markersAdd(mapId, layerId, markers);                        
+        if (colorRoute) {
+            this.routing(mapId, markers, layerId + '_route', colorRoute);
+        } else if (autoCenter) {
             this.computeCenter(mapId, markers);
         }
     },
@@ -314,18 +314,26 @@ OclMapTomtomBox = {
         this.dataset_add(dataGridId, dataset);
         this.autocenter = true;
     },
-    routing : function(mapId, dataset, layerId)
+    routing : function(mapId, dataset, layerId, colorLayer)
     {
         //Init routing layer
         if (Osynapsy.isEmpty(layerId)) { 
             layerId = 'routing';
         }
+        if (Osynapsy.isEmpty(colorLayer)) { 
+            colorLayer = '#00d7ff';
+        }        
         var map = this.maplist[mapId];
         var coordinates = [];
-        if (!(layerId in this.layerlist)) {           
-            this.layerlist[layerId] = tomtom.L.geoJson(null).addTo(map);
-            this.layerlist[layerId].setStyle({style: {color: '#00d7ff', opacity: 0.8, zIndexOffset : 100}});            
-        } else {
+        if (!(layerId in this.layerlist)) {                   
+            this.layerlist[layerId] = tomtom.L.geoJson(null,{
+                style: {
+                    color: colorLayer,
+                    opacity: 0.8, 
+                    zIndexOffset : 100
+                }
+            }).addTo(map);            
+        } else {            
             this.layerlist[layerId].clearLayers();
         }        
         if (!Osynapsy.isEmpty(this.startMarker)) {         
@@ -337,13 +345,12 @@ OclMapTomtomBox = {
         }
         for (var i in dataset) {
             coordinates.push(dataset[i].lat + ',' + dataset[i].lng);
-        }
-        //console.log(locations);
+        }        
         var self = this;
         tomtom.routing()
               .locations(coordinates.join(':'))
               .go()
-              .then(function(routeJson) {
+              .then(function(routeJson) {                    
                     var layer = self.layerlist[layerId];
                     layer.addData(routeJson);                    
                     map.fitBounds(layer.getBounds(), {padding: [5, 5]});
