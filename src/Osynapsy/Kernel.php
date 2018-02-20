@@ -61,11 +61,11 @@ class Kernel
         );
         $this->request->set(
             'observers',
-            $this->loadConfig('observer', 'observerValue', 'subject')
+            $this->loadConfig('observer', '@value', 'subject')
         );
         $this->request->set(
             'listeners',
-            $this->loadConfig('listener', 'listenerValue', 'event')
+            $this->loadConfig('listener', '@value', 'event')
         );                
     }
     
