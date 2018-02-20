@@ -164,3 +164,16 @@ div#waitMask > div.message > div.progress {
     outline: 0; 
     border-bottom: 2px solid #ddd !important
 };
+
+.osy-mt-10 {margin-top: 10px;}
+.osy-mt-20 {margin-top: 20px;}
+.osy-mt-30 {margin-top: 30px;}
+.osy-mb-10 {margin-bottom: 10px;}
+.osy-mb-20 {margin-bottom: 20px;}
+.osy-mb-30 {margin-bottom: 30px;}
+.osy-pt-10 {padding-top: 10px;}
+.osy-pt-20 {padding-top: 20px;}
+.osy-pt-30 {padding-top: 30px;}
+.osy-pb-10 {padding-bottom: 10px;}
+.osy-pb-20 {padding-bottom: 20px;}
+.osy-pb-30 {padding-bottom: 30px;}
