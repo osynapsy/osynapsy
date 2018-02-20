@@ -150,6 +150,7 @@ var Osynapsy = new (function(){
                 switch ($(this).attr('type')) {
                     case 'submit':
                     case 'button':
+                    case 'file':
                         return true;
                     case 'checkbox':
                         if (!$(this).is(':checked')) {
@@ -171,12 +172,10 @@ var Osynapsy = new (function(){
             }
             var hst = JSON.parse(sessionStorage.history);
             var stp = hst.pop();
-            
             if (Osynapsy.isEmpty(stp)) {
                 history.back();
                 return;
             }
-            console.log(stp.parameters);
             sessionStorage.history = JSON.stringify(hst);
             Osynapsy.post(stp.url, stp.parameters);
         }
