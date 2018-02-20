@@ -26,6 +26,7 @@ BclSummernote =
                     }
                 },
                 height: 300,
+                tabsize: 4,
             });
         });
     },
