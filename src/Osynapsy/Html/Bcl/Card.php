@@ -20,14 +20,33 @@ use Osynapsy\Html\Tag;
  */
 class Card extends OclComponent
 {
-    public function __construct($name, $title=null)
+    private $head;
+    
+    public function __construct($name, $title = null, array $commands = [])
     {
         parent::__construct('div',$name);
         $this->att('class','card');
+        $this->head  = new Tag('div');
+        $this->head->att('class','card-header ch-alt clearfix');
         if (!empty($title)) {
-            $this->add(new Tag('div'))
-                 ->att('class','card-header ch-alt')
-                 ->add('<h2>'.$title.'</h2>');
+            $this->head->add('<h2 class="pull-left">'.$title.'</h2>');
         }
+        $this->buildCommandContainer($commands);
+        if (!empty($title) || !empty($commands)) {
+            $this->add($this->head);
+        }
+    }
+    
+    private function buildCommandContainer($commands)
+    {
+        if (empty($commands)) {
+            return;
+        }
+        $commandContainer = new Tag('div');
+        $commandContainer->att('class', 'pull-right m-t-sm');
+        foreach($commands as $command) {
+            $commandContainer->add($command);
+        }
+        $this->head->add($commandContainer);
     }
 }
