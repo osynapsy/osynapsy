@@ -171,6 +171,12 @@ div#waitMask > div.message > div.progress {
 .osy-mb-10 {margin-bottom: 10px;}
 .osy-mb-20 {margin-bottom: 20px;}
 .osy-mb-30 {margin-bottom: 30px;}
+.osy-mr-10 {margin-right: 10px;}
+.osy-mr-20 {margin-right: 20px;}
+.osy-mr-30 {margin-right: 30px;}
+.osy-ml-10 {margin-left: 10px;}
+.osy-ml-20 {margin-left: 20px;}
+.osy-ml-30 {margin-left: 30px;}
 .osy-pt-10 {padding-top: 10px;}
 .osy-pt-20 {padding-top: 20px;}
 .osy-pt-30 {padding-top: 30px;}
