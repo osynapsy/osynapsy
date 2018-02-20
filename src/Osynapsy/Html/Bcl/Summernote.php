@@ -17,8 +17,8 @@ class Summernote extends TextArea
     {
         parent::__construct($name);        
         $this->att('class','summernote');
-        $this->requireCss('Lib/summernote-0.8.2/summernote.css');
-        $this->requireJs('Lib/summernote-0.8.2/summernote.js');
+        $this->requireCss('Lib/summernote-0.8.9/summernote.css');
+        $this->requireJs('Lib/summernote-0.8.9/summernote.js');
         $this->requireJs('Bcl/Summernote/script.js');  
     }    
 }
