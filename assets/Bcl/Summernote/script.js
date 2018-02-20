@@ -3,42 +3,31 @@ BclSummernote =
     init : function()
     {
         $('.summernote').each(function(){
-            if (upath = $(this).attr('uploadpath')) {
+            var upath = $(this).attr('uploadpath');
+            if (upath) {
                 BclSummernote.uploadPath = upath;
             }
+            var self = this;
             $(this).summernote({
-                onkeyup: function(e) {
-                    //$(".summernote").val($(this).code());
-                },
-                onblur: function(e) {
-                    var phpkey1 = "&lt;"+"?php",
-                        phpkeyend = "?&gt;",
-                        stylekey1 = "&lt;style&gt;",
-                        stylekey2 = "&lt;style type=\"text/css\"&gt;",
-                        stylekeyend = "&lt;/style&gt;",
-                        scriptkey1 = "&lt;script&gt;",
-                        scriptkey2 = "&lt;script type=\"text/javascript\"&gt;",
-                        scriptkeyend = "&lt;/script&gt;";
-
-                    var code = $(this).code();
-
-                    code = $.trim(code)
-                      .replace(/<!--\?php/g, phpkey1)
-                      .replace(/\?-->/g, phpkeyend)
-                      .replace(/<style>/g, stylekey1)
-                      .replace(/<style type="text\/css">/g, stylekey2)
-                      .replace(/<\/style>/g, stylekeyend)
-                      .replace(/<script>/g, scriptkey1)
-                      .replace(/<script type="text\/javascript">/g, scriptkey2)
-                      .replace(/<\/script>/g, scriptkeyend);
-
-                    var content = $("textarea[name='"+$(this).attr('id')+"']").html(code);
-                },
-                onImageUpload: function(files, editor, welEditable) {
-                    BclSummernote.upload(files[0], editor, welEditable);
+                callbacks: {
+                    onkeyup: function(e)
+                    {
+                        $(".summernote").val($(this).code());
+                    },
+                    onInit : function(e)
+                    {
+                        var code = $(self).text().replace(/<\?/g,'&lt;?').replace(/\?>/g,'?&gt;');
+                        $(self).summernote('reset');
+                        $(self).summernote('code', code);
+                        console.log(code, self);
+                    },
+                    onImageUpload: function(files, editor, welEditable)
+                    {
+                        BclSummernote.upload(files[0], editor, welEditable);
+                    }
                 },
                 height: 300,
-            })
+            });
         });
     },
     upload : function(file, editor, welEditable)
