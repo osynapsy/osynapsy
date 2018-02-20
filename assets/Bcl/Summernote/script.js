@@ -12,14 +12,13 @@ BclSummernote =
                 callbacks: {
                     onkeyup: function(e)
                     {
-                        $(".summernote").val($(this).code());
+                        //$(".summernote").val($(this).code());
                     },
                     onInit : function(e)
                     {
                         var code = $(self).text().replace(/<\?/g,'&lt;?').replace(/\?>/g,'?&gt;');
                         $(self).summernote('reset');
-                        $(self).summernote('code', code);
-                        console.log(code, self);
+                        $(self).summernote('code', code);                        
                     },
                     onImageUpload: function(files, editor, welEditable)
                     {
