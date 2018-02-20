@@ -32,7 +32,7 @@ BclSummernote =
     },
     upload : function(file, editor, welEditable)
     {
-        data = new FormData();
+        var data = new FormData();
         data.append("file", file);
         $.ajax({
             data: data,
