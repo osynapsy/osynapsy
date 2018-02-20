@@ -43,7 +43,7 @@ class Card extends OclComponent
             return;
         }
         $commandContainer = new Tag('div');
-        $commandContainer->att('class', 'pull-right m-t-sm');
+        $commandContainer->att('class', 'pull-right osy-mt-20');
         foreach($commands as $command) {
             $commandContainer->add($command);
         }
