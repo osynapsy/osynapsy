@@ -314,16 +314,19 @@ OclMapTomtomBox = {
         this.dataset_add(dataGridId, dataset);
         this.autocenter = true;
     },
-    routing : function(mapId, dataset)
+    routing : function(mapId, dataset, layerId)
     {
         //Init routing layer
+        if (Osynapsy.isEmpty(layerId)) { 
+            layerId = 'routing';
+        }
         var map = this.maplist[mapId];
         var coordinates = [];
-        if (!('routing' in this.layerlist)) {           
-            this.layerlist['routing'] = tomtom.L.geoJson(null).addTo(map);
-            this.layerlist['routing'].setStyle({style: {color: '#00d7ff', opacity: 0.8, zIndexOffset : 100}});            
+        if (!(layerId in this.layerlist)) {           
+            this.layerlist[layerId] = tomtom.L.geoJson(null).addTo(map);
+            this.layerlist[layerId].setStyle({style: {color: '#00d7ff', opacity: 0.8, zIndexOffset : 100}});            
         } else {
-            this.layerlist['routing'].clearLayers();
+            this.layerlist[layerId].clearLayers();
         }        
         if (!Osynapsy.isEmpty(this.startMarker)) {         
             coordinates.push(this.startMarker[0] + ',' + this.startMarker[1]);
@@ -341,7 +344,7 @@ OclMapTomtomBox = {
               .locations(coordinates.join(':'))
               .go()
               .then(function(routeJson) {
-                    var layer = self.layerlist['routing'];
+                    var layer = self.layerlist[layerId];
                     layer.addData(routeJson);                    
                     map.fitBounds(layer.getBounds(), {padding: [5, 5]});
                });
