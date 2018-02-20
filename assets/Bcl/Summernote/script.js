@@ -10,18 +10,15 @@ BclSummernote =
             var self = this;
             $(this).summernote({
                 callbacks: {
-                    onkeyup: function(e)
-                    {
+                    onkeyup: function(e) {
                         //$(".summernote").val($(this).code());
                     },
-                    onInit : function(e)
-                    {
+                    onInit : function(e) {
                         var code = $(self).text().replace(/<\?/g,'&lt;?').replace(/\?>/g,'?&gt;');
                         $(self).summernote('reset');
                         $(self).summernote('code', code);                        
                     },
-                    onImageUpload: function(files, editor, welEditable)
-                    {
+                    onImageUpload: function(files, editor, welEditable){
                         BclSummernote.upload(files[0], editor, welEditable);
                     }
                 },
