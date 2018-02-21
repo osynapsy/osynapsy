@@ -26,7 +26,7 @@ Create an index.php file with the following contents:
 <?php
 require '../vendor/autoload.php';
 
-$kernel = new Osynapsy\Core\Kernel('../etc/site.xml');
+$kernel = new Osynapsy\Kernel('../etc/site.xml');
 
 echo $kernel->run();
 ```
