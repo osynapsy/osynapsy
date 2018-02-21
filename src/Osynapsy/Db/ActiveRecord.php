@@ -210,7 +210,7 @@ abstract class ActiveRecord
      */
     private function loadRecordAfterInsert($id)
     {
-        if (!empty($id) && count($this->key) == 1) {                     
+        if (!empty($id) && count($this->keys) == 1) {                     
             $this->findByKey($id);
             return;
         }
