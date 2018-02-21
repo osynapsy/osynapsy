@@ -89,7 +89,7 @@ BclAutocomplete = {
             }
         }).on('click','div.row',function(e){ 
             e.preventDefault();
-            var parentid = $(this).closest('#search_content').data('parent');
+            var parentid = $(this).closest('#search_content').data('parent');            
             $('input#'+parentid).removeClass('osy-autocomplete-unselected').nextAll('#__'.parentid).val($(this).data('value'));
             $('input#'+parentid).val($(this).data('label'));
             if (!Osynapsy.isEmpty($('div#'+parentid).attr('onselected'))) {
@@ -128,6 +128,8 @@ BclAutocomplete = {
             divPosition.left = parentPosition.left;
             divPosition.width = parentWidth > 500 ? parentWidth : windowWidth - (parentPosition.left + 50);
         }
+        divPosition.width = parentWidth;
+        divPosition.left = parentPosition.left; 
         return divPosition;
     },
     closeSearchContainer : function(parent)
