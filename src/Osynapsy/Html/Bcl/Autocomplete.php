@@ -26,7 +26,7 @@ class Autocomplete extends Component
         'search' => ['sql' => null, 'parameters' => []]
     ];
     
-    public function __construct($id, InterfaceDbo $db = null)
+    public function __construct($id, $db = null)
     {
         $this->requireJs('Bcl/Autocomplete/script.js');
         $this->requireCss('Bcl/Autocomplete/style.css');
@@ -44,7 +44,8 @@ class Autocomplete extends Component
             $this->setData(
                 $this->db->execQuery(
                     $this->query['search']['sql'],
-                    $this->query['search']['parameters']
+                    $this->query['search']['parameters'],
+                    'NUM'
                 )
             );
         }
@@ -53,10 +54,11 @@ class Autocomplete extends Component
     
     private function addInput()
     {
-        if (!empty($this->query['decode']['sql'])) {
+        if (!empty($this->query['decode']['sql'])) {            
             $_REQUEST[$this->id] = $this->db->execUnique(
                 $this->query['decode']['sql'],
-                $this->query['decode']['parameters']                
+                $this->query['decode']['parameters'],
+                'NUM'
             );            
         }
         $this->add(new InputGroup($this->id, '', $this->ico))
