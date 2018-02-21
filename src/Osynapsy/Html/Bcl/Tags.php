@@ -93,8 +93,8 @@ class Tags extends Component
                 'style' =>'width: 250px; margin-top: 3px;',
                 'class' => 'pull-left'
             ]);
-            $this->autocomplete->setSelected("BclTags.addLabel(this)");
-            $this->autocomplete->setIco('<span class="fa fa-plus" onclick="BclTags.addLabel($(this).parent().prev(),\'#'.$this->id.'\');"></span>');           
+            $this->autocomplete->setSelected("\$('#{$this->id} span.fa-plus').click()");
+            $this->autocomplete->setIco('<span class="fa fa-plus tag-append" onclick="BclTags.addTag(\'#'.$this->id.'\');"></span>');           
             return $this->autocomplete;
         }
         if ($ajax != $this->id.'_auto') {
