@@ -10,57 +10,58 @@ BclTags = {
             }
             var fld = $(obj).data('fields').split(',');
             var lst = [];
-            for (i in fld) {
+            for (var i in fld) {
                 if ($(fld[i]).val() == '') {
                     alert('Non hai inserito nessun valore impossibile proseguire');
                     return;
                 }
                 lst.append($(fld[i]).val());
             }
-            BclTags.addLabel(lst, $(this).data('parent'));
+            BclTags.addTag($(this).data('parent'));
             $(this).closest('modal').modal('hide');
         }).on('click','.bclTags-delete',function(){
-            BclTags.deleteLabel($(this));
+            BclTags.deleteTag($(this));
         });
     },
-    addLabel : function(lbl, par){
-        if (lbl.val() === '') {
+    addTag : function(tagContainerId)
+    {
+        var tagInput = $('input[type=text]', $(tagContainerId));
+        var tagValue = tagInput.val();
+        if (Osynapsy.isEmpty(tagValue)) {
             alert('Tag field is empty');
             return;
-        } else if (this.checkField(lbl.val(), par)) {
-            alert('Tag <' + lbl.val() + '> is present');
+        } else if (this.checkTagExists(tagValue, tagContainerId)) {
+            alert('Tag <' + tagValue + '> is present');
             return;
         }
-        var htmlLabel = ' <span class="label label-default">' + lbl.val();
-        htmlLabel += ' <span class="fa fa-close bclTags-delete"></span>';
-        htmlLabel += '</span> ';
-        $('.bclTags-container', $('div'+par)).append(htmlLabel);
-        lbl.val('');
-        this.updateField(par);
+        var tagItem = ' <span class="label label-default">' + tagValue + ' <span class="fa fa-close bclTags-delete"></span></span> ';
+        $('.bclTags-container', $('div'+tagContainerId)).append(tagItem);        
+        tagInput.val('');        
+        this.updateHiddenField(tagContainerId);
     },
-    checkField : function(val, par)
+    checkTagExists : function(tagValue, tagContainerId)
     {
-        var exist = false;
-        $('.label', $('div'+par)).each(function(){
-            if ($(this).text().trim() == val.trim()) {
-                exist = true;
+        var exists = false;
+        $('.label', $('div'+tagContainerId)).each(function(){
+            if ($(this).text().trim() == tagValue.trim()) {
+                exists = true;
             }
         });
-        return exist;
+        return exists;
     },
-    deleteLabel : function(obj) {
+    deleteTag : function(tagItem) {
         if (confirm('Are you sure to delete tag')) {
-            var parentId = '#' + $(obj).closest('.bclTags').attr('id');
-            $(obj).parent().remove();
-            this.updateField(parentId);
+            var parentId = '#' + $(tagItem).closest('.bclTags').attr('id');
+            $(tagItem).parent().remove();
+            this.updateHiddenField(parentId);
         }
     },
-    updateField : function(par) {
-        var val = '';
-        $('.label', $('div'+par)).each(function(){
-            val += '[' + $(this).text().trim() + ']';
+    updateHiddenField : function(tagContainerId) {
+        var values = '';
+        $('.label', $('div'+tagContainerId)).each(function(){
+            values += '[' + $(this).text().trim() + ']';
         });
-        $('input'+par).val(val);
+        $('input'+tagContainerId).val(values);
     }
 }
 
