@@ -93,6 +93,9 @@ BclAutocomplete = {
             var parentid = $(this).closest('#search_content').data('parent');
             $('input#'+parentid).removeClass('osy-autocomplete-unselected').nextAll('#__'.parentid).val($(this).data('value'));
             $('input#'+parentid).val($(this).data('label'));
+            if (!Osynapsy.isEmpty($('div#'+parentid).attr('onselected'))) {
+                eval($('div#'+parentid).attr('onselected'));
+            }
         }).data('parent',$(obj).attr('id'));
         $(document.body).append(div);
     },
