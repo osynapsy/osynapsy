@@ -47,7 +47,7 @@ class Autocomplete extends Component
     {        
         $valueList = $this->add(new Tag('div'));
         $valueList->att('id',$this->id.'_list');
-        if (empty($this->data) || !is_array($this->data)) {
+        if (!empty($this->emptyMessage) && (empty($this->data) || !is_array($this->data))) {
             $valueList->add('<div class="row">'.$this->emptyMessage.'</div>');
             return;
         }
