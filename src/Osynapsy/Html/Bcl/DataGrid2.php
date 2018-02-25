@@ -124,6 +124,9 @@ class DataGrid2 extends Component
                 $value = number_format($value, 2, ',', '.');
                 $properties['class'] .= ' text-right';
                 break;
+            case 'commands':
+                $properties['class'] .= ' cmd-row';
+                break;
         }        
         if (!empty($properties['function'])) {
             $value = $properties['function']($value, $cell, $rec, $tr);    
