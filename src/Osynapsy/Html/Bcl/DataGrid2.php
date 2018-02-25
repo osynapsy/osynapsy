@@ -98,9 +98,14 @@ class DataGrid2 extends Component
         $tr = new Tag('div');
         $tr->att('class', 'row');
         foreach ($this->columns as $properties) {
-            $value = array_key_exists($properties['field'], $row) ? 
-                     $row[$properties['field']] : 
-                     '<label class="label label-warning">No data found</label>';            
+            if (is_callable($properties['field'])) {
+                $properties['function'] = $properties['field'];
+                $value = null;
+            } else {
+                $value = array_key_exists($properties['field'], $row) ? 
+                         $row[$properties['field']] : 
+                         '<label class="label label-warning">No data found</label>';            
+            }
             $cell = $tr->add(new Tag('div'))
                        ->att('class', 'bcl-datagrid-td');            
             $cell->add(
