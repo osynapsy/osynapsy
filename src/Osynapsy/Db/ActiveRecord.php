@@ -84,7 +84,7 @@ abstract class ActiveRecord
                 'ASSOC'
             );           
         } catch (\Exception $e) {
-            throw new \Exception('Query error : '.$sql, 100);
+            throw new \Exception('Query error : '.$sql."\n".$e->getMessage(), 100);
         }
         if (empty($this->originalRecord)) {
             return $this->originalRecord;
