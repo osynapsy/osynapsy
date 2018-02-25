@@ -37,4 +37,22 @@
     border-right: 1px solid #ddd;
     padding-top: 5px;
     padding-bottom: 5px;
+    position: relative;
+}
+
+.bcl-datagrid-body .cmd-row {
+    display: none;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+} 
+
+.bcl-datagrid-body div.row:hover .cmd-row
+{
+    display: block;
+    
+}
+.bcl-datagrid-body .cmd-row:hover a
+{
+    color: red !important;
 }
