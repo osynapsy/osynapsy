@@ -40,4 +40,10 @@ class Container extends Tag
         }
         return $this->add($col);
     }
+    
+    public function setTitle($title)
+    {
+        $this->AddRow();
+        $this->AddColumn(12)->add('<h1>'.$title.'</h1>');
+    }
 }
