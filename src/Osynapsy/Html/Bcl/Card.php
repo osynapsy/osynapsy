@@ -27,6 +27,7 @@ class Card extends Component
     public function __construct($name, $title = null, array $commands = [])
     {
         parent::__construct('div',$name);
+        $this->requireCss('Bcl/Card/style.css');
         $this->att('class','card');
         $this->head  = new Tag('div');
         $this->head->att('class','card-header ch-alt clearfix');
@@ -55,8 +56,8 @@ class Card extends Component
     public function getBody()
     {
         if (empty($this->body)) {
-            $this->body = new PanelNew('panel'.$this->name);
-            $this->body->setClass('', '', '', '');
+            $this->body = $this->add(new PanelNew('panel'.$this->id));
+            $this->body->setClass('', '', '', 'card-body');
         }
         return $this->body;
     }
