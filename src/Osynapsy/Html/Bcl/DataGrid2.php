@@ -106,16 +106,9 @@ class DataGrid2 extends Component
                          $row[$properties['field']] : 
                          '<label class="label label-warning">No data found</label>';            
             }
-            $cell = $tr->add(new Tag('div'))
-                       ->att('class', 'bcl-datagrid-td');            
+            $cell = $tr->add(new Tag('div'))->att('class', 'bcl-datagrid-td');            
             $cell->add(
-                $this->valueFormatting(
-                    $value, 
-                    $cell, 
-                    $properties,
-                    $row,
-                    $tr
-                )
+                $this->valueFormatting($value, $cell, $properties, $row, $tr)
             );
         }
         if (!empty($row['_url_detail'])) {
