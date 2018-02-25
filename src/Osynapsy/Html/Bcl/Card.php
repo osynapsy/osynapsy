@@ -11,16 +11,18 @@
 
 namespace Osynapsy\Html\Bcl;
 
-use Osynapsy\Html\Component as OclComponent;
+use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
+use Osynapsy\Html\Bcl\PanelNew;
 
 /**
  * Build a card
  * 
  */
-class Card extends OclComponent
+class Card extends Component
 {
     private $head;
+    private $body;
     
     public function __construct($name, $title = null, array $commands = [])
     {
@@ -48,5 +50,13 @@ class Card extends OclComponent
             $commandContainer->add($command);
         }
         $this->head->add($commandContainer);
+    }
+    
+    public function getBody()
+    {
+        if (empty($this->body)) {
+            $this->body = new Panel('panel'.$this->name);
+        }
+        return $this->body;
     }
 }
