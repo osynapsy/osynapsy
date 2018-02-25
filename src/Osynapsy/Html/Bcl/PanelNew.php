@@ -91,4 +91,9 @@ class PanelNew extends Component
         }        
         return $this;
     }
+    
+    public function resetClass()
+    {
+        $this->setClass('','','','');
+    }
 }
