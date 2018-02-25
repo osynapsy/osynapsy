@@ -55,7 +55,7 @@ class Card extends Component
     public function getBody()
     {
         if (empty($this->body)) {
-            $this->body = new Panel('panel'.$this->name);
+            $this->body = new PanelNew('panel'.$this->name);
             $this->body->setClass('', '', '', '');
         }
         return $this->body;
