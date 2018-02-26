@@ -19,6 +19,7 @@ class DataGrid2 extends Component
     private $columns = [];
     private $title;
     private $emptyMessage = 'No data found';
+    private $showHeader = true;
     
     public function __construct($name)
     {
@@ -35,9 +36,11 @@ class DataGrid2 extends Component
                 $this->buildTitle($this->title)
             );
         }
-        $this->add(
-            $this->buildColumnHead()
-        );
+        if ($this->showHeader) {
+            $this->add(
+                $this->buildColumnHead()
+            );
+        }
         $this->add(
             $this->buildBody()
         );
@@ -145,6 +148,12 @@ class DataGrid2 extends Component
             'type' => $type,
             'function' => $function
         ];
+        return $this;
+    }
+    
+    public function hideHeader()
+    {
+        $this->showHeader = false;
         return $this;
     }
     
