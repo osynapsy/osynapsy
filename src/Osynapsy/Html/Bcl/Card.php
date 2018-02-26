@@ -46,7 +46,7 @@ class Card extends Component
             return;
         }
         $commandContainer = new Tag('div');
-        $commandContainer->att('class', 'pull-right osy-mt-20');
+        $commandContainer->att('class', 'pull-right');
         foreach($commands as $command) {
             $commandContainer->add($command);
         }
