@@ -142,7 +142,7 @@ var Osynapsy = new (function(){
         save : function()
         {
             var hst = [];
-            var arr = {};
+            var arr = [];
             if (sessionStorage.history){
                 hst = JSON.parse(sessionStorage.history);
             }
@@ -159,7 +159,7 @@ var Osynapsy = new (function(){
                         break;
                 }
                 if ($(this).attr('name')) {
-                    arr[$(this).attr('name')] = $(this).val();
+                    arr.push([$(this).attr('name'), $(this).val()]);
                 }
             });
             hst.push({url : window.location.href, parameters : arr});        
@@ -358,8 +358,8 @@ var Osynapsy = new (function(){
     {
         var form = $('<form method="post" action="'+url+'"></form>');
         if (!Osynapsy.isEmpty(vars)) {
-            for (var name in vars) {
-                $('<input type="hidden" name="'+name+'" value="'+vars[name]+'">').appendTo(form);
+            for (var i in vars) {
+                $('<input type="hidden" name="'+vars[i][0]+'" value="'+vars[i][1]+'">').appendTo(form);
             }
         }
         $('body').append(form);
