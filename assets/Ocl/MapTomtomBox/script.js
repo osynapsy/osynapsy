@@ -351,7 +351,7 @@ OclMapTomtomBox = {
               .then(function(routeJson) {                    
                     var layer = self.layerlist[layerId];
                     layer.addData(routeJson);                    
-                    map.fitBounds(layer.getBounds(), {padding: [5, 5]});
+                    //map.fitBounds(layer.getBounds(), {padding: [5, 5]});
                });
     },
     computeCenter : function(mapId, dataset)
