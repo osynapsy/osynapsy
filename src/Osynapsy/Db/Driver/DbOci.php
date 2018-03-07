@@ -177,6 +177,30 @@ class DbOci implements InterfaceDbo
         return $result;
     }
 
+    public function getIterator($rs, $par = null, $method = null)
+    {
+	if (is_string($rs)) {
+	    $rs = $this->execCommand($rs, $par);
+	} else {
+	    $method = $par;
+	}
+	switch($method) {
+	    case 'BOTH':
+	        $method = OCI_BOTH;
+	        break;
+	    case 'NUM':
+	        $method = OCI_NUM;
+	        break;
+	    default:
+	        $method = OCI_ASSOC;
+	        break;
+	}
+	while ($record = oci_fetch_array($rs, $method | OCI_RETURN_NULLS)) {
+	    yield $record;
+	}
+	$this->freeRs($rs);
+	return null;
+    }
     public function query($sql)
     {
         return $this->execCommand($sql);
