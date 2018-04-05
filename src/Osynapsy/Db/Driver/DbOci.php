@@ -66,7 +66,10 @@ class DbOci implements InterfaceDbo
     {
         oci_rollback($this->cn );
     }
-
+    public function quote($value)
+    {
+        return "'".str_replace("'", "''", $value)."'";
+    }
     public function connect()
     {
         $this->cn = oci_connect(
@@ -179,27 +182,26 @@ class DbOci implements InterfaceDbo
 
     public function getIterator($rs, $par = null, $method = null)
     {
-	if (is_string($rs)) {
-	    $rs = $this->execCommand($rs, $par);
-	} else {
-	    $method = $par;
-	}
-	switch($method) {
-	    case 'BOTH':
-	        $method = OCI_BOTH;
-	        break;
-	    case 'NUM':
-	        $method = OCI_NUM;
-	        break;
-	    default:
-	        $method = OCI_ASSOC;
-	        break;
-	}
-	while ($record = oci_fetch_array($rs, $method | OCI_RETURN_NULLS)) {
-	    yield $record;
-	}
-	$this->freeRs($rs);
-	return null;
+	    if (is_string($rs)) {
+	        $rs = $this->execCommand($rs, $par);
+	    } else {
+	        $method = $par;
+	    }
+	    switch($method) {
+	        case 'BOTH':
+	            $method = OCI_BOTH;
+	            break;
+	        case 'NUM':
+	            $method = OCI_NUM;
+	            break;
+	        default:
+	            $method = OCI_ASSOC;
+	            break;
+	    }
+	    while ($record = oci_fetch_array($rs, $method | OCI_RETURN_NULLS)) {
+	        yield $record;
+	    }
+	    $this->freeRs($rs);
     }
     public function query($sql)
     {
