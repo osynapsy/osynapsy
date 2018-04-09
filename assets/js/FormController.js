@@ -345,7 +345,7 @@ var Osynapsy = new (function(){
                 FormController.modalWindow(
                     'amodal', 
                     $(this).attr('title'), 
-                    $(this).attr('href'), 
+                    $(this).is('.postdata') ? [$(this).attr('href'), $(this).closest('form')] : $(this).attr('href'), 
                     $(this).attr('modal-width') ? $(this).attr('modal-width') : '75%',
                     $(this).attr('modal-height') ? $(this).attr('modal-height') : ($(window).innerHeight() - 250) + 'px'
                 );
@@ -562,6 +562,12 @@ var FormController =
     modalWindow : function(id, title, url) {
         var wdt = '90%';        
         var hgt = ($(window).innerHeight() - 250) + 'px';
+        var form = null;
+        if ($.isArray(url)) {
+            form = url[1];
+            url = url[0];
+            console.log(form);
+        }
         if (typeof arguments[3] !== 'undefined') {
             wdt = arguments[3];
         }        
@@ -579,7 +585,8 @@ var FormController =
             win += '                <h4 class="modal-title">' + title + '</h4>';
             win += '            </div>';
             win += '            <div class="modal-body">';
-            win += '                <iframe name="'+id+'" src="'+url+'" style="width: 100%; height:'+ hgt +'; border: 0px; border-radius: 3px;" border="0"></iframe>';
+            win += '                <i class="fa fa-spinner fa-spin" style="font-size:24px; position:absolute; margin-top:20px; margin-left: 20px; color:silver;"></i>';
+            win += '                <iframe onload="$(this).css(\'visibility\',\'\');" name="'+id+'" style="visibility:hidden; width: 100%; height:'+ hgt +'; border: 0px; border-radius: 3px;" border="0"></iframe>';
             win += '            </div>';
             //win += '            <div class="modal-footer">';
             //win += '                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>';
@@ -589,9 +596,31 @@ var FormController =
             win += '</div>';
             win = $(win);
         $('body').append(win);
+        $('iframe', '#'+id).on('load', function(){
+            
+        });
+        if (form) {
+            var action = form.attr('action');
+            var target = form.attr('target');
+            var method = form.attr('method');
+            form.attr('action', url);
+            form.attr('target', id);
+            form.attr('method', 'POST');
+            form.submit();
+            console.log(action, target, method);
+            form.attr('action', action?action:'');
+            form.attr('target', target?target:'');
+            form.attr('method', method?method:'');
+        } else {
+            $('iframe', '#'+id).attr('src',url);
+        }
+        $('iframe', '#'+id).on('load', function(){
+            $(this).prev().hide();
+        });
         $('#'+id).modal({
             keyboard : true
         });
+        
         return win;
     }
 };
