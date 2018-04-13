@@ -11,12 +11,13 @@ and open the template in the editor.
 .card {
     position: relative;
     background: #fff;
-    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.15);
+    box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.15);
     margin-bottom: 20px;
 }
 
 .card .card-header {
     position: relative;
+    border-bottom: 1px solid #eee;
 }
 
 @media screen and (min-width: 768px) {
@@ -33,7 +34,7 @@ and open the template in the editor.
     margin: 0;
     line-height: 100%;
     font-size: 15px;
-    font-weight: 500;    
+    font-weight: 500;
 }
 .card .card-header h2 small {
     display: block;
