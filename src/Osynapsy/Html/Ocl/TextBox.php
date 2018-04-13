@@ -28,4 +28,12 @@ class TextBox extends InputBox
                  ->att('class','right osy-number',true);
         }
     }
+            
+    public function setValue($value)
+    {        
+        if (!array_key_exists($this->name, $_REQUEST)) {
+            $_REQUEST[$this->name] = $value;
+        }
+        return $this;
+    }
 }
