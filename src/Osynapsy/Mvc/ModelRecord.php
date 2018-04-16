@@ -292,6 +292,13 @@ abstract class ModelRecord
         return $field->value;
     }
     
+    protected function setAfterAction($insert, $update, $delete)
+    {
+        $this->repo->set('actions.after-insert', $insert)
+                   ->set('actions.after-update', $update)
+                   ->set('actions.after-delete', $delete);        
+    }
+    
     protected function afterUpload($filename, $field = null)
     {        
     }
@@ -330,5 +337,5 @@ abstract class ModelRecord
     
     abstract protected function init();  
     
-    abstract protected function record();
+    abstract protected function record();        
 }
