@@ -474,30 +474,23 @@ var FormController =
         }
     },
     refreshComponent : function(component)
-    {
+    {        
         var data  = $('form').serialize();
             data += (arguments.length > 1 && arguments[1]) ? '&'+arguments[1] : '';
         if (!(typeof component === 'object')) {            
-            Osynapsy.waitMask.show(component);
-            component = Array(component);
+            Osynapsy.waitMask.show(component);            
         } else if ($(component).is(':visible')) {           
             Osynapsy.waitMask.show();
-        }
-        for (var i in component) {
-            data += '&ajax[]=' + $(component[i]).attr('id');
-        }
+        }        
+        data += '&ajax[]=' + $(component).attr('id');        
         $.ajax({
             type : 'post',
             data : data,
-            success : function(rsp) {
-                console.log(rsp);                
+            success : function(rsp) {                      
                 Osynapsy.waitMask.remove();
-                for (var i in component) {
-                    var cid = '#'+$(component[i]).attr('id');
-                    var cmp = $(rsp).find(cid);
-                    //$(cid).html(cmp.html());
-                    $(cid).replaceWith(cmp);
-                }
+                var cid = '#'+$(component).attr('id');
+                var cmp = $(rsp).find(cid);                
+                $(cid).replaceWith(cmp);                
             }
         });
     },
