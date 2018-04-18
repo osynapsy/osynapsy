@@ -6,7 +6,7 @@
 BclAutocomplete = {
     init : function()
     {
-        $('div.osy-autocomplete input[type=text]').keyup(function(event){
+        $('body').on('keyup','div.osy-autocomplete input[type=text]',function(event){
             switch (event.keyCode) {
                 case 13 : //Enter
                     $('.row.selected','#search_content').trigger('click');
