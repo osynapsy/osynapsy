@@ -23,7 +23,8 @@ class DataGrid extends Component
     private $toolbar;
     private $columns = array();
     private $columnProperties = array();
-
+    private $extra;
+    
     public function __construct($name)
     {
         $this->requireJs('Ocl/DataGrid/script.js');
@@ -86,6 +87,7 @@ class DataGrid extends Component
         $this->buildAddButton($tableContainer);        
         $table = $tableContainer->add(new Tag('table'));
         $table->att([
+            'data-rows-num' => $this->getParameter('rec_num'),
             'data-toggle' => 'table',
             'data-show-columns' => "false",
             'data-search' => 'false',
@@ -114,8 +116,21 @@ class DataGrid extends Component
         $this->att('class', $this->getParameter('type'), true);
 
         $this->buildPaging();
+        
+        $this->buildExtra($table);
     }
 
+    public function buildExtra()
+    {
+        if ($this->extra) {
+            \call_user_func($this->extra, $this, $table);
+        }
+    }
+    public function setExtra($callableExtra)
+    {
+        $this->extra = $callableExtra;
+    }
+    
     public function getToolbar()
     {
         if (!empty($this->toolbar)) {
@@ -313,7 +328,10 @@ class DataGrid extends Component
                 'rawvalue' => $v,
                 'style'    => array($this->getColumnProperty($i, 'style')),
                 'title'    => $k,
-                'value'    => htmlentities($v)                
+                // la conversione deve essere operata lato Tag in modo tale da poterlo
+                // gestire automaticamente su tutti gli elementi da esso derivati
+                /*'value'    => htmlentities($v)*/
+                'value'    => $v
             );
 
             switch ($opt['cell']['rawtitle'][0]) {
@@ -401,7 +419,7 @@ class DataGrid extends Component
             case '_color3':
                 $opt['row']['cell-style-inc'][] = 'color: '.$opt['cell']['value'].';';
                 break;
-            case '_data':            
+            case '_data':
                 $opt['row']['attr'][] = array('data-'.$opt['cell']['title'], $opt['cell']['value']);
                 break;
             case 'date':
