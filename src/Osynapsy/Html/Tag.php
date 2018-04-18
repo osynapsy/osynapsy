@@ -110,7 +110,10 @@ class Tag
             $spaces = $this->tagdep != 0 ? "\n".str_repeat("  ",abs($this->tagdep)) : '';
             $strTag = $spaces.'<'.$tag;
             foreach ($this->att as $key => $val) {
-                $strTag .= ' '.$key.'="'.$val.'"';
+                $strTag .= ' '.$key.'="'.htmlspecialchars($val, ENT_QUOTES).'"';
+                // la conversione del contentuto degli attributi viene fornita da Tag in modo
+                // tale che non debba essere gestito dai suoi figli
+                /*$strTag .= ' '.$key.'="'.$val.'"';*/
             }
             $strTag .= '>';
         }
