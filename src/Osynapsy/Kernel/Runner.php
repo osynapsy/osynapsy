@@ -119,10 +119,10 @@ class Runner
         $body = '';
         foreach ($trace as $step) {
             $body .= '<tr>';
-            $body .= '<td>'.$step['class'].'</td>';
-            $body .= '<td>'.$step['function'].'</td>';
-            $body .= '<td>'.$step['file'].'</td>';
-            $body .= '<td>'.$step['line'].'</td>';            
+            $body .= '<td>'.(!empty($step['class']) ? $step['class'] : '&nbsp;').'</td>';
+            $body .= '<td>'.(!empty($step['function']) ? $step['function'] : '&nbsp;').'</td>';
+            $body .= '<td>'.(!empty($step['file']) ? $step['file'] : '&nbsp;').'</td>';
+            $body .= '<td>'.(!empty($step['line']) ? $step['line'] : '&nbsp;').'</td>';            
             $body .= '</tr>';            
         }
         return <<<PAGE
