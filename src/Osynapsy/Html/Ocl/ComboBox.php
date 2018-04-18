@@ -116,4 +116,19 @@ class ComboBox extends Component
         $this->defaultValue = $value;
         return $this;
     }
+    
+    public function countOption()
+    {
+        return count($this->data);
+    }
+    
+    public function getOptionData($key = null)
+    {
+        if (is_null($key)) {
+            return $this->data;
+        } elseif (!array_key_exists($key, $this->data)) {
+            return [];
+        }
+        return $this->data[$key];
+    }
 }
