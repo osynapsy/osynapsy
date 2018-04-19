@@ -31,7 +31,7 @@ class LabelBox extends Component
     public function setValue($value)
     {
         if (!empty($_REQUEST[$this->hiddenBox->id])) {
-            return;
+            return $this;
         }
         $_REQUEST[$this->hiddenBox->id] = $value;
         return $this;
