@@ -30,7 +30,11 @@ class LabelBox extends Component
     
     public function setValue($value)
     {
-        $this->hiddenBox->att('value',$value);
+        if (!empty($_REQUEST[$this->hiddenBox->id])) {
+            return;
+        }
+        $_REQUEST[$this->hiddenBox->id] = $value;
+        return $this;
     }
     
     public function setLabelFromSQL($db, $sql, $par=array())
@@ -41,14 +45,16 @@ class LabelBox extends Component
     public function setLabel($label)
     {
         $this->label = $label;
+        return $this;
     }
     
     public function __build_extra__()
     {
         if (is_null($this->label)) {
-            $this->add(isset($_REQUEST[$this->hiddenBox->id]) ? $_REQUEST[$this->hiddenBox->id] : null);
+            $label = isset($_REQUEST[$this->hiddenBox->id]) ? $_REQUEST[$this->hiddenBox->id] : null;
         } else {
-            $this->add('<span>'.$this->label.'</span>');
+            $label = $this->label;
         }
+        $this->add('<span>'.$label.'</span>');
     }
 }
