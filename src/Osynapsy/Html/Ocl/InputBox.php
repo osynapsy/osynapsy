@@ -15,6 +15,8 @@ use Osynapsy\Html\Component as Component;
 
 class InputBox extends Component
 {
+    protected $defaultValue;
+    
     public function __construct($type, $name, $id = null)
     {
         parent::__construct('input', $id);
@@ -24,6 +26,12 @@ class InputBox extends Component
 
     protected function __build_extra__()
     {
-        $this->att('value', $this->getGlobal($this->name, $_REQUEST));        
+        $value = $this->getGlobal($this->name, $_REQUEST);
+        $this->att('value', (empty($value) && $value != '0' ? $this->defaultValue : $value));
+    }
+    
+    public function setDefaultValue($value)
+    {
+        $this->defaultValue = $value;
     }
 }
