@@ -44,9 +44,10 @@ var Osynapsy = new (function(){
         remoteExecute : function(action, form, actionParameters)
         {
             var extraData = Osynapsy.isEmpty(actionParameters) ? '' : actionParameters;
+            var actionUrl = Osynapsy.isEmpty($(form).attr('action')) ? window.location.href : $(form).attr('action');
             $('.field-in-error').removeClass('field-in-error');
             var callParameters = {
-                url  : $(form).attr('action'),
+                url  : actionUrl,
                 headers: {
                     'Osynapsy-Action': action
                 },
