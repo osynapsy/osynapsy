@@ -161,6 +161,7 @@ ODataGrid =
             data += '&ajax=' + $(grid).attr('id');
             data += (arguments.length > 1 && arguments[1]) ? '&'+arguments[1] : '';
         $.ajax({
+            url :  window.location.href,
             type : 'post',
             context : grid,
             data : data,
