@@ -63,7 +63,8 @@ var Osynapsy = new (function(){
                     console.log(xhr);
                     alert(xhr.responseText);
                 }
-            };                        
+            };
+            console.log(callParameters.url);
             if (!this.checkForUpload()) {               
                 var options = {
                     beforeSend : function() {
