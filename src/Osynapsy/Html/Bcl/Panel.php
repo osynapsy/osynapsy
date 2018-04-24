@@ -23,7 +23,7 @@ class Panel extends Component
     private $rowClass = 'row';
     private $tag = array('div' , 'div');
     private $formType='normal';
-    
+
     private $head;
     private $body;
     private $foot;
