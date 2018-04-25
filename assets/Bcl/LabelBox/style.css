@@ -5,4 +5,7 @@
     background-color: #f8f8f8;
     color: black;
     font-weight: normal;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
