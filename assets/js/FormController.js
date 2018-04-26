@@ -477,22 +477,28 @@ var FormController =
     },
     refreshComponent : function(component)
     {        
+        var cmps = Array.isArray(component) ? component : [component];
         var data  = $('form').serialize();
             data += (arguments.length > 1 && arguments[1]) ? '&'+arguments[1] : '';
         if (!(typeof component === 'object')) {            
             Osynapsy.waitMask.show(component);            
         } else if ($(component).is(':visible')) {           
             Osynapsy.waitMask.show();
-        }        
-        data += '&ajax[]=' + $(component).attr('id');        
+        }
+        for (var i in cmps) {
+            data += '&ajax[]=' + $(cmps[i]).attr('id');        
+        }
         $.ajax({
+            url  : window.location.href,
             type : 'post',
             data : data,
             success : function(rsp) {                      
                 Osynapsy.waitMask.remove();
-                var cid = '#'+$(component).attr('id');
-                var cmp = $(rsp).find(cid);                
-                $(cid).replaceWith(cmp);                
+                for (var i in cmps) {
+                   var cid = '#'+ $(cmps[i]).attr('id');
+                   var cmp = $(rsp).find(cid);                
+                   $(cid).replaceWith(cmp);                
+                }
             }
         });
     },
