@@ -368,6 +368,34 @@ var Osynapsy = new (function(){
         form.submit();
     };
     
+    pub.refreshComponents = function(components)
+    {        
+        var cmps = Array.isArray(components) ? components : [components];
+        var data  = $('form').serialize();
+            data += (arguments.length > 1 && arguments[1]) ? '&'+arguments[1] : '';
+        if (cmps.length === 1) {            
+            Osynapsy.waitMask.show($('#' + cmps[0]));            
+        } else if ($(components).is(':visible')) {           
+            Osynapsy.waitMask.show();
+        }
+        for (var i in cmps) {
+            data += '&ajax[]=' + cmps[i];
+        }
+        $.ajax({
+            url  : window.location.href,
+            type : 'post',
+            data : data,
+            success : function(response) {                      
+                Osynapsy.waitMask.remove();
+                for (var i in cmps) {
+                   var componentID = '#'+ cmps[i];
+                   var componentRemote = $(response).find(componentID);                
+                   $(componentID).replaceWith(componentRemote);                
+                }
+            }
+        });
+    };
+    
     pub.waitMask = 
     {    
         build : function(message, parent, position)
