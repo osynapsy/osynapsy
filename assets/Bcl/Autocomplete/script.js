@@ -47,7 +47,15 @@ BclAutocomplete = {
                     break;
             }
         }).attr('autocomplete','off');
-        $(window).on('click',function(){
+        $(window).on('click',function(){            
+            if ($('#search_content').length === 0) {
+                return;
+            }                        
+            var parentId = $('#search_content').data('parent');
+            var parent = $('div#' + parentId);
+            if ($('div#' + parentId +' input').hasClass('osy-autocomplete-unselected') && $(parent).attr('onunselected')) {
+                eval($('div#'+parentId).attr('onunselect'));
+            }
             $('#search_content').remove();
             //$('div.osy-textsearch-inline input[type=text]').val('');
         })
@@ -92,8 +100,8 @@ BclAutocomplete = {
             var parentid = $(this).closest('#search_content').data('parent');            
             $('input#'+parentid).removeClass('osy-autocomplete-unselected').nextAll('#__'.parentid).val($(this).data('value'));
             $('input#'+parentid).val($(this).data('label'));
-            if (!Osynapsy.isEmpty($('div#'+parentid).attr('onselected'))) {
-                eval($('div#'+parentid).attr('onselected'));
+            if (!Osynapsy.isEmpty($('div#'+parentid).attr('onselect'))) {
+                eval($('div#'+parentid).attr('onselect'));
             }
         }).data('parent',$(obj).attr('id'));
         $(document.body).append(div);
