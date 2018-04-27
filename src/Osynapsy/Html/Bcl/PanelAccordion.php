@@ -22,7 +22,7 @@ class PanelAccordion extends Component
     {
         parent::__construct('div', $id);
         $this->att('class','panel-group')
-             ->att('role','tablist');
+             ->att('role','tablist');        
     }
     
     public function __build_extra__()
@@ -32,13 +32,15 @@ class PanelAccordion extends Component
         }
     }
     
-    public function addPanel($title)
+    public function addPanel($title, $commands = [])
     {
         $panelIdx = count($this->panels);
+        $this->buildCommandContainer($commands);
         $panelId = $this->id.$panelIdx;
         $panelTitle = '<a data-toggle="collapse" data-parent="#'.$this->id.'" href="#'.$panelId.'-body" class="'.(empty($panelIdx) ? 'collapsed' : '').'">'.$title.'</a>';
         $this->panels[] = new PanelNew($panelId, $panelTitle);
         $this->panels[$panelIdx]
+             ->addCommands($commands)
              ->getBody()
              ->att('id', $panelId.'-body');
         $this->panels[$panelIdx]->setClass('panel-body collapse' .(empty($panelIdx) ? ' in' : ''));             
