@@ -24,7 +24,7 @@ class PanelNew extends Component
     
     private $classCss = [
         'main' => 'panel',
-        'head' => 'panel-heading',
+        'head' => 'panel-heading clearfix',
         'body' => 'panel-body',
         'foot' => 'panel-footer'
     ];
@@ -38,7 +38,8 @@ class PanelNew extends Component
         $this->classCss['main'] = 'panel'.$class;
         if (!empty($title)) {
             $this->sections['head'] = new Tag('div');
-            $this->sections['head']->add('<h4 class="panel-title">'.$title.'</h4>');
+            $this->sections['head'];
+            $this->sections['head']->add('<h4 class="panel-title pull-left">'.$title.'</h4>');            
         }
         $this->sections['body'] = new Tag('div');        
     }
@@ -46,10 +47,10 @@ class PanelNew extends Component
     public function addCommands(array $commands = [])
     {
         if (empty($commands)) {
-            return;
+            return $this;
         }
         $container = new Tag('div');
-        $container->att('class', 'pull-right');
+        $container->att('class', 'panel-commands pull-right');
         foreach($commands as $command) {
             $container->add($command);
         }
