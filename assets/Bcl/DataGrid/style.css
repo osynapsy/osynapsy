@@ -56,3 +56,10 @@
 {
     color: red !important;
 }
+
+.bcl-datagrid .bcl-datagrid-td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.9em;
+}
