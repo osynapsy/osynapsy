@@ -43,6 +43,20 @@ class PanelNew extends Component
         $this->sections['body'] = new Tag('div');        
     }
     
+    public function addCommands(array $commands = [])
+    {
+        if (empty($commands)) {
+            return;
+        }
+        $container = new Tag('div');
+        $container->att('class', 'pull-right');
+        foreach($commands as $command) {
+            $container->add($command);
+        }
+        $this->sections['head']->add($container);
+        return $this;
+    }
+    
     protected function __build_extra__()
     {
         $this->att('class', $this->classCss['main']);
