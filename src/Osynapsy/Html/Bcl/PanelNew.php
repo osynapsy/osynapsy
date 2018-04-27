@@ -46,9 +46,6 @@ class PanelNew extends Component
     
     public function addCommands(array $commands = [])
     {
-        if (empty($commands)) {
-            return $this;
-        }
         $container = new Tag('div');
         $container->att('class', 'panel-commands pull-right');
         foreach($commands as $command) {
