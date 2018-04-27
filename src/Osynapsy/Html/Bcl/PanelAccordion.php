@@ -35,7 +35,6 @@ class PanelAccordion extends Component
     public function addPanel($title, $commands = [])
     {
         $panelIdx = count($this->panels);
-        $this->buildCommandContainer($commands);
         $panelId = $this->id.$panelIdx;
         $panelTitle = '<a data-toggle="collapse" data-parent="#'.$this->id.'" href="#'.$panelId.'-body" class="'.(empty($panelIdx) ? 'collapsed' : '').'">'.$title.'</a>';
         $this->panels[] = new PanelNew($panelId, $panelTitle);
