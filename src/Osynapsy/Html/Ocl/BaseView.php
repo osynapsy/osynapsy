@@ -32,13 +32,12 @@ abstract class BaseView
     
     protected function add($part)
     {
-       $this->controller->response->send($part);
+        $this->controller->response->send($part);
     }
     
     public function get()
     {
-        $this->init();
-        return;        
+        return $this->init();            
     }
 
     public function getController()
@@ -78,7 +77,7 @@ abstract class BaseView
     
     public function __toString()
     {
-        return $this->get();
+        return $this->get().'';
     }
     
     abstract public function init();
