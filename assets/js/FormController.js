@@ -126,7 +126,8 @@ var Osynapsy = new (function(){
         return null;
     };
     
-    pub.hashCode = function(string) {
+    pub.hashCode = function(string)
+    {
         var hash = 0, i, chr;
         if (string.length === 0) {
             return hash;
