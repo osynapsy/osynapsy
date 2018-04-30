@@ -28,12 +28,14 @@ class Container extends Tag
         }
     }
 
-    private function getFoot($right = false)
+    private function getFoot($right = false, $offset = 0)
     {
         if (empty($this->foot)) {
+            $width = (12 - ($offset * 2)) / 2;
+            $lgoffset = empty($offset) ? '' : ' col-lg-offset-'.$offset;
             $this->foot = $this->addRow();
-            $this->footLeft = $this->foot->add(new Tag('div'))->att('class', 'col-lg-6');
-            $this->footRight = $this->foot->add(new Tag('div'))->att('class', 'col-lg-6 text-right');
+            $this->footLeft = $this->foot->add(new Tag('div'))->att('class', 'col-lg-'.$width.$lgoffset);
+            $this->footRight = $this->foot->add(new Tag('div'))->att('class', 'col-lg-'.$width.' text-right');
         }
         return empty($right) ? $this->footLeft : $this->footRight;        
     }
@@ -60,17 +62,17 @@ class Container extends Tag
         $this->AddColumn(12)->add('<h1>'.$title.'</h1>');
     }
     
-    public function setCommand($delete = false, $save = true, $back = true)
+    public function setCommand($delete = false, $save = true, $back = true, $offset = 0)
     {
         if ($delete) {
-            $this->getFoot(true)
+            $this->getFoot(true, $offset)
                  ->add(new Button('btn_delete', 'button', 'btn-danger'))
                  ->setAction('delete')
                  ->att('data-confirm', 'Sei sicuro di voler eliminare il record corrente?')
                  ->add('<span class="glyphicon glyphicon-trash"></span> Elimina');
         }
         if ($save) {
-            $this->getFoot(true)
+            $this->getFoot(true, $offset)
                  ->add(new Button('btn_save', 'button', 'btn-primary'))
                  ->setAction('save')
                  ->add($save === true ? '<span class="glyphicon glyphicon-floppy-disk"></span> Salva' : $save);
