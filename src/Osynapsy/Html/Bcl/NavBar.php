@@ -93,15 +93,20 @@ class NavBar extends Component
         }               
         foreach($data as $label => $menu){
             $li = $ul->add(new Tag('li'));
-            if (!is_array($menu)) {
-                $li->add(new Tag('a'))->att('href',$menu)->add($label);                
-                continue;
-            }
-            $li->att('class','dropdown')
+            if (is_array($menu)) {
+                $li->att('class','dropdown')
                 ->add(new Tag('a'))
                 ->att(['class' => 'dropdown-toggle', 'href' => '#', 'data-toggle' => 'dropdown'])
                 ->add($label.' <span class="caret"></span>');
-            $this->buildUlMenu($li, $menu, $level + 1);
+                $this->buildUlMenu($li, $menu, $level + 1);                
+                continue;
+            }
+            if ($menu === 'hr'){
+                $li->att(['role' => 'separator', 'class' => 'divider']);
+                continue;
+            }
+            $li->add(new Tag('a'))->att('href',$menu)->add($label);
+            
         }
         return $ul;
     }
