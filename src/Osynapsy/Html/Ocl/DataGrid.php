@@ -92,8 +92,11 @@ class DataGrid extends Component
             'data-show-columns' => "false",
             'data-search' => 'false',
             'data-toolbar' => '#'.$this->id.'_toolbar',
-            'class' => 'display table table-bordered dataTable no-footer border-'.$this->getParameter('border')
-        ]);
+            'class' => 'display table dataTable no-footer border-'.$this->getParameter('border')        
+        ]);        
+        if ($this->getParameter('border') == 'on') {
+            $table->att('class', 'table-bordered', true);
+        }
         if ($this->getParameter('error-in-sql')) {
             $table->add(new Tag('tr'))->add(new Tag('td'))->add($this->getParameter('error-in-sql'));
             return;
