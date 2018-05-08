@@ -285,10 +285,10 @@ abstract class ModelRecord
         } catch(\Exception $e) {
             $this->getController()->getResponse()->error('alert', $e->getMessage());
             $field->readonly = true;            
-        }
-        $this->afterUpload($field->value, $field);
+        }        
         $this->set('actions.after-update','refresh');
-        $this->set('actions.after-insert','refresh');
+        //$this->set('actions.after-insert','refresh');
+        $this->afterUpload($field->value, $field);
         return $field->value;
     }
     
