@@ -343,7 +343,7 @@ abstract class Model
             $field->readonly = true;            
         }
         $this->set('actions.after-update','refresh');
-        $this->set('actions.after-insert','refresh');
+        //$this->set('actions.after-insert','refresh');
         $this->afterUpload($field->value, $field);
         return $field->value;
     }
