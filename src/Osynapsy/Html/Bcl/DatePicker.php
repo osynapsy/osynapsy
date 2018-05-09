@@ -23,15 +23,20 @@ class DatePicker extends Component
     public function __construct($id)
     {
         $this->datePickerId = $id;        
-        $this->requireJs('Lib/momentjs-2.17.1/moment.js');
-        $this->requireJs('Lib/bootstrap-datetimejs-4.17.37/bootstrap-datetimejs.js');
-        $this->requireJs('Bcl/DatePicker/script.js');
-        $this->requireCss('Lib/bootstrap-datetimejs-4.17.37/bootstrap-datetimejs.css');
+        $this->pushRequirement();
         
         parent::__construct('div',$id.'_datepicker');
         $this->att('class','input-group');
         $this->dateComponent = $this->add(new TextBox($id))->att('class','date date-picker form-control');
         $this->add('<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>');
+    }
+    
+    public static function pushRequirement()
+    {
+        self::requireJs('Lib/momentjs-2.17.1/moment.js');
+        self::requireJs('Lib/bootstrap-datetimejs-4.17.37/bootstrap-datetimejs.js');
+        self::requireJs('Bcl/DatePicker/script.js');
+        self::requireCss('Lib/bootstrap-datetimejs-4.17.37/bootstrap-datetimejs.css');
     }
     
     protected function __build_extra__()
