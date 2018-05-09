@@ -253,7 +253,7 @@ abstract class EavRecord
             $params[$this->attributeValueField()] = $value;
             $this->dbConnection->insert($this->table, $params);                           
         }
-        $valueToUpdate = array_diff($this->originalRecord, $this->activeRecord);
+        $valueToUpdate = array_diff($this->activeRecord, $this->originalRecord);        
         foreach($valueToUpdate as $virtualField => $value) {
             $updateCondition[$this->attributeIdField()] = $value;
             $this->dbConnection->update(
