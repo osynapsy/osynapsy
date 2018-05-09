@@ -371,9 +371,10 @@ var Osynapsy = new (function(){
     
     pub.refreshComponents = function(components)
     {        
-        var cmps = Array.isArray(components) ? components : [components];
+        var cmps = Array.isArray(components) ? components : [components];       
         var data  = $('form').serialize();
             data += (arguments.length > 1 && arguments[1]) ? '&'+arguments[1] : '';
+        var fncOnSuccess = arguments.length > 2 ? arguments[2] : null;
         if (cmps.length === 1) {            
             Osynapsy.waitMask.show($('#' + cmps[0]));            
         } else if ($(components).is(':visible')) {           
@@ -392,6 +393,9 @@ var Osynapsy = new (function(){
                    var componentID = '#'+ cmps[i];
                    var componentRemote = $(response).find(componentID);                
                    $(componentID).replaceWith(componentRemote);                
+                }                
+                if (typeof fncOnSuccess === 'function') {                    
+                    fncOnSuccess();
                 }
             }
         });
