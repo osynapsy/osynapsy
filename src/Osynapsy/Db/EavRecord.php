@@ -255,7 +255,7 @@ abstract class EavRecord
         }
         $valueToUpdate = array_diff($this->activeRecord, $this->originalRecord);        
         foreach($valueToUpdate as $virtualField => $value) {
-            $updateCondition[$this->attributeIdField()] = $value;
+            $updateCondition[$this->attributeIdField()] = $virtualField;
             $this->dbConnection->update(
                 $this->table,
                 [$this->attributeValueField() => $value],
