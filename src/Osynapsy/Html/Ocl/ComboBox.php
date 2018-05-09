@@ -49,7 +49,7 @@ class ComboBox extends Component
             array_unshift($this->data, array('', $this->placeholder)); 
         }        
         foreach ($this->data as $k => $item) {            
-            $item = array_values(!is_array($item) ? [$item] : $item);
+            $item = array_values(!is_array($item) ? [trim($item)] : $item);
             $this->addOption($item[0], (isset($item[1]) ? $item[1] : $item[0]));            
         }
     }
@@ -57,7 +57,7 @@ class ComboBox extends Component
     public function addOption($value, $label)
     {               
         $option = $this->add(new Tag('option'))->att('value', $value);
-        $option->add($this->nvl($label, $value));        
+        $option->add($this->nvl($label, $value));
         if ($this->currentValue == $value) {
             $option->att('selected', 'selected');
         }
