@@ -43,6 +43,7 @@ class DataGrid extends Component
         $this->setParameter('datasource-sql-par', array());
         $this->setParameter('head-hide', 0);
         $this->setParameter('border', 'on');
+        $this->setParameter('treestate', '');
     }
 
     public function toolbarAppend($cnt, $label='&nbsp;')
@@ -473,7 +474,11 @@ class DataGrid extends Component
                     $cls  = empty($ico_arr[$ii]) ? 'tree-null' : ' tree-con-'.$ico_arr[$ii];
                     $ico .= '<span class="tree '.$cls.'">&nbsp;</span>';
                 }
-                $ico .= '<span class="tree '.(array_key_exists($nodeId, $this->dataGroups) ? 'tree-plus-' : 'tree-con-').$pos.'">&nbsp;</span>';                       
+                $ico .= '<span class="tree '.(array_key_exists($nodeId, $this->dataGroups) ? 'tree-plus-' : 'tree-con-').$pos.'">&nbsp;</span>';                
+                if ($this->getParameter('treestate') === 'open') {
+                    $opt['row']['prefix'][] = str_replace('tree-plus-','minus tree-plus-',$ico);
+                    break;
+                }
                 $opt['row']['prefix'][] = $ico;
                 if (!empty($lev) && !isset($_REQUEST[$this->id.'_open'])) {
                     $opt['row']['class'][] = 'hide';
