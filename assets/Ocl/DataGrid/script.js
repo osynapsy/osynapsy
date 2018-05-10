@@ -1,91 +1,46 @@
-OTree = {
-    branchClose : function(parentNodeId)
-    {
-        $('tr[treeParentNodeId="'+parentNodeId+'"]').each(function(){
-            OTree.branchClose($(this).attr('treeNodeId'));
-            $(this).addClass('hide');
-        });
-    },
-    branchOpen : function(parentNodeId)
-    {
-        if ($('tr[treeNodeId="'+parentNodeId+'"]').is(':visible')){ //Serve a bloccare le aperture su refresh
-            $('tr[treeParentNodeId="'+parentNodeId+'"]').each(function(){
-                $(this).removeClass('hide');
-                if ($(this).attr('__state') === 'open') {
-                    OTree.branchOpen($(this).attr('treeNodeId'));
-                }
-            });
-        }
-    },
-    branchOpen2 : function(obj)
-    {
-        var gid = obj.attr('gid');
-        $('tr[gid="'+gid+'"]').each(function(){
-             $(this).addClass('hide');
-        });
-        $('tr[oid="'+gid+'"]').each(function(){
-            $(this).attr('__state','open');
-            $('span[class*=tree-plus]',this).addClass('minus');
-            OTree.branchOpen2($(this));
-        });
-    },
-    checkOpen : function()
-    {
-        $('div.osy-treegrid').each(function(){
-            $('input[type=checkbox]:checked',this).each(function(){
-                OTree.branchOpen2($(this).closest('tr'));
-            });
-        });
-    },
-    parentOpen : function()
-    {
-        $('div.osy-treegrid').each(function(){
-            var dataGridId = $(this).attr('id');
-            var sel = $('#'+dataGridId+'_sel',this).val().split('][')[0];
-            if (sel){
-                sel = sel.replace('[','').replace(']','');
-                $('tr[oid="'+sel+'"]',this).addClass('sel');
-            }
-            var nodeOpenObj = $('input[name='+ $(this).attr('id') + '_open]');
-            var nodeOpenVal = nodeOpenObj.val().split('][');
-            for (var i in nodeOpenVal) {
-                var parentNodeId = nodeOpenVal[i].replace('[','').replace(']','');
-                $('tr[treeNodeId="'+parentNodeId+'"]').attr('__state','open');
-                $('span[class*=tree-plus]','tr[treeNodeId="'+parentNodeId+'"]').addClass('minus');
-                OTree.branchOpen(parentNodeId);
-            }
-        });
-    },    
+var OTree = 
+{
     init : function()
     {
-        OTree.parentOpen();
-        OTree.checkOpen();
-        $('.osy-datagrid-2').on(
-            'click',
-            'span.tree',
-            function (event){
-                event.stopPropagation();
-                var tr = $(this).closest('tr');
-                var dataGrid = $(this).closest('div.osy-datagrid-2');
-                var nodeOpenObj = $('input[name='+ dataGrid.attr('id') + '_open]');
-                var nodeOpenVal = nodeOpenObj.val();
-                var targetNodeId = tr.attr('treeNodeId');
-                if ($(this).hasClass('minus')){
-                    nodeOpenObj.val(nodeOpenVal.replace('['+targetNodeId+']',''));
-                    OTree.branchClose(targetNodeId);
-                    tr.attr('__state','close');
-                } else {
-                    nodeOpenObj.val(nodeOpenVal+'['+targetNodeId+']');
-                    OTree.branchOpen(targetNodeId);
-                    tr.attr('__state','open');
-                }
-                $(this).toggleClass('minus');
-            }
-        );
+        //OTree.parentOpen();
+        $('div.osy-treegrid').each(function(){
+            $('tr.branch-open', this).each(function(){
+                OTree.initBranch($(this));
+            });
+        });
+        $('.osy-datagrid-2').on('click', 'span.tree', function (event){
+            event.stopPropagation();
+            OTree.toggleBranch($(this));
+        });
+    },
+    initBranch(row)
+    {
+        $(row).removeClass('hide');
+        $('span[class*=tree-plus-]',row).addClass('minus');
+        $('.parent-' + $(row).attr('treeNodeId')).removeClass('hide');
+        var parentId = $(row).attr('treeParentNodeId');
+        if (parentId) {
+            OTree.toggleBranch($('tr[treeNodeId="'+parentId+'"]'),true);
+        }
+    },
+    toggleBranch : function(span)
+    {
+        var row = $(span).toggleClass('minus').closest('tr');
+        $('.parent-' + $(row).attr('treeNodeId')).toggleClass('hide');
+        var grid = $(row).closest('.osy-treegrid');
+        var nodeId = $(row).attr('treeNodeId');
+        $('input.selected-folder').val(nodeId);
+        var inputOpenFolders = $('input.open-folders', grid);
+        var strOpenFolders = inputOpenFolders.val();
+        if (!$(span).hasClass('minus')){
+           inputOpenFolders.val(strOpenFolders.replace('['+nodeId+']',''));
+        } else {
+           inputOpenFolders.val(strOpenFolders + '['+nodeId+']');
+        }                    
     }
 };
 
-ODataGrid = 
+var ODataGrid = 
 {
     init : function()
     {
