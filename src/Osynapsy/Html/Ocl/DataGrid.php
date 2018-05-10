@@ -76,10 +76,10 @@ class DataGrid extends Component
             $this->att('data-mapgrid-infowindow-format', $par);
         }
         //Aggiungo il campo che conterrà i rami aperti dell'albero.
-        $this->add(new HiddenBox($this->id.'_open'));
-        $this->add(new HiddenBox($this->id.'_order'));
+        $this->add(new HiddenBox($this->id.'_open'))->setClass('open-folders');
         //Aggiungo il campo che conterrà il ramo selezionato.
-        $this->add(new HiddenBox($this->id,$this->id.'_sel'));
+        $this->add(new HiddenBox($this->id,$this->id.'_sel'))->setClass('selected-folders');
+        $this->add(new HiddenBox($this->id.'_order'));        
         $tableContainer = $this->add(new Tag('div'))->att([
             'id' => $this->id.'-body',
             'class' => 'osy-datagrid-2-body table-responsive',
@@ -463,6 +463,9 @@ class DataGrid extends Component
                 $opt['row']['attr'][] = ['treeNodeId', $nodeId];
                 $opt['row']['attr'][] = ['treeParentNodeId', $parentNodeId];
                 $opt['row']['attr'][] = ['data-treedeep', $lev];
+                if (!empty($parentNodeId)) {
+                    $opt['row']['class'][] = 'parent-'.$parentNodeId;
+                }
                 if (array_key_exists($this->id, $_REQUEST) && $_REQUEST[$this->id] == '['.$nodeId.']'){
                     $opt['row']['class'][] = 'sel';
                 }
