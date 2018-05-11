@@ -78,7 +78,7 @@ class DataGrid extends Component
         //Aggiungo il campo che conterrà i rami aperti dell'albero.
         $this->add(new HiddenBox($this->id.'_open'))->setClass('open-folders');
         //Aggiungo il campo che conterrà il ramo selezionato.
-        $this->add(new HiddenBox($this->id,$this->id.'_sel'))->setClass('selected-folders');
+        $this->add(new HiddenBox($this->id,$this->id.'_sel'))->setClass('selected-folder');
         $this->add(new HiddenBox($this->id.'_order'));        
         $tableContainer = $this->add(new Tag('div'))->att([
             'id' => $this->id.'-body',
