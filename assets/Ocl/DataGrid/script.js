@@ -23,10 +23,27 @@ var OTree =
             OTree.initBranch($('tr[treeNodeId="'+parentId+'"]'));
         }
     },
+    openBranch : function(row)
+    {
+        $('.parent-' + $(row).attr('treeNodeId')).removeClass('hide');
+        console.log($(row).attr('treeNodeId'));
+    },
+    closeBranch : function(row)
+    {
+        $('.parent-' + $(row).attr('treeNodeId')).each(function(){
+            $(this).addClass('hide');
+            OTree.closeBranch(this);
+        });
+    },
     toggleBranch : function(span)
     {
+        var branchIsOpen = $(span).hasClass('minus');
         var row = $(span).toggleClass('minus').closest('tr');
-        $('.parent-' + $(row).attr('treeNodeId')).toggleClass('hide');
+        if (branchIsOpen) {
+            OTree.closeBranch(row);
+        } else {
+            OTree.openBranch(row);
+        }        
         var grid = $(row).closest('.osy-treegrid');
         var nodeId = $(row).attr('treeNodeId');        
         var inputOpenFolders = $('input.open-folders', grid);
