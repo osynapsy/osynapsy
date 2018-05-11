@@ -28,9 +28,9 @@ class LabelBox extends Component
         $this->add($label);
     }
     
-    public function setValue($value)
+    public function setValue($value, $force = false)
     {
-        if (!empty($_REQUEST[$this->hiddenBox->id])) {
+        if (!$force && !empty($_REQUEST[$this->hiddenBox->id])) {
             return $this;
         }
         $_REQUEST[$this->hiddenBox->id] = $value;
