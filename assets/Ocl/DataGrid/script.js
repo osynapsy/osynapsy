@@ -2,15 +2,15 @@ var OTree =
 {
     init : function()
     {
-        //OTree.parentOpen();
-        $('div.osy-treegrid').each(function(){
+        $('div.osy-treegrid').on('click', 'span.tree', function (event){
+            event.stopPropagation();
+            OTree.toggleBranch($(this));
+        }).on('click', 'tr', function (event){
+            OTree.clickNode(this);
+        }).each(function(){
             $('tr.branch-open', this).each(function(){
                 OTree.initBranch($(this));
             });
-        });
-        $('.osy-datagrid-2').on('click', 'span.tree', function (event){
-            event.stopPropagation();
-            OTree.toggleBranch($(this));
         });
     },
     initBranch(row)
@@ -20,7 +20,7 @@ var OTree =
         $('.parent-' + $(row).attr('treeNodeId')).removeClass('hide');
         var parentId = $(row).attr('treeParentNodeId');
         if (parentId) {
-            OTree.toggleBranch($('tr[treeNodeId="'+parentId+'"]'),true);
+            OTree.initBranch($('tr[treeNodeId="'+parentId+'"]'));
         }
     },
     toggleBranch : function(span)
@@ -28,8 +28,7 @@ var OTree =
         var row = $(span).toggleClass('minus').closest('tr');
         $('.parent-' + $(row).attr('treeNodeId')).toggleClass('hide');
         var grid = $(row).closest('.osy-treegrid');
-        var nodeId = $(row).attr('treeNodeId');
-        $('input.selected-folder').val(nodeId);
+        var nodeId = $(row).attr('treeNodeId');        
         var inputOpenFolders = $('input.open-folders', grid);
         var strOpenFolders = inputOpenFolders.val();
         if (!$(span).hasClass('minus')){
@@ -37,6 +36,19 @@ var OTree =
         } else {
            inputOpenFolders.val(strOpenFolders + '['+nodeId+']');
         }                    
+    },
+    clickNode : function(row)
+    {
+        var grid = $(row).closest('.osy-treegrid');
+        $('tr', grid).removeClass('selected');                   
+        var folderId = $(row).attr('treeNodeId');
+        var folderSel = $('input.selected-folder', grid).val();        
+        if (folderId !== folderSel) {
+            $(row).addClass('selected');
+            $('input.selected-folder', grid).val(folderId);
+        } else {
+            $('input.selected-folder', grid).val('');
+        }
     }
 };
 
