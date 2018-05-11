@@ -24,12 +24,13 @@ class DataGrid extends Component
     private $columns = array();
     private $columnProperties = array();
     private $extra;
+    protected $request;
     
     public function __construct($name)
     {
         $this->requireJs('Ocl/DataGrid/script.js');
         $this->requireCss('Ocl/DataGrid/style.css');
-        parent::__construct('div',$name);       
+        parent::__construct('div', $name);
         $this->att('class','osy-datagrid-2');
         $this->setParameter('type', 'datagrid');
         $this->setParameter('row-num', 10);
@@ -44,6 +45,10 @@ class DataGrid extends Component
         $this->setParameter('head-hide', 0);
         $this->setParameter('border', 'on');
         $this->setParameter('treestate', '');
+        $this->request = [
+            'nodeOpenIds' => filter_input(\INPUT_POST, $name.'_open'),            
+            'nodeSelectedId' => filter_input(\INPUT_POST, $name),
+        ];
     }
 
     public function toolbarAppend($cnt, $label='&nbsp;')
@@ -78,7 +83,7 @@ class DataGrid extends Component
         //Aggiungo il campo che conterrà i rami aperti dell'albero.
         $this->add(new HiddenBox($this->id.'_open'))->setClass('open-folders');
         //Aggiungo il campo che conterrà il ramo selezionato.
-        $this->add(new HiddenBox($this->id,$this->id.'_sel'))->setClass('selected-folder');
+        $this->add(new HiddenBox($this->id, $this->id.'_sel'))->setClass('selected-folder');
         $this->add(new HiddenBox($this->id.'_order'));        
         $tableContainer = $this->add(new Tag('div'))->att([
             'id' => $this->id.'-body',
@@ -458,16 +463,19 @@ class DataGrid extends Component
                 $opt['cell']['print'] = true;
                 break;
             case '_tree':
-                //Il primo elemento deve essere l'id dell'item il secondo l'id del gruppo di appartenenza
-                list($nodeId, $parentNodeId) = \array_pad(explode(',',$opt['cell']['rawvalue']),2,null);               
+                //Il primo elemento deve essere l'id dell'item il secondo l'id del gruppo di appartenenza                              
+                list($nodeId, $parentNodeId, $nodeState) = \array_pad(explode(',',$opt['cell']['rawvalue']),3,null);               
                 $opt['row']['attr'][] = ['treeNodeId', $nodeId];
                 $opt['row']['attr'][] = ['treeParentNodeId', $parentNodeId];
                 $opt['row']['attr'][] = ['data-treedeep', $lev];
                 if (!empty($parentNodeId)) {
                     $opt['row']['class'][] = 'parent-'.$parentNodeId;
                 }
-                if (array_key_exists($this->id, $_REQUEST) && $_REQUEST[$this->id] == '['.$nodeId.']'){
-                    $opt['row']['class'][] = 'sel';
+                if ($this->request['nodeSelectedId'] === $nodeId){
+                    $opt['row']['class'][] = 'selected';
+                }
+                if (empty($this->request['nodeOpenIds']) && $nodeState) {
+                    $opt['row']['class'][] = 'branch-open';
                 }
                 if (is_null($lev)) {
                     break;
@@ -477,16 +485,15 @@ class DataGrid extends Component
                     $cls  = empty($ico_arr[$ii]) ? 'tree-null' : ' tree-con-'.$ico_arr[$ii];
                     $ico .= '<span class="tree '.$cls.'">&nbsp;</span>';
                 }
-                $ico .= '<span class="tree '.(array_key_exists($nodeId, $this->dataGroups) ? 'tree-plus-' : 'tree-con-').$pos.'">&nbsp;</span>';                
-                if ($this->getParameter('treestate') === 'open') {
-                    $opt['row']['prefix'][] = str_replace('tree-plus-','minus tree-plus-',$ico);
-                    break;
-                }
-                $opt['row']['prefix'][] = $ico;
-                if (!empty($lev) && !isset($_REQUEST[$this->id.'_open'])) {
+                $ico .= '<span class="tree '.(array_key_exists($nodeId, $this->dataGroups) ? 'tree-plus-' : 'tree-con-').$pos.'">&nbsp;</span>';
+                $opt['row']['prefix'][] = $ico;                
+                /*if (!empty($lev) && !isset($_REQUEST[$this->id.'_open'])) {
                     $opt['row']['class'][] = 'hide';
-                } elseif (!empty($lev) && strpos($_REQUEST[$this->id.'_open'], '['.$parentNodeId.']') === false){
+                } else*/
+                if (!empty($lev) && strpos($this->request['nodeOpenIds'], '['.$parentNodeId.']') === false){
                     $opt['row']['class'][] = 'hide';
+                } elseif (strpos($this->request['nodeOpenIds'], '['.$nodeId.']') !== false) {                    
+                    $opt['row']['prefix'][0] = str_replace('tree-plus-','minus tree-plus-',$opt['row']['prefix'][0]);                
                 }
                 break;           
             case '_!html':
