@@ -13,4 +13,22 @@ and open the template in the editor.
 
 .panel-group .expanded:hover .panel-commands {
    display: block;
-} 
+}
+
+.panel-group .panel {
+    border: 1px solid #ddd !important;
+}
+
+.panel-heading {
+  padding: 8px 12px !important;
+  border-bottom: 1px solid #ddd !important;
+}
+
+.panel-title {
+    font-size: 20px !important;
+    font-weight: bold;
+}
+
+.panel-title a{
+    text-decoration: none;
+}
