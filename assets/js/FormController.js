@@ -387,16 +387,29 @@ var Osynapsy = new (function(){
             url  : window.location.href,
             type : 'post',
             data : data,
-            success : function(response) {                      
+            dataType : 'html',
+            success : function(response)
+            {
                 Osynapsy.waitMask.remove();
+                var successRefresh = false;
                 for (var i in cmps) {
-                   var componentID = '#'+ cmps[i];
-                   var componentRemote = $(response).find(componentID);                
-                   $(componentID).replaceWith(componentRemote);                
-                }                
-                if (typeof fncOnSuccess === 'function') {                    
+                    var componentID = '#'+ cmps[i];
+                    var componentRemote = $(response).find(componentID);
+                    if (componentRemote) {
+                        $(componentID).replaceWith(componentRemote);
+                        successRefresh = true;
+                    }                    
+                }
+                if (!successRefresh){
+                    console.log(response);
+                } else if (typeof fncOnSuccess === 'function') {                    
                     fncOnSuccess();
                 }
+            },
+            error : function(response)
+            {
+                Osynapsy.waitMask.remove();
+                console.log(response);
             }
         });
     };
@@ -407,9 +420,10 @@ var Osynapsy = new (function(){
         {                        
             var mask = $('<div id="waitMask" class="wait"><div class="message">'+message+'</div></div>');
             mask.width($(parent).width())
-                .height($(parent).height())
-                .css('top', position.top+'px')
-                .css('left',position.left+'px');
+                .height($(parent).height());
+            if (position) {
+                mask.css('top', position.top+'px').css('left',position.left+'px');
+            }
             $('body').append(mask);
         },
         show : function()
@@ -419,8 +433,8 @@ var Osynapsy = new (function(){
             var parent = document;
             if (arguments.length > 0) {
                 parent = arguments[0];
-                position = $(parent).offset();
-            }
+                position = $(parent).offset();                
+            }            
             this.build(message, parent, position);
         },
         showProgress : function()
