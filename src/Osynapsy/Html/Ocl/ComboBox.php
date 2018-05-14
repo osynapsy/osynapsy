@@ -114,6 +114,12 @@ class ComboBox extends Component
         return $this;
     }
     
+    public function setPlaceholder($label)
+    {
+        $this->placeholder = $label;
+        return $this;
+    }
+    
     public function countOption()
     {
         return count($this->data);
