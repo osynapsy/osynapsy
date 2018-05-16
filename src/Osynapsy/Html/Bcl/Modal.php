@@ -13,6 +13,8 @@ class Modal extends Component
     public $body;
     public $panelBody;
     public $panelFoot;
+    private $columnCommandLeft;
+    private $columnCommandRight;
     public $footer;    
     
     public function __construct($id, $title = '', $type = '')
@@ -58,9 +60,26 @@ class Modal extends Component
     public function getPanelFoot()
     {
         if (empty($this->panelFoot)){
-            $this->panelFoot = $this->addFoot(new PanelNew($this->id.'PanelFoot'));
+            $this->panelFoot = $this->addFooter(new PanelNew($this->id.'PanelFoot'));
             $this->panelFoot->resetClass();
         }
         return $this->panelFoot;
+    }
+    
+    public function addCommand(array $left = [],array $right = [], $addCloseCommand = true)
+    {
+        if (empty($this->columnCommandLeft)) {
+            $this->columnCommandLeft = $this->getPanelFoot()->addColumn(6)->setXs(6)->setClass('text-left');
+        }
+        if (empty($this->columnCommandRight)) {
+            $this->columnCommandRight = $this->getPanelFoot()->addColumn(6)->setXs(6)->setClass('text-right');
+        }
+        if ($addCloseCommand){
+            $ButtonClose = new Button('btnClose'.$this->id,'button', null, 'Chiudi');
+            $ButtonClose->att('onclick',"\$('#{$this->id}').modal('hide');");
+            array_push($left, $ButtonClose);
+        }
+        $this->columnCommandLeft->addFromArray($left);
+        $this->columnCommandRight->addFromArray($right);
     }
 }
