@@ -44,7 +44,11 @@ class Dropdown extends Component
     {
         foreach ($this->data as $key => $rec) {
             if (is_object($rec)) {
-                $this->list->att('data-value',$key)->add(new Tag('li'))->add($rec);
+                $this->list->add(new Tag('li'))->att('data-value',$key)->add($rec);
+                continue;
+            }
+            if ($rec === 'divider') {
+                $this->list->add(new Tag('li'))->att(['class' => 'divider','role' => 'separator']);
                 continue;
             }
             $rec = array_values($rec);
