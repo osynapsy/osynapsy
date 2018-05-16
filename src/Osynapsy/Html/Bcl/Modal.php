@@ -11,7 +11,8 @@ class Modal extends Component
     public $header;
     public $title;
     public $body;
-    public $panel;
+    public $panelBody;
+    public $panelFoot;
     public $footer;    
     
     public function __construct($id, $title = '', $type = '')
@@ -45,12 +46,21 @@ class Modal extends Component
         return $content;
     }
     
-    public function getPanel()
+    public function getPanelBody()
     {
-        if (empty($this->panel)){
-            $this->panel = $this->addBody(new PanelNew($this->id.'Panel'));
-            $this->panel->resetClass();
+        if (empty($this->panelBody)){
+            $this->panelBody = $this->addBody(new PanelNew($this->id.'PanelBody'));
+            $this->panelBody->resetClass();
         }
-        return $this->panel;
+        return $this->panelBody;
+    }
+    
+    public function getPanelFoot()
+    {
+        if (empty($this->panelFoot)){
+            $this->panelFoot = $this->addFoot(new PanelNew($this->id.'PanelFoot'));
+            $this->panelFoot->resetClass();
+        }
+        return $this->panelFoot;
     }
 }
