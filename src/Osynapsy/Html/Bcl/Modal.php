@@ -3,7 +3,7 @@ namespace Osynapsy\Html\Bcl;
 
 use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
-use Osynapsy\Html\PanelNew;
+use Osynapsy\Html\Bcl\PanelNew;
 
 class Modal extends Component
 {
@@ -14,7 +14,7 @@ class Modal extends Component
     public $panel;
     public $footer;    
     
-    public function __construct($id, $title='', $type='')
+    public function __construct($id, $title = '', $type = '')
     {
         parent::__construct('div',$id);
         
@@ -48,7 +48,7 @@ class Modal extends Component
     public function getPanel()
     {
         if (empty($this->panel)){
-            $this->panel = $this->addBody(new Panel($this->id.'Panel'));
+            $this->panel = $this->addBody(new PanelNew($this->id.'Panel'));
             $this->panel->resetClass();
         }
         return $this->panel;
