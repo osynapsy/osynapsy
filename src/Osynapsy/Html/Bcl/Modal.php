@@ -1,18 +1,9 @@
 <?php
-
-/*
- * This file is part of the Osynapsy package.
- *
- * (c) Pietro Celeste <p.celeste@osynapsy.org>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Osynapsy\Html\Bcl;
 
 use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
+use Osynapsy\Html\PanelNew;
 
 class Modal extends Component
 {
@@ -20,6 +11,7 @@ class Modal extends Component
     public $header;
     public $title;
     public $body;
+    public $panel;
     public $footer;    
     
     public function __construct($id, $title='', $type='')
@@ -51,5 +43,14 @@ class Modal extends Component
     {
         $this->body->add($content);
         return $content;
+    }
+    
+    public function getPanel()
+    {
+        if (empty($this->panel)){
+            $this->panel = $this->addBody(new Panel($this->id.'Panel'));
+            $this->panel->resetClass();
+        }
+        return $this->panel;
     }
 }
