@@ -22,7 +22,7 @@ class RequestRaw
     {
 		$this->server = $_SERVER;
         $data = sprintf(
-			"%s %s %s\n\nHTTP headers:\n",
+			"%s %s %s\n",
 			$this->server['REQUEST_METHOD'],
 			$this->server['REQUEST_URI'],
 			$this->server['SERVER_PROTOCOL']
@@ -30,11 +30,23 @@ class RequestRaw
 		foreach ($this->getHeaderList() as $name => $value) {
 			$data .= $name . ': ' . $value . "\n";
 		}
-		$data .= "\nRequest body:\n";
+		$data .= "\n".$this->buildBody();
 		
 		$this->raw = $data;
 	}
 	
+    private function buildBody()
+    {
+        if (empty($_POST)) {
+            return '';
+        }
+        $post = [];
+        foreach($_POST as $key => $value){
+            $post[] = $key.'='.$value;
+        }
+        return implode('&',$post);
+    }
+    
     private function getHeaderList()
     {
 		$headerList = [];
