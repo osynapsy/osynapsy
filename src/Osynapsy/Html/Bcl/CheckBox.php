@@ -23,10 +23,13 @@ class CheckBox extends Component
 {
     private $checkbox;    
     
-    public function __construct($id, $label, $value='1')
+    public function __construct($id, $label, $value = '1', $prefix = '')
     {
         parent::__construct('label', $id.'_parent');
         $this->att('class','form-check-label')->add('<input type="hidden" name="'.$id.'" value="0">');
+        if (!empty($prefix)) {
+            $this->add($prefix);
+        }
         $this->checkbox = $this->add(new Tag('input'))->att([
             'id' => $id,
             'type' => 'checkbox',
