@@ -37,6 +37,8 @@ class DataGrid extends Component
         $this->setParameter('max_wdt_per', 96);
         $this->setParameter('column-object', array());
         $this->setParameter('col_len', array());
+        $this->setParameter('cols_vis', 0);
+        $this->setParameter('cols', array());
         $this->setParameter('paging', true);
         $this->setParameter('error-in-sql', false);
         $this->setParameter('record-add', null);
@@ -279,7 +281,7 @@ class DataGrid extends Component
                 $cel->att('class',trim($opt['class']),true);
             }
 
-            $cel->att('data-type', $col['native_type'])
+            $cel->att('data-type', empty($col['native_type']) ? '' : $col['native_type'])
                 ->add('<span>'.$opt['title'].'</span>');
             if (empty($_REQUEST[$this->id.'_order'])) {
                 continue;
