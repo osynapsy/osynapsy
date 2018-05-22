@@ -22,6 +22,7 @@ class Tab extends Component
     private $nCard=0;
     private $currentCard;
     private $tabContent;
+    private $tabSelected;
     private $id;
     
     public function __construct($id)
@@ -37,6 +38,7 @@ class Tab extends Component
             'role' => 'tablist',
             'data-tabs' => 'tabs'
         ]);
+        $this->tabSelected = empty($_REQUEST[$this->id]) ? '1' : $_REQUEST[$this->id];
         $this->tabContent = $this->add(new Tag('div'))->att('class','tab-content');
     }
     
@@ -44,11 +46,13 @@ class Tab extends Component
     {
         $cardId = $this->id.'_'.$this->nCard++;
         $li = $this->ul->add(new Tag('li'))->att('role','presentation');
-        if ($this->nCard == 1) {
-            //$li->att('class','active');
+        $class = '';
+        if($this->tabSelected == $this->nCard) {
+            $class = 'active in';
         }
+        $li->att('class',$class);
         $li->add('<a href="#'.$cardId.'" data-toggle="tab">'.$title.'</a>');
-        $this->currentCard = $this->tabContent->add(new Panel($cardId))->att('class' , 'tab-pane fade no-border', true);
+        $this->currentCard = $this->tabContent->add(new Panel($cardId))->att('class' , 'tab-pane fade no-border '.$class, true);
         return $this->currentCard;
     }
     
