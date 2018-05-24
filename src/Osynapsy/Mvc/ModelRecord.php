@@ -47,6 +47,10 @@ abstract class ModelRecord
         $this->recordFill();        
     }       
     
+    protected function afterInit()
+    {        
+    }
+    
     public function get($key)
     {
         return $this->repo->get($key);
