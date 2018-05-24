@@ -26,7 +26,7 @@ namespace Osynapsy\Db;
 abstract class ActiveRecord
 {
     private $activeRecord = [];
-    private $dbConnection;
+    protected $dbConnection;
     private $originalRecord = [];
     private $state = 'insert';
     private $sequence;
@@ -34,7 +34,8 @@ abstract class ActiveRecord
     private $searchCondition = [];        
     private $softDelete = [];
     private $keys = [];
-    private $fields = [];    
+    private $fields = [];
+    private $extensions = [];
     
     /**
      * Object constructor
@@ -50,6 +51,7 @@ abstract class ActiveRecord
         $this->sequence = $this->sequence();
         $this->fields = $this->fields();
         $this->softDelete = $this->softDelete();
+        $this->init();
     }
     
     /**
@@ -77,7 +79,7 @@ abstract class ActiveRecord
             $i++;
         }
         try {            
-            $sql = "SELECT * FROM {$this->table} WHERE ".implode(' AND ', $where['conditions'])." ORDER BY 1";            
+            $sql = "SELECT * FROM {$this->table} WHERE ".implode(' AND ', $where['conditions'])." ORDER BY 1";
             $this->originalRecord = $this->activeRecord = $this->dbConnection->execUnique(
                 $sql,
                 $where['parameters'],
@@ -86,11 +88,36 @@ abstract class ActiveRecord
         } catch (\Exception $e) {
             throw new \Exception('Query error : '.$sql."\n".$e->getMessage(), 100);
         }
+        $extendedValues = $this->findInExtensions();
+        if (!empty($extendedValues)) {
+            $this->originalRecord = array_merge($this->originalRecord, $extendedValues);
+            $this->activeRecord = array_merge($this->activeRecord, $extendedValues);
+        }
         if (empty($this->originalRecord)) {
             return $this->originalRecord;
         }
         $this->state = 'update';
         return $this->activeRecord;
+    }
+    
+    private function findInExtensions()
+    {
+        if (empty($this->extensions)) {
+            return [];
+        }        
+        $values = [];       
+        foreach($this->extensions as $extension){             
+            $searchArray = [];
+            foreach($this->keys as $idx => $field){
+                $searchArray[$extension[1][$idx]] = $this->get($field);
+            }            
+            try {
+                $values = array_merge($values, $extension[0]->findByAttributes($searchArray));
+            } catch (Exception $e) {
+                echo $e->getMessage();
+            }            
+        }        
+        return $values;
     }
     
     /**
@@ -146,6 +173,10 @@ abstract class ActiveRecord
         return false;
     }
     
+    protected function init()
+    {
+    }
+    
     /**
      * Set value on current active record
      * 
@@ -161,10 +192,31 @@ abstract class ActiveRecord
             throw new \Exception('Field parameter is empty');
         }
         if (!in_array($field, $this->fields)) {
-            throw new \Exception("Field {$field} do not exist");
+            $exists = $this->setValueInExtension($field, $value, $defaultValue);            
+            if (!$exists) {
+                var_dump($exists, $field);
+            exit;
+                throw new \Exception("Field {$field} do not exist");
+            }
         }        
         $this->activeRecord[$field] = ($value !== '0' && $value !== 0 && empty($value))  ? $defaultValue : $value;        
         return $this;
+    }
+    
+    private function setValueInExtension($field, $value = null, $defaultValue = null)
+    {        
+        if (empty($this->extensions)) {
+            return false;
+        }       
+        foreach($this->extensions as $extension) {
+            try{
+                $extension[0]->setValue($field, $value, $defaultValue);
+                return true;
+            } catch(\Exception $e) {
+                continue;
+            }
+        }        
+        return false;
     }
     
     /**
@@ -179,7 +231,10 @@ abstract class ActiveRecord
             throw new \Exception('Record is not updatable');
         }
         $this->beforeSave();
-        $id = empty($this->originalRecord)? $this->insert() : $this->update();        
+        $id = empty($this->originalRecord)? $this->insert() : $this->update();
+        foreach($this->extensions as $extension){
+            $extension[0]->save();
+        }
         $this->afterSave();
         return $id;
     }
@@ -192,10 +247,10 @@ abstract class ActiveRecord
     private function insert()
     {
         $this->beforeInsert();        
-        $sequenceId = $this->getSequenceNextValue();                
+        $sequenceId = $this->getSequenceNextValue();
         $autoincrementId = $this->dbConnection->insert(
             $this->table,
-            $this->activeRecord
+            array_intersect_key($this->activeRecord, array_flip($this->fields()))
         );
         $id = !empty($autoincrementId) ? $autoincrementId : $sequenceId;
         $this->loadRecordAfterInsert($id);
@@ -235,7 +290,11 @@ abstract class ActiveRecord
         if (empty($this->searchCondition)) {
             throw new \Exception('Primary key is empty');
         }
-        $this->dbConnection->update($this->table, $this->activeRecord, $this->searchCondition);
+        $this->dbConnection->update(
+            $this->table,
+            array_intersect_key($this->activeRecord, array_flip($this->fields())),
+            $this->searchCondition
+        );
         $this->afterUpdate();
     }
     
@@ -319,6 +378,14 @@ abstract class ActiveRecord
             $this->activeRecord[$firstKey] = $sequenceValue;
         }
         return $sequenceValue;
+    }
+    
+    protected function extend($record, array $foreignKeys)
+    {
+        if (empty($foreignKeys)) {
+            throw new \Exception("Parameter foreignKeys is empty");
+        }
+        $this->extensions[] = [$record, array_values($foreignKeys)];
     }
     
     /**
