@@ -194,8 +194,6 @@ abstract class ActiveRecord
         if (!in_array($field, $this->fields)) {
             $exists = $this->setValueInExtension($field, $value, $defaultValue);            
             if (!$exists) {
-                var_dump($exists, $field);
-            exit;
                 throw new \Exception("Field {$field} do not exist");
             }
         }        
