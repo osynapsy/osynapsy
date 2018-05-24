@@ -44,7 +44,8 @@ abstract class ModelRecord
                    ->set('fields',[])                   
                    ->set('values',[]);
         $this->init();
-        $this->recordFill();        
+        $this->recordFill();
+        $this->afterInit();
     }       
     
     protected function afterInit()
