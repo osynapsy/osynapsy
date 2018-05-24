@@ -170,7 +170,7 @@ abstract class EavRecord
             throw new \Exception('Field parameter is empty');
         }
         if (!empty($this->fields) && !in_array($field, $this->fields)) {
-            throw new \Exception("Field {$field} do not exist");
+            throw new \Exception("Field {$field} do not exist in ".get_class($this));
         }        
         $this->activeRecord[$field] = ($value !== '0' && $value !== 0 && empty($value))  ? $defaultValue : $value;        
         return $this;
@@ -393,4 +393,3 @@ abstract class EavRecord
     
     abstract public function attributeValueField();
 }
-
