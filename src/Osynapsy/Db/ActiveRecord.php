@@ -78,17 +78,13 @@ abstract class ActiveRecord
             $where['parameters'][$fieldsh1] = $value; 
             $i++;
         }
+        $sql = "SELECT * FROM {$this->table} WHERE ".implode(' AND ', $where['conditions'])." ORDER BY 1";
         try {            
-            $sql = "SELECT * FROM {$this->table} WHERE ".implode(' AND ', $where['conditions'])." ORDER BY 1";
-            $this->originalRecord = $this->activeRecord = $this->dbConnection->execUnique(
-                $sql,
-                $where['parameters'],
-                'ASSOC'
-            );           
+            $this->originalRecord = $this->activeRecord = $this->dbConnection->execUnique($sql, $where['parameters'], 'ASSOC');
         } catch (\Exception $e) {
             throw new \Exception('Query error : '.$sql."\n".$e->getMessage(), 100);
-        }
-        $extendedValues = $this->findInExtensions();
+        }        
+        $extendedValues = $this->findInExtensions();       
         if (!empty($extendedValues)) {
             $this->originalRecord = array_merge($this->originalRecord, $extendedValues);
             $this->activeRecord = array_merge($this->activeRecord, $extendedValues);
@@ -229,14 +225,39 @@ abstract class ActiveRecord
             throw new \Exception('Record is not updatable');
         }
         $this->beforeSave();
+        $extensionValues = array_diff_key($this->activeRecord, array_flip($this->fields()));
         $id = empty($this->originalRecord)? $this->insert() : $this->update();
-        foreach($this->extensions as $extension){
-            $extension[0]->save();
-        }
+        $this->saveRecordExtensions($extensionValues);        
         $this->afterSave();
         return $id;
     }
     
+    /**
+     * Save current active record extension on database
+     * 
+     * @return void
+     */
+    private function saveRecordExtensions($values)
+    {
+        if (empty($values)) {
+            return;
+        }
+        foreach($this->extensions as $extension){
+            foreach($this->keys as $idx => $field){
+                $extension[0]->setValue($extension[1][$idx], $this->get($field));
+            }
+            foreach($values as $field => $value) {
+                try {
+                    $extension[0]->setValue($field, $value);
+                    $this->activeRecord[$field] = $value;
+                    $this->originalRecord[$field] = $value;
+                } catch (\Exception $e) {                    
+                }
+            }
+            $extension[0]->save();
+        }
+    }
+
     /**
      * Insert current active record on database
      * 
