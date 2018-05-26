@@ -25,8 +25,9 @@ namespace Osynapsy\Db;
 
 abstract class ActiveRecord
 {
-    private $activeRecord = [];
     protected $dbConnection;
+    private $activeRecord = [];
+    private $extendRecord = [];
     private $originalRecord = [];
     private $state = 'insert';
     private $sequence;
@@ -192,6 +193,7 @@ abstract class ActiveRecord
             if (!$exists) {
                 throw new \Exception("Field {$field} do not exist");
             }
+            $this->extendRecord[$field] = $value;
         }        
         $this->activeRecord[$field] = ($value !== '0' && $value !== 0 && empty($value))  ? $defaultValue : $value;        
         return $this;
@@ -225,9 +227,8 @@ abstract class ActiveRecord
             throw new \Exception('Record is not updatable');
         }
         $this->beforeSave();
-        $extensionValues = array_diff_key($this->activeRecord, array_flip($this->fields()));
         $id = empty($this->originalRecord)? $this->insert() : $this->update();
-        $this->saveRecordExtensions($extensionValues);        
+        $this->saveRecordExtensions();        
         $this->afterSave();
         return $id;
     }
@@ -237,16 +238,16 @@ abstract class ActiveRecord
      * 
      * @return void
      */
-    private function saveRecordExtensions($values)
+    private function saveRecordExtensions()
     {
-        if (empty($this->extensions) || empty($values)) {
+        if (empty($this->extensions) || empty($this->extendRecord)) {
             return;
         }
         foreach($this->extensions as $extension){
             foreach($this->keys as $idx => $field){
-                $extension[0]->setValue($extension[1][$idx], $this->get($field));
+                //$extension[0]->setValue($extension[1][$idx], $this->get($field));
             }
-            foreach($values as $field => $value) {
+            foreach($this->extendRecord as $field => $value) {
                 try {
                     $extension[0]->setValue($field, $value);
                     $this->activeRecord[$field] = $value;
