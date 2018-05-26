@@ -239,7 +239,7 @@ abstract class ActiveRecord
      */
     private function saveRecordExtensions($values)
     {
-        if (empty($values)) {
+        if (empty($this->extensions) || empty($values)) {
             return;
         }
         foreach($this->extensions as $extension){
