@@ -132,8 +132,10 @@ abstract class ModelRecord
     
     public function insert()
     {
-        $this->beforeInsert();        
-
+        $error = $this->beforeInsert();        
+        if (!empty($error)) {
+            $this->getController()->getResponse()->error('alert', $error);
+        }
         if ($this->getController()->getResponse()->error()) {
             return;
         }        
@@ -157,7 +159,10 @@ abstract class ModelRecord
 
     public function update()
     {
-        $this->beforeUpdate();
+        $error = $this->beforeUpdate();
+        if (!empty($error)) {
+            $this->getController()->getResponse()->error('alert', $error);
+        }
         if ($this->getController()->getResponse()->error()) {
             return;
         }
