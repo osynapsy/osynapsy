@@ -109,7 +109,8 @@ abstract class ActiveRecord
                 $searchArray[$extension[1][$idx]] = $this->get($field);
             }            
             try {
-                $values = array_merge($values, $extension[0]->findByAttributes($searchArray));
+                $extens = $extension[0]->findByAttributes($searchArray); 
+                $values = array_merge($values, is_array($extens) ? $extens : []);
             } catch (Exception $e) {
                 echo $e->getMessage();
             }            
@@ -417,7 +418,7 @@ abstract class ActiveRecord
     {
         return '';
     }
-    
+      
     /**
      * Active or disactive softDelete
      * 
