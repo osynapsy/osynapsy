@@ -171,7 +171,10 @@ abstract class EavRecord
         }
         if (!empty($this->fields) && !in_array($field, $this->fields)) {
             throw new \Exception("Field {$field} do not exist in ".get_class($this));
-        }        
+        }
+        if (in_array($field, $this->keys)) {
+            return $this;
+        }
         $this->activeRecord[$field] = ($value !== '0' && $value !== 0 && empty($value))  ? $defaultValue : $value;        
         return $this;
     }

@@ -246,7 +246,7 @@ abstract class ActiveRecord
         }
         foreach($this->extensions as $extension){
             foreach($this->keys as $idx => $field){
-                //$extension[0]->setValue($extension[1][$idx], $this->get($field));
+                $extension[0]->setValue($extension[1][$idx], $this->get($field));
             }
             foreach($this->extendRecord as $field => $value) {
                 try {
