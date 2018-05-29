@@ -81,17 +81,17 @@ abstract class ActiveRecord
         }
         $sql = "SELECT * FROM {$this->table} WHERE ".implode(' AND ', $where['conditions'])." ORDER BY 1";
         try {            
-            $this->originalRecord = $this->activeRecord = $this->dbConnection->execUnique($sql, $where['parameters'], 'ASSOC');
+            $this->activeRecord = $this->dbConnection->execUnique($sql, $where['parameters'], 'ASSOC');
         } catch (\Exception $e) {
             throw new \Exception('Query error : '.$sql."\n".$e->getMessage(), 100);
         }        
         $extendedValues = $this->findInExtensions();       
         if (!empty($extendedValues)) {
-            $this->originalRecord = array_merge($this->originalRecord, $extendedValues);
-            $this->activeRecord = array_merge($this->activeRecord, $extendedValues);
+            $this->activeRecord = array_merge($extendedValues, $this->activeRecord);
         }
-        if (empty($this->originalRecord)) {
-            return $this->originalRecord;
+        $this->originalRecord = $this->activeRecord;
+        if (empty($this->activeRecord)) {
+            return [];
         }
         $this->state = 'update';
         return $this->activeRecord;
