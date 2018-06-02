@@ -149,7 +149,7 @@ var Osynapsy = new (function(){
             if (sessionStorage.history){
                 hst = JSON.parse(sessionStorage.history);
             }
-            $('input,select,textarea').each(function(){
+            $('input,select,textarea').not('.history-skip').each(function(){
                 switch ($(this).attr('type')) {
                     case 'submit':
                     case 'button':
