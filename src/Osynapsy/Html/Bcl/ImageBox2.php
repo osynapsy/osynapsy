@@ -28,7 +28,7 @@ class ImageBox2 extends Component
         'maxheight' => 0,
         'domain' => ''
     );
-    
+    private $debug = false;
     private $resizeMethod = 'resize';
     private $toolbar;
     private $dummy;
@@ -132,10 +132,14 @@ class ImageBox2 extends Component
         $this->att('data-max-width', $this->image['maxwidth']);
         $this->att('data-max-height', $this->image['maxheight']);
         $this->att('data-zoom','1');
-        $this->att('class','crop',true);
+        $this->setClass('crop');
         $this->toolbar->add('<button type="button" class="crop-command btn btn-info btn-sm"><span class="fa fa-crop"></span></button> ');
         $this->toolbar->add('<button type="button" class="zoomin-command btn btn-info btn-sm"><span class="fa fa-search-plus"></span></button> ');
         $this->toolbar->add('<button type="button" class="zoomout-command btn btn-info btn-sm"><span class="fa fa-search-minus"></span></button> ');
+        if ($this->debug) {
+            $this->setClass('debug');
+            $this->toolbar->add('<input type="text" name="'.$this->id.'_debug" class="debug" value="">');
+        }
     }        
     
     public function setAction($action)
@@ -174,5 +178,10 @@ class ImageBox2 extends Component
     public function setCropAction($action)
     {
         $this->action['crop'] = $action;
+    }
+    
+    public function activeDebug()
+    {
+        $this->debug = true;
     }
 }
