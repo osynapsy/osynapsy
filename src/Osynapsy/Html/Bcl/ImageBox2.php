@@ -131,6 +131,7 @@ class ImageBox2 extends Component
         $this->cropActive = true;
         $this->att('data-max-width', $this->image['maxwidth']);
         $this->att('data-max-height', $this->image['maxheight']);
+        $this->att('data-zoom','1');
         $this->att('class','crop',true);
         $this->toolbar->add('<button type="button" class="crop-command btn btn-info btn-sm"><span class="fa fa-crop"></span></button> ');
         $this->toolbar->add('<button type="button" class="zoomin-command btn btn-info btn-sm"><span class="fa fa-search-plus"></span></button> ');
