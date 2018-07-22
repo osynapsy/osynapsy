@@ -35,3 +35,7 @@
 .osy-imagebox-bcl:hover .osy-imagebox-bcl-image-delete {
     visibility: visible;
 }
+
+.osy-imagebox-dummy > img{
+    max-width: 100%;
+}
