@@ -1,4 +1,4 @@
-ImageBox2 =
+BclImageBox =
 {
     init : function ()
     {        
@@ -6,7 +6,7 @@ ImageBox2 =
             setTimeout(
                 function(){
                     $('img.imagebox-main').each(function(){
-                        ImageBox2.initCropBox(this);
+                        BclImageBox.initCropBox(this);
                     });
                 },
                 500
@@ -21,21 +21,21 @@ ImageBox2 =
             FormController.execute($(this).closest('.osy-imagebox-bcl'));
         });
         $('.crop-command').click(function() {
-            ImageBox2.crop(this);
+            BclImageBox.crop(this);
         });
         $('.zoomin-command').click(function(){
             var parent = $(this).closest('.crop');
             $('img.imagebox-main', parent).cropper('zoom',0.05);
             var zoom = $(parent).data('zoom') + 0.05;
             $(parent).data('zoom',zoom);
-            //ImageBox2.setCropBoxDimension($('img.imagebox-main', parent));
+            //BclImageBox.setCropBoxDimension($('img.imagebox-main', parent));
         });
         $('.zoomout-command').click(function(){
             var parent = $(this).closest('.crop');
             $('img.imagebox-main', parent).cropper('zoom',-0.05);
             var zoom = $(parent).data('zoom') - 0.05;
             $(parent).data('zoom',zoom);
-            //ImageBox2.setCropBoxDimension($('img.imagebox-main', parent));
+            //BclImageBox.setCropBoxDimension($('img.imagebox-main', parent));
         });
         $(window).resize();
     },
@@ -88,7 +88,7 @@ ImageBox2 =
 }
 
 if (window.FormController) {
-    FormController.register('init','ImageBox2',function() {
-        ImageBox2.init();
+    FormController.register('init','BclImageBox',function() {
+        BclImageBox.init();
     });
 }
