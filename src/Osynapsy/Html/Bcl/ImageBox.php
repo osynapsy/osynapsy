@@ -28,7 +28,7 @@ class ImageBox extends Component
         'maxheight' => 0,
         'domain' => ''
     );
-    
+    private $debug = false;
     private $resizeMethod = 'resize';
     private $toolbar;
     private $dummy;
@@ -136,6 +136,10 @@ class ImageBox extends Component
         $this->toolbar->add('<button type="button" class="crop-command btn btn-info btn-sm"><span class="fa fa-crop"></span></button> ');
         $this->toolbar->add('<button type="button" class="zoomin-command btn btn-info btn-sm"><span class="fa fa-search-plus"></span></button> ');
         $this->toolbar->add('<button type="button" class="zoomout-command btn btn-info btn-sm"><span class="fa fa-search-minus"></span></button> ');
+        if ($this->debug) {
+            $this->setClass('debug');
+            $this->toolbar->add('<input type="text" name="'.$this->id.'_debug" class="debug" value="">');
+        }
     }
     
     public function setDomain($domain)
@@ -169,5 +173,10 @@ class ImageBox extends Component
     public function setCropAction($action)
     {
         $this->action['crop'] = $action;
-    }    
+    }
+    
+    public function activeDebug()
+    {
+        $this->debug = true;
+    }
 }
