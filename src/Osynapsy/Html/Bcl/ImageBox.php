@@ -133,12 +133,12 @@ class ImageBox extends Component
         $this->att('data-max-height', $this->image['maxheight']);
         $this->att('class','crop',true);
         $this->att('data-zoom','1');
-        $this->toolbar->add('<button type="button" class="crop-command btn btn-info btn-sm"><span class="fa fa-crop"></span></button> ');
-        $this->toolbar->add('<button type="button" class="zoomin-command btn btn-info btn-sm"><span class="fa fa-search-plus"></span></button> ');
-        $this->toolbar->add('<button type="button" class="zoomout-command btn btn-info btn-sm"><span class="fa fa-search-minus"></span></button> ');
+        $this->toolbar->add('<button type="button" class="imagebox-command crop btn btn-info btn-sm"><span class="fa fa-crop"></span></button> ');
+        $this->toolbar->add('<button type="button" class="imagebox-command zoomin btn btn-info btn-sm"><span class="fa fa-search-plus"></span></button> ');
+        $this->toolbar->add('<button type="button" class="imagebox-command zoomout btn btn-info btn-sm"><span class="fa fa-search-minus"></span></button> ');
         if ($this->debug) {
             $this->setClass('debug');
-            $this->toolbar->add('<input type="text" name="'.$this->id.'_debug" class="debug" value="">');
+            $this->toolbar->add('<input type="text" class="form-control input-xs" placeholder="debug" name="'.$this->id.'_debug" class="debug" value="">');
         }
     }
     
