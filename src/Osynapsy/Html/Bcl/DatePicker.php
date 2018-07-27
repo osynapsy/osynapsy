@@ -82,4 +82,12 @@ class DatePicker extends Component
     {
         $this->format = $format;
     }
+    
+    public function setDefaultDate($date = null)
+    {
+        if (!empty($_REQUEST[$this->datePickerId])) {
+            return;
+        }
+        $_REQUEST[$this->datePickerId] = empty($date) ? date('d/m/Y') : $date;        
+    }
 }
