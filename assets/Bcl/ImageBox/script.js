@@ -9,7 +9,7 @@ BclImageBox =
                         BclImageBox.initCropBox(this);
                     });
                 },
-                500
+                1000
             );
         });
         $('.osy-imagebox-bcl').on('change','input[type=file]',function(e){
@@ -20,69 +20,93 @@ BclImageBox =
             //var uploadAction = $(this).closest('.osy-imagebox-bcl').data('action');            
             FormController.execute($(this).closest('.osy-imagebox-bcl'));
         });
-        $('.crop-command').click(function() {
+        $('.imagebox-command.crop').click(function() {
             BclImageBox.crop(this);
         });
-        $('.zoomin-command').click(function(){
+        $('.imagebox-command.zoomin, .imagebox-command.zoomout').click(function(){
+            var factor = $(this).hasClass('zoomout') ? -0.025 : 0.025;
             var parent = $(this).closest('.crop');
-            $('img.imagebox-main', parent).cropper('zoom',0.05);
-            var zoom = $(parent).data('zoom') + 0.05;
+            $('img.imagebox-main', parent).cropper('zoom', factor);
+            var zoom = $(parent).data('zoom') + factor;
             $(parent).data('zoom',zoom);
-            //BclImageBox.setCropBoxDimension($('img.imagebox-main', parent));
-        });
-        $('.zoomout-command').click(function(){
-            var parent = $(this).closest('.crop');
-            $('img.imagebox-main', parent).cropper('zoom',-0.05);
-            var zoom = $(parent).data('zoom') - 0.05;
-            $(parent).data('zoom',zoom);
-            //BclImageBox.setCropBoxDimension($('img.imagebox-main', parent));
         });
         $(window).resize();
     },
     initCropBox : function(img)
     {
         var options = {
-            viewMode : 0,
+            viewMode : 1,
             modal: true,
             dragMode: 'none',
-            responsive: true,
+            responsive : true,
             cropBoxResizable : false,
             data : true,
             zoomOnWheel: false,
-            crop: function(e) {
-                // Output the result data for cropping image.
-                var zoom = $(this).closest('.crop').data('zoom') + 0;
-                
-                var imgData = $(this).cropper('getImageData');
-                //var factor = imgData.width / imgData.naturalWidth;
-                var crpData = imgData.naturalWidth * zoom + ',';
-                    crpData += imgData.naturalHeight * zoom + ',';
-                    crpData += (e.x * zoom) + ',';
-                    crpData += (e.y * zoom) + ','; 
-                    crpData += (e.width * zoom) + ',';
-                    crpData += (e.height * zoom);
-                $(this).data('action-parameters', crpData);
+            built : function(){
+                BclImageBox.setCropBoxDimension(this, 1);
             }
         };
-        $(img).cropper(options).cropper('reset');
-        this.setCropBoxDimension(img);
+        $(img).cropper('destroy');
+        $(img).cropper(options);
     },
     setCropBoxDimension : function(img)
     {
         var cropWidth = $(img).closest('.crop').data('max-width');
         var cropHeight = $(img).closest('.crop').data('max-height');
-        var imgid = $(img).closest('.crop').attr('id');
-        var imageProperty = $(img).cropper('getImageData');
-        if (imageProperty.naturalWidth > imageProperty.width) {
-            var factor = imageProperty.naturalWidth / imageProperty.width;
-            cropWidth = cropWidth / factor;
-            cropHeight = cropHeight / factor;
+        var imageProperties = $(img).cropper('getImageData');
+        if (cropWidth > imageProperties.width) {
+            var factor = imageProperties.width / imageProperties.naturalWidth;
+            cropWidth = cropWidth * factor;
+            cropHeight = cropHeight * factor;
         }
-        $(img).cropper('setCropBoxData',{width: cropWidth, height: cropHeight, x:0, y:0, resizable : false});
+        $(img).cropper('setCropBoxData',{width: cropWidth, height: cropHeight, x:0, y:0});
     },
     crop : function(button)
     {
-        var image = $('img.imagebox-main', $(button).closest('.crop'));
+        var parent =  $(button).closest('div.crop');
+        var image = $('img.imagebox-main', parent);
+        var cropWidth = $(parent).data('max-width') + 0;
+        var cropHeight = $(parent).data('max-height') + 0;
+        var imageData = $(image).cropper('getImageData');
+        // Output the result data for cropping image.
+        var crop = $(image).cropper('getData');        
+        var factor = imageData.width / imageData.naturalWidth;
+        var factor2 = factor;
+        imageData.zoomFactor = imageData.width / imageData.naturalWidth;
+        imageData.zoomFactor2 = (imageData.naturalWidth - imageData.width) / imageData.width;
+        console.log(crop);
+        if (cropWidth > imageData.width) {
+            factor = $(parent).data('zoom');
+            factor2 = factor < 1 ? 1 : factor;
+            crop.width = cropWidth;
+            crop.height = cropHeight;
+        }
+        var data = [
+            Math.ceil(imageData.naturalWidth * factor),
+            Math.ceil(imageData.naturalHeight * factor),
+            Math.ceil(crop.x * factor),
+            Math.ceil(crop.y * factor), 
+            Math.ceil(crop.width * factor2) - 1,
+            Math.ceil(crop.height * factor2) - 1
+        ];
+        
+        var data2 = [
+            imageData.zoomFactor2,
+            Math.ceil(imageData.width * imageData.zoomFactor2),
+            Math.ceil(imageData.height * imageData.zoomFactor2),
+            Math.ceil(crop.x),
+            Math.ceil(crop.y), 
+            Math.ceil(crop.width),
+            Math.ceil(crop.height)
+        ];
+        if (parent.hasClass('debug')) {
+            data.push(factor);
+            data.push(factor2);
+            data.push(crop);
+            $('input[type=text]', parent).val(data.join(',')+'['+data2.join(',')+']');
+            return;
+        }
+        $(image).data('action-parameters', data.join(','));
         FormController.execute(image);
     }
 }
