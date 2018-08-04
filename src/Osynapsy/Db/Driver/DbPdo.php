@@ -189,6 +189,29 @@ class DbPdo extends \PDO implements InterfaceDbo
         return $this->lastId();
     }
 
+    public function multiInsert($table, array $rawValues)
+    {
+        if (empty($rawValues[0]) || !is_array($rawValues[0])) {
+            return;
+        }
+        $fields = $placeholder = array();
+        foreach ($rawValues[0] as $k => $v) {
+            $fields [] = $k;
+            $placeholder[] = '?';
+        }
+        $arguments = '('.implode(',',$placeholder).')';
+        $params = [];
+        $values = [];
+        foreach ($rawValues as $k => $record) {
+            $params[] = $arguments;
+            $values = array_merge($values, array_values($record));
+        }
+        $command = 'insert into '.$table.'('.implode(',',$fields).') values '.implode(',', $params);
+        $this->execMulti($command, [$values]);
+        return $this->lastId();
+    }
+
+    
     public function update($tbl, array $arg, array $cnd)
     {
         $fld = array();
