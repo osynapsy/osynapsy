@@ -66,6 +66,8 @@ class Runner
         switch($e->getCode()) {
             case '404':
                 return $this->pageNotFound($e->getMessage());
+            case '501':
+                return $this->pageOops($e->getMessage());
             default :
                 return $this->pageOops($e->getMessage(), $e->getTrace());                 
         }
@@ -83,7 +85,7 @@ class Runner
             $this->route
         );
         if (!$this->appController->run()) {
-            throw new KernelException('App not running (access denied)','501');
+            throw new KernelException('Access denied','501');
         }
     }
     
@@ -113,36 +115,40 @@ class Runner
         return $message;
     }
     
-    public function pageOops($message, $trace)
+    public function pageOops($message, $trace = [])
     {
         ob_clean();
+        if (filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION')) {
+            return $message;
+        }
         $body = '';
-        foreach ($trace as $step) {
+        if (!empty($trace)) {
+            $body .= '<table style="border-collapse: collapse;">';
             $body .= '<tr>';
-            $body .= '<td>'.(!empty($step['class']) ? $step['class'] : '&nbsp;').'</td>';
-            $body .= '<td>'.(!empty($step['function']) ? $step['function'] : '&nbsp;').'</td>';
-            $body .= '<td>'.(!empty($step['file']) ? $step['file'] : '&nbsp;').'</td>';
-            $body .= '<td>'.(!empty($step['line']) ? $step['line'] : '&nbsp;').'</td>';            
-            $body .= '</tr>';            
+            $body .= '<th>Class</th>';
+            $body .= '<th>Function</th>';
+            $body .= '<th>File</th>';
+            $body .= '<th>Line</th>';
+            $body .= '</tr>';
+            foreach ($trace as $step) {
+                $body .= '<tr>';
+                $body .= '<td>'.(!empty($step['class']) ? $step['class'] : '&nbsp;').'</td>';
+                $body .= '<td>'.(!empty($step['function']) ? $step['function'] : '&nbsp;').'</td>';
+                $body .= '<td>'.(!empty($step['file']) ? $step['file'] : '&nbsp;').'</td>';
+                $body .= '<td>'.(!empty($step['line']) ? $step['line'] : '&nbsp;').'</td>';            
+                $body .= '</tr>';            
+            }
+            $body .= '</table>';
         }
         return <<<PAGE
-            <style>
-                * {font-family: Arial;} 
-                div.container {margin: auto;} 
-                td,th {font-size: 12px; font-family: Arial; padding: 3px; border: 0.5px solid silver}
-            </style>
             <div class="container">       
                 {$message}
-                <table style="border-collapse: collapse; max-width: 1200px;">
-                    <tr>
-                        <th>Class</th>
-                        <th>Function</th>
-                        <th>File</th>
-                        <th>Line</th>
-                    </tr>
-                    {$body}
-                </table>
+                {$body}
             </div>
+            <style>
+                * {font-family: Arial;}
+                td,th {font-size: 12px; font-family: Arial; padding: 3px; border: 0.5px solid silver}
+            </style>
 PAGE;
                     
     }
