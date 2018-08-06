@@ -142,11 +142,15 @@ class Runner
         }
         return <<<PAGE
             <div class="container">       
-                {$message}
+                <div class="message">{$message}</div>
                 {$body}
             </div>
             <style>
                 * {font-family: Arial;}
+                body {margin: 0px;}
+                div.container {margin: 0px; max-width: 1024px; margin: auto;}
+                table {width: 100%; margin-top: 20px;}
+                .message {background-color: #B0413E; color: white; padding: 10px; font-weight: bold;}
                 td,th {font-size: 12px; font-family: Arial; padding: 3px; border: 0.5px solid silver}
             </style>
 PAGE;
