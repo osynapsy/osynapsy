@@ -69,13 +69,8 @@ class DbPdo extends \PDO implements InterfaceDbo
             case 'mysql' :
                 $opt[\PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
             default:
-                try{
-                    $cnstr = "{$this->param['typ']}:host={$this->param['hst']};dbname={$this->param['db']}";
-                    //var_dump($cnstr);
-                    parent::__construct($cnstr,$this->param['usr'],$this->param['pwd'], $opt);
-                } catch (\Exception $e) {
-                    die($cnstr.' '.$e);
-                }
+                $cnstr = "{$this->param['typ']}:host={$this->param['hst']};dbname={$this->param['db']}";
+                parent::__construct($cnstr,$this->param['usr'],$this->param['pwd'], $opt);
                 break;
         }
         $this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -83,29 +78,28 @@ class DbPdo extends \PDO implements InterfaceDbo
 
     public function getType()
     {
-       return $this->param['typ'];
+        return $this->param['typ'];
     }
 
     //Metodo che setta il parametri della connessione
     public function setParam($p, $v)
     {
-      $this->param[$p] = $v;
+        $this->param[$p] = $v;
     }
 
     //Prendo l'ultimo valore di un campo autoincrement dopo l'inserimento
     public function lastId()
     {
-      return $this->lastInsertId();
+        return $this->lastInsertId();
     }
     
-    public function execCommand($cmd, $par = null)
+    public function execCommand($command, $parameters = null)
     {
-        if (!empty($par)) {
-            $s = $this->prepare($cmd);
-            return $s->execute($par);
-        } else {
-            return $this->exec($cmd);
-        }
+        if (empty($parameters)) {
+            return $this->exec($command);
+        }    
+        $s = $this->prepare($command);
+        return $s->execute($parameters);
     }
     
     public function execMulti($cmd, $par)
@@ -189,7 +183,7 @@ class DbPdo extends \PDO implements InterfaceDbo
         return $this->lastId();
     }
 
-    public function multiInsert($table, array $rawValues)
+    public function multiInsert($table, array $rawValues, array $OnUpdateKey = [])
     {
         if (empty($rawValues[0]) || !is_array($rawValues[0])) {
             return;
@@ -206,44 +200,50 @@ class DbPdo extends \PDO implements InterfaceDbo
             $params[] = $arguments;
             $values = array_merge($values, array_values($record));
         }
-        $command = 'insert into '.$table.'('.implode(',',$fields).') values '.implode(',', $params);
+        $command = 'INSERT INTO '.$table.'('.implode(',',$fields).') VALUES '.implode(',', $params);
+        if (!empty($OnUpdateKey)) {
+            array_walk($OnUpdateKey, function(&$item, $key) { $item = $key .' = '.$item; });
+            $command .= ' ON DUPLICATE KEY UPDATE '.implode(' , ', $OnUpdateKey);
+        }
         $this->execMulti($command, [$values]);
         return $this->lastId();
     }
 
-    
-    public function update($tbl, array $arg, array $cnd)
+    public function update($table, array $arg, array $filters)
     {
-        $fld = array();
-        foreach ($arg as $k => $v) {
-            $fld[] = "{$k} = ?";
-            $val[] = $v;
+        $fields = $values = $where = [];
+        foreach ($arg as $field => $value) {
+            $fields[] = "{$field} = ?";
+            $values[] = $value;
         }
-        if (!is_array($cnd)) {
-          $cnd = array('id' => $cnd);
+        foreach ($filters as $field => $value) {
+            if (!is_array($value)) {
+                $where[] = $field . " = ?";
+                $values[] = $value;
+                continue;
+            }
+            $where[] = $field . ' IN (' .implode(',',array_fill(0, count($value), '?')) . ')';
+            $values = array_merge($values, array_values($value));
         }
-        $whr = array();
-        foreach ($cnd as $k => $v) {
-            $whr[] = "$k = ?";
-            $val[] = $v;
-        }
-        $cmd = 'update '.$tbl.' set '.implode(', ', $fld).' where '.implode(' and ', $whr);
-        // mail('p.celeste@spinit.it','query',$cmd."\n".print_r($val,true));
-        return $this->execCommand($cmd,$val);
+        $command = 'update '.$table.' set '.implode(', ', $fields).' where '.implode(' and ', $where);
+        //die($command);
+        return $this->execCommand($command, $values);
     }
 
-    public function delete($tbl, array $cnd)
+    public function delete($table, array $filters)
     {
-        $whr = array();
-        if (!is_array($cnd)) {
-            $cnd = array('id'=>$cnd);
+        $values = $where = [];
+        foreach ($filters as $field => $value) {
+            if (!is_array($value)) {
+                $where[] = $field . " = ?";
+                $values[] = $value;
+                continue;
+            }
+            $where[] = $field . ' IN (' .implode(',',array_fill(0, count($value), '?')) . ')';
+            $values = array_merge($values, array_values($value));
         }
-        foreach ($cnd as $k=>$v) {
-            $whr[] = "{$k} = ?";
-            $val[] = $v;
-        }
-        $cmd = 'delete from '.$tbl.' where '.implode(' and ',$whr);
-        $this->execCommand($cmd, $val);
+        $command = 'DELETE FROM '.$table.' WHERE '.implode(' AND ',$where);
+        $this->execCommand($command, $values);
     }
     
     private function buildSelect($table, array $fields, array $conditions)
