@@ -334,11 +334,21 @@ var Osynapsy = new (function(){
     pub.page = {
         init : function()
         {
-            $('body').on('change','.change-execute',function(){
+            $('body').on('change','.change-execute, .onchange-execute',function(){
                 Osynapsy.action.execute(this);
-            }).on('click','.cmd-execute, .click-execute',function(event) {
+            }).on('click','.cmd-execute, .click-execute, .onclick-execute',function(event) {
                 event.stopPropagation();
                 Osynapsy.action.execute(this);
+            }).on('keydown','.onenter-execute',function(event){
+                event.stopPropagation();
+                //alert('ci sono');
+                switch (event.keyCode) {
+                    case 13 : //Enter
+                    case 9:                                
+                        FormController.execute(this);
+                        return false;
+                    break;                             
+                }
             }).on('click','.cmd-back',function(){        
                 Osynapsy.history.back();
             }).on('click','.save-history',function(){
