@@ -67,7 +67,7 @@ class DbPdo extends \PDO implements InterfaceDbo
                 parent::__construct("{$this->param['typ']}:{$this->param['db']}");
                 break;
             case 'mysql' :
-                $opt[\PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
+                $opt[\PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8mb4";
             default:
                 $cnstr = "{$this->param['typ']}:host={$this->param['hst']};dbname={$this->param['db']}";
                 parent::__construct($cnstr,$this->param['usr'],$this->param['pwd'], $opt);
