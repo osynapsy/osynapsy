@@ -17,7 +17,7 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
     
     public function __construct(array $init = null)
     {
-        $this->repo = $init;
+        $this->repo = empty($init) ? [] : $init;
     }
     
     public function __invoke($key)
