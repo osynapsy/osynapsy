@@ -42,11 +42,11 @@ class Kernel
      * @param string $fileconf path of the instance configuration file
      * @param object $composer Instance of composer loader
      */
-    public function __construct($fileconf, $composer = null)
-    {                
+    public function __construct($fileconf, $composer = null, Request $Request = null)
+    {
         $this->composer = $composer;
         $this->loader = new Loader($fileconf);
-        $this->request = new Request($_GET, $_POST, array(), $_COOKIE, $_FILES, $_SERVER);
+        $this->request = !empty($Request) ? $Request : new Request($_GET, $_POST, array(), $_COOKIE, $_FILES, $_SERVER);
         $this->request->set(
             'app.parameters',
             $this->loadConfig('parameter', 'name', 'value')
@@ -66,7 +66,7 @@ class Kernel
         $this->request->set(
             'listeners',
             $this->loadConfig('listener', '@value', 'event')
-        );                
+        );
     }
     
     private function loadConfig($key, $name, $value)
