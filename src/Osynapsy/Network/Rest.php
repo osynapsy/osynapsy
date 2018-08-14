@@ -13,9 +13,14 @@ namespace Osynapsy\Network;
 
 class Rest
 {
-    public static function get($url)
+    public static function get($url, $proxy = null)
     {
         $ch = curl_init($url);
+        if (!empty($proxy)) {
+            $proxy = explode(':', $proxy);
+            curl_setopt($ch, CURLOPT_PROXY, $proxy[0]);
+            curl_setopt($ch, CURLOPT_PROXYPORT, $proxy[1]);
+        }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
         //curl_setopt($ch, CURLOPT_POSTFIELDS,http_build_query($data));
