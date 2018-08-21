@@ -1,6 +1,6 @@
 {
     "name": "osynapsy.org/osynapsy",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "homepage": "http://www.osynapsy.org/",
     "type": "library",
     "description": "Osynapsy is a framework MVC for develop Rich Internet Application (RIA).",
