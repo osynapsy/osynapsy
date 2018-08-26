@@ -36,7 +36,7 @@ class Loader extends Controller
         if (!is_file($filename)) {
             return false;
         }
-        $this->copyFileToCache($this->request->get('page.url'), $filename);        
+        $this->copyFileToCache($this->getRequest()->get('page.url'), $filename);        
         $this->sendFile($filename);
         return true;
     }
@@ -89,8 +89,8 @@ class Loader extends Controller
         // calc the string in GMT not localtime and add the offset
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
         //output the HTTP header
-        $this->response->setHeader('Expires', gmdate("D, d M Y H:i:s", time() + $offset) . " GMT");        
-        $this->response->setContentType('text/'.$ext);
+        $this->getResponse()->setHeader('Expires', gmdate("D, d M Y H:i:s", time() + $offset) . " GMT");        
+        $this->getResponse()->setContentType('text/'.$ext);
         readfile($filename);
     }
 }
