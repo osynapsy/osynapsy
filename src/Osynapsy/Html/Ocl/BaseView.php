@@ -16,23 +16,17 @@ use Osynapsy\Mvc\Controller;
 abstract class BaseView
 {
     protected $components = array();
-    protected $controller;
-    protected $reponse;
-    protected $db;    
+    private $controller;       
     
-    public function __construct(Controller $controller, $title = null)
+    public function __construct(Controller $controller, $title = '')
     {
-        $this->controller = $controller;
-        $this->request = $controller->request;
-        $this->db = $controller->getDb();        
-        if ($title) {
-            $this->setTitle($title);
-        }
+        $this->controller = $controller;        
+        $this->setTitle($title);        
     }
     
     protected function add($part)
     {
-        $this->controller->response->send($part);
+        $this->getController()->getResponse()->send($part);
     }
     
     public function get()
@@ -47,7 +41,12 @@ abstract class BaseView
     
     public function getModel()
     {
-        return $this->getController()->model;
+        return $this->getController()->getModel();
+    }
+    
+    public function getDb()
+    {
+        return $this->getController()->getDb();
     }
     
     public function setTitle($title)
