@@ -28,9 +28,9 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     private $dispatcher;
     private $dbFactory;
     public $model;
-    public $request;
-    public $response;
-    public $app;
+    private $request;
+    private $response;
+    private $app;
     
     public function __construct(Request $request = null, DbFactory $db = null, $appController = null)
     {        
