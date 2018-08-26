@@ -76,7 +76,7 @@ abstract class Model
     public function delete()
     {
         $this->beforeDelete();
-        if ($this->controller->response->error()){ 
+        if ($this->controller->getResponse()->error()){ 
             return; 
         }
         $where = array();
@@ -104,13 +104,13 @@ abstract class Model
         if ($this->repo->get('actions.after-delete') === false) {
             return;
         }
-        $this->controller->response->go($this->repo->get('actions.after-delete'));
+        $this->controller->getResponse()->go($this->repo->get('actions.after-delete'));
     }
 
     public function insert($values, $where=null)
     {
         $this->beforeInsert();        
-        if ($this->controller->response->error()) {
+        if ($this->controller->getResponse()->error()) {
             return;
         }        
         $lastId = null;
@@ -128,10 +128,10 @@ abstract class Model
         switch ($this->repo->get('actions.after-insert')) {
             case 'back':
             case 'refresh':
-                $this->controller->response->go($this->repo->get('actions.after-insert'));                
+                $this->controller->getResponse()->go($this->repo->get('actions.after-insert'));                
                 break;
             default: 
-                $this->controller->response->go($this->repo->get('actions.after-insert').$lastId);                
+                $this->controller->getResponse()->go($this->repo->get('actions.after-insert').$lastId);                
                 break;
         }
     }
@@ -139,7 +139,7 @@ abstract class Model
     public function update($values, $where)
     {
         $this->beforeUpdate();
-        if ($this->controller->response->error()) {
+        if ($this->controller->getResponse()->error()) {
             return;
         }
         $this->db->update($this->repo->get('table'), $values, $where);
@@ -147,7 +147,7 @@ abstract class Model
         if ($this->repo->get('actions.after-update') === false) {
             return;
         }
-        $this->controller->response->go($this->repo->get('actions.after-update'), false);        
+        $this->controller->getResponse()->go($this->repo->get('actions.after-update'), false);        
     }    
 
     public function find()
@@ -178,7 +178,7 @@ abstract class Model
                 $this->values = $rec;
             }
         } catch (\Exception $e) {
-            $this->controller->response->addContent('MODEL FIND ERROR: <pre>'.$e->getMessage()."\n".$sql.'</pre>');
+            $this->controller->getResponse()->addContent('MODEL FIND ERROR: <pre>'.$e->getMessage()."\n".$sql.'</pre>');
         }
         $this->assocData();
     }
@@ -190,7 +190,7 @@ abstract class Model
             array('<!--'.$field->html.'-->', $field->value),            
             $this->errorMessages[$errorId].$postfix
         );
-        $this->controller->response->error($field->html, $error);
+        $this->controller->getResponse()->error($field->html, $error);
     }
     
     public function assocData()
@@ -260,7 +260,7 @@ abstract class Model
             }
         }
         //If occurred some error stop db updating
-        if ($this->controller->response->error()) { 
+        if ($this->controller->getResponse()->error()) { 
             return; 
         }
         //If where list is empty execute db insert else execute a db update
@@ -339,7 +339,7 @@ abstract class Model
         try {
             $field->value = $upload->saveFile($field->html, $field->uploadDir);
         } catch(\Exception $e) {
-            $this->controller->response->error('alert', $e->getMessage());
+            $this->controller->getResponse()->error('alert', $e->getMessage());
             $field->readonly = true;            
         }
         $this->set('actions.after-update','refresh');
