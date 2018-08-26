@@ -40,7 +40,7 @@ abstract class Model
         $this->controller = $controller;
         $this->db = $this->controller->getDb();
         $this->repo = new Dictionary();
-        $this->repo->set('actions.after-insert', $this->controller->request->get('page.url'))
+        $this->repo->set('actions.after-insert', $this->controller->getRequest()->get('page.url'))
                    ->set('actions.after-update', 'back')
                    ->set('actions.after-delete', 'back')
                    ->set('fields',array());
