@@ -64,8 +64,8 @@ class DataGrid extends Component
         return $this->toolbar;
     }
 
-    protected function __build_extra__() {
-
+    protected function __build_extra__()
+    {
         //$this->loadColumnObject();
         if ($this->rows) {
             $this->__par['row-num'] = $this->rows;
@@ -225,6 +225,8 @@ class DataGrid extends Component
                     $opt['print'] = false;
                     @list($cmd, $nam, $par) = explode(',',$opt['title']);
                     switch ($cmd) {
+                        case '_newrow':
+                            break 3;
                         case '_tree':
                             $this->att('class','osy-treegrid',true);
                             $this->dataGroup();
@@ -244,7 +246,7 @@ class DataGrid extends Component
                             $opt['print'] = true;
                             break;                        
                         case '_!html' :
-                            $opt['class'] .= ' text-center';
+                            $opt['class'] .= ' text-center';                        
                         case '_button':
                         case '_html'  :
                         case '_text'  :
@@ -322,7 +324,10 @@ class DataGrid extends Component
             if (array_key_exists($k, $this->columns)) {
                 $k = empty($this->columns['raw']) ? $k : $this->columns['raw'];
             }
-            
+            if (strtolower($k) === '_newrow') {
+                $grd->add($orw);
+                $orw = new Tag('tr');
+            }
             $cel = new Tag('td');
 
             $opt['cell'] = array(
@@ -339,12 +344,12 @@ class DataGrid extends Component
                 'rawvalue' => $v,
                 'style'    => array($this->getColumnProperty($i, 'style')),
                 'title'    => $k,
+                'attr'     => $this->getColumnProperty($t, 'attr'),
                 // la conversione deve essere operata lato Tag in modo tale da poterlo
                 // gestire automaticamente su tutti gli elementi da esso derivati
                 /*'value'    => htmlentities($v)*/
                 'value'    => $v
-            );
-
+            );            
             switch ($opt['cell']['rawtitle'][0]) {
                 case '_':
                     @list($opt['cell']['format'], $opt['cell']['title'], $opt['cell']['parameter']) = explode(',',$opt['cell']['rawtitle']);
@@ -390,6 +395,9 @@ class DataGrid extends Component
                 $this->__build_attr($cel,$this->__col[$i]);
             }            
             $cel->add(($opt['cell']['value'] !== '0' && empty($opt['cell']['value'])) ? '&nbsp;' : nl2br($opt['cell']['value']));
+            if (!empty($opt['cell']['attr']) && is_array($opt['cell']['attr'])) {                
+                $cel->att($opt['cell']['attr']);
+            }
             $orw->add($cel);
             $i++;//Incremento l'indice delle colonne visibili
         }
