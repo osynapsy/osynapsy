@@ -15,6 +15,7 @@ use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
 use Osynapsy\Data\Dictionary;
 use Osynapsy\Html\Bcl\Column;
+use Osynapsy\Html\Bcl\PanelNew;
 use Osynapsy\Html\Bcl\Alert;
 
 /**
@@ -31,6 +32,7 @@ class Form extends Component
     private $body;
     private $foot;
     private $repo;
+    private $headCommand;
     private $appendFootToMain = false;
     
     public function __construct($name, $mainComponent = 'Panel', $tag = 'form')
@@ -166,6 +168,16 @@ class Form extends Component
                  ->att('style','margin-right: 10px; min-width: 100px;')
                  ->add('<span class="glyphicon glyphicon-chevron-left"></span> Indietro');
         }
+    }
+    
+    public function addHeadCommand($object, $space = 1)
+    {
+        if (empty($this->headCommand)) {            
+            $this->headCommand = $this->head(6);
+            $this->headCommand->setClass('text-right')->add('<div>&nbsp;</div>');
+        }
+        $this->headCommand->add(str_repeat('&nbsp;', $space));
+        $this->headCommand->add($object);
     }
     
     public function setType($type)
