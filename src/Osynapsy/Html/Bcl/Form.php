@@ -15,7 +15,6 @@ use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
 use Osynapsy\Data\Dictionary;
 use Osynapsy\Html\Bcl\Column;
-use Osynapsy\Html\Bcl\PanelNew;
 use Osynapsy\Html\Bcl\Alert;
 
 /**
