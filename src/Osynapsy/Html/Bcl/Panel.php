@@ -20,6 +20,7 @@ class Panel extends Component
     private $cells = array();
     private $cellClass;
     private $currentRow = null;
+    private $bodyClass = 'panel-body';
     private $rowClass = 'row';
     private $tag = array('div' , 'div');
     private $formType='normal';
@@ -69,7 +70,7 @@ class Panel extends Component
     {
         if (empty($this->body)) {
             $this->body = new Tag('div');
-            $this->body->att('class','panel-body');
+            $this->body->att('class', $this->bodyClass);
         }
         if ($content) {
             $this->body->add($content);
@@ -200,6 +201,11 @@ class Panel extends Component
             'class' => $class,
             'offset' => $offset
         );
+    }
+    
+    public function setBodyClass($class)
+    {
+        $this->setBodyClass($class);
     }
     
     public function setType($type)
