@@ -205,7 +205,7 @@ class Panel extends Component
     
     public function setBodyClass($class)
     {
-        $this->setBodyClass($class);
+        $this->bodyClass = $class;
     }
     
     public function setType($type)
