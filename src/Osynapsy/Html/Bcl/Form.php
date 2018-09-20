@@ -100,9 +100,6 @@ class Form extends Component
         if (empty($this->head)) {
             $this->head = new Tag('dummy');
         }
-        if ($width === 0) {
-            $width = $this->headCommandWidth;
-        }
         $column = $this->head->add(new Column($width, $offset));
         return $column;
     }
@@ -176,10 +173,12 @@ class Form extends Component
     public function addHeadCommand($object, $space = 1)
     {
         if (empty($this->headCommand)) {            
-            $this->headCommand = $this->head(0);
-            $this->headCommand->setClass('text-right')->add('<div>&nbsp;</div>');
+            $this->headCommand = $this->head($this->headCommandWidth); 
+            $this->headCommand->att('style','padding-top: 10px');
         }
-        $this->headCommand->add(str_repeat('&nbsp;', $space));
+        if ($space > 0) {
+            $this->headCommand->add(str_repeat('&nbsp;', $space));
+        }
         $this->headCommand->add($object);
     }
     
