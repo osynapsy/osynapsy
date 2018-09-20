@@ -25,6 +25,7 @@ use Osynapsy\Html\Bcl\Alert;
 class Form extends Component
 {    
     private $head;
+    private $headCommandWidth = 12;
     public  $headClass = 'row';
     private $alert;
     private $alertCount=0;
@@ -93,12 +94,15 @@ class Form extends Component
         $this->body->addCard($title);
     }
     
-    public function head($width=12, $offset = 0)
+    public function head($width = 12, $offset = 0)
     {
         //Head setting
         if (empty($this->head)) {
             $this->head = new Tag('dummy');
-        } 
+        }
+        if ($width === 0) {
+            $width = $this->headCommandWidth;
+        }
         $column = $this->head->add(new Column($width, $offset));
         return $column;
     }
@@ -172,7 +176,7 @@ class Form extends Component
     public function addHeadCommand($object, $space = 1)
     {
         if (empty($this->headCommand)) {            
-            $this->headCommand = $this->head(6);
+            $this->headCommand = $this->head(0);
             $this->headCommand->setClass('text-right')->add('<div>&nbsp;</div>');
         }
         $this->headCommand->add(str_repeat('&nbsp;', $space));
@@ -194,7 +198,7 @@ class Form extends Component
                  ->add($title);
         $column = $this->head($size);
         $column->push(false, $objTitle, false);
-        
+        $this->headCommandWidth -= $size;
         if (!empty($subTitle)) {
             $column->push(false,'<h4><i>'.$subTitle.'</i></h4>',false);
         }
