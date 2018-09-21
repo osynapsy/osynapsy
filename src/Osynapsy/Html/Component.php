@@ -207,4 +207,16 @@ class Component extends Tag
         }
         return $this;
     }
+    
+    /**
+     * Set placeholder attribute
+     * 
+     * @param string $placeholder placeholder value    
+     * @return $this
+     */    
+    public function setPlaceholder($placeholder)
+    {
+        $this->att('placeholder', $placeholder);
+        return $this;
+    }
 }
