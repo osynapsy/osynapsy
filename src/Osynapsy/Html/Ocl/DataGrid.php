@@ -25,6 +25,7 @@ class DataGrid extends Component
     private $columnProperties = array();
     private $extra;
     protected $request;
+    private $functionRow;
     
     public function __construct($name)
     {
@@ -319,7 +320,10 @@ class DataGrid extends Component
             ),
             'cell' => array()
         );
-
+        if (!empty($this->functionRow) &&is_callable($this->functionRow)) {
+            $function = $this->functionRow;
+            $function($grd, $row);
+        }
         foreach ($row as $k => $v) {
             if (array_key_exists($k, $this->columns)) {
                 $k = empty($this->columns['raw']) ? $k : $this->columns['raw'];
@@ -409,7 +413,7 @@ class DataGrid extends Component
                 $orw->att($item[0], $item[1], true);
             }
         }        
-        $grd->add($orw.'');
+        $grd->add($orw.'');        
     }
     
     protected function formatCellOption($opt, $lev, $pos, $ico_arr, $data)
@@ -733,5 +737,10 @@ class DataGrid extends Component
             $_REQUEST[$this->id.'_order'] = $column;
         }        
         return $this;
+    }
+    
+    public function setFuncionRow($function)
+    {
+        $this->functionRow = $function;
     }
 }
