@@ -322,7 +322,7 @@ class DataGrid extends Component
         );
         if (!empty($this->functionRow) &&is_callable($this->functionRow)) {
             $function = $this->functionRow;
-            $function($grd, $row);
+            $function($grd, $row, $orw);
         }
         foreach ($row as $k => $v) {
             if (array_key_exists($k, $this->columns)) {
