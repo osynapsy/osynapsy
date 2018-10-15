@@ -24,4 +24,14 @@ class Link extends Component
             $this->att('class', $class);
         }
     }
+    
+    public function openInModal($title, $widht = '640px', $height = '480px')
+    {
+        $this->setClass('open-modal');
+        $this->att([
+            'title' => $title,
+            'modal-width' => $widht,
+            'modal-height' => $height
+        ]);
+    }
 }
