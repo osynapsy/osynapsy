@@ -81,7 +81,7 @@ abstract class ActiveRecord
             $i++;
         }
         $sql = "SELECT * FROM {$this->table} WHERE ".implode(' AND ', $where['conditions'])." ORDER BY 1";
-        if ($this->debug) {
+        if ($this->debug) {            
             echo $sql;
         }
         try {            
@@ -430,7 +430,7 @@ abstract class ActiveRecord
      */
     protected function setDebug($debug = true)
     {
-        $this->debug = true;
+        $this->debug = $debug;
     }
     
     /**
