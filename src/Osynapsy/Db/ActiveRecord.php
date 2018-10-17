@@ -37,22 +37,23 @@ abstract class ActiveRecord
     private $keys = [];
     private $fields = [];
     private $extensions = [];
-    
+    private $debug = false;
     /**
      * Object constructor
      *
      * @param PDO $dbCn A valid dbPdo wrapper
      * @return void
      */
-    public function __construct($dbCn) 
+    public function __construct($dbCn, $debug = false) 
     {
+        $this->setDebug($debug);
         $this->dbConnection = $dbCn;
         $this->keys = $this->primaryKey();
         $this->table = $this->table();
         $this->sequence = $this->sequence();
         $this->fields = $this->fields();
         $this->softDelete = $this->softDelete();
-        $this->init();
+        $this->init();        
     }
     
     /**
@@ -80,6 +81,9 @@ abstract class ActiveRecord
             $i++;
         }
         $sql = "SELECT * FROM {$this->table} WHERE ".implode(' AND ', $where['conditions'])." ORDER BY 1";
+        if ($this->debug) {
+            echo $sql;
+        }
         try {            
             $this->activeRecord = $this->dbConnection->execUnique($sql, $where['parameters'], 'ASSOC');
         } catch (\Exception $e) {
@@ -418,7 +422,17 @@ abstract class ActiveRecord
     {
         return '';
     }
-      
+    
+    /**
+     * Set debug property
+     * 
+     * @return string
+     */
+    protected function setDebug($debug = true)
+    {
+        $this->debug = true;
+    }
+    
     /**
      * Active or disactive softDelete
      * 
