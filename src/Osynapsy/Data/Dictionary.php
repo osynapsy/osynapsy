@@ -201,4 +201,26 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
         }
         return $plain;
     }
+    
+    public function xmlSerialize($rootElement = 'root')
+    {
+        $xml = new \SimpleXMLElement('<'.$rootElement.'/>');
+        $this->arrayToXml($this->repo, $xml);
+        return str_replace('><','>'.PHP_EOL.'<',$xml->asXML());
+    }
+    
+    public function arrayToXml($data, &$xml) {
+        foreach($data as $key => $value) {
+            if(!is_array($value)) {
+                $xml->addChild("$key","$value");
+                continue;
+            }                        
+            if(is_numeric($key)){
+                $this->arrayToXml($value, $xml);
+                continue;                
+            }
+            $subnode = $xml->addChild("$key");
+            $this->arrayToXml($value, $subnode);                             
+        }
+    }
 }
