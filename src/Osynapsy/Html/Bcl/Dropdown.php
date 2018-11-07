@@ -30,14 +30,14 @@ class Dropdown extends Component
              ->att('type', 'button')
              ->att('class','dropdown-toggle',true)
              ->att('data-toggle','dropdown')
-             ->att('aria-haspopup','true')
+             ->att('aria-haspopup','false')
              ->att('aria-expanded','false');        
         $this->button->add($label.' <span class="caret"></span>');
         $this->list = $this->add(
             new Tag('ul')
         )->att('class','dropdown-menu dropdown-menu-'.$align)
+         ->att('onclick',"var t = this; setTimeout(function() { $(t).closest('.dropdown').removeClass('open'); }, 300);")
          ->att('aria-labelledby',$name);
-
     }
     
     protected function __build_extra__()
@@ -54,7 +54,7 @@ class Dropdown extends Component
             $rec = array_values($rec);
             $this->list
                  ->add(new Tag('li'))
-                 ->att('data-value',$rec[0])
+                 ->att('data-value',$rec[0])                 
                  ->add('<a href="#">'.$rec[1].'</a>');
         }
     }
@@ -62,5 +62,5 @@ class Dropdown extends Component
     public function getButton()
     {
         return $this->button;
-    }
+    }    
 }
