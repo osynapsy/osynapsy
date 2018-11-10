@@ -52,10 +52,8 @@ class Dropdown extends Component
                 continue;
             }
             $rec = array_values($rec);
-            $this->list
-                 ->add(new Tag('li'))
-                 ->att('data-value',$rec[0])                 
-                 ->add('<a href="#">'.$rec[1].'</a>');
+            $li = $this->list->add(new Tag('li'))->att('data-value',$rec[0]);
+            $li->add(is_object($rec[1]) ? $rec[1] : '<a href="#">'.$rec[1].'</a>');
         }
     }
             
