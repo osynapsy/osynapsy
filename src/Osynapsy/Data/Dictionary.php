@@ -209,7 +209,8 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
         return str_replace('><','>'.PHP_EOL.'<',$xml->asXML());
     }
     
-    public function arrayToXml($data, &$xml) {
+    public function arrayToXml($data, &$xml)
+    {
         foreach($data as $key => $value) {
             if(!is_array($value)) {
                 $xml->addChild("$key","$value");
