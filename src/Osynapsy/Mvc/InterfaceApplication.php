@@ -12,10 +12,11 @@
 namespace Osynapsy\Mvc;
 
 use Osynapsy\Kernel\Route;
+use Osynapsy\Http\Request;
 
 interface InterfaceApplication
 {
-    public function __construct($db, Route &$route);
+    public function __construct($db, Route &$route, Request &$request);
     
     public function run();
 }
