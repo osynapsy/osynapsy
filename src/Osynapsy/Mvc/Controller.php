@@ -135,7 +135,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     
     public function loadView($path, $params = array(), $return = false)
     {
-        $view = $this->response->getBuffer($path, $this);
+        $view = $this->getResponse()->getBuffer($path, $this);
         if ($return) {
             return $view;
         }
@@ -148,11 +148,10 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         if (!empty($cmd)) {
             return $this->execAction($cmd);
         }        
-        $this->setResponse(new HtmlResponse());
-        $layoutPath = $this->request->get('page.route')->template;
-        if (!empty($layoutPath)) {
-            $this->response->template = $this->response->getBuffer($layoutPath, $this);            
-        }
+        $this->setResponse(new HtmlResponse())->loadTemplate(
+            $this->request->get('page.route')->template,
+            $this
+        );
         if ($this->model) {
             $this->model->find();
         }
@@ -178,6 +177,6 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     
     public function setResponse(Response $response)
     {
-        $this->response = $response;
-    }        
+        return $this->response = $response;
+    }
 }
