@@ -37,7 +37,7 @@ abstract class ApplicationController
     
     public function getRequest()
     {
-        $this->request;
+        return $this->request;
     }
     
     public function getRoute()
