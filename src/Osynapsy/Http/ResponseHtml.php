@@ -27,10 +27,13 @@ class ResponseHtml extends Response
     }
     
     public function addBufferToContent($path = null, $part = 'main')
-    {
-        $buffer = self::getBuffer($path);
-        $buffer = $this->replaceContent($buffer);
-        $this->addContent($buffer , $part);
+    {                
+        $this->addContent(
+            $this->replaceContent(
+                self::getBuffer($path)
+            ), 
+            $part
+        );
     }
     
     private function replaceContent($buffer)
@@ -103,5 +106,13 @@ class ResponseHtml extends Response
     {
         $this->addJs('/assets/osynapsy/'.Kernel::VERSION.'/js/FormController.js');
         $this->addCss('/assets/osynapsy/'.Kernel::VERSION.'/css/style.css');
+    }
+    
+    public function loadTemplate($filename, $object = [])
+    {
+        if (empty($filename)) {
+            return;
+        }
+        $this->template = $this->getBuffer($filename, $object);
     }
 }
