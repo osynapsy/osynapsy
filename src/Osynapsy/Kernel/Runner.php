@@ -26,7 +26,7 @@ class Runner
     private $dbFactory;
     private $appController;
     
-    public function __construct(Dictionary &$env, $currentRoute)
+    public function __construct(Dictionary &$env, Route $currentRoute)
     {
         $this->env = $env;
         $this->route = $currentRoute;
@@ -82,7 +82,8 @@ class Runner
         //If app has applicationController instance it before recall route controller;        
         $this->appController = new $applicationController(
             $this->dbFactory->getConnection(0), 
-            $this->route
+            $this->route,
+            $this->env
         );
         if (!$this->appController->run()) {
             throw new KernelException('Access denied','501');
