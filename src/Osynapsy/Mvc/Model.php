@@ -109,7 +109,10 @@ abstract class Model
 
     public function insert($values, $where=null)
     {
-        $this->beforeInsert();        
+        $beforeError = $this->beforeInsert();
+        if (!empty($beforeError)) {
+			$this->getController()->getResponse()->error('alert', $beforeError);			
+		}
         if ($this->controller->getResponse()->error()) {
             return;
         }        
@@ -138,8 +141,11 @@ abstract class Model
 
     public function update($values, $where)
     {
-        $this->beforeUpdate();
-        if ($this->controller->getResponse()->error()) {
+        $beforeError = $this->beforeUpdate();
+        if (!empty($beforeError)) {
+			$this->getController()->getResponse()->error('alert',$beforeError);			
+		}
+        if ($this->getController()->getResponse()->error()) {
             return;
         }
         $this->db->update($this->repo->get('table'), $values, $where);
@@ -233,7 +239,10 @@ abstract class Model
     public function save()
     {
         //Recall before exec method with arbirtary code
-        $this->beforeExec();
+        $beforeError = $this->beforeExec();
+        if (!empty($beforeError)) {
+			$this->getController()->getResponse()->error('alert',$beforeError);			
+		}
         
         //Init arrays
         $values = array();

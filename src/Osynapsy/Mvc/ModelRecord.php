@@ -202,8 +202,10 @@ abstract class ModelRecord
     public function save()
     {
         //Recall before exec method with arbirtary code
-        $this->beforeExec();
-                                     
+        $beforeError = $this->beforeExec();
+        if (!empty($beforeError)) {
+			$this->getController()->getResponse()->error('alert',$beforeError);			
+		}                         
         //skim the field list for check value and build $values, $where and $key list
         foreach ($this->repo->get('fields') as $field) {
             //Check if value respect rule
