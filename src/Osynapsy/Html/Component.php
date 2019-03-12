@@ -202,7 +202,7 @@ class Component extends Tag
     {
         $this->setClass($class)
              ->att('data-action',$action);
-        if (!empty($parameters)) {
+        if (!empty($parameters) || $parameters === 0 || $parameters === '0') {
             $this->att('data-action-parameters', $parameters);
         }
         return $this;
