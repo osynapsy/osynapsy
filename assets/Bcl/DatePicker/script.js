@@ -27,6 +27,12 @@ BclDatePicker =
                     opt['maxDate'] = new Date(maxDate);
                 }
             }
+            var onchange = $(this).attr('onchange');            
+            if (typeof onchange !== 'undefined') {                 
+                $(this).on('dp.change', function(){                    
+                    eval(onchange); 
+                });                
+            }
             $(this).datetimepicker(opt);
         });
     }
