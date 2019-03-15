@@ -127,7 +127,7 @@ class DataGrid extends Component
         //Setto il tipo di componente come classe css in modo da poterlo testare via js.
         $this->att('class', $this->getParameter('type'), true);
 
-        $this->buildPaging();
+        $this->add('<div class="osy-datagrid-2-foot text-center">'.$this->buildPaging().'</div>');
         
         $this->buildExtra($table);
     }
@@ -560,23 +560,18 @@ class DataGrid extends Component
 
     private function buildPaging()
     {
-        if (empty($this->__par['row-num'])) {
+        if (empty($this->__par['row-num']) || empty($this->__par['pag_tot'])) {            
             return '';
-        }
-        if (empty($this->__par['pag_tot'])) {
-            return;
-        }
-        $foot = '<div class="osy-datagrid-2-foot text-center">';
-        $foot .= '<button type="button" name="btn_pag" data-mov="start" value="&lt;&lt;" class="btn btn-primary btn-xs osy-datagrid-2-paging">&lt;&lt;</button>';
+        }        
+        $foot = '<button type="button" name="btn_pag" data-mov="start" value="&lt;&lt;" class="btn btn-primary btn-xs osy-datagrid-2-paging">&lt;&lt;</button>';
         $foot .= '<button type="button" name="btn_pag" data-mov="-1" value="&lt;" class="btn btn-primary btn-xs  osy-datagrid-2-paging">&lt;</button>';
         $foot .= '<span>&nbsp;';
         $foot .= '<input type="hidden" name="'.$this->id.'_pag" id="'.$this->id.'_pag" value="'.$this->getParameter('pag_cur').'" class="osy-datagrid-2-pagval history-param" data-pagtot="'.$this->getParameter('pag_tot').'"> ';
         $foot .= 'Pagina '.$this->getParameter('pag_cur').' di <span id="_pag_tot">'.$this->getParameter('pag_tot').'</span>';
         $foot .= '&nbsp;</span>';
         $foot .= '<button type="button" name="btn_pag" data-mov="+1" value="&gt;" class="btn btn-primary btn-xs  osy-datagrid-2-paging">&gt;</button>';
-        $foot .= '<button type="button" name="btn_pag" data-mov="end" value="&gt;&gt;" class="btn btn-primary btn-xs  osy-datagrid-2-paging">&gt;&gt;</button>';
-        $foot .= '</div>';
-        $this->add($foot);
+        $foot .= '<button type="button" name="btn_pag" data-mov="end" value="&gt;&gt;" class="btn btn-primary btn-xs  osy-datagrid-2-paging">&gt;&gt;</button>';        
+        return $foot;
     }
 
     private function dataLoad()
