@@ -3,6 +3,7 @@ namespace Osynapsy\Mvc;
 
 use Osynapsy\Kernel\Route;
 use Osynapsy\Http\Request;
+
 /**
  * Description of ApplicationController
  *
