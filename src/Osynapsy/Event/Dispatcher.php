@@ -18,12 +18,12 @@ namespace Osynapsy\Event;
  */
 class Dispatcher 
 {
-    public $controller;
+    public $request;
     private $init = false;
     
-    public function __construct($controller)
+    public function __construct($request)
     {
-        $this->controller = $controller;
+        $this->request = $request;
     }
     
     public function dispatch(Event $event)
@@ -31,7 +31,7 @@ class Dispatcher
         if (!$this->init) {
             $this->init();
         }
-        $listeners = $this->controller->getRequest()->get('listeners');
+        $listeners = $this->request->get('listeners');
         if (empty($listeners)) {
             return;
         }
