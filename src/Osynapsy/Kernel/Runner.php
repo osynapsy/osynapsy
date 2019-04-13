@@ -24,12 +24,12 @@ class Runner
     private $env;
     private $route;
     private $dbFactory;
-    private $appController;
+    private $appController;    
     
     public function __construct(Dictionary &$env, Route $currentRoute)
     {
         $this->env = $env;
-        $this->route = $currentRoute;
+        $this->route = $currentRoute;        
     }
     
     private function checks()
@@ -56,7 +56,7 @@ class Runner
             }
         } catch (KernelException $e) {
             return $this->dispatchKernelException($e);
-        } catch(\Exception $e) {
+        } catch(\Exception $e) {            
             return $this->pageOops($e->getMessage(), $e->getTrace()); 
         }   
     }
