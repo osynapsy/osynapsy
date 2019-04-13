@@ -49,6 +49,6 @@ abstract class ApplicationController
     public function getDb()
     {
         return $this->db;
-    }
+    }        
 }
     
