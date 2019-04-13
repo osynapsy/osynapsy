@@ -11,7 +11,6 @@
 
 namespace Osynapsy\Mvc;
 
-use Osynapsy\Db\DbFactory;
 use Osynapsy\Event\Dispatcher;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response;
@@ -23,21 +22,18 @@ abstract class Controller implements InterfaceController, InterfaceSubject
 {
     use \Osynapsy\Observer\Subject;
     
-    protected $db;
     private $parameters;
     private $dispatcher;
-    private $dbFactory;
-    public $model;
     private $request;
     private $response;
-    private $app;
+    private $application;
+    public $model;
     
-    public function __construct(Request $request = null, DbFactory $db = null, $appController = null)
+    public function __construct(Request $request = null, $application = null)
     {        
+        $this->application = $application;
         $this->parameters = $request->get('page.route')->parameters;        
         $this->request = $request;
-        $this->setDbHandler($db);
-        $this->app = $appController;
         $this->dispatcher = new Dispatcher($this);
         $this->loadObserver();
         $this->setState('init');
@@ -77,17 +73,17 @@ abstract class Controller implements InterfaceController, InterfaceSubject
 
     public function getApp()
     {
-        return $this->app;
+        return $this->application;
     }
     
     public function getDb($key = 0)
     {
-        return $this->dbFactory->getConnection($key);
+        return $this->getApp()->getDb($key);
     }
     
     public function getDbFactory()
     {
-        return $this->dbFactory;
+        return $this->getApp()->getDbFactory();
     }
     
     public function getDispacther()
@@ -167,12 +163,6 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         if ($this->model) {
             $this->model->save();
         }
-    }
-    
-    public function setDbHandler($dbFactory)
-    {
-        $this->dbFactory = $dbFactory;
-        $this->db = $this->dbFactory->getConnection(0);
     }
     
     public function setResponse(Response $response)
