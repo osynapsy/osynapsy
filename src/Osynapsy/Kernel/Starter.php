@@ -12,18 +12,16 @@
 namespace Osynapsy\Kernel;
 
 use Osynapsy\Data\Dictionary;
-use Osynapsy\Db\DbFactory;
 
 /**
  * Description of Runner
  *
  * @author Pietro Celeste <p.celeste@spinit.it>
  */
-class Runner
+class Starter
 {
     private $env;
     private $route;
-    private $dbFactory;
     private $appController;    
     
     public function __construct(Dictionary &$env, Route $currentRoute)
@@ -40,25 +38,6 @@ class Runner
         if (!$this->route->application) {
             throw new KernelException('No application defined', 405);
         }
-    }
-    
-    public function run()
-    {
-        try {
-            $this->checks();        
-            $this->loadDatasources();
-            $this->runApplicationController();
-            $response = $this->runRouteController(
-                $this->route->controller
-            );
-            if ($response !== false) {
-                return $response;
-            }
-        } catch (KernelException $e) {
-            return $this->dispatchKernelException($e);
-        } catch(\Exception $e) {            
-            return $this->pageOops($e->getMessage(), $e->getTrace()); 
-        }   
     }
     
     private function dispatchKernelException(KernelException $e)
@@ -80,11 +59,7 @@ class Runner
             return true;
         }
         //If app has applicationController instance it before recall route controller;        
-        $this->appController = new $applicationController(
-            $this->dbFactory->getConnection(0), 
-            $this->route,
-            $this->env
-        );
+        $this->appController = new $applicationController($this->route, $this->env);
         if (!$this->appController->run()) {
             throw new KernelException('Access denied','501');
         }
@@ -95,18 +70,26 @@ class Runner
         if (empty($classController)) {
             throw new KernelException('Route not found', '404');
         }
-        $this->controller = new $classController($this->env, $this->dbFactory, $this->appController);
+        $this->controller = new $classController($this->env, $this->appController);
         return (string) $this->controller->run();
     }
     
-    private function loadDatasources()
-    {            
-        $listDatasource = $this->env->search('db',"env.app.{$this->route->application}.datasources");
-        $this->dbFactory = new DbFactory();
-        foreach ($listDatasource as $datasource) {
-            $connectionString = $datasource['@value'];
-            $this->dbFactory->createConnection($connectionString);                       
-        }
+    public function run()
+    {
+        try {
+            $this->checks();
+            $this->runApplicationController();
+            $response = $this->runRouteController(
+                $this->route->controller
+            );
+            if ($response !== false) {
+                return $response;
+            }
+        } catch (KernelException $e) {
+            return $this->dispatchKernelException($e);
+        } catch(\Exception $e) {            
+            return $this->pageOops($e->getMessage(), $e->getTrace()); 
+        }   
     }
     
     public function pageNotFound($message = 'Page not found')
