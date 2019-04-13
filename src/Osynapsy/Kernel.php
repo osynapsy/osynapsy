@@ -15,7 +15,7 @@ use Osynapsy\Http\Request;
 use Osynapsy\Kernel\Loader;
 use Osynapsy\Kernel\Route;
 use Osynapsy\Kernel\Router;
-use Osynapsy\Kernel\Runner;
+use Osynapsy\Kernel\Starter;
 use Osynapsy\Kernel\KernelException;
 
 /**
@@ -136,7 +136,7 @@ class Kernel
     public function followRoute(Route $route)
     {
         $this->request->set('page.route', $route);
-        $runner = new Runner($this->request, $route);
-        return $runner->run();  
+        $starter = new Starter($this->request, $route);
+        return $starter->run();  
     }
 }
