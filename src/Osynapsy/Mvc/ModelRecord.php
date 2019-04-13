@@ -85,10 +85,9 @@ abstract class ModelRecord
        
     public function delete()
     {
-        $this->beforeDelete();
-        if ($this->getController()->getResponse()->error()){ 
-            return; 
-        }
+        if ($this->addAlert($this->beforeDelete())) {
+            return;
+        }        
         $this->getRecord()->delete();
         $this->afterDelete();
         if ($this->repo->get('actions.after-delete') === false) {
@@ -132,13 +131,9 @@ abstract class ModelRecord
     
     public function insert()
     {
-        $error = $this->beforeInsert();        
-        if (!empty($error)) {
-            $this->getController()->getResponse()->error('alert', $error);
-        }
-        if ($this->getController()->getResponse()->error()) {
+        if ($this->addAlert($this->beforeInsert())) {
             return;
-        }        
+        }         
 
         $lastId = $this->getRecord()->save();        
 
@@ -159,13 +154,7 @@ abstract class ModelRecord
 
     public function update()
     {
-        $error = $this->beforeUpdate();
-        if (!empty($error)) {
-            $this->getController()->getResponse()->error('alert', $error);
-        }
-        if ($this->getController()->getResponse()->error()) {
-            return;
-        }
+        $this->addAlert($this->beforeUpdate());        
         $id = $this->getRecord()->save();   
         $this->afterUpdate($id);
         if ($this->repo->get('actions.after-update') === false) {
@@ -183,6 +172,15 @@ abstract class ModelRecord
         );
         $this->getController()->getResponse()->error($field->html, $error);
     }        
+    
+    protected function addAlert($message)
+    {
+        if (empty($message)) {
+            return false;
+        }
+        $this->getController()->getResponse()->error('alert', $message);
+        return $this->getController()->getResponse()->error();
+    }
     
     public function map($htmlField, $dbField = null, $value = null, $type = 'string')
     {
@@ -202,10 +200,8 @@ abstract class ModelRecord
     public function save()
     {
         //Recall before exec method with arbirtary code
-        $beforeError = $this->beforeExec();
-        if (!empty($beforeError)) {
-			$this->getController()->getResponse()->error('alert',$beforeError);			
-		}                         
+        $this->addAlert($this->beforeExec());
+        
         //skim the field list for check value and build $values, $where and $key list
         foreach ($this->repo->get('fields') as $field) {
             //Check if value respect rule
