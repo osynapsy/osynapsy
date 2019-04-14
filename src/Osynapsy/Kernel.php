@@ -139,4 +139,9 @@ class Kernel
         $starter = new Starter($this->request, $route);
         return $starter->run();  
     }
+    
+    public function getRequest()
+    {
+        return $this->request;
+    }
 }
