@@ -56,22 +56,40 @@ class ResponseJson extends Response
      * If recall with only $oid parameter return if error $oid exists
      * If recall it with $oid e $err parameter set error $err on key $oid.
      * 
-     * @param string $oid
-     * @param string $err
+     * @param string $objectId
+     * @param string $errorMessage
      * @return type
      */
-    public function error($oid=null, $err=null)
+    public function error($objectId = null, $errorMessage = null)
     {
-        if (is_null($oid) && is_null($err)){
+        if (is_null($objectId) && is_null($errorMessage)){
             return array_key_exists('errors',$this->repo['content']);
         }
-        if (!is_null($oid) && is_null($err)){
-            return array_key_exists('errors', $this->repo['content']) && array_key_exists($oid, $this->repo['content']['errors']);
+        if (!is_null($objectId) && is_null($errorMessage)){
+            return array_key_exists('errors', $this->repo['content']) && array_key_exists($objectId, $this->repo['content']['errors']);
         }         
-        if (function_exists('mb_detect_encoding') && !mb_detect_encoding($err, 'UTF-8', true)) {        
-            $err = \utf8_encode($err);
+        if (function_exists('mb_detect_encoding') && !mb_detect_encoding($errorMessage, 'UTF-8', true)) {        
+            $errorMessage = \utf8_encode($errorMessage);
         }
-        $this->message('errors', $oid, $err);
+        $this->message('errors', $objectId, $errorMessage);
+    }
+    
+    /**
+     * Store a error message alias
+     * 
+     * If recall without parameter return if errors exists.
+     * If recall with only $oid parameter return if error $oid exists
+     * If recall it with $oid e $err parameter set error $err on key $oid.
+     * 
+     * @param string $errorMessage
+     * @return type
+     */
+    public function alertJs($errorMessage)
+    {
+        if (!empty($errorMessage)) {
+            $this->error('alert', $errorMessage);
+        }
+        return $this;
     }
     
     /**
