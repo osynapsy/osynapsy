@@ -111,8 +111,8 @@ abstract class Model
     {
         $beforeError = $this->beforeInsert();
         if (!empty($beforeError)) {
-			$this->getController()->getResponse()->error('alert', $beforeError);			
-		}
+            $this->getController()->getResponse()->error('alert', $beforeError);			
+        }
         if ($this->controller->getResponse()->error()) {
             return;
         }        
@@ -241,9 +241,8 @@ abstract class Model
         //Recall before exec method with arbirtary code
         $beforeError = $this->beforeExec();
         if (!empty($beforeError)) {
-			$this->getController()->getResponse()->error('alert',$beforeError);			
-		}
-        
+            $this->getController()->getResponse()->error('alert',$beforeError);			
+	}
         //Init arrays
         $values = array();
         $where = array();
