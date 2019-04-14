@@ -403,7 +403,8 @@ var Osynapsy = new (function(){
                     $(this).attr('title'), 
                     $(this).is('.postdata') ? [$(this).attr('href'), $(this).closest('form')] : $(this).attr('href'), 
                     $(this).attr('modal-width') ? $(this).attr('modal-width') : '75%',
-                    $(this).attr('modal-height') ? $(this).attr('modal-height') : ($(window).innerHeight() - 250) + 'px'
+                    $(this).attr('modal-height') ? $(this).attr('modal-height') : ($(window).innerHeight() - 250) + 'px',
+                    $(this).attr('modal-dimension')
                 );
             });
             FormController.fire('init');
@@ -664,6 +665,7 @@ var FormController =
         var wdt = '90%';        
         var hgt = ($(window).innerHeight() - 250) + 'px';
         var form = null;
+        var dim = 'modal-lg';
         if ($.isArray(url)) {
             form = url[1];
             url = url[0];
@@ -674,12 +676,13 @@ var FormController =
         }        
         if (typeof arguments[4] !== 'undefined') {
             hgt = arguments[4];
-            console.log('height :' + hgt);
         }
-        
+        if (typeof arguments[5] !== 'undefined') {
+            dim = arguments[5];
+        }
         $('.modal').remove();
         var win  = '<div id="' + id + '" class="modal fade" role="dialog">\n';
-            win += '    <div class="modal-dialog modal-lg" style="width: '+wdt+';">\n';
+            win += '    <div class="modal-dialog '+dim+'" style="width: '+wdt+';">\n';
             win += '        <div class="modal-content">\n';
             win += '            <div class="modal-header">\n';
             win += '                <button type="button" class="close" data-dismiss="modal">&times;</button>';
