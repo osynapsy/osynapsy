@@ -48,27 +48,22 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         }
     }
     
-    private function execAction($cmd)
+    private function execAction($action)
     {
         $this->setResponse(new JsonResponse());
-        //$cmd = $_REQUEST[$this->actionKey];
-        //sleep(0.7);
-        $this->setState($cmd.'ActionStart');
-        if (!method_exists($this, $cmd.'Action')) {
-            $res = 'No action '.$cmd.' exist in '.get_class($this);
-        } elseif (!empty($_REQUEST['actionParameters'])){
-            $res = call_user_func_array(
-                array($this, $cmd.'Action'),
-                $_REQUEST['actionParameters']
-            );
-        } else {
-            $res = $this->{$cmd.'Action'}();
+        $this->setState($action.'ActionStart');
+        if (!method_exists($this, $action.'Action')) {
+            return $this->getResponse()->alertJs('No action '.$cmd.' exist in '.get_class($this));
         }
-        $this->setState($cmd.'ActionEnd');
-        if (!empty($res) && is_string($res)) {
-            $this->response->error('alert',$res);
+        $actionParameters = filter_input(\INPUT_POST , 'actionParameters', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        $response = !empty($actionParameters) 
+                  ? call_user_func_array( [$this, $action.'Action'], $actionParameters) 
+                  : $this->{$action.'Action'}();
+        $this->setState($action.'ActionEnd');
+        if (!empty($response) && is_string($response)) {
+            $this->getResponse()->alertJs($response);
         }
-        return $this->response;
+        return $this->getResponse();
     }
 
     public function getApp()
@@ -140,22 +135,22 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     
     public function run()
     {
-        $cmd = filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION');
-        if (!empty($cmd)) {
-            return $this->execAction($cmd);
+        $action = filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION');
+        if (!empty($action)) {
+            return $this->execAction($action);
         }        
         $this->setResponse(new HtmlResponse())->loadTemplate(
-            $this->request->get('page.route')->template,
+            $this->getRequest()->get('page.route')->template,
             $this
         );
         if ($this->model) {
             $this->model->find();
         }
-        $resp = $this->indexAction();
-        if ($resp) {
-            $this->response->addContent($resp);
+        $response = $this->indexAction();
+        if ($response) {
+            $this->getResponse()->addContent($response);
         }
-        return $this->response;
+        return $this->getResponse();
     }
     
     public function saveAction()
