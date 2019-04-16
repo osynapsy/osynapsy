@@ -1,9 +1,12 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Osynapsy\Kernel;
@@ -11,6 +14,8 @@ namespace Osynapsy\Kernel;
 /**
  * Description of ErrorDispatcher
  *
+ * Class responsible for dispatching and rendering html of Osynapsy Kernel exception.  
+ * 
  * @author Pietro Celeste <p.celeste@spinit.it>
  */
 class ErrorDispatcher
@@ -94,10 +99,13 @@ class ErrorDispatcher
         598 => 'Network read timeout error', //Server Error
         599 => 'Network connect timeout error' //Server Error
     ];
+    private $request;
     private $response;
-    
-    public function __construct(\Exception $e)
+        
+    public function __construct(\Exception $e, $request)
     {
+        $this->request = $request;
+        
         switch($e->getCode()) {
             case '403':
             case '404':
