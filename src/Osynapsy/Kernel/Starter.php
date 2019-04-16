@@ -11,6 +11,8 @@
 namespace Osynapsy\Kernel;
 
 use Osynapsy\Data\Dictionary;
+use Osynapsy\Kernel\KernelException;
+use Osynapsy\Mvc\ApplicationException;
 
 /**
  * Description of Runner
