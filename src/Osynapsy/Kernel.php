@@ -17,6 +17,7 @@ use Osynapsy\Kernel\Route;
 use Osynapsy\Kernel\Router;
 use Osynapsy\Kernel\Starter;
 use Osynapsy\Kernel\KernelException;
+use Osynapsy\Kernel\ErrorDispatcher;
 
 /**
  * The Kernel is the core of Osynapsy
@@ -27,7 +28,7 @@ use Osynapsy\Kernel\KernelException;
  */
 class Kernel
 {
-    const VERSION = '0.4.1-DEV';
+    const VERSION = '0.4.4-DEV';
     
     public $router;
     public $request;
@@ -94,7 +95,7 @@ class Kernel
         );
         $applications = $this->loader->get('app');
         if (empty($applications)) {
-            throw new KernelException('No app configuration found');
+            throw new KernelException('No app configuration found', 1001);
         }
         foreach(array_keys($applications) as $applicationId) {
             $routes = $this->loader->search('route', "app.{$applicationId}");
@@ -120,12 +121,17 @@ class Kernel
     public function run($requestUri = null)
     {
         if (is_null($requestUri)) {
-            $requestUri = strtok(filter_input(INPUT_SERVER, 'REQUEST_URI'),'?');
+            $requestUri = strtok(filter_input(INPUT_SERVER, 'REQUEST_URI'), '?');
         }
-        $this->loadRoutes();
-        return $this->followRoute(
-            $this->router->dispatchRoute($requestUri)
-        );
+        try {
+            $this->loadRoutes();
+            return $this->followRoute(
+                $this->router->dispatchRoute($requestUri)
+            );
+        } catch (\Exception $exception) {
+            $errorDispatcher = new ErrorDispatcher($exception, $this->request);
+            return $errorDispatcher->get();
+        }
     }
     
     /**
