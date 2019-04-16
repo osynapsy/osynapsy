@@ -102,10 +102,13 @@ class ErrorDispatcher
     private $request;
     private $response;
         
-    public function __construct(\Exception $e, $request)
+    public function __construct( $e, $request)
     {
-        $this->request = $request;
-        
+        $this->request = $request;                
+    }
+    
+    public function dispatchException(\Exception $e)
+    {
         switch($e->getCode()) {
             case '403':
             case '404':
@@ -118,6 +121,13 @@ class ErrorDispatcher
                 $this->response = $this->pageTraceError($e->getMessage(), $e->getTrace());
                 break;
         }
+        return $this->get();
+    }
+    
+    public function dispatchError(\Error $e)
+    {
+        $this->response = $this->pageTraceError($e->getMessage(), $e->getTrace());
+        return $this->get();
     }
     
     public function pageHttpError($errorCode, $message = 'Page not found')
