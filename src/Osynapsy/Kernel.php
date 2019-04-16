@@ -129,8 +129,11 @@ class Kernel
                 $this->router->dispatchRoute($requestUri)
             );
         } catch (\Exception $exception) {
-            $errorDispatcher = new ErrorDispatcher($exception, $this->request);
-            return $errorDispatcher->get();
+            $errorDispatcher = new ErrorDispatcher($this->request);
+            return $errorDispatcher->dispatchException($exception);
+        } catch (\Error $error) {
+            $errorDispatcher = new ErrorDispatcher($error, $this->request);
+            return $errorDispatcher->dispatchError($error);
         }
     }
     
