@@ -102,7 +102,7 @@ class ErrorDispatcher
     private $request;
     private $response;
         
-    public function __construct( $e, $request)
+    public function __construct($request)
     {
         $this->request = $request;                
     }
