@@ -97,7 +97,7 @@ div.osy-addressbook .osy-addressbook-item:hover a.osy-addressbook-link {
 
 div.osy-addressbook div.p0 .osy-addressbook-img {
     width: 33px;
-    height: 33px;
+    /*height: 33px;*/
     position: absolute;
     top: 12px;
     left: 7px;
