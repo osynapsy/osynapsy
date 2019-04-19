@@ -53,7 +53,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         $this->setResponse(new JsonResponse());
         $this->setState($action.'ActionStart');
         if (!method_exists($this, $action.'Action')) {
-            return $this->getResponse()->alertJs('No action '.$cmd.' exist in '.get_class($this));
+            return $this->getResponse()->alertJs('No action '.$action.' exist in '.get_class($this));
         }
         $actionParameters = filter_input(\INPUT_POST , 'actionParameters', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
         $response = !empty($actionParameters) 
