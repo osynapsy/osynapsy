@@ -233,11 +233,9 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
         $objectXml = simplexml_load_string(
             $stringXml
         );
-        $this->repo = new Dictionary(
-            json_decode(
-                json_encode($objectXml), 
-                true
-            )
-        );   
+        $this->repo = json_decode(
+            json_encode($objectXml), 
+            true
+        );        
     }
 }
