@@ -135,9 +135,12 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
     }
 
     public function &offsetGet($offset) 
-    {
+    {        
+        if (isset($this->repo[$offset])) {
+            return $this->get($offset);
+        }
         $null = null;
-        return isset($this->repo[$offset]) ? $this->get($offset) : $null;
+        return $null;
     }
     
     public function rewind()
