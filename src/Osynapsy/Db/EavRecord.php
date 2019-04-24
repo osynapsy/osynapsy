@@ -84,7 +84,7 @@ abstract class EavRecord
             
         } catch (\Exception $e) {
             throw new \Exception('Query error : '.$sql."\n".$e->getMessage(), 100);
-        }
+        }        
         if (empty($this->originalRecord)) {
             return $this->originalRecord;
         }
@@ -249,21 +249,27 @@ abstract class EavRecord
             throw new \Exception('Primary key is empty');
         }
         $updateCondition = $this->searchCondition;
-        $valueToInsert = array_diff_key($this->activeRecord, $this->originalRecord);
+        $valueToInsert = array_diff_key($this->activeRecord, $this->originalRecord);       
         foreach($valueToInsert as $virtualField => $value) {
             $params = $updateCondition;
             $params[$this->attributeIdField()] = $virtualField;
             $params[$this->attributeValueField()] = $value;
-            $this->dbConnection->insert($this->table, $params);                           
+            $this->dbConnection->insert($this->table, $params);
+            //After Db insert of value, original record is modified respect db.
+            //Add virtual field for make ugual db and original field.
+            $this->originalRecord[$virtualField] = $value;
         }
-        $valueToUpdate = array_diff($this->activeRecord, $this->originalRecord);        
+        $valueToUpdate = array_diff($this->activeRecord, $this->originalRecord);                
         foreach($valueToUpdate as $virtualField => $value) {
             $updateCondition[$this->attributeIdField()] = $virtualField;
             $this->dbConnection->update(
                 $this->table,
                 [$this->attributeValueField() => $value],
                 $updateCondition
-            );                           
+            );
+            //After Db update of value, original record is modified respect db.
+            //Add virtual field for make ugual db and original field.
+            $this->originalRecord[$virtualField] = $value;
         }
         $this->afterUpdate();
     }
@@ -307,7 +313,7 @@ abstract class EavRecord
         $this->searchCondition = [];
         return $this;
     }
-    
+            
     /**
      * Get current db connection
      * 
