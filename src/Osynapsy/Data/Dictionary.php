@@ -224,4 +224,17 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
             $this->arrayToXml($value, $subnode);                             
         }
     }
+    
+    public function initFromStringXml($stringXml)
+    {
+        $objectXml = simplexml_load_string(
+            $stringXml
+        );
+        $this->repo = new Dictionary(
+            json_decode(
+                json_encode($objectXml), 
+                true
+            )
+        );   
+    }
 }
