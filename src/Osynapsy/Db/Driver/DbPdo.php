@@ -172,8 +172,8 @@ class DbPdo extends \PDO implements InterfaceDbo
 
     public function insert($tbl, array $arg)
     {
-        $fld = $val = array();
-        foreach ($arg as $k=>$v) {
+        $fld = $val = $arg2 = array();
+        foreach ($arg as $k => $v) {
             $fld [] = $k;
             $val [] = '?';
             $arg2[] = $v;
