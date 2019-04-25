@@ -20,32 +20,35 @@ class Tag
     public $tagdep = 0;
     public $parent = null;
     
-    public function __construct($tag = 'dummy', $id = null)
+    public function __construct($tag = 'dummy', $id = null, $class = null)
     {
         $this->att(0,$tag);
         if (!empty($id)) {
             $this->att('id', $id);
         }
+        if (!empty($class)) {
+            $this->att('class', $class);
+        }
     }
     
-    public function __get($a)
+    public function __get($attribute)
     {
-        if ($a == 'tag') {
+        if ($attribute == 'tag') {
             return $this->att[0];
         }
-        return array_key_exists($a,$this->att) ? $this->att[$a] : null;
+        return array_key_exists($attribute, $this->att) ? $this->att[$attribute] : null;
     }
     
-    public function __set($p,$v)
+    public function __set($attribute, $value)
     {
-       $this->att[$p] = $v;
+       $this->att[$attribute] = $value;
     }
     
     public function add($a, $d='last')
     {
         if (is_object($a)) {
             if ($a instanceof tag) {
-                $a->tagdep = abs($this->tagdep)+1;
+                $a->tagdep = abs($this->tagdep) + 1;
                 $this->tagdep = abs($this->tagdep) * -1;
             }
             if ($a->id && array_key_exists($a->id,$this->ref)) {
@@ -56,7 +59,7 @@ class Tag
             }
             $a->parent =& $this;
         }
-        if ($d=='last') {
+        if ($d == 'last') {
             if (is_array($this->cnt)) {
                 array_push($this->cnt,$a);
             } 
@@ -78,19 +81,16 @@ class Tag
         return $t;
     }
     
-    public function att($p, $v='', $concat=false)
+    public function att($attribute, $value = '', $concat = false)
     {
-        if (is_array($p)) {
-            foreach ($p as $k => $v) {
-                $this->att[$k] = $v;
-            }
-            return $this;
-        } 
-        if ($concat && !empty($this->att[$p])) {
-            $concat_car = ($concat===true) ? ' ' : $concat;
-            $this->att[$p] .= "{$concat_car}{$v}";
+        if (is_array($attribute)) {
+            foreach ($attribute as $key => $value) {
+                $this->att[$key] = $value;
+            }            
+        } elseif ($concat && !empty($this->att[$attribute])) {            
+            $this->att[$attribute] .= ($concat === true ? ' ' : $concat) . $value;
         } else {
-            $this->att[$p] = $v;
+            $this->att[$attribute] = $value;
         }
         return $this;
     }
@@ -134,13 +134,13 @@ class Tag
         return $this->build();
     }
     
-    public function child($i=0)
+    public function child($index = 0)
     {
-        if (is_null($i)) {
+        if (is_null($index)) {
             return $this->cnt;   
         }
-        if (array_key_exists($i, $this->cnt)) {
-            return $this->cnt[$i];
+        if (array_key_exists($index, $this->cnt)) {
+            return $this->cnt[$index];
         }
         return false;
     }
