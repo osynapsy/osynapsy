@@ -16,6 +16,7 @@ use Osynapsy\Html\Component;
 use Osynapsy\Html\Ocl\HiddenBox;
 
 
+
 /**
  * Description of TreeBox
  *
@@ -28,6 +29,10 @@ class TreeBox extends Component
     ];
     private $rootId = '__ROOT__';
     private $nodeOpenIds = [];
+    
+    const POSITION_BEGIN = 1;
+    const POSITION_BETWEEN = 2;
+    const POSITION_END = 3;
     
     public function __construct($id)
     {
@@ -50,10 +55,11 @@ class TreeBox extends Component
     private function buildNode($nodeId, $level = 0, $position = 1, $iconArray = [])
     {
         $iconArray[$level] = empty($level) ? null : 4;
-        if ($position === 3) {            
+        if ($position === self::POSITION_END) {            
             $iconArray[$level] = null;
-        } elseif ($position === 1) {            
-            $iconArray[$level] = 4;
+        //Fix for children begin on level major of one.
+        } elseif ($position === self::POSITION_BEGIN && $level > 1) {
+            $position = self::POSITION_BETWEEN;
         }
         if (!empty($this->treeData[$nodeId])) {            
             return $this->buildBranch($nodeId, $level, $position, $iconArray);
@@ -63,14 +69,13 @@ class TreeBox extends Component
     
     private function buildBranch($nodeId, $level, $position, $iconArray = [])
     {
-        $branch = new Tag('div', 'osy-treebox-node-'.$nodeId);
-        $branch->att('class','osy-treebox-branch')               
-               ->att('data-level', $level);        
+        $branch = new Tag('div', 'osy-treebox-node-'.$nodeId, 'osy-treebox-branch');
+        $branch->att('data-level', $level);        
         if (!empty($this->data[$nodeId])) {
-            $label = $branch->add(new Tag('label', 'osy-treebox-node-label'));
+            $label = $branch->add(new Tag('label', null, 'osy-treebox-node-label'));
             $label->add($this->buildIcon($nodeId, $position, $level, $iconArray).$this->data[$nodeId]);            
         }
-        $branchBody = $branch->add(new Tag('div'))->att('class','osy-treebox-node-body');        
+        $branchBody = $branch->add(new Tag('div', null, 'osy-treebox-node-body'));        
         if (!in_array($nodeId, $this->nodeOpenIds)) {
             $branchBody->att('class', 'hidden', true);
         }
@@ -78,11 +83,13 @@ class TreeBox extends Component
         $lastIdx = count($this->treeData[$nodeId]) - 1;
         foreach($this->treeData[$nodeId] as $idx => $childrenId) {
             //Calcolo in che posizione si trova l'elemento (In testa = 1, nel mezzo = 2, alla fine = 3);
-            $position = 2;            
+            $position = self::POSITION_BETWEEN;
+            //Se il corrente children è anche l'ultimo
             if ($lastIdx === $idx) {
-                $position = 3;                
+                $position = self::POSITION_END;
+            //Se l'indice corrente è vuoto (ossia è il first children) e il livello è 0            
             } elseif (empty($idx)) {
-                $position = 1;                
+                $position = self::POSITION_BEGIN;
             }
             $branchBody->add(
                 $this->buildNode($childrenId, $level + 1, $position, $iconArray)
@@ -93,9 +100,8 @@ class TreeBox extends Component
     
     private function buildLeaf($nodeId, $level, $position, $iconArray)
     {
-        $leaf = new Tag('label');
-        $leaf->att('class','osy-treebox-leaf label-block')
-             ->att('data-level',$level);
+        $leaf = new Tag('label', null, 'osy-treebox-leaf label-block');
+        $leaf->att('data-level', $level);
         $leaf->add($this->buildIcon($nodeId, $position, $level, $iconArray).$this->data[$nodeId]);        
         return $leaf;
     }
