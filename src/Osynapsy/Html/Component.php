@@ -86,6 +86,16 @@ class Component extends Tag
     }
     
     /**
+     * Return data array
+     *      
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+    
+    /**
      * Return value of parameter
      * 
      * @param $key name of parameter to return;
