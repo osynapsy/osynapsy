@@ -48,8 +48,8 @@ class TreeBox extends Component
     {
         $this->buildTreeData();        
         $this->nodeOpenIds = [$this->rootId];
-        $elementId = empty($_REQUEST["{$this->id}_open"]) ? $this->rootId : $_REQUEST["{$this->id}_open"];
-        $this->add($this->buildNode($elementId));        
+        $nodeSelectedId = empty($_REQUEST["{$this->id}_open"]) ? $this->rootId : $_REQUEST["{$this->id}_open"];
+        $this->add($this->buildNode($nodeSelectedId));        
     }
     
     private function buildNode($nodeId, $level = 0, $position = 1, $iconArray = [])
@@ -113,10 +113,15 @@ class TreeBox extends Component
             $class  = empty($iconArray[$idx]) ? 'tree-null' : ' tree-con-'.$iconArray[$idx];
             $icon .= '<span class="tree '.$class.'">&nbsp;</span>';
         }
-        $icon .= '<span class="tree '.(array_key_exists($nodeId, $this->treeData) ? 'osy-treebox-branch-command tree-plus-' : 'tree-con-').$positionOnBranch.'">&nbsp;</span>';        
-        if (in_array($nodeId, $this->nodeOpenIds)) {                    
-            $icon = str_replace('tree-plus-','minus tree-plus-', $icon);
+        $class = 'tree-con-';
+        if (array_key_exists($nodeId, $this->treeData)){ 
+            $class = 'osy-treebox-branch-command tree-plus-';
         }
+        $class .= $positionOnBranch;
+        if (in_array($nodeId, $this->nodeOpenIds)) {                    
+            $class .= ' minus';
+        }
+        $icon .= '<span class="tree '.$class.'">&nbsp;</span>';        
         return $icon;
     }
     
