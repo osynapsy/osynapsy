@@ -47,12 +47,18 @@ class TreeBox extends Component
         $this->add($this->buildNode($elementId));        
     }
     
-    private function buildNode($nodeId, $level = 0, $position = 1)
+    private function buildNode($nodeId, $level = 0, $position = 1, $iconArray = [])
     {
-        if (!empty($this->treeData[$nodeId])) {            
-            return $this->buildBranch($nodeId, $level, $position);
+        $iconArray[$level] = empty($level) ? null : 4;
+        if ($position === 3) {            
+            $iconArray[$level] = null;
+        } elseif ($position === 1) {            
+            $iconArray[$level] = 4;
         }
-        return $this->buildLeaf($nodeId, $level, $position);
+        if (!empty($this->treeData[$nodeId])) {            
+            return $this->buildBranch($nodeId, $level, $position, $iconArray);
+        }
+        return $this->buildLeaf($nodeId, $level, $position, $iconArray);
     }
     
     private function buildBranch($nodeId, $level, $position, $iconArray = [])
@@ -61,9 +67,8 @@ class TreeBox extends Component
         $branch->att('class','osy-treebox-branch')               
                ->att('data-level', $level);        
         if (!empty($this->data[$nodeId])) {
-            $label = $branch->add(new Tag('label', 'osy-treebox-node-label'))
-                   ->att('onclick',"$(this).next().toggleClass('hidden')");
-            $label->add($this->buildIcon($nodeId, $position, $level).$this->data[$nodeId]);            
+            $label = $branch->add(new Tag('label', 'osy-treebox-node-label'));
+            $label->add($this->buildIcon($nodeId, $position, $level, $iconArray).$this->data[$nodeId]);            
         }
         $branchBody = $branch->add(new Tag('div'))->att('class','osy-treebox-node-body');        
         if (!in_array($nodeId, $this->nodeOpenIds)) {
@@ -73,39 +78,36 @@ class TreeBox extends Component
         $lastIdx = count($this->treeData[$nodeId]) - 1;
         foreach($this->treeData[$nodeId] as $idx => $childrenId) {
             //Calcolo in che posizione si trova l'elemento (In testa = 1, nel mezzo = 2, alla fine = 3);
-            $position = 2;
+            $position = 2;            
             if ($lastIdx === $idx) {
-                $position = 3;
+                $position = 3;                
             } elseif (empty($idx)) {
-                $position = 1;
+                $position = 1;                
             }
             $branchBody->add(
-                $this->buildNode($childrenId, $level + 1, $position)
+                $this->buildNode($childrenId, $level + 1, $position, $iconArray)
             );            
         }        
         return $branch;
     }
     
-    private function buildLeaf($nodeId, $level, $position)
+    private function buildLeaf($nodeId, $level, $position, $iconArray)
     {
         $leaf = new Tag('label');
         $leaf->att('class','osy-treebox-leaf label-block')
              ->att('data-level',$level);
-        $leaf->add($this->buildIcon($nodeId, $position, $level).$this->data[$nodeId]);        
+        $leaf->add($this->buildIcon($nodeId, $position, $level, $iconArray).$this->data[$nodeId]);        
         return $leaf;
     }
     
     private function buildIcon($nodeId, $positionOnBranch, $level, $iconArray = [])
     {        
-        if (is_null($level)) {
-            return;
-        }
         $icon = '';
-        for($idx = 0; $idx < $level; $idx++) {
+        for($idx = 1; $idx < $level; $idx++) {
             $class  = empty($iconArray[$idx]) ? 'tree-null' : ' tree-con-'.$iconArray[$idx];
             $icon .= '<span class="tree '.$class.'">&nbsp;</span>';
         }
-        $icon .= '<span class="tree '.(array_key_exists($nodeId, $this->treeData) ? 'tree-plus-' : 'tree-con-').$positionOnBranch.'">&nbsp;</span>';        
+        $icon .= '<span class="tree '.(array_key_exists($nodeId, $this->treeData) ? 'osy-treebox-branch-command tree-plus-' : 'tree-con-').$positionOnBranch.'">&nbsp;</span>';        
         if (in_array($nodeId, $this->nodeOpenIds)) {                    
             $icon = str_replace('tree-plus-','minus tree-plus-', $icon);
         }
