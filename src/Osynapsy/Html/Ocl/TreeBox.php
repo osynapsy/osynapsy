@@ -108,21 +108,20 @@ class TreeBox extends Component
     
     private function buildIcon($nodeId, $positionOnBranch, $level, $iconArray = [])
     {        
-        $icon = '';
+        $icons = [];
         for($idx = 1; $idx < $level; $idx++) {
             $class  = empty($iconArray[$idx]) ? 'tree-null' : ' tree-con-'.$iconArray[$idx];
-            $icon .= '<span class="tree '.$class.'">&nbsp;</span>';
+            $icons[] = '<span class="tree '.$class.'">&nbsp;</span>';
         }
-        $class = 'tree-con-';
-        if (array_key_exists($nodeId, $this->treeData)){ 
-            $class = 'osy-treebox-branch-command tree-plus-';
-        }
-        $class .= $positionOnBranch;
-        if (in_array($nodeId, $this->nodeOpenIds)) {                    
+        
+        $class = "osy-treebox-branch-command tree-plus-{$positionOnBranch}";
+        if (!array_key_exists($nodeId, $this->treeData)){ 
+            $class = "tree-con-{$positionOnBranch}";    
+        } elseif (in_array($nodeId, $this->nodeOpenIds)) { //If node is open load minus icon
             $class .= ' minus';
         }
-        $icon .= '<span class="tree '.$class.'">&nbsp;</span>';        
-        return $icon;
+        $icons[] = '<span class="tree '.$class.'">&nbsp;</span>';        
+        return implode('',$icons);
     }
     
     private function buildTreeData()
