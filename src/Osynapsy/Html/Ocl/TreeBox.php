@@ -33,12 +33,14 @@ class TreeBox extends Component
     const POSITION_BEGIN = 1;
     const POSITION_BETWEEN = 2;
     const POSITION_END = 3;
+    const ICON_NODE_CONNECTOR_EMPTY = '<span class="tree tree-null">&nbsp;</span>';
+    const ICON_NODE_CONNECTOR_LINE = '<span class="tree tree-con-4">&nbsp;</span>';
     
     public function __construct($id)
     {
         parent::__construct('div', $id);
-        $this->add(new HiddenBox("{$id}_selected"));
-        $this->add(new HiddenBox("{$id}_opened"));
+        $this->add(new HiddenBox("{$id}_sel"))->setClass('selectedNode');
+        $this->add(new HiddenBox("{$id}_opn"))->setClass('openNodes');
         $this->setClass('osy-treebox');
         $this->requireJs('Ocl/TreeBox/script.js');
         $this->requireCss('Ocl/TreeBox/style.css');
@@ -52,28 +54,14 @@ class TreeBox extends Component
         $this->add($this->buildNode($nodeSelectedId));        
     }
     
-    private function buildNode($nodeId, $level = 0, $position = 1, $iconArray = [])
-    {
-        $iconArray[$level] = empty($level) ? null : 4;
-        if ($position === self::POSITION_END) {            
-            $iconArray[$level] = null;
-        //Fix for children begin on level major of one.
-        } elseif ($position === self::POSITION_BEGIN && $level > 1) {
-            $position = self::POSITION_BETWEEN;
-        }
-        if (!empty($this->treeData[$nodeId])) {            
-            return $this->buildBranch($nodeId, $level, $position, $iconArray);
-        }
-        return $this->buildLeaf($nodeId, $level, $position, $iconArray);
-    }
-    
     private function buildBranch($nodeId, $level, $position, $iconArray = [])
     {
-        $branch = new Tag('div', 'osy-treebox-node-'.$nodeId, 'osy-treebox-branch');
-        $branch->att('data-level', $level);        
+        $branch = new Tag('div', $this->id.'_node_'.$nodeId, 'osy-treebox-node osy-treebox-branch');
+        $branch->att(['data-level' => $level, 'data-node-id' => $nodeId]);        
         if (!empty($this->data[$nodeId])) {
-            $label = $branch->add(new Tag('label', null, 'osy-treebox-node-label'));
-            $label->add($this->buildIcon($nodeId, $position, $level, $iconArray).$this->data[$nodeId]);            
+            $label = $branch->add(new Tag('div', null, 'osy-treebox-node-label'));
+            $label->add($this->buildIcon($nodeId, $position, $level, $iconArray));
+            $label->add('<span class="osy-treebox-label">'.$this->data[$nodeId].'</span>');            
         }
         $branchBody = $branch->add(new Tag('div', null, 'osy-treebox-node-body'));        
         if (!in_array($nodeId, $this->nodeOpenIds)) {
@@ -87,8 +75,8 @@ class TreeBox extends Component
             //Se il corrente children è anche l'ultimo
             if ($lastIdx === $idx) {
                 $position = self::POSITION_END;
-            //Se l'indice corrente è vuoto (ossia è il first children) e il livello è 0            
-            } elseif (empty($idx)) {
+               //Fix for children begin on level major of one.                               
+            } elseif (empty($idx) && $level < 1) {
                 $position = self::POSITION_BEGIN;
             }
             $branchBody->add(
@@ -100,28 +88,35 @@ class TreeBox extends Component
     
     private function buildLeaf($nodeId, $level, $position, $iconArray)
     {
-        $leaf = new Tag('label', null, 'osy-treebox-leaf label-block');
-        $leaf->att('data-level', $level);
-        $leaf->add($this->buildIcon($nodeId, $position, $level, $iconArray).$this->data[$nodeId]);        
+        $leaf = new Tag('div', null, 'osy-treebox-node osy-treebox-leaf');
+        $leaf->att(['data-level' => $level, 'data-node-id' => $nodeId]);                
+        $leaf->add($this->buildIcon($nodeId, $position, $level, $iconArray));
+        $leaf->add('<span class="osy-treebox-label">'.$this->data[$nodeId].'</span>');        
         return $leaf;
     }
     
-    private function buildIcon($nodeId, $positionOnBranch, $level, $iconArray = [])
+    private function buildIcon($nodeId, $positionOnBranch, $level, $icons = [])
     {        
-        $icons = [];
-        for($idx = 1; $idx < $level; $idx++) {
-            $class  = empty($iconArray[$idx]) ? 'tree-null' : ' tree-con-'.$iconArray[$idx];
-            $icons[] = '<span class="tree '.$class.'">&nbsp;</span>';
-        }
-        
         $class = "osy-treebox-branch-command tree-plus-{$positionOnBranch}";
         if (!array_key_exists($nodeId, $this->treeData)){ 
             $class = "tree-con-{$positionOnBranch}";    
         } elseif (in_array($nodeId, $this->nodeOpenIds)) { //If node is open load minus icon
             $class .= ' minus';
         }
-        $icons[] = '<span class="tree '.$class.'">&nbsp;</span>';        
+        //Sovrascrivo l'ultima icona con il l'icona/segmento corrispondente al comando / posizione        
+        $icons[$level] = sprintf('<span class="tree %s">&nbsp;</span>', $class);        
         return implode('',$icons);
+    }
+    
+    private function buildNode($nodeId, $level = 0, $position = 1, $icons = [])
+    {
+        if ($level > 0){
+            $icons[$level] = $position === self::POSITION_END ? self::ICON_NODE_CONNECTOR_EMPTY: self::ICON_NODE_CONNECTOR_LINE;        
+        }
+        if (!empty($this->treeData[$nodeId])) {            
+            return $this->buildBranch($nodeId, $level, $position, $icons);
+        }
+        return $this->buildLeaf($nodeId, $level, $position, $icons);
     }
     
     private function buildTreeData()
