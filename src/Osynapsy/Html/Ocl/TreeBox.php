@@ -29,12 +29,15 @@ class TreeBox extends Component
     ];
     private $rootId = '__ROOT__';
     private $nodeOpenIds = [];
+    private $nodeSelectedId;
     
+    const CLASS_SELECTED_LABEL = 'osy-treebox-label-selected';
+    const ICON_NODE_CONNECTOR_EMPTY = '<span class="tree tree-null">&nbsp;</span>';
+    const ICON_NODE_CONNECTOR_LINE = '<span class="tree tree-con-4">&nbsp;</span>';
     const POSITION_BEGIN = 1;
     const POSITION_BETWEEN = 2;
     const POSITION_END = 3;
-    const ICON_NODE_CONNECTOR_EMPTY = '<span class="tree tree-null">&nbsp;</span>';
-    const ICON_NODE_CONNECTOR_LINE = '<span class="tree tree-con-4">&nbsp;</span>';
+    
     
     public function __construct($id)
     {
@@ -49,9 +52,27 @@ class TreeBox extends Component
     protected function __build_extra__()
     {
         $this->buildTreeData();        
-        $this->nodeOpenIds = [$this->rootId];
+        $this->nodeOpenIds = $this->buildNodeOpenIds();
+        $this->nodeSelectedId = filter_input(\INPUT_POST, "{$this->id}_sel");
         $nodeSelectedId = empty($_REQUEST["{$this->id}_open"]) ? $this->rootId : $_REQUEST["{$this->id}_open"];
         $this->add($this->buildNode($nodeSelectedId));        
+    }
+    
+    /**
+     * Load open folder from post value
+     * 
+     * @return array
+     */
+    private function buildNodeOpenIds()
+    {        
+        $postIds = str_replace(
+            ['][','[',']'],
+            [',','',''],
+            filter_input(\INPUT_POST, "{$this->id}_opn")
+        );        
+        $IDs = explode(',', $postIds);        
+        $IDs[] = $this->rootId;
+        return $IDs;
     }
     
     private function buildBranch($nodeId, $level, $position, $iconArray = [])
@@ -59,31 +80,47 @@ class TreeBox extends Component
         $branch = new Tag('div', $this->id.'_node_'.$nodeId, 'osy-treebox-node osy-treebox-branch');
         $branch->att(['data-level' => $level, 'data-node-id' => $nodeId]);        
         if (!empty($this->data[$nodeId])) {
-            $label = $branch->add(new Tag('div', null, 'osy-treebox-node-label'));
-            $label->add($this->buildIcon($nodeId, $position, $level, $iconArray));
-            $label->add('<span class="osy-treebox-label">'.$this->data[$nodeId].'</span>');            
+            $labelContainer = $branch->add(new Tag('div', null, 'osy-treebox-node-label'));
+            $labelContainer->add($this->buildIcon($nodeId, $position, $level, $iconArray));
+            $label = $labelContainer->add(new Tag('span', null, 'osy-treebox-label'));
+            $label->add($this->data[$nodeId]);            
+            if ($nodeId === $this->nodeSelectedId) {
+                $label->att('class', self::CLASS_SELECTED_LABEL, true);
+            }
         }
         $branchBody = $branch->add(new Tag('div', null, 'osy-treebox-node-body'));        
         if (!in_array($nodeId, $this->nodeOpenIds)) {
             $branchBody->att('class', 'hidden', true);
         }
-        //Calcolo l'indice dell'utlimo elemento del ramo.
-        $lastIdx = count($this->treeData[$nodeId]) - 1;
-        foreach($this->treeData[$nodeId] as $idx => $childrenId) {
+        $branchBody->add(
+            $this->buildBranchChilds($nodeId, $level, $iconArray)
+        );
+        return $branch;
+    }
+    
+    private function buildBranchChilds($parentNodeId, $parentNodeLevel, $iconArray)
+    {
+        //Create a dummy tag to return and append to branch body
+        $dummy = new Tag('dummy');
+        //Get childs
+        $childs = $this->treeData[$parentNodeId];
+        //Calculate last child index
+        $lastChildIdx = count($childs) - 1;
+        foreach($childs as $currentChildIdx => $childrenId) {
             //Calcolo in che posizione si trova l'elemento (In testa = 1, nel mezzo = 2, alla fine = 3);
             $position = self::POSITION_BETWEEN;
             //Se il corrente children è anche l'ultimo
-            if ($lastIdx === $idx) {
+            if ($lastChildIdx === $currentChildIdx) {
                 $position = self::POSITION_END;
                //Fix for children begin on level major of one.                               
-            } elseif (empty($idx) && $level < 1) {
+            } elseif (empty($currentChildIdx) && $parentNodeLevel < 1) {
                 $position = self::POSITION_BEGIN;
             }
-            $branchBody->add(
-                $this->buildNode($childrenId, $level + 1, $position, $iconArray)
+            $dummy->add(
+                $this->buildNode($childrenId, $parentNodeLevel + 1, $position, $iconArray)
             );            
         }        
-        return $branch;
+        return $dummy;
     }
     
     private function buildLeaf($nodeId, $level, $position, $iconArray)
@@ -91,7 +128,10 @@ class TreeBox extends Component
         $leaf = new Tag('div', null, 'osy-treebox-node osy-treebox-leaf');
         $leaf->att(['data-level' => $level, 'data-node-id' => $nodeId]);                
         $leaf->add($this->buildIcon($nodeId, $position, $level, $iconArray));
-        $leaf->add('<span class="osy-treebox-label">'.$this->data[$nodeId].'</span>');        
+        $label = $leaf->add('<span class="osy-treebox-label">'.$this->data[$nodeId].'</span>');
+        if ($nodeId === $this->nodeSelectedId) {
+            $label->setClass(self::CLASS_SELECTED_LABEL);
+        }        
         return $leaf;
     }
     
