@@ -1,10 +1,12 @@
-div.osy-treebox label {
+span.osy-treebox-label {
     font-weight: normal;
-    font-size: 0.9em;
-    display: block;
+    font-size: 0.9em;    
     margin-bottom: 0px;
 }
-
+span.osy-treebox-label:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
 div.osy-treebox span.tree {
     display: inline-block;
     margin-right: 3px;
@@ -59,6 +61,7 @@ div.osy-treebox span.tree-con-4 {
     background-image: url(tree.set.png);
     background-position: 0 -124px;
 }
-div.osy-treebox label:hover {
+div.osy-treebox-node-label:hover,
+div.osy-treebox-leaf:hover{
     background-color: #eee;
 }
