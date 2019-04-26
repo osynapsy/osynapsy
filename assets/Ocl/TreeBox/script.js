@@ -2,7 +2,8 @@ OclTreeBox =
 {
     init : function()
     {
-        $('.osy-treebox').on('click','span.osy-treebox-branch-command',function(){
+        var treeboxParent = $('.osy-treebox').parent();
+        $(treeboxParent).on('click','span.osy-treebox-branch-command',function(){
             OclTreeBox.toggleBranch($(this));
         }).on('click','span.osy-treebox-label', function(){
             OclTreeBox.clickLabel($(this));
