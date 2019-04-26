@@ -128,9 +128,10 @@ class TreeBox extends Component
         $leaf = new Tag('div', null, 'osy-treebox-node osy-treebox-leaf');
         $leaf->att(['data-level' => $level, 'data-node-id' => $nodeId]);                
         $leaf->add($this->buildIcon($nodeId, $position, $level, $iconArray));
-        $label = $leaf->add('<span class="osy-treebox-label">'.$this->data[$nodeId].'</span>');
+        $label = $leaf->add(new Tag('span', null, 'osy-treebox-label'));
+        $label->add($this->data[$nodeId]);
         if ($nodeId === $this->nodeSelectedId) {
-            $label->setClass(self::CLASS_SELECTED_LABEL);
+            $label->att('class', self::CLASS_SELECTED_LABEL, true);
         }        
         return $leaf;
     }
