@@ -16,7 +16,6 @@ use Osynapsy\Html\Component;
 use Osynapsy\Html\Ocl\HiddenBox;
 
 
-
 /**
  * Description of TreeBox
  *
@@ -27,7 +26,8 @@ class TreeBox extends Component
     private $treeData = [
         '__ROOT__' => []
     ];
-    
+    private $refreshOnClick = [];
+    private $refreshOnOpen = [];
     private $nodeOpenIds = [];
     private $nodeSelectedId;
     
@@ -55,7 +55,13 @@ class TreeBox extends Component
         $this->nodeOpenIds = $this->buildNodeOpenIds();
         $this->nodeSelectedId = filter_input(\INPUT_POST, "{$this->id}_sel");
         $nodeSelectedId = empty($_REQUEST["{$this->id}_open"]) ? self::ROOT_ID : $_REQUEST["{$this->id}_open"];
-        $this->add($this->buildNode($nodeSelectedId));        
+        $this->add($this->buildNode($nodeSelectedId)); 
+        if (!empty($this->refreshOnClick)) {
+            $this->att('data-refresh-on-click', implode(',', $this->refreshOnClick));
+        }
+        if (!empty($this->refreshOnOpen)) {
+            $this->att('data-refresh-on-open', implode(',', $this->refreshOnOpen));
+        }
     }
     
     /**
@@ -192,5 +198,15 @@ class TreeBox extends Component
             $data[$row[0]] = $row;
         }
         $this->setData($data);
+    }
+    
+    public function refreshOnClick($componentId)
+    {
+        $this->refreshOnClick[] = $componentId;
+    }
+    
+    public function refreshOnOpen($componentId)
+    {
+        $this->refreshOnOpen[] = $componentId;
     }
 }
