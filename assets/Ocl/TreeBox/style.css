@@ -69,3 +69,14 @@ span.osy-treebox-label-selected {
     color: #0078A8;
     font-weight: bold;
 }
+span.osy-treebox-node-command {
+    float: right;
+    font-size: 0.8em;
+    padding: 3px 3px 0px 3px; 
+    text-decoration: none !important;
+    visibility: hidden;
+}
+div.osy-treebox-node-label:hover span.osy-treebox-node-command,
+div.osy-treebox-leaf:hover span.osy-treebox-node-command {
+    visibility: visible;
+}
