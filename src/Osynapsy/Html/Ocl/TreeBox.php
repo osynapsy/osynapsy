@@ -93,12 +93,12 @@ class TreeBox extends Component
             $branchBody->att('class', 'hidden', true);
         }
         $branchBody->add(
-            $this->buildBranchChilds($nodeId, $level, $iconArray)
+            $this->buildChilds($nodeId, $level, $iconArray)
         );
         return $branch;
     }
     
-    private function buildBranchChilds($parentNodeId, $parentNodeLevel, $iconArray)
+    private function buildChilds($parentNodeId, $parentNodeLevel, $iconArray)
     {
         //Create a dummy tag to return and append to branch body
         $dummy = new Tag('dummy');
