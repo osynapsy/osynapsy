@@ -83,22 +83,23 @@ class TreeBox extends Component
             $labelContainer = $branch->add(new Tag('div', null, 'osy-treebox-node-label'));
             $labelContainer->add($this->buildIcon($nodeId, $position, $level, $iconArray));
             $label = $labelContainer->add(new Tag('span', null, 'osy-treebox-label'));
-            $label->add($this->data[$nodeId]);            
+            $label->add($this->data[$nodeId][1]);            
             if ($nodeId === $this->nodeSelectedId) {
                 $label->att('class', self::CLASS_SELECTED_LABEL, true);
             }
+            $labelContainer->add($this->buildNodeCommand($this->data[$nodeId]));
         }
         $branchBody = $branch->add(new Tag('div', null, 'osy-treebox-node-body'));        
         if (!in_array($nodeId, $this->nodeOpenIds)) {
             $branchBody->att('class', 'hidden', true);
         }
         $branchBody->add(
-            $this->buildChilds($nodeId, $level, $iconArray)
+            $this->buildBranchChilds($nodeId, $level, $iconArray)
         );
         return $branch;
     }
     
-    private function buildChilds($parentNodeId, $parentNodeLevel, $iconArray)
+    private function buildBranchChilds($parentNodeId, $parentNodeLevel, $iconArray)
     {
         //Create a dummy tag to return and append to branch body
         $dummy = new Tag('dummy');
@@ -125,15 +126,32 @@ class TreeBox extends Component
     
     private function buildLeaf($nodeId, $level, $position, $iconArray)
     {
+        $node = $this->data[$nodeId];
         $leaf = new Tag('div', null, 'osy-treebox-node osy-treebox-leaf');
         $leaf->att(['data-level' => $level, 'data-node-id' => $nodeId]);                
         $leaf->add($this->buildIcon($nodeId, $position, $level, $iconArray));
         $label = $leaf->add(new Tag('span', null, 'osy-treebox-label'));
-        $label->add($this->data[$nodeId]);
+        $label->add($node[1]);
         if ($nodeId === $this->nodeSelectedId) {
             $label->att('class', self::CLASS_SELECTED_LABEL, true);
-        }        
+        }
+        $leaf->add($this->buildNodeCommand($node));
         return $leaf;
+    }
+    
+    private function buildNodeCommand($node)
+    {
+        $dummy = new Tag('dummy');
+        if (count($node) < 4){
+            return $dummy;
+        }
+        foreach($node as $i => $command) {
+            if ($i > 2) {
+                $dummy->add(new Tag('span', null, 'osy-treebox-node-command'))
+                       ->add($command);
+            }
+        }
+        return $dummy;
     }
     
     private function buildIcon($nodeId, $positionOnBranch, $level, $icons = [])
@@ -171,7 +189,7 @@ class TreeBox extends Component
                 $this->treeData[$row[2]] = [];
             }            
             $this->treeData[$row[2]][] = $row[0];
-            $data[$row[0]] = $row[1];
+            $data[$row[0]] = $row;
         }
         $this->setData($data);
     }
