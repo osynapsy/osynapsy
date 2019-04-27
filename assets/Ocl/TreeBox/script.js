@@ -22,6 +22,7 @@ OclTreeBox =
         }        
         $(elm).toggleClass('minus');
         $(elm).parent().next().toggleClass('hidden');
+        this.refreshComponents($(box).data('refreshOnOpen'));
     },
     clickLabel : function(elm)
     {        
@@ -34,6 +35,25 @@ OclTreeBox =
             $('input.selectedNode', box).val(curNodeId);
         } else {
             $('input.selectedNode', box).val('');
+        }
+        this.refreshComponents($(box).data('refreshOnClick'));
+    },
+    refreshComponents: function(strComponents)
+    {
+        if (!strComponents) {
+            return;
+        }
+        var rawComponents = strComponents.split(',');
+        var components = [];
+        for (var i in rawComponents) {
+            if ($('#'+rawComponents[i]).hasClass('osy-datagrid-2')) {
+                ODataGrid.refreshAjax($('#'+rawComponents[i]));
+                continue;
+            }
+            components.push(rawComponents[i]);
+        }
+        if (components.length > 0){
+            Osynapsy.refreshComponents(components);
         }
     }
 };
