@@ -203,10 +203,12 @@ class TreeBox extends Component
     public function onClickRefresh($componentId)
     {
         $this->refreshOnClick[] = $componentId;
+        return $this;
     }
     
     public function onOpenRefresh($componentId)
     {
         $this->refreshOnOpen[] = $componentId;
+        return $this;
     }
 }
