@@ -200,12 +200,12 @@ class TreeBox extends Component
         $this->setData($data);
     }
     
-    public function refreshOnClick($componentId)
+    public function onClickRefresh($componentId)
     {
         $this->refreshOnClick[] = $componentId;
     }
     
-    public function refreshOnOpen($componentId)
+    public function onOpenRefresh($componentId)
     {
         $this->refreshOnOpen[] = $componentId;
     }
