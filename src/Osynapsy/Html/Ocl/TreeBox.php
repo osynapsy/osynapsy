@@ -27,7 +27,7 @@ class TreeBox extends Component
     private $treeData = [
         '__ROOT__' => []
     ];
-    private $rootId = '__ROOT__';
+    
     private $nodeOpenIds = [];
     private $nodeSelectedId;
     
@@ -37,7 +37,7 @@ class TreeBox extends Component
     const POSITION_BEGIN = 1;
     const POSITION_BETWEEN = 2;
     const POSITION_END = 3;
-    
+    const ROOT_ID = '__ROOT__';
     
     public function __construct($id)
     {
@@ -54,7 +54,7 @@ class TreeBox extends Component
         $this->buildTreeData();        
         $this->nodeOpenIds = $this->buildNodeOpenIds();
         $this->nodeSelectedId = filter_input(\INPUT_POST, "{$this->id}_sel");
-        $nodeSelectedId = empty($_REQUEST["{$this->id}_open"]) ? $this->rootId : $_REQUEST["{$this->id}_open"];
+        $nodeSelectedId = empty($_REQUEST["{$this->id}_open"]) ? self::ROOT_ID : $_REQUEST["{$this->id}_open"];
         $this->add($this->buildNode($nodeSelectedId));        
     }
     
@@ -71,7 +71,7 @@ class TreeBox extends Component
             filter_input(\INPUT_POST, "{$this->id}_opn")
         );        
         $IDs = explode(',', $postIds);        
-        $IDs[] = $this->rootId;
+        $IDs[] = self::ROOT_ID;
         return $IDs;
     }
     
@@ -166,7 +166,7 @@ class TreeBox extends Component
         foreach ($this->getData() as $rawRow) {
             $row = array_values($rawRow);            
             if (empty($row[2])) {
-                $row[2] = $this->rootId;                
+                $row[2] = self::ROOT_ID;                
             }if (!array_key_exists($row[2], $this->treeData)) {
                 $this->treeData[$row[2]] = [];
             }            
