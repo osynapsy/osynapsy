@@ -9,7 +9,7 @@ span.osy-treebox-label:hover {
 }
 div.osy-treebox span.tree {
     display: inline-block;
-    margin-right: 3px;
+    /*margin-right: 3px;*/
     background-repeat: no-repeat;
     line-height: 20px;
     width: 16px; 
