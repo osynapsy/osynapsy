@@ -104,10 +104,18 @@ class DataGrid2 extends Component
         if (empty($this->data)) {
             return $this->buildEmptyMessage($body);
         }        
-        foreach ($this->data as $recIdx => $rec) {
-            $body->add(
-                $this->buildRow($rec)
-            );            
+        if ($this->rowWidth === 12) {
+            foreach ($this->data as $recIdx => $rec) {            
+                $body->add($this->buildRow($rec));            
+            }
+            return $body;
+        }
+        $rowClass =  'col-lg-'.$this->rowWidth;        
+        foreach ($this->data as $recIdx => $rec) {            
+            if (($recIdx) % (12 / $this->rowWidth) === 0) {
+                $row = $body->add(new Tag('div', null, 'row'));
+            }
+            $row->add($this->buildRow($rec, $rowClass));
         }        
         return $body;
     }
@@ -269,6 +277,17 @@ class DataGrid2 extends Component
     }
     
     /**
+     * Set width of row in bootstrap unit grid (max width = 12)
+     * 
+     * @param int $width
+     */
+    public function setRowWidth($width)
+    {
+        $this->rowWidth = $width;
+        return $this;
+    }
+    
+    /**
      * Set a pagination object
      *      * 
      * @param type $db Handler db connection
@@ -278,9 +297,12 @@ class DataGrid2 extends Component
      */
     public function setPagination($db, $sqlQuery, $sqlParameters, $pageDimension = 10)
     {
-        $this->pagination = new Pagination($this->id.(strpos($this->id, '_') ? '_pagination' : 'Pagination'));
-        $this->pagination->setSql($db, $sqlQuery, $sqlParameters, empty($pageDimension) ? 10 : $pageDimension);
-        $this->pagination->setParentComponent($this->id);
+        $this->pagination = new Pagination(
+            $this->id.(strpos($this->id, '_') ? '_pagination' : 'Pagination'),
+            empty($pageDimension) ? 10 : $pageDimension
+        );
+        $this->pagination->setSql($db, $sqlQuery, $sqlParameters);
+        $this->pagination->setParentComponent($this->id);        
         return $this->pagination;
     }
     
