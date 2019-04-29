@@ -14,7 +14,7 @@
     margin-left: -28px;
     margin-bottom: 5px !important;
 }
-.bcl-datagrid-thead {
+.bcl-datagrid-border-on .bcl-datagrid-thead {
     border: 1px solid #ddd;   
 }
 .bcl-datagrid-thead > .bcl-datagrid-th {
@@ -25,19 +25,22 @@
 .bcl-datagrid-thead > .bcl-datagrid-th:first-child {
     border-left: 1px solid transparent;
 }
-.bcl-datagrid-body .row:first-child {
+.bcl-datagrid-border-on .bcl-datagrid-body .row:first-child {
     border-top: 1px solid #ddd;
 }
-.bcl-datagrid-body .row:hover {
+.bcl-datagrid-body .bcl-datagrid-body-row:hover {
     background-color: #f8f8f8;
 }
-.bcl-datagrid-body .row {
-    border-left: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-    border-right: 1px solid #ddd;
+.bcl-datagrid-body .row {    
     padding-top: 5px;
     padding-bottom: 5px;
     position: relative;
+}
+
+.bcl-datagrid-border-on .row {
+    border-left: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
 }
 
 .bcl-datagrid-body .cmd-row {
@@ -47,11 +50,11 @@
     right: 5px;
 } 
 
-.bcl-datagrid-body div.row:hover .cmd-row
+.bcl-datagrid-body div.bcl-datagrid-body-row:hover .cmd-row
 {
-    display: block;
-    
+    display: block;    
 }
+
 .bcl-datagrid-body .cmd-row:hover a
 {
     color: red !important;
