@@ -21,6 +21,7 @@ class DataGrid2 extends Component
     private $pagination;
     private $showHeader = true;
     private $title;
+    private $rowWidth = 12;
     
     public function __construct($name)
     {
@@ -102,11 +103,11 @@ class DataGrid2 extends Component
         $body->att('class','bcl-datagrid-body');        
         if (empty($this->data)) {
             return $this->buildEmptyMessage($body);
-        }
-        foreach ($this->data as $rec) {
+        }        
+        foreach ($this->data as $recIdx => $rec) {
             $body->add(
                 $this->buildRow($rec)
-            );
+            );            
         }        
         return $body;
     }
@@ -135,10 +136,9 @@ class DataGrid2 extends Component
      * @param type $row
      * @return Tag
      */
-    private function buildRow($row)
+    private function buildRow($row, $class = 'row')
     {
-        $tr = new Tag('div');
-        $tr->att('class', 'row');
+        $tr = new Tag('div', null, $class);        
         foreach ($this->columns as $properties) {
             if (is_callable($properties['field'])) {
                 $properties['function'] = $properties['field'];
@@ -148,7 +148,7 @@ class DataGrid2 extends Component
                          $row[$properties['field']] : 
                          '<label class="label label-warning">No data found</label>';            
             }
-            $cell = $tr->add(new Tag('div'))->att('class', 'bcl-datagrid-td');            
+            $cell = $tr->add(new Tag('div', null, 'bcl-datagrid-td'));            
             $cell->add(
                 $this->valueFormatting($value, $cell, $properties, $row, $tr)
             );
@@ -166,10 +166,8 @@ class DataGrid2 extends Component
      */
     private function buildTitle()
     {        
-        $tr = new Tag('div');
-        $tr->att('class','row bcl-datagrid-title')
-           ->add(new Tag('div'))
-           ->att('class','col-lg-12')
+        $tr = new Tag('div', null, 'row bcl-datagrid-title');
+        $tr->add(new Tag('div', null, 'col-lg-12'))           
            ->add($this->title);
         return $tr;
     }
