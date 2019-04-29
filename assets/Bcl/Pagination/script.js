@@ -1,19 +1,22 @@
 BclPager = {
     init : function() {
-        $('.BclPager').each(function() {
-            
+        $('.BclPagination').each(function() {            
             if ($(this).hasClass('infinitescroll')) {
                 console.log('init');
                 $(document).imagesLoaded(function() {
                     BclPager.infiniteScrollInit($('.infinitescroll'));
                 });
             }                      
-            $('body').on('click','.BclPager a',function(e){
+            $('body').on('click','.BclPagination a',function(e){                
                 e.preventDefault();
-                var par = $(this).closest('.BclPager');
-                var hdn = $('input[type=hidden]:first-child', par);
-                hdn.val($(this).data('value'));
-                $(this).closest('form').submit();                
+                var parent = $(this).closest('.BclPagination');
+                var hidden = $('input[type=hidden]:first-child', parent);
+                hidden.val($(this).data('value'));
+                if ($(parent).data('parent')) {                    
+                    Osynapsy.refreshComponents([$(parent).data('parent')]);
+                } else {
+                    $(this).closest('form').submit();
+                }                
             });            
         });
     },
