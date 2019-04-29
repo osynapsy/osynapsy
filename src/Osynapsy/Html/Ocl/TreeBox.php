@@ -30,6 +30,7 @@ class TreeBox extends Component
     private $refreshOnOpen = [];
     private $nodeOpenIds = [];
     private $nodeSelectedId;
+    private $pathSelected = [];
     
     const CLASS_SELECTED_LABEL = 'osy-treebox-label-selected';
     const ICON_NODE_CONNECTOR_EMPTY = '<span class="tree tree-null">&nbsp;</span>';
@@ -46,12 +47,11 @@ class TreeBox extends Component
         $this->add(new HiddenBox("{$id}_opn"))->setClass('openNodes');
         $this->setClass('osy-treebox');
         $this->requireJs('Ocl/TreeBox/script.js');
-        $this->requireCss('Ocl/TreeBox/style.css');
+        $this->requireCss('Ocl/TreeBox/style.css');        
     }
     
     protected function __build_extra__()
-    {
-        $this->buildTreeData();        
+    {             
         $this->nodeOpenIds = $this->buildNodeOpenIds();
         $this->nodeSelectedId = filter_input(\INPUT_POST, "{$this->id}_sel");
         $nodeSelectedId = empty($_REQUEST["{$this->id}_open"]) ? self::ROOT_ID : $_REQUEST["{$this->id}_open"];
@@ -183,6 +183,15 @@ class TreeBox extends Component
         }
         return $this->buildLeaf($nodeId, $level, $position, $icons);
     }
+     
+    private function buildPath($nodeId)
+    {                
+        if (empty($nodeId) || empty($this->data[$nodeId])){
+            return;
+        } 
+        $this->pathSelected[] = $this->data[$nodeId];
+        $this->buildPath($this->data[$nodeId][2]);        
+    }
     
     private function buildTreeData()
     {        
@@ -197,7 +206,12 @@ class TreeBox extends Component
             $this->treeData[$row[2]][] = $row[0];
             $data[$row[0]] = $row;
         }
-        $this->setData($data);
+        $this->data = $data;
+    }
+    
+    public function getPath()
+    {
+        return $this->pathSelected;
     }
     
     public function onClickRefresh($componentId)
@@ -211,4 +225,14 @@ class TreeBox extends Component
         $this->refreshOnOpen[] = $componentId;
         return $this;
     }
+    
+    public function setData($data)
+    {
+        parent::setData($data);
+        if (!empty($this->data)){
+            $this->buildTreeData();
+            $this->buildPath(filter_input(\INPUT_POST, "{$this->id}_sel"));
+        }
+        return $this;
+    }    
 }
