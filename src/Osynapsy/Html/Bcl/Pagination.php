@@ -55,8 +55,8 @@ class Pagination extends Component
         if (!empty($infiniteContainer)) {
             $this->setInfiniteScroll($infiniteContainer);
         }
-        $this->requireJs('Bcl/Pager/script.js');
-        $this->att('class','BclPager',true);
+        $this->requireJs('Bcl/Pagination/script.js');
+        $this->setClass('BclPagination');
         if ($tag == 'form') {
             $this->att('method','post');
         }
@@ -76,7 +76,7 @@ class Pagination extends Component
         }
         $this->add(new HiddenBox($this->id));
         foreach($this->fields as $field) {
-            $this->add(new HiddenBox($field));
+            $this->add(new HiddenBox($field, $field.'_hidden'));
         }
         $ul = $this->add(new Tag('ul'));
         $ul->att('class','pagination');
@@ -251,10 +251,13 @@ class Pagination extends Component
         return array_key_exists($key, $this->total) ? $this->total[$key] : null;
     }
     
-    public function loadData($requestPage)
+    public function loadData($requestPage = null)
     {        
         if (empty($this->sql)) {
             return array();
+        }
+        if (is_null($requestPage) && filter_input(\INPUT_POST, $this->id)) {
+            $requestPage = filter_input(\INPUT_POST, $this->id);
         }
         $where = $this->buildFilter();
       
@@ -313,6 +316,7 @@ class Pagination extends Component
     public function setParentComponent($componentId)
     {
         $this->parentComponent = $componentId;
+        $this->att('data-parent', $componentId);
         return $this;
     }
     
