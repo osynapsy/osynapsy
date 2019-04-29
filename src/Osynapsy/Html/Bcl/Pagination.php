@@ -64,9 +64,9 @@ class Pagination extends Component
             $this->page['dimension'] = $_REQUEST[$this->id.'PageDimension'];
         } elseif (!empty($_REQUEST[$this->id.'_page_dimension'])) {
             $this->page['dimension'] = $_REQUEST[$this->id.'_page_dimension'];
-        } elseif ($pageDimension) {
+        } else {
             $this->page['dimension'] = $pageDimension;
-        }
+        }        
     }
     
     public function __build_extra__()
@@ -324,5 +324,8 @@ class Pagination extends Component
         return $this;
     }
                    
-    
+    public function getStatistics()
+    {
+        return $this->page;
+    }
 }
