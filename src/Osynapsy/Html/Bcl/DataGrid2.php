@@ -38,7 +38,7 @@ class DataGrid2 extends Component
     {
         //If datagrid has pager get data from it.
         if (!empty($this->pagination)) {
-            $this->setData($this->pagination->loadData(0));
+            $this->setData($this->pagination->loadData());
         } 
         //If Datagrid has title append and show it.
         if (!empty($this->title)) {
