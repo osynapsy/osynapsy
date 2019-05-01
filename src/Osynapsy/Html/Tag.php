@@ -22,6 +22,13 @@ class Tag
     public $tagdep = 0;
     public $parent = null;
     
+    /**
+     * Constructor of tag
+     * 
+     * @param type $tag to build
+     * @param type $id identity of tag
+     * @param type $class css class
+     */
     public function __construct($tag = 'dummy', $id = null, $class = null)
     {
         $this->att(0, $tag);
@@ -33,6 +40,12 @@ class Tag
         }
     }
     
+    /**
+     * Check if inaccessible property is in attribute
+     *  
+     * @param type $attribute
+     * @return type
+     */
     public function __get($attribute)
     {
         if ($attribute == 'tag') {
@@ -41,6 +54,11 @@ class Tag
         return array_key_exists($attribute, $this->attributes) ? $this->attributes[$attribute] : null;
     }
     
+    /**
+     * 
+     * @param type $attribute
+     * @param type $value
+     */
     public function __set($attribute, $value)
     {
        $this->attributes[$attribute] = $value;
