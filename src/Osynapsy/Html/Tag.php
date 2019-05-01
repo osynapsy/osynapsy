@@ -24,7 +24,7 @@ class Tag
     
     public function __construct($tag = 'dummy', $id = null, $class = null)
     {
-        $this->att(0,$tag);
+        $this->att(0, $tag);
         if (!empty($id)) {
             $this->att('id', $id);
         }
@@ -46,6 +46,12 @@ class Tag
        $this->attributes[$attribute] = $value;
     }
     
+    /**
+     * Add child content to childs repo
+     * 
+     * @param $child
+     * @return \Osynapsy\Html\tag|$this
+     */
     public function add($child)
     {
         if ($child instanceof tag) {
@@ -68,14 +74,28 @@ class Tag
         return $child;
     }
     
+    /**
+     * Add childs from array
+     * 
+     * @param array $array
+     * @return $this
+     */
     public function addFromArray(array $array)
     {
         foreach ($array as $child) {
             $this->add($child);
         }
-        return $child;
+        return $this;
     }
     
+    /**
+     * Set attribute value of tag
+     * 
+     * @param type $attribute
+     * @param type $value
+     * @param type $concat
+     * @return $this
+     */
     public function att($attribute, $value = '', $concat = false)
     {
         if (is_array($attribute)) {
@@ -90,45 +110,62 @@ class Tag
         return $this;
     }
     
+    /**
+     * Build html tag e return string
+     * 
+     * @return string
+     */
     protected function build()
     {
-        $strContent = '';
-        foreach ($this->childs as $content) {
-            $strContent .= $content;
-        }
         $tag = array_shift($this->attributes);
-        if ($tag == 'dummy') {
-            return $strContent;
+        $content = implode('', $this->childs);
+        if (empty($tag) || $tag == 'dummy') {
+            return $content;
         }
-        $spaces = $strTag = '';
-        if (!empty($tag)){
-            $spaces = $this->tagdep != 0 ? "\n".str_repeat("  ",abs($this->tagdep)) : '';
-            $strTag = $spaces.'<'.$tag;
-            foreach ($this->attributes as $key => $val) {
-                $strTag .= ' '.$key.'="'.htmlspecialchars($val, ENT_QUOTES).'"';
-                // la conversione del contentuto degli attributi viene fornita da Tag in modo
-                // tale che non debba essere gestito dai suoi figli
-                /*$strTag .= ' '.$key.'="'.$val.'"';*/
-            }
-            $strTag .= '>';
+        $spaces = $this->tagdep != 0 ? PHP_EOL.str_repeat("  ",abs($this->tagdep)) : '';
+        $strTag = $spaces.'<'.$tag;
+        foreach ($this->attributes as $key => $value) {
+            $strTag .= ' '.$key.'="'.htmlspecialchars($value, ENT_QUOTES).'"';
+            // la conversione del contentuto degli attributi viene fornita da Tag in modo
+            // tale che non debba essere gestito dai suoi figli
+            /*$strTag .= ' '.$key.'="'.$val.'"';*/
         }
-        if (!in_array($tag, array('input', 'img', 'link', 'meta'))) {
-            $spaces2 = $this->tagdep < 0 ? $spaces : '';
-            $strTag .= $strContent . (!empty($tag) ? $spaces2."</{$tag}>" : '');
+        $strTag .= '>';
+        
+        if (!in_array($tag, ['input', 'img', 'link', 'meta'])) {
+            $strTag .= $content . ($this->tagdep < 0 ? $spaces : '') ."</{$tag}>";
         }
         return $strTag;
     }
     
-    public static function create($tag, $id = null)
+    /**
+     * Static method for create a tag object
+     * 
+     * @param string $tag
+     * @param string $id
+     * @return \Osynapsy\Html\tag
+     */
+    public static function create($tag, $id = null, $class = null)
     {
-        return new tag($tag,$id);
+        return new Tag($tag, $id, $class);
     }
     
+    /**
+     * Get html string of tag
+     * 
+     * @return type
+     */
     public function get()
     {
         return $this->build();
     }
     
+    /**
+     * Get $index child from repo
+     * 
+     * @param int $index
+     * @return boolean
+     */
     public function child($index = 0)
     {
         if (is_null($index)) {
@@ -140,11 +177,21 @@ class Tag
         return false;
     }
     
+    /**
+     * Check if tag content is empty
+     * 
+     * @return boolean
+     */
     public function isEmpty()
     {
         return count($this->childs) > 0 ? false : true;
     }
 
+    /**
+     * Magic method for rendering tag in html
+     * 
+     * @return type
+     */
     public function __toString()
     {
         try {
