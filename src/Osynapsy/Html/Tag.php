@@ -13,8 +13,10 @@ namespace Osynapsy\Html;
 
 class Tag
 {
-    private $att = [];
-    private $cnt = [];
+    //Attribute repo
+    private $attributes = [];
+    //Content repo
+    private $childs = [];
     
     public $ref = array(); 
     public $tagdep = 0;
@@ -34,63 +36,56 @@ class Tag
     public function __get($attribute)
     {
         if ($attribute == 'tag') {
-            return $this->att[0];
+            return $this->attributes[0];
         }
-        return array_key_exists($attribute, $this->att) ? $this->att[$attribute] : null;
+        return array_key_exists($attribute, $this->attributes) ? $this->attributes[$attribute] : null;
     }
     
     public function __set($attribute, $value)
     {
-       $this->att[$attribute] = $value;
+       $this->attributes[$attribute] = $value;
     }
     
-    public function add($a, $d='last')
+    public function add($child)
     {
-        if (is_object($a)) {
-            if ($a instanceof tag) {
-                $a->tagdep = abs($this->tagdep) + 1;
-                $this->tagdep = abs($this->tagdep) * -1;
+        if ($child instanceof tag) {
+            if ($child->id && array_key_exists($child->id,$this->ref)) {
+                return $this->ref[$child->id];                
             }
-            if ($a->id && array_key_exists($a->id,$this->ref)) {
-                $a = $this->ref[$a->id];
-                return $a;
-            } elseif ($a->id) {
-                $this->ref[$a->id] = $a;
-            }
-            $a->parent =& $this;
+            $child->tagdep = abs($this->tagdep) + 1;
+            $this->tagdep = abs($this->tagdep) * -1;
         }
-        if ($d == 'last') {
-            if (is_array($this->cnt)) {
-                array_push($this->cnt,$a);
-            } 
-        } else {
-            array_unshift($this->cnt,$a);
-            ksort($this->cnt);
+        //Append child to childs repo
+        $this->childs[] = $child;
+        //If child isn't object return $this tag
+        if (!is_object($child)) {
+            return $this;
         }
-        return $a;
+        if ($child->id) {
+            $this->ref[$child->id] =& $child;
+        }
+        $child->parent =& $this;
+        return $child;
     }
     
-    public function addFromArray($a)
+    public function addFromArray(array $array)
     {
-        if (!is_array($a)) {
-            return $this->add($a);
+        foreach ($array as $child) {
+            $this->add($child);
         }
-        foreach ($a as $t) {
-            $this->add($t);
-        }
-        return $t;
+        return $child;
     }
     
     public function att($attribute, $value = '', $concat = false)
     {
         if (is_array($attribute)) {
             foreach ($attribute as $key => $value) {
-                $this->att[$key] = $value;
+                $this->attributes[$key] = $value;
             }            
-        } elseif ($concat && !empty($this->att[$attribute])) {            
-            $this->att[$attribute] .= ($concat === true ? ' ' : $concat) . $value;
+        } elseif ($concat && !empty($this->attributes[$attribute])) {            
+            $this->attributes[$attribute] .= ($concat === true ? ' ' : $concat) . $value;
         } else {
-            $this->att[$attribute] = $value;
+            $this->attributes[$attribute] = $value;
         }
         return $this;
     }
@@ -98,10 +93,10 @@ class Tag
     protected function build()
     {
         $strContent = '';
-        foreach ($this->cnt as $content) {
+        foreach ($this->childs as $content) {
             $strContent .= $content;
         }
-        $tag = array_shift($this->att);
+        $tag = array_shift($this->attributes);
         if ($tag == 'dummy') {
             return $strContent;
         }
@@ -109,7 +104,7 @@ class Tag
         if (!empty($tag)){
             $spaces = $this->tagdep != 0 ? "\n".str_repeat("  ",abs($this->tagdep)) : '';
             $strTag = $spaces.'<'.$tag;
-            foreach ($this->att as $key => $val) {
+            foreach ($this->attributes as $key => $val) {
                 $strTag .= ' '.$key.'="'.htmlspecialchars($val, ENT_QUOTES).'"';
                 // la conversione del contentuto degli attributi viene fornita da Tag in modo
                 // tale che non debba essere gestito dai suoi figli
@@ -124,7 +119,7 @@ class Tag
         return $strTag;
     }
     
-    public static function create($tag,$id=null)
+    public static function create($tag, $id = null)
     {
         return new tag($tag,$id);
     }
@@ -137,17 +132,17 @@ class Tag
     public function child($index = 0)
     {
         if (is_null($index)) {
-            return $this->cnt;   
+            return $this->childs;   
         }
-        if (array_key_exists($index, $this->cnt)) {
-            return $this->cnt[$index];
+        if (array_key_exists($index, $this->childs)) {
+            return $this->childs[$index];
         }
         return false;
     }
     
     public function isEmpty()
     {
-        return count($this->cnt) > 0 ? false : true;
+        return count($this->childs) > 0 ? false : true;
     }
 
     public function __toString()
@@ -162,10 +157,5 @@ class Tag
             echo '</pre>';
             return $this->id;
         }
-    }
-    
-    public function set($content)
-    {
-        $this->cnt = array($content);
     }
 }
