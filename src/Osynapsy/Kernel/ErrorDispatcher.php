@@ -141,8 +141,13 @@ class ErrorDispatcher
     {
         ob_clean();
         if (filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION')) {
-            return $message;
+            return $this->pageTraceErrorText($message, $trace);
         }
+        return $this->pageTraceErrorHtml($message, $trace);
+    }
+    
+    private function pageTraceErrorHtml($message, $trace)
+    {
         $body = '';
         if (!empty($trace)) {
             $body .= '<table style="border-collapse: collapse;">';
@@ -177,6 +182,19 @@ class ErrorDispatcher
             </style>
 PAGE;
                     
+    }
+    
+    private function pageTraceErrorText($message, $trace = [])
+    {
+        $message .= PHP_EOL;
+        foreach($trace as $step) {
+            if (empty($step['file'])) {
+                continue;
+            }
+            $message .= $step['line'].' - ';
+            $message .= $step['file'].PHP_EOL;
+        }
+        return $message;
     }
     
     public function get()
