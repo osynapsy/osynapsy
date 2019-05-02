@@ -308,6 +308,16 @@ class DbOci implements InterfaceDbo
         $this->execCommand($cmd, $keys);
     }
 
+    public function replace($table, array $args, array $conditions)
+    {                        
+        $result = $this->select($table, ['NUMROWS' => 'count(*)'], $conditions);
+        if (!empty($result) && !empty($result[0]) && !empty($result[0]['NUMROWS'])) {
+            $this->update($table, $args, $conditions);
+            return;
+        } 
+        $this->insert($table, array_merge($args, $conditions));
+    }
+    
     public function select($table, array $fields, array $condition)
     {
         $where = array();   
