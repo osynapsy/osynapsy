@@ -97,7 +97,7 @@ class Kernel
         if (empty($applications)) {
             throw new KernelException('No app configuration found', 1001);
         }
-        foreach(array_keys($applications) as $applicationId) {
+        foreach (array_keys($applications) as $applicationId) {
             $routes = $this->loader->search('route', "app.{$applicationId}");
             foreach ($routes as $route) {
                 if (!isset($route['path'])) {
