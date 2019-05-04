@@ -28,22 +28,22 @@ class DbPdo extends \PDO implements InterfaceDbo
     private $iCursor = null;
     public  $backticks = '"';
     
-    public function __construct($str)
+    public function __construct($connectionString)
     {
-        $par = explode(':',$str);
+        $par = explode(':', $connectionString);
         switch ($par[0]) {
             case 'sqlite':
-                $this->param['typ'] = trim($par[0]);
+                $this->param['type'] = trim($par[0]);
                 $this->param['db']  = trim($par[1]);
                 break;
             case 'mysql':
                 $this->backticks = '`';
             default:
-                $this->param['typ'] = trim($par[0]);
-                $this->param['hst'] = trim($par[1]);
+                $this->param['type'] = trim($par[0]);
+                $this->param['host'] = trim($par[1]);
                 $this->param['db']  = trim($par[2]);
-                $this->param['usr'] = trim($par[3]);
-                $this->param['pwd'] = trim($par[4]);
+                $this->param['username'] = trim($par[3]);
+                $this->param['password'] = trim($par[4]);
                 $this->param['query-parameter-dummy'] = '?';
                 break;
         }
@@ -61,16 +61,21 @@ class DbPdo extends \PDO implements InterfaceDbo
     
     public function connect()
     {
-        $opt = array();
-        switch ($this->param['typ']) {
+        $option = array();
+        switch ($this->param['type']) {
             case 'sqlite':
-                parent::__construct("{$this->param['typ']}:{$this->param['db']}");
+                parent::__construct("{$this->param['type']}:{$this->param['db']}");
                 break;
             case 'mysql' :
-                $opt[\PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8mb4";
+                $option[\PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8mb4";
             default:
-                $cnstr = "{$this->param['typ']}:host={$this->param['hst']};dbname={$this->param['db']}";
-                parent::__construct($cnstr,$this->param['usr'],$this->param['pwd'], $opt);
+                $connectionString = "{$this->param['type']}:host={$this->param['host']};dbname={$this->param['db']}";
+                parent::__construct(
+                    $connectionString, 
+                    $this->param['username'],
+                    $this->param['password'],
+                    $option
+                );
                 break;
         }
         $this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -78,7 +83,7 @@ class DbPdo extends \PDO implements InterfaceDbo
 
     public function getType()
     {
-        return $this->param['typ'];
+        return $this->param['type'];
     }
 
     //Metodo che setta il parametri della connessione
@@ -118,11 +123,11 @@ class DbPdo extends \PDO implements InterfaceDbo
         return;
     }
     
-    public function execQuery($sql, $par = null, $mth = null, $iColumn = null)
+    public function execQuery($sql, $parameters = null, $fetchMethod = null, $fetchColumnIdx = null)
     {
         $this->iCursor = $this->prepare($sql);
-        $this->iCursor->execute($par);
-        switch ($mth) {
+        $this->iCursor->execute($parameters);
+        switch ($fetchMethod) {
             case 'NUM':
                 $mth = \PDO::FETCH_NUM;
                 break;
@@ -136,17 +141,15 @@ class DbPdo extends \PDO implements InterfaceDbo
                 $mth = \PDO::FETCH_BOTH;
                 break;
         }
-        if (is_null($iColumn)) {
-            $res = $this->iCursor->fetchAll($mth);
-        } else {
-            $res = $this->iCursor->fetchAll(\PDO::FETCH_COLUMN, $iColumn);
-        }
-        return $res;
+        if (is_null($fetchColumnIdx)) {
+            return $this->iCursor->fetchAll($mth);
+        } 
+        return $this->iCursor->fetchAll(\PDO::FETCH_COLUMN, $returnColumnIdx);
     }
 
-    public function execUnique($sql, $par = null, $mth = 'NUM')
+    public function execUnique($sql, $parameters = null, $fetchMethod = 'NUM')
     {
-        $raw = $this->execQuery($sql, $par, $mth);       
+        $raw = $this->execQuery($sql, $parameters, $fetchMethod);       
         if (empty($raw)) {
             return null;
         }
@@ -170,7 +173,7 @@ class DbPdo extends \PDO implements InterfaceDbo
         return $cols;
     }
 
-    public function insert($tbl, array $arg)
+    public function insert($table, array $arg)
     {
         $fld = $val = $arg2 = array();
         foreach ($arg as $k => $v) {
@@ -178,7 +181,7 @@ class DbPdo extends \PDO implements InterfaceDbo
             $val [] = '?';
             $arg2[] = $v;
         }
-        $cmd = 'insert into '.$tbl.'('.implode(',',$fld).') values ('.implode(',',$val).')';
+        $cmd = 'insert into '.$table.'('.implode(',',$fld).') values ('.implode(',',$val).')';
         $this->execCommand($cmd, $arg2);
         return $this->lastId();
     }
