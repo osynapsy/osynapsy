@@ -1,0 +1,18 @@
+<?php
+namespace Osynapsy\Db;
+
+/**
+ * Description of InterfaceRecord
+ *
+ * @author pietr
+ */
+interface InterfaceRecord
+{
+    public function findByKey($key);
+    
+    public function findByAttributes(array $searchParameters);
+    
+    public function get($key = null);
+    
+    public function setValue($field, $value = null, $defaultValue = null);
+}
