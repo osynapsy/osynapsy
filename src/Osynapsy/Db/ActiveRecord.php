@@ -23,7 +23,7 @@ namespace Osynapsy\Db;
  * @link     http://docs.osynapsy.org/ref/ActiveRecord
  */
 
-abstract class ActiveRecord
+abstract class ActiveRecord implements InterfaceRecord
 {
     protected $dbConnection;
     private $activeRecord = [];
@@ -441,6 +441,27 @@ abstract class ActiveRecord
     protected function softDelete()
     {
         return false;
+    }
+    
+    public function __get($field)
+    {
+        if (array_key_exists($field, $this->fields)) {
+            $field = $this->fields[$field];
+        }
+        return $this->get($field);
+    }
+    
+    public function __set($field, $value)
+    {
+        if (array_key_exists($field, $this->fields)) {
+            $field = $this->fields[$field];
+        }
+        return $this->set($field, $value);
+    }
+    
+    public function __invoke($field)
+    {
+        return $this->__get($field);
     }
     
     protected function afterDelete(){}
