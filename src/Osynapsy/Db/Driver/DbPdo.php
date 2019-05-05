@@ -233,8 +233,7 @@ class DbPdo extends \PDO implements InterfaceDbo
             $where[] = $field . ' IN (' .implode(',',array_fill(0, count($value), '?')) . ')';
             $values = array_merge($values, array_values($value));
         }
-        $command = 'update '.$table.' set '.implode(', ', $fields).' where '.implode(' and ', $where);
-        //die($command);
+        $command = 'UPDATE '.$table.' SET '.implode(', ', $fields).' WHERE '.implode(' AND ', $where);        
         return $this->execCommand($command, $values);
     }
 
