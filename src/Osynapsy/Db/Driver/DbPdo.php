@@ -283,11 +283,6 @@ class DbPdo extends \PDO implements InterfaceDbo
         return [$sql, $params];
     }
     
-    public function par($p)
-    {
-        return array_key_exists($p,$this->param) ? $this->param[$p] : null;
-    }
-    
     public function cast($field,$type)
     {
         $cast = $field;
