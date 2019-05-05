@@ -23,30 +23,54 @@ namespace Osynapsy\Db\Driver;
  * @link     http://docs.osynapsy.org/ref/DbPdo
  */
 class DbPdo extends \PDO implements InterfaceDbo
-{
-    private $param = array();
+{    
     private $iCursor = null;
-    public  $backticks = '"';
+    private $connectionStringDecoder = [
+        'sqlite' => ['type','db'],
+        '*' => ['type','host','dbname','username','password','port']
+    ];
+    private $param = [
+        'queryParameterDummy' => '?', 
+        'backticks' => '"'
+    ];
     
-    public function __construct($connectionString)
+    public function __construct($osyConnectionString)
     {
-        $par = explode(':', $connectionString);
-        switch ($par[0]) {
+        $option = [];
+        $pdoConnectionString = $this->buildPDOConnectionString($osyConnectionString);
+        switch ($this->type) {
             case 'sqlite':
-                $this->param['type'] = trim($par[0]);
-                $this->param['db']  = trim($par[1]);
+                parent::__construct("{$this->type}:{$this->dbname}");
                 break;
-            case 'mysql':
+            case 'mysql' :
+                $option[\PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8mb4";
                 $this->backticks = '`';
-            default:
-                $this->param['type'] = trim($par[0]);
-                $this->param['host'] = trim($par[1]);
-                $this->param['db']  = trim($par[2]);
-                $this->param['username'] = trim($par[3]);
-                $this->param['password'] = trim($par[4]);
-                $this->param['query-parameter-dummy'] = '?';
+            default:                
+                parent::__construct($pdoConnectionString, $this->username, $this->password, $option);
                 break;
         }
+        $this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+    }
+    
+    private function buildPDOConnectionString($osyConnectionString)
+    {
+        $cnParameters = explode(':', $osyConnectionString);
+        if (empty($cnParameters)) {
+            throw new \Exception('connection parameters is empty');
+        }        
+        $decoder = array_key_exists($cnParameters[0], $this->connectionStringDecoder) ? 
+                   $this->connectionStringDecoder[$cnParameters[0]] : 
+                   $this->connectionStringDecoder['*'];
+        foreach($decoder as $propertyIdx => $property) {            
+            if (!empty($cnParameters[$propertyIdx])) {
+                $this->{$property} = $cnParameters[$propertyIdx];
+            }            
+        }
+        $pdoConnectionString = "{$this->type}:host={$this->host};dbname={$this->dbname}";
+        if ($this->port) {
+            $pdoConnectionString .= ";port={$this->port}";
+        }
+        return $pdoConnectionString;
     }
     
     public function begin()
@@ -57,29 +81,7 @@ class DbPdo extends \PDO implements InterfaceDbo
     public function countColumn()
     {
        return $this->iCursor->columnCount();
-    }
-    
-    public function connect()
-    {
-        $option = array();
-        switch ($this->param['type']) {
-            case 'sqlite':
-                parent::__construct("{$this->param['type']}:{$this->param['db']}");
-                break;
-            case 'mysql' :
-                $option[\PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8mb4";
-            default:
-                $connectionString = "{$this->param['type']}:host={$this->param['host']};dbname={$this->param['db']}";
-                parent::__construct(
-                    $connectionString, 
-                    $this->param['username'],
-                    $this->param['password'],
-                    $option
-                );
-                break;
-        }
-        $this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-    }
+    }        
 
     public function getType()
     {
@@ -144,7 +146,7 @@ class DbPdo extends \PDO implements InterfaceDbo
         if (is_null($fetchColumnIdx)) {
             return $this->iCursor->fetchAll($mth);
         } 
-        return $this->iCursor->fetchAll(\PDO::FETCH_COLUMN, $returnColumnIdx);
+        return $this->iCursor->fetchAll(\PDO::FETCH_COLUMN, $fetchColumnIdx);
     }
 
     public function execUnique($sql, $parameters = null, $fetchMethod = 'NUM')
@@ -304,5 +306,15 @@ class DbPdo extends \PDO implements InterfaceDbo
 
     public function close()
     {
+    }
+    
+    public function __get($key)
+    {
+        return array_key_exists($key, $this->param) ? $this->param[$key] : null;
+    }
+    
+    public function __set($key, $value)
+    {
+        return $this->param[$key] = $value;
     }
 }
