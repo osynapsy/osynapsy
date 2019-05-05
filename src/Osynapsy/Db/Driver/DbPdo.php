@@ -197,14 +197,14 @@ class DbPdo extends \PDO implements InterfaceDbo
             return;
         }
         $fields = $placeholder = array();
-        foreach ($rawValues[0] as $k => $v) {
-            $fields [] = $k;
+        foreach (array_keys($rawValues[0]) as $field) {
+            $fields [] = $field;
             $placeholder[] = '?';
         }
         $arguments = '('.implode(',',$placeholder).')';
         $params = [];
         $values = [];
-        foreach ($rawValues as $k => $record) {
+        foreach ($rawValues as $record) {
             $params[] = $arguments;
             $values = array_merge($values, array_values($record));
         }
