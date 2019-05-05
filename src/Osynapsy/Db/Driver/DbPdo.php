@@ -166,7 +166,9 @@ class DbPdo extends \PDO implements InterfaceDbo
    
     public function getColumns($stmt = null)
     {
-        $stmt = is_null($stmt) ? $this->cursor : $stmt;
+        if (is_null($stmt)) {
+            $stmt = $this->cursor;
+        }
         $cols = array();
         $ncol = $stmt->columnCount();
         for ($i = 0; $i < $ncol; $i++) {
@@ -175,16 +177,17 @@ class DbPdo extends \PDO implements InterfaceDbo
         return $cols;
     }
 
-    public function insert($table, array $arg)
+    public function insert($table, array $parameters)
     {
-        $fld = $val = $arg2 = array();
-        foreach ($arg as $k => $v) {
-            $fld [] = $k;
-            $val [] = '?';
-            $arg2[] = $v;
+        $fields = $placeholders = $values = [];
+        foreach ($parameters as $field => $value) {
+            $fields[] = $field;
+            $placeholders[] = '?';
+            $values[] = $value;
         }
-        $cmd = 'insert into '.$table.'('.implode(',',$fld).') values ('.implode(',',$val).')';
-        $this->execCommand($cmd, $arg2);
+        $sqlInsert = 'insert into '.$table.'('.implode(',',$fields).')';
+        $sqlInsert .= ' values ('.implode(',',$placeholders).')';
+        $this->execCommand($sqlInsert, $values);
         return $this->lastId();
     }
 
