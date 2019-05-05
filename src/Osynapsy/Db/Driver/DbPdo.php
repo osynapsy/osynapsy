@@ -292,16 +292,7 @@ class DbPdo extends \PDO implements InterfaceDbo
                 break;
         }
         return $cast;
-    }
-
-    public function free_rs($rs)
-    {
-        unset($rs);
-    }
-
-    public function close()
-    {
-    }
+    }   
     
     public function __get($key)
     {
