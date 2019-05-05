@@ -24,6 +24,10 @@ namespace Osynapsy\Db\Driver;
  */
 class DbPdo extends \PDO implements InterfaceDbo
 {    
+    const FETCH_NUM = 'NUM';
+    const FETCH_ASSOC = 'ASSOC';
+    const FETCH_BOTH = 'BOTH';
+    
     private $cursor = null;
     private $connectionStringDecoder = [
         'sqlite' => ['type','db'],
@@ -133,10 +137,10 @@ class DbPdo extends \PDO implements InterfaceDbo
             return $this->cursor->fetchAll(\PDO::FETCH_COLUMN, $fetchColumnIdx);
         } 
         switch ($fetchMethod) {
-            case 'NUM':
+            case self::FETCH_NUM:
                 $pdoFetchMethod = \PDO::FETCH_NUM;
                 break;
-            case 'ASSOC':
+            case self::FETCH_ASSOC:
                 $pdoFetchMethod = \PDO::FETCH_ASSOC;
                 break;
             case 'KEY_PAIR':
@@ -149,7 +153,7 @@ class DbPdo extends \PDO implements InterfaceDbo
         return $this->cursor->fetchAll($pdoFetchMethod);        
     }
 
-    public function execUnique($sql, $parameters = null, $fetchMethod = 'NUM')
+    public function execUnique($sql, $parameters = null, $fetchMethod = self::FETCH_NUM)
     {
         $raw = $this->execQuery($sql, $parameters, $fetchMethod);       
         if (empty($raw)) {
@@ -264,11 +268,11 @@ class DbPdo extends \PDO implements InterfaceDbo
             
     public function selectOne($table, array $conditions, array $fields = ['*'], $fetchMethod = 'ASSOC')
     {        
-        list($sql, $params) = $this->buildSelect($table, $fields, $conditions);
+        list($sql, $params) = $this->selectBuild($table, $fields, $conditions);
         return $this->execUnique($sql, $params, $fetchMethod);
     }
     
-    private function buildSelect($table, array $fields, array $conditions)
+    private function selectBuild($table, array $fields, array $conditions)
     {
         $sql = 'SELECT '. implode(',', $fields) . ' FROM ' . $table;
         if (empty($conditions)) {
