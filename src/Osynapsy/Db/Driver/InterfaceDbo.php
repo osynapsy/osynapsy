@@ -34,8 +34,6 @@ interface InterfaceDbo
     
     public function commit();
     
-    public function connect();
-    
     public function delete($table, array $conditions);
     
     public function execCommand($command, $parameters);

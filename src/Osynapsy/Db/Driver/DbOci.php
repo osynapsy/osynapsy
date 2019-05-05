@@ -40,6 +40,18 @@ class DbOci implements InterfaceDbo
         $this->__par['usr'] = trim($par[3]);
         $this->__par['pwd'] = trim($par[4]);
         $this->__par['query-parameter-dummy'] = 'pos';
+        $this->cn = oci_connect(
+            $this->__par['usr'],
+            $this->__par['pwd'],
+            "{$this->__par['hst']}/{$this->__par['db']}",
+            'AL32UTF8'
+        );
+        if (!$this->cn) {
+            $e = oci_error();
+            trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+        } else {
+            $this->execCommand("ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD'");
+        }
     }
     
     public function begin()
@@ -69,21 +81,6 @@ class DbOci implements InterfaceDbo
     public function quote($value)
     {
         return "'".str_replace("'", "''", $value)."'";
-    }
-    public function connect()
-    {
-        $this->cn = oci_connect(
-            $this->__par['usr'],
-            $this->__par['pwd'],
-            "{$this->__par['hst']}/{$this->__par['db']}",
-            'AL32UTF8'
-        );
-        if (!$this->cn) {
-            $e = oci_error();
-            trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-        } else {
-            $this->execCommand("ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD'");
-        }
     }
 
     function getType()
