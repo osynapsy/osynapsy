@@ -24,7 +24,7 @@ namespace Osynapsy\Db\Driver;
  */
 class DbPdo extends \PDO implements InterfaceDbo
 {    
-    private $iCursor = null;
+    private $cursor = null;
     private $connectionStringDecoder = [
         'sqlite' => ['type','db'],
         '*' => ['type','host','dbname','username','password','port']
@@ -80,7 +80,7 @@ class DbPdo extends \PDO implements InterfaceDbo
     
     public function countColumn()
     {
-       return $this->iCursor->columnCount();
+       return $this->cursor->columnCount();
     }        
 
     public function getType()
@@ -127,26 +127,26 @@ class DbPdo extends \PDO implements InterfaceDbo
     
     public function execQuery($sql, $parameters = null, $fetchMethod = null, $fetchColumnIdx = null)
     {
-        $this->iCursor = $this->prepare($sql);
-        $this->iCursor->execute($parameters);
+        $this->cursor = $this->prepare($sql);
+        $this->cursor->execute($parameters);
+        if (!is_null($fetchColumnIdx)) {
+            return $this->cursor->fetchAll(\PDO::FETCH_COLUMN, $fetchColumnIdx);
+        } 
         switch ($fetchMethod) {
             case 'NUM':
-                $mth = \PDO::FETCH_NUM;
+                $pdoFetchMethod = \PDO::FETCH_NUM;
                 break;
             case 'ASSOC':
-                $mth = \PDO::FETCH_ASSOC;
+                $pdoFetchMethod = \PDO::FETCH_ASSOC;
                 break;
             case 'KEY_PAIR':
-                $mth = \PDO::FETCH_KEY_PAIR;
+                $pdoFetchMethod = \PDO::FETCH_KEY_PAIR;
                 break;
             default :
-                $mth = \PDO::FETCH_BOTH;
+                $pdoFetchMethod = \PDO::FETCH_BOTH;
                 break;
         }
-        if (is_null($fetchColumnIdx)) {
-            return $this->iCursor->fetchAll($mth);
-        } 
-        return $this->iCursor->fetchAll(\PDO::FETCH_COLUMN, $fetchColumnIdx);
+        return $this->cursor->fetchAll($pdoFetchMethod);        
     }
 
     public function execUnique($sql, $parameters = null, $fetchMethod = 'NUM')
@@ -166,7 +166,7 @@ class DbPdo extends \PDO implements InterfaceDbo
    
     public function getColumns($stmt = null)
     {
-        $stmt = is_null($stmt) ? $this->iCursor : $stmt;
+        $stmt = is_null($stmt) ? $this->cursor : $stmt;
         $cols = array();
         $ncol = $stmt->columnCount();
         for ($i = 0; $i < $ncol; $i++) {
@@ -273,13 +273,11 @@ class DbPdo extends \PDO implements InterfaceDbo
             return $sql;
         }
         $where = $params = [];
-        foreach($conditions as $field => $value) {
+        foreach ($conditions as $field => $value) {
             $where[] = $field.' = :'.sha1($field);
             $params[sha1($field)] = $value;
-        }
-        
-        $sql .= ' WHERE '.implode(' AND ', $where);    
-
+        }        
+        $sql .= ' WHERE '.implode(' AND ', $where);
         return [$sql, $params];
     }
     
