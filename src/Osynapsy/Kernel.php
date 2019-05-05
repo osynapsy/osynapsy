@@ -43,11 +43,18 @@ class Kernel
      * @param string $fileconf path of the instance configuration file
      * @param object $composer Instance of composer loader
      */
-    public function __construct($fileconf, $composer = null, Request $Request = null)
+    public function __construct($fileconf, $composer = null)
     {
         $this->composer = $composer;
         $this->loader = new Loader($fileconf);
-        $this->request = !empty($Request) ? $Request : new Request($_GET, $_POST, array(), $_COOKIE, $_FILES, $_SERVER);
+        $this->request = new Request(
+            $_GET, 
+            $_POST,
+            [],
+            $_COOKIE,
+            $_FILES,
+            $_SERVER
+        );
         $this->request->set(
             'app.parameters',
             $this->loadConfig('parameter', 'name', 'value')
@@ -144,7 +151,7 @@ class Kernel
      */
     public function followRoute(Route $route)
     {
-        $this->request->set('page.route', $route);
+        $this->getRequest()->set('page.route', $route);
         $starter = new Starter($this->request, $route);
         return $starter->run();  
     }
@@ -152,5 +159,10 @@ class Kernel
     public function getRequest()
     {
         return $this->request;
+    }
+    
+    public function getVersion()
+    {
+        return self::VERSION;
     }
 }
