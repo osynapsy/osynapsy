@@ -25,7 +25,7 @@ namespace Osynapsy\Db\Driver;
 class DbOci implements InterfaceDbo
 {
     private $__par = array();
-    private $__cur = null;
+    private $cursor = null;
     public  $backticks = '"';
     public  $cn = null;
     private $__transaction = false;
@@ -66,7 +66,7 @@ class DbOci implements InterfaceDbo
 
     public function columnCount()
     {
-       return $this->__cur->columnCount();
+       return $this->cursor->columnCount();
     }
 
     public function commit()
@@ -125,8 +125,7 @@ class DbOci implements InterfaceDbo
         $rs = oci_parse($this->cn, $cmd);
         if (!$rs) {
             $e = oci_error($this->cn);  // For oci_parse errors pass the connection handle
-            throw new \Exception($e['message']);
-            return;
+            throw new \Exception($e['message']);            
         }
         if (!empty($par) && is_array($par)) {
             foreach ($par as $k => $v) {
@@ -143,8 +142,7 @@ class DbOci implements InterfaceDbo
         
         if (!$ok) {
             $e = oci_error($rs);  // For oci_parse errors pass the connection handle
-            throw new \Exception($e['message'].PHP_EOL.$e['sqltext'].PHP_EOL.print_r($par,true));
-            return;
+            throw new \Exception($e['message'].PHP_EOL.$e['sqltext'].PHP_EOL.print_r($par,true));            
         } 
         
         if ($rs_return) {
@@ -160,7 +158,7 @@ class DbOci implements InterfaceDbo
 
     public function execQuery($sql, $par = null, $fetchMethod = null)
     {
-        $this->__cur = $this->execCommand($sql, $par);
+        $this->cursor = $this->execCommand($sql, $par);
         switch ($fetchMethod) {
             case 'BOTH':
                 $fetchMethod = OCI_BOTH;
@@ -172,7 +170,13 @@ class DbOci implements InterfaceDbo
                 $fetchMethod = OCI_ASSOC;
                 break;
         }
-        oci_fetch_all($this->__cur, $result, null, null, OCI_FETCHSTATEMENT_BY_ROW|OCI_RETURN_NULLS|OCI_RETURN_LOBS|$fetchMethod);
+        oci_fetch_all(
+            $this->cursor,
+            $result, 
+            null, 
+            null, 
+            OCI_FETCHSTATEMENT_BY_ROW | OCI_RETURN_NULLS | OCI_RETURN_LOBS | $fetchMethod
+        );
         //oci_free_statement($cur);
         return $result;
     }
@@ -207,7 +211,13 @@ class DbOci implements InterfaceDbo
 
     public function fetchAll2($rs)
     {
-        oci_fetch_all($rs, $res, null, null, OCI_FETCHSTATEMENT_BY_ROW|OCI_ASSOC|OCI_RETURN_NULLS|OCI_RETURN_LOBS);
+        oci_fetch_all(
+            $rs, 
+            $res, 
+            null, 
+            null, 
+            OCI_FETCHSTATEMENT_BY_ROW | OCI_ASSOC | OCI_RETURN_NULLS | OCI_RETURN_LOBS
+        );
         return $res;
     }
 
@@ -223,13 +233,17 @@ class DbOci implements InterfaceDbo
     public function execUnique($sql, $par = null, $mth = 'NUM')
     {
        $res = $this->execQuery($sql, $par, $mth);
-       if (empty($res)) return null;
-       return (count($res[0])==1) ? $res[0][0] : $res[0];
+       if (empty($res)) {
+           return null;
+       }
+       return count($res[0])==1 ? $res[0][0] : $res[0];
     }
 
     public function getColumns($stmt = null)
     {
-        $stmt = is_null($stmt) ? $this->__cur : $stmt;
+        if (is_null($stmt)) {
+            $stmt =  $this->cursor;
+        }
         $cols = array();
         $ncol = oci_num_fields($stmt);
         for ($i = 1; $i <= $ncol; $i++) {
