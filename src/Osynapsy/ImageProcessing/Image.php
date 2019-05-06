@@ -65,7 +65,7 @@ class Image
         return false;
     }
     
-    public function crop($x, $y, $cropW, $cropH, $bgcolor = [255,255,255])
+    public function crop($x, $y, $cropW, $cropH, $resizeW = null, $resizeH = null, $bgcolor = [255,255,255])
     {
         $imageW = imagesx($this->image);
         $imageH = imagesy($this->image);
@@ -86,13 +86,17 @@ class Image
         }
         if (($imageH + $destY) < $cropH) {
             $cropH = $imageH;
+        }        
+        if (!imagecopy($cropI, $this->image, $destX, $destY, $x, $y, $cropW, $cropH)) {
+            return false;            
         }
-        //mail('pietro.celeste@gmail.com','crop',print_r(func_get_args(),true).' w:'.$imageW.' h:'.$imageH);
-        if (imagecopy($cropI, $this->image, $destX, $destY, $x, $y, $cropW, $cropH)) {
-            $this->image = $cropI;
-            return true;
+        $this->image = $cropI;
+        $this->info[0] = $cropW;
+        $this->info[1] = $cropH;
+        if (!empty($resizeW) && !empty($resizeH)) {
+            $this->resize($resizeW, $resizeH, $bgcolor);
         }
-        return false;
+        return true;
     }
     
     public function getDimension()
