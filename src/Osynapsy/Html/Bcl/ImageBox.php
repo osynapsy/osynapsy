@@ -34,6 +34,7 @@ class ImageBox extends Component
     private $toolbar;
     private $dummy;
     private $cropActive = false;
+    private $preserveAspectRatio = false;
     private $action = array(
         'crop' => 'crop',
         'delete' => 'deleteImage'
@@ -47,6 +48,7 @@ class ImageBox extends Component
         $this->requireJs('Bcl/ImageBox/script.js');
         parent::__construct('div',$id.'_box');
         $this->att('class','osy-imagebox-bcl')->att('data-action','save');
+        $this->att('data-preserve-aspect-ratio', 0);
         $this->add(new HiddenBox($id));
         $this->dummy = $this->add(new Tag('label', null, 'osy-imagebox-dummy'))                            
                             ->att('for',$id);
@@ -100,9 +102,8 @@ class ImageBox extends Component
             return;
         }
         if ($this->cropActive) {
-            $this->image['object'] = $this->add(new Tag('img'))
-                                          ->att('src', $this->image['domain'].$this->image['webPath'])
-                                          ->att('class','imagebox-main')
+            $this->image['object'] = $this->add(new Tag('img', null, 'imagebox-main'))
+                                          ->att('src', $this->image['domain'].$this->image['webPath'])                                          
                                           ->att('data-action',$this->action['crop']);
         } else {
             $this->image['object'] = $this->dummy->add(new Tag('img'))->att('src', $this->image['domain'].$this->image['webPath']);
@@ -178,5 +179,10 @@ class ImageBox extends Component
     public function activeDebug()
     {
         $this->debug = true;
+    }
+    
+    public function setPreserveAspectRatio($value)
+    {
+        $this->att('data-preserve-aspect-ratio', empty($value) ? 0 : 1);
     }
 }
