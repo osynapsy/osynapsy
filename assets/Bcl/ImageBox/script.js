@@ -23,9 +23,9 @@ BclImageBox2 =
     },
     initCropBox : function(img)
     {
-        var cropBoxWidth = $(img).closest('.crop').data('max-width');
-        var cropBoxHeight = $(img).closest('.crop').data('max-height');
-        var preserveAspect = $(img).closest('.crop').data('preserve-aspect-ratio') ? true : false;
+        var cropBoxWidth = $(img).closest('.crop').data('maxWidth');
+        var cropBoxHeight = $(img).closest('.crop').data('maxHeight');
+        var preserveAspect = $(img).closest('.crop').data('preserveAspectRatio') ? true : false;        
         $(img).rcrop({
             minSize : [cropBoxWidth, cropBoxHeight],
             //maxSize : [cropBoxWidth, cropBoxHeight],
