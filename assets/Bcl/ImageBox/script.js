@@ -28,7 +28,7 @@ BclImageBox2 =
         $(img).rcrop({
             minSize : [cropBoxWidth, cropBoxHeight],
             //maxSize : [cropBoxWidth, cropBoxHeight],
-            preserveAspectRatio : true,
+            preserveAspectRatio : false,
             grid : true    
         });        
     },
