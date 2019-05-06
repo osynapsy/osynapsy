@@ -14,6 +14,7 @@ namespace Osynapsy\Html\Bcl;
 use Osynapsy\Helper\ImageProcessing\Image;
 use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
+use Osynapsy\Html\Ocl\HiddenBox;
 
 class ImageBox extends Component
 {
@@ -39,19 +40,18 @@ class ImageBox extends Component
     );
     
     public function __construct($id)
-    {        
-        $this->requireCss('Lib/cropper-2.3.2/cropper.css');
-        $this->requireJs('Lib/cropper-2.3.2/cropper.js');
+    {
+        $this->requireCss('Lib/rcrop/style.css');
+        $this->requireJs('Lib/rcrop/script.js');
         $this->requireCss('Bcl/ImageBox/style.css');        
         $this->requireJs('Bcl/ImageBox/script.js');
         parent::__construct('div',$id.'_box');
         $this->att('class','osy-imagebox-bcl')->att('data-action','save');
-        //$this->add(new HiddenBox($id));
-        $this->dummy = $this->add(new Tag('label'))
-                            ->att('class','osy-imagebox-dummy')
+        $this->add(new HiddenBox($id));
+        $this->dummy = $this->add(new Tag('label', null, 'osy-imagebox-dummy'))                            
                             ->att('for',$id);
-        $file = $this->add(new Tag('input'));
-        $file->att('type','file')->att('class','hidden')->att('id',$id)->name = $id;
+        $file = $this->add(new Tag('input', $id, 'hidden'));
+        $file->att('type','file')->att('style','visibility: hidden;')->name = $id;
         
         $this->toolbar = new Tag('div');
         $this->toolbar->att('class','osy-imagebox-bcl-cmd');
@@ -131,17 +131,17 @@ class ImageBox extends Component
         $this->cropActive = true;
         $this->att('data-max-width', $this->image['maxwidth']);
         $this->att('data-max-height', $this->image['maxheight']);
-        $this->att('class','crop',true);
         $this->att('data-zoom','1');
-        $this->toolbar->add('<button type="button" class="imagebox-command crop btn btn-info btn-sm"><span class="fa fa-crop"></span></button> ');
-        $this->toolbar->add('<button type="button" class="imagebox-command zoomin btn btn-info btn-sm"><span class="fa fa-search-plus"></span></button> ');
-        $this->toolbar->add('<button type="button" class="imagebox-command zoomout btn btn-info btn-sm"><span class="fa fa-search-minus"></span></button> ');
+        $this->setClass('crop');
+        $this->toolbar->add('<button type="button" class="crop-command btn btn-info btn-sm"><span class="fa fa-crop"></span></button> ');
+        $this->toolbar->add('<button type="button" class="zoomin-command btn btn-info btn-sm"><span class="fa fa-search-plus"></span></button> ');
+        $this->toolbar->add('<button type="button" class="zoomout-command btn btn-info btn-sm"><span class="fa fa-search-minus"></span></button> ');
         if ($this->debug) {
             $this->setClass('debug');
-            $this->toolbar->add('<input type="text" class="form-control input-xs" placeholder="debug" name="'.$this->id.'_debug" class="debug" value="">');
+            $this->toolbar->add('<input type="text" name="'.$this->id.'_debug" class="debug" value="">');
         }
-    }
-    
+    }        
+        
     public function setDomain($domain)
     {
         $this->image['domain'] = $domain;
