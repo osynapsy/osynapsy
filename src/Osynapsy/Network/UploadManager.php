@@ -45,11 +45,13 @@ class UploadManager
         if (empty($uploadRoot)){
             return 'configuration parameters.path-upload is empty';
         }
-        if (!is_dir($this->documentRoot.$uploadRoot)) {
-            if (!$this->createDir($this->documentRoot.$uploadRoot)) {
-                return 'path-upload '.$this->documentRoot.$uploadRoot.' not exists';
-            }
+        $dirToCheck = $this->documentRoot.$uploadRoot;
+        if (!is_dir($dirToCheck)) {            
+            if (!$this->createDir($dirToCheck)) {
+                return sprintf('Create %s dir is not possibile', $dirToCheck);
+            }   
         } 
+        
         if (!is_writeable($this->documentRoot.$uploadRoot)) {
             return $this->documentRoot.$uploadRoot.' is not writeable.';
         }        
@@ -69,7 +71,7 @@ class UploadManager
         $fileNameTemp = $_FILES[$componentName]['tmp_name'];
         $alert = $this->checkUploadDir($uploadRoot);
         if (!empty($alert)) {
-            throw new \Exception('path-upload '.$this->documentRoot.$uploadRoot.' not exists');            
+            throw new \Exception($alert);            
         } elseif(empty($fileNameFinal)) {             
             throw new \Exception('Filename is empty for field '.$componentName);
         } elseif (empty($fileNameTemp)) {            
