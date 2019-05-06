@@ -33,8 +33,7 @@ class ImageBox extends Component
     private $resizeMethod = 'resize';
     private $toolbar;
     private $dummy;
-    private $cropActive = false;
-    private $preserveAspectRatio = false;
+    private $cropActive = false;    
     private $action = array(
         'crop' => 'crop',
         'delete' => 'deleteImage'
@@ -118,7 +117,6 @@ class ImageBox extends Component
             $height = ceil($this->image['height'] * ($this->image['maxwidth'] / $this->image['width']));
         }
         $this->image['object'];
-             //->att('style','width:'.$width.'px; height: '.$height.'px;');
     }
     
     private function checkCrop()
@@ -132,6 +130,8 @@ class ImageBox extends Component
         $this->cropActive = true;
         $this->att('data-max-width', $this->image['maxwidth']);
         $this->att('data-max-height', $this->image['maxheight']);
+        $this->att('data-img-width', $this->image['width']);
+        $this->att('data-img-height', $this->image['height']);
         $this->att('data-zoom','1');
         $this->setClass('crop');
         $this->toolbar->add('<button type="button" class="crop-command btn btn-info btn-sm"><span class="fa fa-crop"></span></button> ');
