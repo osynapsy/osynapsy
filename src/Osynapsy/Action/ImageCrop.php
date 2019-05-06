@@ -40,13 +40,15 @@ class ImageCrop
         $this->pathinfo = pathinfo($this->targetFile);        
     }
 
-    public function cropAction($newWidth, $newHeight, $cropX, $cropY, $cropWidth, $cropHeight, $filename)
+    public function cropAction($cropWidth, $cropHeight, $cropX, $cropY, $filename, $newWidth = null, $newHeight = null)
     {       
-        $img = new Image('.'.$this->targetFile);
-        $img->resize($newWidth, $newHeight);
+        $img = new Image('.'.$this->targetFile);        
         $img->crop($cropX, $cropY, $cropWidth, $cropHeight);
         if (!empty($filename) && $filename[0] !== '/') {
             $filename = $this->pathinfo['dirname'].'/'.$filename;
+        }
+        if (!empty($newWidth) && !empty($newHeight)) {
+            $img->resize($newWidth, $newHeight);
         }
         $img->save('.'.$filename);                
         $this->updateRecord($filename);        
