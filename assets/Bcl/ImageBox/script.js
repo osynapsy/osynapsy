@@ -25,10 +25,11 @@ BclImageBox2 =
     {
         var cropBoxWidth = $(img).closest('.crop').data('max-width');
         var cropBoxHeight = $(img).closest('.crop').data('max-height');
+        var preserveAspect = $(img).closest('.crop').data('preserve-aspect-ratio') ? true : false;
         $(img).rcrop({
             minSize : [cropBoxWidth, cropBoxHeight],
             //maxSize : [cropBoxWidth, cropBoxHeight],
-            preserveAspectRatio : false,
+            preserveAspectRatio : preserveAspect,
             grid : true    
         });        
     },
