@@ -66,7 +66,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         return $this->getResponse();
     }
 
-    public function getApp()
+    final public function getApp()
     {
         return $this->application;
     }
@@ -76,7 +76,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         return $this->getApp()->getDb($key);
     }
     
-    public function getDbFactory()
+    final public function getDbFactory()
     {
         return $this->getApp()->getDbFactory();
     }
@@ -86,7 +86,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         return $this->dispatcher;
     }
     
-    public function getModel()
+    final public function getModel()
     {
         return $this->model;
     }
