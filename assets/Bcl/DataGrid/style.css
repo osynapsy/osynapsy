@@ -38,6 +38,10 @@
     position: relative;
 }
 
+.bcl-datagrid-body .bcl-datagrid-td:nth-last-child(2) {
+    padding-right: 25px !important;
+}
+
 .bcl-datagrid-border-on .bcl-datagrid-body .row,
 .bcl-datagrid-border-on .bcl-datagrid-head .row {
     border-left: 1px solid #ddd;
