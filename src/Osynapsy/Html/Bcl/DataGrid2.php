@@ -26,7 +26,7 @@ class DataGrid2 extends Component
     public function __construct($name)
     {
         parent::__construct('div', $name);
-        $this->att('class','bcl-datagrid');
+        $this->setClass('bcl-datagrid');
         $this->requireCss('Bcl/DataGrid/style.css');
         $this->requireJs('Bcl/DataGrid/script.js');
     }
@@ -304,6 +304,16 @@ class DataGrid2 extends Component
         $this->pagination->setSql($db, $sqlQuery, $sqlParameters);
         $this->pagination->setParentComponent($this->id);        
         return $this->pagination;
+    }
+    
+    /**
+     * Method for set table and rows borders visible
+     * 
+     * return void;
+     */
+    public function setBorderOn()
+    {
+        $this->setClass('bcl-datagrid-border-on');
     }
     
     /**
