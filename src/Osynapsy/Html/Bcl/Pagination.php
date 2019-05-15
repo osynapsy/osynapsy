@@ -31,16 +31,14 @@ class Pagination extends Component
     private $par;
     private $sql;  
     private $orderBy = null;
-    private $page = array(
-        'dimension' => 10,
-        'total' => 1,
-        'current' => 1
+    private $statistics = array(
+        'pageDimension' => 10,
+        'pageTotal' => 1,
+        'pageCurrent' => 1,
+        'rowsTotal' => 0
     ); //Dimension of the pag in row;
     private $parentComponent;
-    private $total = array(
-        'rows' => 0        
-    );
-    
+       
     /**
      * Costructor of pager component.
      * 
@@ -61,11 +59,11 @@ class Pagination extends Component
             $this->att('method','post');
         }
         if (!empty($_REQUEST[$this->id.'PageDimension'])) {
-            $this->page['dimension'] = $_REQUEST[$this->id.'PageDimension'];
+            $this->statistics['pageDimension'] = $_REQUEST[$this->id.'PageDimension'];
         } elseif (!empty($_REQUEST[$this->id.'_page_dimension'])) {
-            $this->page['dimension'] = $_REQUEST[$this->id.'_page_dimension'];
+            $this->statistics['pageDimension'] = $_REQUEST[$this->id.'_page_dimension'];
         } else {
-            $this->page['dimension'] = $pageDimension;
+            $this->statistics['pageDimension'] = $pageDimension;
         }        
     }
     
@@ -81,21 +79,21 @@ class Pagination extends Component
         $ul = $this->add(new Tag('ul'));
         $ul->att('class','pagination');
         $liFirst = $ul->add(new Tag('li'));
-        if ($this->page['current'] < 2) {
+        if ($this->statistics['pageCurrent'] < 2) {
             $liFirst->att('class','disabled');
         }
         $liFirst->add(new Tag('a'))
                 ->att('data-value','first')
                 ->att('href','#')
                 ->add('&laquo;');
-        $dim = min(7, $this->page['total']);
+        $dim = min(7, $this->statistics['pageTotal']);
         $app = floor($dim / 2);
-        $pageMin = max(1, $this->page['current'] - $app);
-        $pageMax = max($dim, min($this->page['current'] + $app, $this->page['total']));
-        $pageMin = min($pageMin, $this->page['total'] - $dim + 1);
+        $pageMin = max(1, $this->statistics['pageCurrent'] - $app);
+        $pageMax = max($dim, min($this->statistics['pageCurrent'] + $app, $this->statistics['pageTotal']));
+        $pageMin = min($pageMin, $this->statistics['pageTotal'] - $dim + 1);
         for ($i = $pageMin; $i <= $pageMax; $i++) {
             $liCurrent = $ul->add(new Tag('li'));
-            if ($i == $this->page['current']) {
+            if ($i == $this->statistics['pageCurrent']) {
                 $liCurrent->att('class','active');
             }
             $liCurrent->att('class','text-center',true)
@@ -105,7 +103,7 @@ class Pagination extends Component
                       ->add($i);
         }
         $liLast = $ul->add(new Tag('li'));
-        if ($this->page['current'] >= $this->page['total']) {
+        if ($this->statistics['pageCurrent'] >= $this->statistics['pageTotal']) {
             $liLast->att('class','disabled');
         }
         $liLast->add(new Tag('a'))
@@ -132,13 +130,13 @@ class Pagination extends Component
         } elseif ($this->orderBy) {
             $sql .= "\nORDER BY {$this->orderBy}";
         }
-        if (empty($this->page['dimension'])) {
+        if (empty($this->statistics['pageDimension'])) {
             return $sql;
         }
-        $startFrom = ($this->page['current'] - 1) * $this->page['dimension'];
+        $startFrom = ($this->statistics['pageCurrent'] - 1) * $this->statistics['pageDimension'];
         $startFrom = max(0, $startFrom);
         
-        $sql .= "\nLIMIT ".$startFrom." , ".$this->page['dimension'];
+        $sql .= "\nLIMIT ".$startFrom." , ".$this->statistics['pageDimension'];
         return $sql;
     }
     
@@ -150,12 +148,12 @@ class Pagination extends Component
         } elseif ($this->orderBy) {
             $sql .= "\nORDER BY {$this->orderBy}";
         }
-        if (empty($this->page['dimension'])) {
+        if (empty($this->statistics['pageDimension'])) {
             return $sql;
         }
-        $startFrom = ($this->page['current'] - 1) * $this->page['dimension'];
+        $startFrom = ($this->statistics['pageCurrent'] - 1) * $this->statistics['pageDimension'];
         $startFrom = max(0, $startFrom);
-        $sql .= "\nLIMIT ".$this->page['dimension']." OFFSET ".$startFrom;              
+        $sql .= "\nLIMIT ".$this->statistics['pageDimension']." OFFSET ".$startFrom;              
         return $sql;
     }
     
@@ -171,11 +169,11 @@ class Pagination extends Component
                         ".(!empty($_REQUEST[$this->id.'_order']) ? ' ORDER BY '.str_replace(array('][','[',']'),array(',','',''),$_REQUEST[$this->id.'_order']) : '')."
                     ) b
                 ) a ";
-        if (empty($this->page['dimension'])) {
+        if (empty($this->statistics['pageDimension'])) {
             return $sql;
         }
-        $startFrom = (($this->page['current'] - 1) * $this->page['dimension']) + 1 ;
-        $endTo = ($this->page['current'] * $this->page['dimension']);
+        $startFrom = (($this->statistics['pageCurrent'] - 1) * $this->statistics['pageDimension']) + 1 ;
+        $endTo = ($this->statistics['pageCurrent'] * $this->statistics['pageDimension']);
         $sql .=  "WHERE \"_rnum\" BETWEEN $startFrom AND $endTo";
         return $sql;
     }
@@ -201,34 +199,34 @@ class Pagination extends Component
 
     private function calcPage($requestPage)
     {                
-        $this->page['current'] = max(1,(int) $requestPage);
-        if ($this->total['rows'] == 0 || empty($this->page['dimension'])) {
+        $this->statistics['pageCurrent'] = max(1,(int) $requestPage);
+        if ($this->statistics['rowsTotal'] == 0 || empty($this->statistics['pageDimension'])) {
             return;
         }
-        $this->page['total'] = ceil($this->total['rows'] / $this->page['dimension']);
+        $this->statistics['pageTotal'] = ceil($this->statistics['rowsTotal'] / $this->statistics['pageDimension']);
         $this->att(
             'data-page-max',
-            max($this->page['total'],1)
+            max($this->statistics['pageTotal'],1)
         );
         switch ($requestPage) {
             case 'first':
-                $this->page['current'] = 1;
+                $this->statistics['pageCurrent'] = 1;
                 break;
             case 'last' :
-                $this->page['current'] = $this->page['total'];
+                $this->statistics['pageCurrent'] = $this->statistics['pageTotal'];
                 break;
             case 'prev':
-                if ($this->page['current'] > 1){
-                    $this->page['current']--;
+                if ($this->statistics['pageCurrent'] > 1){
+                    $this->statistics['pageCurrent']--;
                 }
                 break;
             case 'next':
-                if ($this->page['current'] < $this->page['total']) {
-                    $this->page['current']++;
+                if ($this->statistics['pageCurrent'] < $this->statistics['pageTotal']) {
+                    $this->statistics['pageCurrent']++;
                 }
                 break;
             default:
-                $this->page['current'] = min($this->page['current'], $this->page['total']);
+                $this->statistics['pageCurrent'] = min($this->statistics['pageCurrent'], $this->statistics['pageTotal']);
                 break;
         }
     }
@@ -236,6 +234,7 @@ class Pagination extends Component
     public function getPageDimensionsCombo()
     {
         $Combo = new ComboBox($this->id.(strpos($this->id, '_') ? '_page_dimension' : 'PageDimension'));
+        $Combo->setPlaceholder('- Dimensione pagina -');
         $Combo->att('onchange',"Osynapsy.refreshComponents(['{$this->parentComponent}'])")->att('style','margin-top: 20px;')->setArray([
             ['10', '10 righe'],
             ['20', '20 righe'],
@@ -248,7 +247,12 @@ class Pagination extends Component
     
     public function getTotal($key)
     {
-        return array_key_exists($key, $this->total) ? $this->total[$key] : null;
+        return $this->getStatistic('total'.ucfirst($key));
+    }
+    
+    public function getStatistic($key = null)
+    {
+        return array_key_exists($key, $this->statistics) ? $this->statistics[$key] : null;
     }
     
     public function loadData($requestPage = null)
@@ -264,8 +268,8 @@ class Pagination extends Component
         $count = "SELECT COUNT(*) FROM (\n{$this->sql}\n) a " . $where;
           
         try {                     
-            $this->total['rows'] = $this->db->execUnique($count, $this->par);
-            $this->att('data-total-rows',$this->total['rows']);
+            $this->statistics['rowsTotal'] = $this->db->execUnique($count, $this->par);
+            $this->att('data-total-rows', $this->statistics['rowsTotal']);
         } catch(\Exception $e) {
             echo $this->errors[] = '<pre>'.$count."\n".$e->getMessage().'</pre>';
             return array();
