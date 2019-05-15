@@ -31,14 +31,21 @@ class Pagination extends Component
     private $par;
     private $sql;  
     private $orderBy = null;
+    private $parentComponent;
     private $statistics = array(
+        //Dimension of the pag in row;
         'pageDimension' => 10,
         'pageTotal' => 1,
         'pageCurrent' => 1,
         'rowsTotal' => 0
-    ); //Dimension of the pag in row;
-    private $parentComponent;
-       
+    ); 
+    private $pageDimensions = [
+        1 => ['10', '10 righe'],
+        2 => ['20', '20 righe'],
+        5 => ['50', '50 righe'],
+        10 => ['100', '100 righe'],
+        20 => ['200', '200 righe']
+    ];       
     /**
      * Costructor of pager component.
      * 
@@ -58,13 +65,7 @@ class Pagination extends Component
         if ($tag == 'form') {
             $this->att('method','post');
         }
-        if (!empty($_REQUEST[$this->id.'PageDimension'])) {
-            $this->statistics['pageDimension'] = $_REQUEST[$this->id.'PageDimension'];
-        } elseif (!empty($_REQUEST[$this->id.'_page_dimension'])) {
-            $this->statistics['pageDimension'] = $_REQUEST[$this->id.'_page_dimension'];
-        } else {
-            $this->statistics['pageDimension'] = $pageDimension;
-        }        
+        $this->setPageDimension($pageDimension);    
     }
     
     public function __build_extra__()
@@ -235,13 +236,9 @@ class Pagination extends Component
     {
         $Combo = new ComboBox($this->id.(strpos($this->id, '_') ? '_page_dimension' : 'PageDimension'));
         $Combo->setPlaceholder('- Dimensione pagina -');
-        $Combo->att('onchange',"Osynapsy.refreshComponents(['{$this->parentComponent}'])")->att('style','margin-top: 20px;')->setArray([
-            ['10', '10 righe'],
-            ['20', '20 righe'],
-            ['50', '50 righe'],
-            ['100', '100 righe'],
-            ['200', '200 righe']
-        ]);
+        $Combo->att('onchange',"Osynapsy.refreshComponents(['{$this->parentComponent}'])")
+              ->att('style','margin-top: 20px;')
+              ->setArray($this->pageDimensions);
         return $Combo;
     }
     
@@ -315,6 +312,24 @@ class Pagination extends Component
     {
         $this->orderBy = $field;
         return $this;
+    }
+    
+    public function setPageDimension($pageDimension)
+    {
+        if (!empty($_REQUEST[$this->id.'PageDimension'])) {
+            $this->statistics['pageDimension'] = $_REQUEST[$this->id.'PageDimension'];
+        } elseif (!empty($_REQUEST[$this->id.'_page_dimension'])) {
+            $this->statistics['pageDimension'] = $_REQUEST[$this->id.'_page_dimension'];
+        } else {
+            $this->statistics['pageDimension'] = $pageDimension;
+        }
+        if ($pageDimension === 10) {
+            return;
+        }
+        foreach(array_keys($this->pageDimensions) as $key) {
+            $dimension = $pageDimension * $key;
+            $this->pageDimensions[$key] = [$dimension, "{$dimension} righe"];
+        }
     }
     
     public function setParentComponent($componentId)
