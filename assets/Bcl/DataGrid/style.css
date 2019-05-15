@@ -18,7 +18,8 @@
     border: 1px solid #ddd;   
 }
 .bcl-datagrid-thead > .bcl-datagrid-th {
-    padding: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
     border-left: 1px solid #ddd;
     background-color: #fdfdfd;
 }
@@ -37,7 +38,8 @@
     position: relative;
 }
 
-.bcl-datagrid-border-on .row {
+.bcl-datagrid-border-on .bcl-datagrid-body .row,
+.bcl-datagrid-border-on .bcl-datagrid-head .row {
     border-left: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
     border-right: 1px solid #ddd;
