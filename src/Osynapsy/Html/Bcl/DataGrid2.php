@@ -194,7 +194,7 @@ class DataGrid2 extends Component
     {        
         switch($properties['type']) {            
             case 'money':
-                $value = number_format($value, 2, ',', '.');
+                $value = is_numeric($value) ? number_format($value, 2, ',', '.') : $value;
                 $properties['class'] .= ' text-right';
                 break;
             case 'commands':
