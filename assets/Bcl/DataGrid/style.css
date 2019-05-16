@@ -5,6 +5,9 @@
     margin-left: 0px !important;
     margin-right: 0px !important;
 }
+.bcl-datagrid .bcl-datagrid-th {
+    position: relative;
+}
 .bcl-datagrid .bcl-datagrid-th,
 .bcl-datagrid .bcl-datagrid-head {
     font-weight: bold;
@@ -72,4 +75,16 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 0.9em;
+}
+
+.bcl-datagrid-th-order-label {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    font-size: 8px;
+    border-left: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 1px 5px;
+    background-color: white;
+    border-radius: 0px 0px 0px 3px;
 }
