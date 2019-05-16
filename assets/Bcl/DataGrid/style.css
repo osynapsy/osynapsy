@@ -13,6 +13,11 @@
     font-weight: bold;
     cursor: pointer;
 }
+
+.bcl-datagrid .bcl-datagrid-th-order-by:hover {
+    background-color: #eee !important;
+}
+
 .bcl-datagrid .bcl-datagrid-head {
     font-size: 1.2em;
     margin-left: -28px;
