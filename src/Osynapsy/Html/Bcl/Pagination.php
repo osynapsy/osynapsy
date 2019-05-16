@@ -65,7 +65,8 @@ class Pagination extends Component
         if ($tag == 'form') {
             $this->att('method','post');
         }
-        $this->setPageDimension($pageDimension);    
+        $this->setPageDimension($pageDimension);
+        $this->setOrder(filter_input(\INPUT_POST, $this->id.'OrderBy'));
     }
     
     public function __build_extra__()
@@ -73,7 +74,10 @@ class Pagination extends Component
         if (!$this->loaded) {
             $this->loadData;
         }
-        $this->add(new HiddenBox($this->id));
+        $this->add(new HiddenBox($this->id))
+             ->setClass('BclPaginationCurrentPage');
+        $this->add(new HiddenBox($this->id.'OrderBy'))
+             ->setClass('BclPaginationOrderBy');
         foreach($this->fields as $field) {
             $this->add(new HiddenBox($field, $field.'_hidden'));
         }
@@ -310,7 +314,9 @@ class Pagination extends Component
     
     public function setOrder($field)
     {
-        $this->orderBy = $field;
+        if (empty($this->orderBy)) {
+            $this->orderBy = str_replace(['][', '[', ']'], [',' ,'' ,''], $field);
+        }
         return $this;
     }
     
