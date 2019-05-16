@@ -64,7 +64,8 @@ class DataGrid2 extends Component
     private function buildColumnHead()
     {
         $tr = new Tag('div');
-        $tr->att('class', 'row bcl-datagrid-thead hidden-xs');        
+        $tr->att('class', 'row bcl-datagrid-thead hidden-xs');
+        $idxOrderBy = 1;
         foreach($this->columns as $rawLabel => $properties) {            
             if (empty($rawLabel)) {
                 continue;
@@ -83,9 +84,11 @@ class DataGrid2 extends Component
             $th->att('data-idx', $orderByField)->att('class', 'bcl-datagrid-th-order-by', true);
             $paginationOrderByString = filter_input(\INPUT_POST, $this->pagination->id.'OrderBy');
             if (strpos($paginationOrderByString,'['.$orderByField.']') !== false) {
-                $th->add(' <span class="orderIcon glyphicon glyphicon-sort-by-alphabet"></span>');                
+                $th->add('<span class="bcl-datagrid-th-order-label">'.$idxOrderBy.' <i class="fa fa-arrow-up"></i></sup>');
+                $idxOrderBy++;
             } elseif (strpos($paginationOrderByString,'['.$orderByField.' DESC]') !== false) {                
-                $th->add(' <span class="orderIcon glyphicon glyphicon-sort-by-alphabet-alt"></span>');
+                $th->add('<span class="bcl-datagrid-th-order-label">'.$idxOrderBy.' <i class="fa fa-arrow-down"></i></span>');
+                $idxOrderBy++;
             }
         }
         return $tr;
