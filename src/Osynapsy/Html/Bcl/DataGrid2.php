@@ -194,7 +194,13 @@ class DataGrid2 extends Component
      */
     private function valueFormatting($value, &$cell, $properties, $rec, &$tr)
     {        
-        switch($properties['type']) {            
+        switch($properties['type']) {
+            case 'check':
+                if (empty($value)) {
+                    break;
+                }
+                $value = '<input type="checkbox" name="'.$this->id.''.$properties['field'].'['.$value.']" value="'.$value.'">';                
+                break;
             case 'money':
                 $value = is_numeric($value) ? number_format($value, 2, ',', '.') : $value;
                 $properties['class'] .= ' text-right';
