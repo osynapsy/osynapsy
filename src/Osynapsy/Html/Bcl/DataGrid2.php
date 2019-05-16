@@ -65,7 +65,11 @@ class DataGrid2 extends Component
     {
         $tr = new Tag('div');
         $tr->att('class', 'row bcl-datagrid-thead hidden-xs');
-        $idxOrderBy = 1;
+        $paginationOrderByFields = explode(',', str_replace(
+            ['][','[',']'],
+            [',','',''],
+            filter_input(\INPUT_POST, $this->pagination->id.'OrderBy')
+        ));
         foreach($this->columns as $rawLabel => $properties) {            
             if (empty($rawLabel)) {
                 continue;
@@ -82,13 +86,12 @@ class DataGrid2 extends Component
             }
             $orderByField = $properties['fieldOrderBy'];
             $th->att('data-idx', $orderByField)->att('class', 'bcl-datagrid-th-order-by', true);
-            $paginationOrderByString = filter_input(\INPUT_POST, $this->pagination->id.'OrderBy');
-            if (strpos($paginationOrderByString,'['.$orderByField.']') !== false) {
-                $th->add('<span class="bcl-datagrid-th-order-label">'.$idxOrderBy.' <i class="fa fa-arrow-up"></i></sup>');
-                $idxOrderBy++;
-            } elseif (strpos($paginationOrderByString,'['.$orderByField.' DESC]') !== false) {                
-                $th->add('<span class="bcl-datagrid-th-order-label">'.$idxOrderBy.' <i class="fa fa-arrow-down"></i></span>');
-                $idxOrderBy++;
+            foreach ([$orderByField, $orderByField.' DESC'] as $i => $token) {
+                $key = array_search($token, $paginationOrderByFields);
+                if ($key !== false) {
+                    $icon = ($key + 1).' <i class="fa fa-arrow-'.(empty($i) ? 'up' : 'down').'"></i>';
+                    $th->add('<span class="bcl-datagrid-th-order-label">'.$icon.' </span>');
+                }
             }
         }
         return $tr;
