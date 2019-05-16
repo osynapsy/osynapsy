@@ -26,6 +26,9 @@ BclDataGrid =
             $('.BclPaginationCurrentPage','#'+gridId).val(1);
             orderByField.val(orderByString);
             Osynapsy.refreshComponents([gridId]);
+        }).on('click','.bcl-datagrid-th-check-all', function(){
+            var className = $(this).data('fieldClass');
+            $('.'+className).click();
         });
     }
 };
