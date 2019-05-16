@@ -8,6 +8,7 @@
 .bcl-datagrid .bcl-datagrid-th,
 .bcl-datagrid .bcl-datagrid-head {
     font-weight: bold;
+    cursor: pointer;
 }
 .bcl-datagrid .bcl-datagrid-head {
     font-size: 1.2em;
