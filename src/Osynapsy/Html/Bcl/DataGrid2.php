@@ -64,16 +64,26 @@ class DataGrid2 extends Component
     private function buildColumnHead()
     {
         $tr = new Tag('div');
-        $tr->att('class', 'row bcl-datagrid-thead');
-        foreach($this->columns as $label => $properties) {
-            if (empty($label)) {
+        $tr->att('class', 'row bcl-datagrid-thead hidden-xs');        
+        foreach($this->columns as $rawLabel => $properties) {            
+            if (empty($rawLabel)) {
                 continue;
-            } elseif ($label[0] == '_') {
+            } elseif ($rawLabel[0] == '_') {
                 continue;
             }
-            $tr->add(new Tag('div'))
-               ->att('class', $properties['class'].' hidden-xs bcl-datagrid-th')               
-               ->add($label);
+            $th = $tr->add(new Tag('div', null, $properties['class'].' bcl-datagrid-th'));
+            $th->add(new Tag('span'))->add($rawLabel);
+            if (empty($this->pagination)) {
+                continue;
+            }
+            $orderByField = $properties['fieldOrderBy'];
+            $th->att('data-idx', $orderByField)->att('class', 'bcl-datagrid-th-order-by', true);
+            $paginationOrderByString = filter_input(\INPUT_POST, $this->pagination->id.'OrderBy');
+            if (strpos($paginationOrderByString,'['.$orderByField.']') !== false) {
+                $th->add(' <span class="orderIcon glyphicon glyphicon-sort-by-alphabet"></span>');                
+            } elseif (strpos($paginationOrderByString,'['.$orderByField.' DESC]') !== false) {                
+                $th->add(' <span class="orderIcon glyphicon glyphicon-sort-by-alphabet-alt"></span>');
+            }
         }
         return $tr;
     }
@@ -228,13 +238,20 @@ class DataGrid2 extends Component
      * @param callable $function for manipulate data value
      * @return $this
      */
-    public function addColumn($label, $field, $class = '', $type = 'string',callable $function = null)
-    {
+    public function addColumn(
+        $label, 
+        $field,
+        $class = '',
+        $type = 'string',
+        callable $function = null,
+        $fieldOrderBy = null
+    ){
         $this->columns[$label] = [
             'field' => $field,
+            'fieldOrderBy' => empty($fieldOrderBy) ? $field : $fieldOrderBy,
             'class' => $class,
             'type' => $type,
-            'function' => $function
+            'function' => $function            
         ];
         return $this;
     }
