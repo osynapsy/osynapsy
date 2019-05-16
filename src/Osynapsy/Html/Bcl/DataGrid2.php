@@ -213,7 +213,8 @@ class DataGrid2 extends Component
                     break;
                 }
                 $class = $this->id.''.$properties['field'];
-                $value = '<input type="checkbox" name="'.$class.'['.$value.']" class="'.$class.'" value="'.$value.'">';                
+                $checked = !empty($_POST[$class]) && !empty($_POST[$class][$value]) ? ' checked="checked"' : '';
+                $value = '<input type="checkbox" name="'.$class.'['.$value.']" class="'.$class.'" value="'.$value.'"'.$checked.'>';                
                 break;
             case 'money':
                 $value = is_numeric($value) ? number_format($value, 2, ',', '.') : $value;

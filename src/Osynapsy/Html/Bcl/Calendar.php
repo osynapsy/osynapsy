@@ -36,14 +36,15 @@ class Calendar extends Component
         '12' => 'Dicembre'
     );
 
+    private $items = [];
+        
     public function __construct($initDate, $type = null)
     {
-        $this->addRequire('Ocl/Component/Calendar/style.css');
-        $this->addRequire('Ocl/Component/Calendar/controller.js');
         parent::__construct('div');
-
+        $this->requireJs('Bcl/Calendar/script.js');
+        $this->requireCss('Bcl/Calendar/style.css');
         try {
-            $idat = new \DateTime(empty($_REQUEST['calendar_init_date']) ? date('Y-m-d') : $_REQUEST['calendar_init_date']);
+            $idat = new \DateTime(empty($initDate) ? date('Y-m-d') : $initDate);
         } catch (\Exception $e){
             $idat = new \DateTime(date('Y-m-d'));
         }
@@ -59,12 +60,11 @@ class Calendar extends Component
             'init-date' => $idat
         );
 
-        $this->att('class',"osy-view-calendar");
+        $this->setClass('osy-calendar');
           
         switch($this->getParameter('type')) {
             case 'daily': 
-                $this->par('period',[$idat->format('Y-m-d'),$idat->format('Y-m-d')]);
-                $this->par('build-method','build_daily');
+                $this->setParameter('period',[$idat->format('Y-m-d'),$idat->format('Y-m-d')]);
                 break;
             case 'weekly': 
                 $dw = $idat->format('w');
@@ -75,12 +75,10 @@ class Calendar extends Component
                 $dfwe = clone $idat;
                 $dfws->sub(new \DateInterval('P'.($dw - 1).'D'));
                 $dfwe->add(new \DateInterval('P'.(7 - $dw).'D'));
-                $this->par('period', [$dfws->format('Y-m-d'), $dfwe->format('Y-m-d')]);
-                $this->par('build-method','build_weekly');
+                $this->setParameter('period', [$dfws->format('Y-m-d'), $dfwe->format('Y-m-d')]);
                 break;
             default     :
-                $this->par('period', [$idat->format('Y-m-01'), $idat->format('Y-m-t')]);
-                $this->par('build-method', 'build_monthly');
+                $this->setParameter('period', [$idat->format('Y-m-01'), $idat->format('Y-m-t')]);
                 break;
         }
     }
@@ -91,7 +89,7 @@ class Calendar extends Component
         return (($d = jddayofweek(GregorianToJD ($mm,1,$aa),0)) == 0) ? 7 : $d;
     }
 
-    public function build()
+    protected function __build_extra__()
     {
         switch($this->getParameter('type')) {
             case 'daily':
@@ -108,20 +106,19 @@ class Calendar extends Component
         
     private function buildToolbar($label, $prev, $next, $type = 'monthly')
     {
-        $hd = $this->add(new Tag('div'))->att('class','osy-view-calendar-toolbar');
+        $toolbar = $this->add(new Tag('div', null, 'osy-calendar-toolbar'));
         //Button month navigation
-        $nav = $hd->add(new Tag('div'))
-                  ->att('class','osy-view-calendar-navigation');
-        $nav->add('<input type="button" name="btn_prev" value="&lt;" class="osy-calendar-command" data-date="'.($prev->format('Y-m-d')).'">');
-        $nav->add('<input type="button" name="btn_next" value="&gt;" class="osy-calendar-command" data-date="'.($next->format('Y-m-d')).'">');
+        $nav = $toolbar->add(new Tag('div', null, 'osy-calendar-toolbar-navigation'));
+        $nav->add('<input type="button" name="btn_prev" value="&lt;" class="osy-calendar-command btn btn-info btn-xs" data-date="'.($prev->format('Y-m-d')).'">');
+        $nav->add('<input type="button" name="btn_next" value="&gt;" class="osy-calendar-command btn btn-info btn-xs" data-date="'.($next->format('Y-m-d')).'">');
         //Label current month
-        $lbl = $hd->add(new Tag('div'))->att('class','osy-view-calendar-label')->add($label);
+        $nav->add(new Tag('span', null, 'osy-calendar-toolbar-label'))->add($label);
         //Button calendar type
-        $dty = $hd->add(new Tag('div'))->att('class','osy-view-calendar-type');
+        $dty = $toolbar->add(new Tag('div', null, 'osy-calendar-toolbar-type'));
         $dty->add('<input type="submit" id="btn_daily" value="Giorno" class="osy-calendar-command'.($type=='daily' ? ' ui-state-active' : '').'">');
         $dty->add('<input type="submit" id="btn_weekly" value="Settimana" class="osy-calendar-command'.($type=='weekly' ? ' ui-state-active' : '').'">');
         $dty->add('<input type="submit" id="btn_monthly" value="Mese" class="osy-calendar-command'.($type=='monthly' ? ' ui-state-active' : '').'">');
-        $hd->add('<br style="clear: both;">');
+        $toolbar->add('<br class="osy-clear">');
     }
         
     public function buildDaily()
@@ -315,15 +312,13 @@ class Calendar extends Component
     
     private function buildMonthly()
     {
-        $days = array_pad(array(),43,"&nbsp;");
-        $month_len = $this->getParameter('init-date')->format('t');
-        $start_day = $this->firstDayOfMonth($this->getParameter('init-date')->format('Y-m-d'));
-        //var_dump($start_day);
-        for ($i = 0; $i < $month_len; $i++) {
-            $days[$start_day + $i] = $i + 1;
-        }
-        $cellHeight = floor(($this->__par['dimension']['height'] - 120) / 6);
-        $cellWidth  = floor($this->__par['dimension']['width'] / 7)-2;
+        $dayBoxs = array_pad(array(),43,"&nbsp;");
+        $dayStart = $this->firstDayOfMonth($this->getParameter('init-date')->format('Y-m-d')) - 1;
+        
+        $monthLength = $this->getParameter('init-date')->format('t');                
+        for ($currentBoxIdx = 0; $currentBoxIdx < $monthLength; $currentBoxIdx++) {
+            $dayBoxs[$dayStart + $currentBoxIdx] = $currentBoxIdx + 1;
+        }        
         $intv = new \DateInterval('P1M');
         $prev = new \DateTime($this->getParameter('init-date')->format('Y-m-01'));
         $prev->sub($intv);
@@ -332,51 +327,49 @@ class Calendar extends Component
         //Build toolbar;
         $this->buildToolbar($this->getParameter('init-date')->format('F Y'), $prev, $next);
         //Build body;
-        $body = $this->add(new Tag('table'))->att('class','osy-view-calendar-monthly osy-maximize');
-        $row = $body->add(new Tag('thead'))->add(new Tag('tr'));
-        foreach($this->days_of_week as $day) {
-            $row->add(new Tag('th'))->add($day);
+        $body = $this->add(new Tag('div', null, 'osy-calendar-monthly'));
+        $head = $body->add(new Tag('div', null, 'osy-calendar-mounthly-head'));
+        foreach($this->daysOfWeek as $dayLabel) {
+            $head->add(new Tag('div', null, 'osy-calendar-mounthly-head-column'))->add('<b>'.$dayLabel.'</b>');
         }
-        $k        = $h = 1;
-        $data     = $this->getParameter('init-date')->format('Y-m-');
-        $tbody    = $body->add(new Tag('tbody'));
-        $init_day     = $this->getParameter('init-date')->format('Y-m-d');
-        for ($j = 0; $j < 6; $j++) {
-            $row = $tbody->add(new Tag('tr'));
-            for ($i = 0; $i < 7; $i++) {
-                $cel = $row->add(new Tag('td'))
-                           ->att('class','day')
-                           ->att('valign','top')
-                           ->att('style',"height: {$cell_hgt}px; width: {$cell_wdt}px;");
-                switch($i) {
+        $data    = $this->getParameter('init-date')->format('Y-m-');
+        $tbody   = $body->add(new Tag('div', null, 'osy-calendar-mounthly-body'));
+        $initDay = $this->getParameter('init-date')->format('Y-m-d');
+        for ($rowIdx = 0; $rowIdx < 6; $rowIdx++) {
+            $bodyRow = $tbody->add(new Tag('div', null, 'osy-calendar-mounthly-body-row'));         
+            for ($currentDayIdx = 0; $currentDayIdx < 7; $currentDayIdx++) {
+                $cellIdx = ($rowIdx * 7) + $currentDayIdx;
+                $cell = $bodyRow->add(new Tag('div', null, 'osy-calendar-day'))
+                                ->att('style',"height: 100px;");
+                switch($currentDayIdx) {
                     case 6:
-                            $cel->style .= 'color: red;';
+                            $cell->style .= 'color: red;';
                             break;
                 }
-                $k++;
-                if ($days[$k] == "&nbsp;") {
-                    $cel->att('class','dummy')->add('&nbsp');
+                if ($dayBoxs[$cellIdx] == "&nbsp;") {
+                    $cell->att('class','osy-calendar-day-dummy')->add('&nbsp');
                     continue;
                 } 
-                $dateCicle = $data.str_pad($days[$k],2,'0',STR_PAD_LEFT);
-                $cel->att('data-date',$dateCicle)
+                $dateCicle = $data.str_pad($dayBoxs[$cellIdx],2,'0',STR_PAD_LEFT);
+                
+                $cell->att('data-date',$dateCicle)
                     ->att('onmousedown',"return false")
                     ->att('onselectstart',"return false");
                 if ($dateCicle == date('Y-m-d')) {
-                    $cel->att('class','today',true);
+                    $cell->att('class','today',true);
                 }
-                if ($dateCicle == $init_day) {
-                    $cel->att('class','selected',true);
+                if ($dateCicle == $initDay) {
+                    $cell->att('class','selected',true);
                 }
                 //Num day
-                $cel->add(new Tag('div'))->att('class',"day-num")->add($days[$k]);
+                $cell->add(new Tag('div'))->att('class',"day-num")->add('<small>'.$dayBoxs[$cellIdx].'</small>');
                 if (!array_key_exists($dateCicle,$this->items)) {
                     continue;
                 } 
                 if (empty($this->items[$dateCicle])) {
                     continue;    
                 }
-                $cnt = $cel->add(new Tag('div'))->att('class','cell-cont '.($dateCicle < date('Y-m-d') ? 'day-past' : 'day-future'),true);
+                $cnt = $cell->add(new Tag('div'))->att('class','cell-cont '.($dateCicle < date('Y-m-d') ? 'day-past' : 'day-future'),true);
                 $cnt->att('style','width: '.$cell_wdt.'px;');
                 $ext_evt = 0;
                 for ($t = 0; $t < count($this->items[$dateCicle]); $t++) {
@@ -395,6 +388,7 @@ class Calendar extends Component
                 }
             }
         }
+        $this->add('<div class="osy-clear"></div>');
     }
 
     private function makeItem($par, $items, $class = '', $hour = '')
