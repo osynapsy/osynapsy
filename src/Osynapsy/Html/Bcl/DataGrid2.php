@@ -70,10 +70,13 @@ class DataGrid2 extends Component
                 continue;
             } elseif ($rawLabel[0] == '_') {
                 continue;
+            } elseif ($properties['type'] === 'check') {
+                $rawLabel = '<span class="fa fa-check bcl-datagrid-th-check-all" data-field-class="'.$this->id.''.$properties['field'].'"></span>';
             }
             $th = $tr->add(new Tag('div', null, $properties['class'].' bcl-datagrid-th'));
             $th->add(new Tag('span'))->add($rawLabel);
-            if (empty($this->pagination)) {
+            
+            if (empty($this->pagination) || $properties['type'] === 'check') {
                 continue;
             }
             $orderByField = $properties['fieldOrderBy'];
@@ -209,7 +212,8 @@ class DataGrid2 extends Component
                 if (empty($value)) {
                     break;
                 }
-                $value = '<input type="checkbox" name="'.$this->id.''.$properties['field'].'['.$value.']" value="'.$value.'">';                
+                $class = $this->id.''.$properties['field'];
+                $value = '<input type="checkbox" name="'.$class.'['.$value.']" class="'.$class.'" value="'.$value.'">';                
                 break;
             case 'money':
                 $value = is_numeric($value) ? number_format($value, 2, ',', '.') : $value;
