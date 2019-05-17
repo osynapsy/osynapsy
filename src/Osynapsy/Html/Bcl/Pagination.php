@@ -23,6 +23,7 @@ use Osynapsy\Html\Tag;
 class Pagination extends Component
 {
     private $columns = array();
+    private $entity = 'record';
     protected $data = array();
     private $db;
     private $filters = array();
@@ -244,6 +245,22 @@ class Pagination extends Component
               ->att('style','margin-top: 20px;')
               ->setArray($this->pageDimensions);
         return $Combo;
+    }
+    
+    public function getInfo()
+    {
+        $start = $this->statistics['pageCurrent'] * $this->statistics['pageDimension'];
+        $end = $start + $this->statistics['pageDimension'];
+        $info = $start;
+        $info .= ' a ';
+        $info .= $end;
+        $info .= ' di ';
+        $info .= ' x '.$this->entity;
+    }
+    
+    public function getOrderBy()
+    {
+        return $this->orderBy;
     }
     
     public function getTotal($key)
