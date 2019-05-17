@@ -65,11 +65,7 @@ class DataGrid2 extends Component
     {
         $tr = new Tag('div');
         $tr->att('class', 'row bcl-datagrid-thead hidden-xs');
-        $paginationOrderByFields = explode(',', str_replace(
-            ['][','[',']'],
-            [',','',''],
-            filter_input(\INPUT_POST, $this->pagination->id.'OrderBy')
-        ));
+        $paginationOrderByFields = $this->pagination ? explode(',', $this->pagination->getOrderBy()) : null;
         foreach($this->columns as $rawLabel => $properties) {            
             if (empty($rawLabel)) {
                 continue;
@@ -81,7 +77,7 @@ class DataGrid2 extends Component
             $th = $tr->add(new Tag('div', null, $properties['class'].' bcl-datagrid-th'));
             $th->add(new Tag('span'))->add($rawLabel);
             
-            if (empty($this->pagination) || $properties['type'] === 'check') {
+            if (empty($paginationOrderByFields) || $properties['type'] === 'check') {
                 continue;
             }
             $orderByField = $properties['fieldOrderBy'];
