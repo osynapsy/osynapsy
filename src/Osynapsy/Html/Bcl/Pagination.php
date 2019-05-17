@@ -23,7 +23,7 @@ use Osynapsy\Html\Tag;
 class Pagination extends Component
 {
     private $columns = array();
-    private $entity = 'record';
+    private $entity = 'Record';
     protected $data = array();
     private $db;
     private $filters = array();
@@ -249,13 +249,18 @@ class Pagination extends Component
     
     public function getInfo()
     {
-        $start = $this->statistics['pageCurrent'] * $this->statistics['pageDimension'];
-        $end = $start + $this->statistics['pageDimension'];
-        $info = $start;
+        $end = min($this->getStatistic('pageCurrent') * $this->getStatistic('pageDimension'), $this->getStatistic('rowsTotal'));
+        $start = ($this->getStatistic('pageCurrent') - 1) * $this->getStatistic('pageDimension') + 1;
+        $info = 'da ';
+        $info .= $start;
         $info .= ' a ';
         $info .= $end;
         $info .= ' di ';
-        $info .= ' x '.$this->entity;
+        $info .= $this->getStatistic('rowsTotal'); 
+        $info .= ' ';
+        $info .= $this->entity;
+        
+        return $info;
     }
     
     public function getOrderBy()
