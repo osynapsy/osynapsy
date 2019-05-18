@@ -152,11 +152,12 @@ class DataGrid2 extends Component
         }
         $row->add(new Tag('div', null, 'col-lg-2'))            
             ->add($this->pagination->getPageDimensionsCombo());
-        $row->add(new Tag('div', null, 'col-lg-4 col-lg-offset-2 text-center'))
+        $row->add(new Tag('div', null, 'col-lg-4 col-lg-offset-2 offset-lg-2 text-center'))
              ->add('<label class="" style="margin-top: 30px;">'.$this->pagination->getInfo().'</label>');
         if ($this->pagination->getStatistic('pageTotal') > 1) {
             $row->add(new Tag('div', null, 'col-lg-4 text-right'))
-                ->add($this->pagination);
+                ->add($this->pagination)
+                ->setClass('mt-4')->setPosition('end');
         }
         return $row;
     }
