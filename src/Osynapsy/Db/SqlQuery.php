@@ -48,6 +48,16 @@ class SqlQuery
         $this->debug = $debug;
     }
     
+    public function addParameters(array $parameters = [])
+    {
+        $this->parameters = array_merge($this->parameters, $parameters);
+    }
+    
+    private function isAssoc($array)
+    {
+        return !($array === array_values($array));
+    }
+    
     public function condition($condition, callable $function)
     {
         if (!$condition) {
@@ -57,7 +67,7 @@ class SqlQuery
         return $this;
     }
     
-    public function select(array $fields = null)
+    public function select(array $fields = null, array $parameters = [])
     {
         if (empty($fields)) {
             return;
@@ -72,6 +82,7 @@ class SqlQuery
             $fields = $app;
         }
         $this->elements['SELECT'] = array_merge($this->elements['SELECT'], $fields);
+        $this->addParameters($parameters);
         return $this;
     }
     
@@ -82,32 +93,33 @@ class SqlQuery
         return $this;
     }
     
-    public function join($table, array $on, array $fields = null)
+    public function join($table, array $on, array $fields = null, array $parameters = [])
     {
         $this->select($fields);
         $this->elements['JOIN'][] = 'INNER JOIN '.$table;
         $this->elements['JOIN'][] = 'ON ('.implode(' AND ',$on).')';
+        $this->addParameters($parameters);
         return $this;
     }
     
-    public function joinLeft($table, array $on, array $fields = null)
+    public function joinLeft($table, array $on, array $fields = null, array $parameters = [])
     {
         $this->select($fields);
         $this->elements['JOIN'][] = 'LEFT JOIN '.$table;
         $this->elements['JOIN'][] = 'ON ('.implode(' AND ',$on).')';
+        $this->addParameters($parameters);
         return $this;
     }
     
-    public function where($condition, array $parameters = array(), $operator = 'AND')
+    public function where($rawCondition, array $parameters = [], $operator = 'AND')
     {
+        $condition = is_array($rawCondition) ? '('.implode(' OR ', $rawCondition).')' 
+                                             : $rawCondition;        
         if (!empty($this->elements['WHERE'])) {
             $condition = $operator . ' ' . $condition;
         } 
         $this->elements['WHERE'][] = $condition;
-        $this->parameters = array_merge(
-            $this->parameters,
-            is_array($parameters) ? $parameters : [$parameters]
-        );
+        $this->addParameters($parameters);
         return $this;
     }
     
@@ -124,7 +136,10 @@ class SqlQuery
     
     public function __toString() {
         $string = '';
-        foreach ($this->elements as $word => $items) {            
+        foreach ($this->elements as $word => $items) {
+            if (empty($items)) {
+                continue;
+            }
             $string .= $word == 'JOIN' ? '' : $word.' ';
             $string .= $this->prefix($word);            
             $string .= is_array($items) ? implode($this->getSeparator($word), $items) : ' '.$items;            
@@ -138,8 +153,12 @@ class SqlQuery
     {
         return $this->parameters;
     }
-    
-    
+                
+    private function getSeparator($word)
+    {
+        return array_key_exists($word, $this->part) ? $this->part[$word]['separator'] : ' ';
+    }
+            
     private function prefix($word)
     {
         //return array_key_exists($word, $this->part) ? $this->part[$word][0] : ' ';
@@ -149,15 +168,5 @@ class SqlQuery
     private function postfix($word)
     {
         return isset($this->part[$word]) && isset($this->part[$word]['postfix']) ? $this->part[$word]['postfix'] : ' ';
-    }
-    
-    private function getSeparator($word)
-    {
-        return array_key_exists($word, $this->part) ? $this->part[$word]['separator'] : ' ';
-    }
-    
-    private function isAssoc($array)
-    {
-        return !($array === array_values($array));
     }
 }
