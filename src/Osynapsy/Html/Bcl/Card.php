@@ -28,11 +28,11 @@ class Card extends Component
     {
         parent::__construct('div',$name);
         $this->requireCss('Bcl/Card/style.css');
-        $this->att('class','card');
+        $this->att('class','bcl-card');
         $this->head  = new Tag('div');
         $this->head->att('class','card-header ch-alt clearfix');
         if (!empty($title)) {
-            $this->head->add('<h2 class="pull-left">'.$title.'</h2>');
+            $this->head->add('<h3 class="pull-left">'.$title.'</h3>');
         }
         $this->buildCommandContainer($commands);
         if (!empty($title) || !empty($commands)) {
