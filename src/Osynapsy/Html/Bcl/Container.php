@@ -42,7 +42,7 @@ class Container extends Tag
     
     public function AddRow()
     {
-        return $this->currentRow = $this->add(new Tag('div'))->att('class','row');
+        return $this->currentRow = $this->add(new Tag('div', null , 'row'));
     }
     
     public function AddColumn($lg = 4, $sm = null, $xs = null)
@@ -50,10 +50,10 @@ class Container extends Tag
         $col = new Column($lg);
         $col->setSm($sm);
         $col->setXs($xs);
-        if ($this->currentRow) {
-            return $this->currentRow->add($col);
+        if (empty($this->currentRow)) {
+            $this->AddRow();
         }
-        return $this->add($col);
+        return $this->currentRow->add($col);
     }
     
     public function setTitle($title)
