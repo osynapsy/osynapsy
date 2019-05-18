@@ -8,88 +8,88 @@ and open the template in the editor.
     Author     : Peter
 */
 
-.card {
+.bcl-card {
     position: relative;
     background: #fff;
     box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.15);
     margin-bottom: 20px;
 }
 
-.card .card-header {
+.bcl-card .bcl-card-header {
     position: relative;
     border-bottom: 1px solid #eee;
 }
 
 @media screen and (min-width: 768px) {
-    .card .card-header:not(.ch-alt) {
+    .bcl-card .bcl-card-header:not(.ch-alt) {
         padding: 23px 25px;
     }
 }
 @media screen and (max-width: 991px) {
-    .card .card-header:not(.ch-alt) {
+    .bcl-card .bcl-card-header:not(.ch-alt) {
         padding: 18px;
     }
 }
-.card .card-header h2 {
+.bcl-card .bcl-card-header h2 {
     margin: 0;
     line-height: 100%;
     font-size: 15px;
     font-weight: 500;
 }
-.card .card-header h2 small {
+.bcl-card .bcl-card-header h2 small {
     display: block;
     margin-top: 8px;
     color: #AEAEAE;
     line-height: 160%;
 }
 @media screen and (min-width: 768px) {
-    .card .card-header.ch-alt {
+    .bcl-card .bcl-card-header.ch-alt {
         /* padding: 23px 26px;*/
         /*padding: 13px 16px;*/
         padding:8px 12px;
     }
 }
 @media screen and (max-width: 991px) {
-    .card .card-header.ch-alt {
+    .bcl-card .bcl-card-header.ch-alt {
         /*padding: 18px 18px 28px;*/
         /*padding: 13px 16px;*/
         padding:8px 12px;
     }
 }
-.card .card-header.ch-alt:not([class*="bgm-"]) {
+.bcl-card .bcl-card-header.ch-alt:not([class*="bgm-"]) {
     background-color: #f7f7f7;
 }
-.card .card-header[class*="bgm-"] h2,
-.card .card-header[class*="bgm-"] h2 small {
+.bcl-card .bcl-card-header[class*="bgm-"] h2,
+.bcl-card .bcl-card-header[class*="bgm-"] h2 small {
     color: #fff;
 }
-.card .card-header .actions {
+.bcl-card .bcl-card-header .actions {
     position: absolute;
     right: 10px;
     z-index: 2;
     top: 15px;
 }
-.card .card-header .btn-float {
+.bcl-card .bcl-card-header .btn-float {
     right: 25px;
     bottom: -23px;
     z-index: 1;
 }
-.card .card-body {
+.bcl-card .bcl-card-body {
     padding: 5px 10px;
 }
 @media screen and (min-width: 768px) {
-    .card .card-body.card-padding {
+    .bcl-card .bcl-card-body.bcl-card-padding {
         padding: 23px 26px;
     }
 }
 @media screen and (max-width: 991px) {
-    .card .card-body.card-padding {
+    .bcl-card .bcl-card-body.bcl-card-padding {
         padding: 18px;
     }
 }
-.card .card-body.card-padding-sm {
+.bcl-card .bcl-card-body.bcl-card-padding-sm {
     padding: 15px;
 }
-.card-header:not(.ch-alt):not([class*="bgm-"]) + .card-padding {
+.bcl-card-header:not(.ch-alt):not([class*="bgm-"]) + .bcl-card-padding {
     padding-top: 0;
 }
