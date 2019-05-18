@@ -684,9 +684,9 @@ var FormController =
         var win  = '<div id="' + id + '" class="modal fade" role="dialog">\n';
             win += '    <div class="modal-dialog '+dim+'" style="width: '+wdt+';">\n';
             win += '        <div class="modal-content">\n';
-            win += '            <div class="modal-header">\n';
+            win += '            <div class="modal-header">\n';            
+            win += '                <h5 class="modal-title">' + title + '</h5>';
             win += '                <button type="button" class="close" data-dismiss="modal">&times;</button>';
-            win += '                <h4 class="modal-title">' + title + '</h4>';
             win += '            </div>';
             win += '            <div class="modal-body">';
             win += '                <i class="fa fa-spinner fa-spin" style="font-size:24px; position:absolute; margin-top:20px; margin-left: 20px; color:silver;"></i>';
