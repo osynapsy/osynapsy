@@ -33,6 +33,7 @@ class Pagination extends Component
     private $sql;  
     private $orderBy = null;
     private $parentComponent;
+    private $position = 'center';
     private $statistics = array(
         //Dimension of the pag in row;
         'pageDimension' => 10,
@@ -82,13 +83,12 @@ class Pagination extends Component
         foreach($this->fields as $field) {
             $this->add(new HiddenBox($field, $field.'_hidden'));
         }
-        $ul = $this->add(new Tag('ul'));
-        $ul->att('class','pagination');
-        $liFirst = $ul->add(new Tag('li'));
+        $ul = $this->add(new Tag('ul', null, 'pagination justify-content-'.$this->position));        
+        $liFirst = $ul->add(new Tag('li', null, 'page-item'));
         if ($this->statistics['pageCurrent'] < 2) {
             $liFirst->att('class','disabled');
         }
-        $liFirst->add(new Tag('a'))
+        $liFirst->add(new Tag('a', null, 'page-link'))
                 ->att('data-value','first')
                 ->att('href','#')
                 ->add('&laquo;');
@@ -98,21 +98,20 @@ class Pagination extends Component
         $pageMax = max($dim, min($this->statistics['pageCurrent'] + $app, $this->statistics['pageTotal']));
         $pageMin = min($pageMin, $this->statistics['pageTotal'] - $dim + 1);
         for ($i = $pageMin; $i <= $pageMax; $i++) {
-            $liCurrent = $ul->add(new Tag('li'));
+            $liCurrent = $ul->add(new Tag('li', null, 'page-item'));
             if ($i == $this->statistics['pageCurrent']) {
-                $liCurrent->att('class','active');
+                $liCurrent->att('class','active', true);
             }
-            $liCurrent->att('class','text-center',true)
-                      ->add(new Tag('a'))
+            $liCurrent->add(new Tag('a', null, 'page-link'))
                       ->att('data-value',$i)
                       ->att('href','#')
                       ->add($i);
         }
-        $liLast = $ul->add(new Tag('li'));
+        $liLast = $ul->add(new Tag('li', null, 'page-item'));
         if ($this->statistics['pageCurrent'] >= $this->statistics['pageTotal']) {
             $liLast->att('class','disabled');
         }
-        $liLast->add(new Tag('a'))
+        $liLast->add(new Tag('a', null, 'page-link'))
                ->att('href','#')
                ->att('data-value','last')
                ->add('&raquo;');
@@ -365,6 +364,11 @@ class Pagination extends Component
         $this->parentComponent = $componentId;
         $this->att('data-parent', $componentId);
         return $this;
+    }
+    
+    public function setPosition($position)
+    {
+        $this->position = $position;
     }
     
     public function setSql($db, $cmd, array $par = array())
