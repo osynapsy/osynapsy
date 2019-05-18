@@ -20,14 +20,17 @@ use Osynapsy\Html\Tag;
 class Accordion extends Component
 {
     private $panels = array();
+    private $defaultOpen  = 0; 
     
-    public function __construct($id)
+    public function __construct($id, $defaultOpen = 0)
     {
         parent::__construct('div', $id);
         $this->att('class','accordion osy-panel-accordion')
              ->att('role','tablist');
         $this->requireCss('Bcl/PanelAccordion/style.css');
         //$this->requireJs('Bcl/PanelAccordion/script.js');
+        $memoryOpen = filter_input(\INPUT_POST, $this->id);
+        $this->defaultOpen = is_null($memoryOpen) ? $defaultOpen : $memoryOpen;
     }
     
     public function __build_extra__()
@@ -38,10 +41,11 @@ class Accordion extends Component
         }        
     }
     
-    public function addPanel($title, $commands = [], $open = false)
+    public function addPanel($title, $commands = [])
     {
         $panelIdx = count($this->panels);
         $panelId = $this->id.'_'.$panelIdx;
+        $open = $this->defaultOpen === $panelIdx ? true : false;
         //$panelHd = '<a data-toggle="collapse" data-parent="#'.$this->id.'" href="#'.$panelId.'-body" data-panel-id="'.$panelIdx.'" class="'.(filter_input(\INPUT_POST, $this->id) == $panelIdx ? 'collapsed' : '').'" onclick="">'.$title.'</a>';
         $panelHd = $this->buildHeader($title, $panelId.'_body', $open);
         $panel = new PanelNew($panelId, $panelHd);
