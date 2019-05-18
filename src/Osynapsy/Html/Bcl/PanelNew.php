@@ -69,9 +69,9 @@ class PanelNew extends Component
     
     public function addRow()
     {
-        $this->currentRow = $this->sections['body']
-                                 ->add(new Tag('div'))
-                                 ->att('class','row');
+        $this->currentRow = $this->sections['body']->add(
+            new Tag('div', null, 'row')
+        );
         return $this->currentRow;
     }
     
@@ -80,7 +80,9 @@ class PanelNew extends Component
         if (empty($this->currentRow)) {
             $this->addRow();
         }
-        $this->currentColumn = $this->currentRow->add(new Column($colspan, $offset));
+        $this->currentColumn = $this->currentRow->add(
+            new Column($colspan, $offset)
+        );
         return $this->currentColumn;
     }
     
