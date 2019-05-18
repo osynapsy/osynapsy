@@ -13,6 +13,7 @@ namespace Osynapsy\Html\Bcl4;
 
 use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
+use Osynapsy\Html\Bcl\Link;
 
 /**
  * Build a Bootstrap NavBar
@@ -110,8 +111,8 @@ class NavBar extends Component
                 continue;
             }
             $menu->add(new Tag('a', null, 'dropdown-item'))
-                 ->att('href', $link)
-                 ->add($label);
+                 ->att('href', is_array($link) ? '#' : $link)
+                 ->add($label);            
         }
     }
     
