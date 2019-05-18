@@ -44,17 +44,15 @@ class Dropdown extends Component
     
     protected function __build_extra__()
     {
-        $ul = $this->add(new Tag('div', null, 'dropdown-menu dropdown-menu-'.$this->align));        
-        $ul->att([            
-            'aria-labelledby' => $this->id
-        ]);         
-        foreach ($this->data as $key => $rec) {
+        $list = $this->add(new Tag('div', null, 'dropdown-menu dropdown-menu-'.$this->align));        
+        $list->att('aria-labelledby', $this->id);         
+        foreach ($this->data as $rec) {
             if (is_object($rec)) {
-                $ul->add($rec)->att('class', 'dropdown-item', true);                           
+                $list->add($rec)->att('class', 'dropdown-item', true);                           
                 continue;
             }
             if ($rec === 'divider') {
-                $this->list->add(new Tag('li'))->att(['class' => 'divider','role' => 'separator']);
+                $list->add(new Tag('div', null, 'dropdown-divider'));
                 continue;
             }            
         }
