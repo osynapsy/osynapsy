@@ -102,8 +102,18 @@ class ResponseHtml extends Response
         $this->template = '';
     }
     
-    public function appendFormController()
+    public function appendLibrary(array $optionalLibrary = [], $appendFormController = true)
     {
+        foreach ($optionalLibrary as $pathLibrary) {
+            if (strpos($pathLibrary, '.css') !== false) {
+                $this->addCss('/assets/osynapsy/'.Kernel::VERSION.$pathLibrary);
+                continue;
+            }
+            $this->addJs('/assets/osynapsy/'.Kernel::VERSION.$pathLibrary);
+        }
+        if (!$appendFormController) {
+            return;
+        }
         $this->addJs('/assets/osynapsy/'.Kernel::VERSION.'/js/FormController.js');
         $this->addCss('/assets/osynapsy/'.Kernel::VERSION.'/css/style.css');
     }
