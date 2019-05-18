@@ -41,8 +41,9 @@ class Column extends Component
             $class = 'col-'.$size.'-'.$dimension['width'];
             if (!empty($dimension['offset'])) {
                 $class .= ' col-'.$size.'-offset-'.$dimension['offset'];
+                $class .= ' offset-'.$size.'-'.$dimension['offset'];
             }
-            $this->att('class', $class, true);
+            $this->setClass($class);
         }
     }
     
