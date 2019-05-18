@@ -26,7 +26,7 @@ class Accordion extends Component
         parent::__construct('div', $id);
         $this->att('class','accordion osy-panel-accordion')
              ->att('role','tablist');
-        //$this->requireCss('Bcl/PanelAccordion/style.css');
+        $this->requireCss('Bcl/PanelAccordion/style.css');
         //$this->requireJs('Bcl/PanelAccordion/script.js');
     }
     
@@ -51,17 +51,21 @@ class Accordion extends Component
             'card-foot',
             'card'
         );
-        $panel->addCommands($commands)->getBody()->att('id', $panelId.'_body');        
+        $panel->addCommands($commands)->getBody()->att([
+            'id' => $panelId.'_body',
+            'data-parent' => '#'.$this->id
+        ]);        
         $this->panels[] = $panel;
         return $this->panels[$panelIdx];
     }
     
     private function buildHeader($title, $targetId, $open)
     {
-        $h2 = new Tag('h2', null, 'm-0');
-        $h2->add(new Tag('button', null, 'btn btn-link'))->att([
+        $h2 = new Tag('span', null, 'm-0');
+        $h2->add(new Tag('button', null, 'btn'))->att([
             'type' => 'button',
             'data-toggle' => 'collapse',
+            'role' => 'button',
             'data-target' => '#'.$targetId, 
             'aria-expanded' => empty($open) ? 'false' : 'true',
             'aria-controls' => $targetId
