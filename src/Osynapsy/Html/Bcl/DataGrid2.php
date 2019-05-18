@@ -16,6 +16,10 @@ use Osynapsy\Html\Tag;
 
 class DataGrid2 extends Component
 {
+    const FIELD_TYPE_MONEY = 'money';
+    const FIELD_TYPE_CHECKBOX = 'check';
+    const FIELD_TYPE_COMMAND = 'commands';
+   
     private $columns = [];    
     private $emptyMessage = 'No data found';
     private $pagination;
@@ -212,7 +216,7 @@ class DataGrid2 extends Component
     private function valueFormatting($value, &$cell, $properties, $rec, &$tr)
     {        
         switch($properties['type']) {
-            case 'check':
+            case self::FIELD_TYPE_CHECKBOX:
                 if (empty($value)) {
                     break;
                 }
@@ -220,11 +224,11 @@ class DataGrid2 extends Component
                 $checked = !empty($_POST[$class]) && !empty($_POST[$class][$value]) ? ' checked="checked"' : '';
                 $value = '<input type="checkbox" name="'.$class.'['.$value.']" class="'.$class.'" value="'.$value.'"'.$checked.'>';                
                 break;
-            case 'money':
+            case self::FIELD_TYPE_MONEY:
                 $value = is_numeric($value) ? number_format($value, 2, ',', '.') : $value;
                 $properties['class'] .= ' text-right';
                 break;
-            case 'commands':
+            case self::FIELD_TYPE_COMMAND:
                 $properties['class'] .= ' cmd-row';
                 break;
         }        
