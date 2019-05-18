@@ -25,7 +25,7 @@ class InputGroup extends Component
         $this->att('class','input-group');
         if (!empty($prefix)) {
             $this->add(new Tag('span'))
-                 ->att('class', 'input-group-addon')
+                 ->att('class', 'input-group-addon input-group-prepend')
                  ->att('id',$name.'_prefix')
                  ->add($prefix);
         }
@@ -37,8 +37,11 @@ class InputGroup extends Component
         }
         
         if ($postfix) {
-            $this->postfix = $this->add(new Tag('span'))->att('class', 'input-group-addon');
+            $this->postfix = $this->add(new Tag('span'))->att('class', 'input-group-addon input-group-append');
             $this->postfix->add($postfix);
+            if (!is_object($postfix)) {
+                $this->postfix->att('class', 'input-group-text', true);
+            }
         }
     }
     
