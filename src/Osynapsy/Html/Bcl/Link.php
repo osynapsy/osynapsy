@@ -11,24 +11,13 @@
 
 namespace Osynapsy\Html\Bcl;
 
-use Osynapsy\Html\Component;
+use Osynapsy\Html\Ocl\Link as OclLink;
 
-class Link extends Component
-{
-    public function __construct($id, $link, $label, $class='')
-    {
-        parent::__construct('a', $id);        
-        $this->att('href', $link)
-             ->add($label);
-        if ($class) {
-            $this->att('class', $class);
-        }
-    }
-    
+class Link extends OclLink
+{    
     public function openInModal($title, $widht = '640px', $height = '480px')
     {
-        $this->setClass('open-modal');
-        $this->att([
+        $this->setClass('open-modal')->att([
             'title' => $title,
             'modal-width' => $widht,
             'modal-height' => $height
