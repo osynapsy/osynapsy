@@ -173,7 +173,7 @@ class Component extends Tag
      */
     public function setClass($class, $append = true)
     {
-        return $this->att('class', $class, $append);
+        return empty($class) ? $this : $this->att('class', $class, $append);
     }
     
     /**
