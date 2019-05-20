@@ -203,7 +203,7 @@ class DataGrid2 extends Component
         return $column;
         //$this->addColumn($label, $field, $class, $type, $function, $fieldOrderBy);
     }
-    
+        
     /**
      * return pager object
      * 
