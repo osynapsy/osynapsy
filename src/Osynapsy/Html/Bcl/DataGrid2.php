@@ -15,11 +15,7 @@ use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
 
 class DataGrid2 extends Component
-{
-    const FIELD_TYPE_MONEY = 'money';
-    const FIELD_TYPE_CHECKBOX = 'check';
-    const FIELD_TYPE_COMMAND = 'commands';
-   
+{      
     private $columns = [];   
     private $emptyMessage = 'No data found';
     private $pagination;
