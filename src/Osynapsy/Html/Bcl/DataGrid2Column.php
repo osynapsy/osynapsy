@@ -11,6 +11,8 @@ use Osynapsy\Html\Tag;
 class DataGrid2Column 
 {        
     const FIELD_TYPE_MONEY = 'money';
+    const FIELD_TYPE_EURO  = 'euro';
+    const FIELD_TYPE_DOLLAR  = 'dollar';
     const FIELD_TYPE_CHECKBOX = 'check';
     const FIELD_TYPE_COMMAND = 'commands';
     
@@ -136,21 +138,42 @@ class DataGrid2Column
                 }                       
                 $value = $this->buildCheckBox($value);                
                 break;
+            case self::FIELD_TYPE_EURO:
             case self::FIELD_TYPE_MONEY:
-                $value = is_numeric($value) ? number_format($value, 2, ',', '.') : $value;
-                $properties['class'] .= ' text-right';
+            case self::FIELD_TYPE_DOLLAR;
+                $value = $this->formatCurrencyValue($value, $properties['type']);
+                $properties['classTd'][] = 'text-right';
                 break;
             case self::FIELD_TYPE_COMMAND:
-                $properties['class'] .= ' cmd-row';
+                $properties['classTd'][] = 'cmd-row';
                 break;
         }        
         if (!empty($properties['function'])) {
             $value = $properties['function']($value, $cell, $rec, $tr);    
         }
-        if (!empty($properties['class'])) {            
-            $cell->att('class', implode($this->properties['classTd']), true);
+        if (!empty($properties['classTd'])) {            
+            $cell->att('class', implode(' ', $properties['classTd']), true);
         }
         return ($value != 0 && empty($value)) ? '&nbsp;' : $value;
+    }
+    
+    private function formatCurrencyValue($rawValue, $type)
+    {
+        $value = '';
+        switch($type){
+            case self::FIELD_TYPE_EURO:
+                $value = '&euro; ';
+                break;
+            case self::FIELD_TYPE_DOLLAR;
+                $value = '$ ';
+                break;
+        }
+        if (!empty($rawValue) && is_numeric($rawValue)) {
+            $value .= number_format($rawValue, 2, ',', '.');
+        } else {
+            $value = $rawValue;
+        }
+        return $value;
     }
     
     private function buildCheckBox($value)
