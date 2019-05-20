@@ -20,7 +20,7 @@ class DataGrid2 extends Component
     const FIELD_TYPE_CHECKBOX = 'check';
     const FIELD_TYPE_COMMAND = 'commands';
    
-    private $columns = [];    
+    private $columns = [];   
     private $emptyMessage = 'No data found';
     private $pagination;
     private $showHeader = true;
@@ -69,30 +69,13 @@ class DataGrid2 extends Component
     {
         $tr = new Tag('div');
         $tr->att('class', 'row bcl-datagrid-thead hidden-xs');
-        $paginationOrderByFields = $this->pagination ? explode(',', $this->pagination->getOrderBy()) : null;
-        foreach($this->columns as $rawLabel => $properties) {            
-            if (empty($rawLabel)) {
-                continue;
-            } elseif ($rawLabel[0] == '_') {
-                continue;
-            } elseif ($properties['type'] === 'check') {
-                $rawLabel = '<span class="fa fa-check bcl-datagrid-th-check-all" data-field-class="'.$this->id.''.$properties['field'].'"></span>';
-            }
-            $th = $tr->add(new Tag('div', null, $properties['class'].' bcl-datagrid-th'));
-            $th->add(new Tag('span'))->add($rawLabel);
-            
-            if (empty($paginationOrderByFields) || $properties['type'] === 'check') {
+        $orderByFields = $this->pagination ? explode(',', $this->pagination->getOrderBy()) : null;
+        foreach(array_keys($this->columns) as $rawLabel) {
+            $th = $this->columns[$rawLabel]->buildTh($orderByFields);
+            if (empty($th)) {
                 continue;
             }
-            $orderByField = $properties['fieldOrderBy'];
-            $th->att('data-idx', $orderByField)->att('class', 'bcl-datagrid-th-order-by', true);
-            foreach ([$orderByField, $orderByField.' DESC'] as $i => $token) {
-                $key = array_search($token, $paginationOrderByFields);
-                if ($key !== false) {
-                    $icon = ($key + 1).' <i class="fa fa-arrow-'.(empty($i) ? 'up' : 'down').'"></i>';
-                    $th->add('<span class="bcl-datagrid-th-order-label">'.$icon.' </span>');
-                }
-            }
+            $tr->add($th);
         }
         return $tr;
     }
@@ -125,7 +108,7 @@ class DataGrid2 extends Component
         }        
         if ($this->rowWidth === 12) {
             foreach ($this->data as $recIdx => $rec) {            
-                $body->add($this->buildRow($rec));            
+                $body->add($this->buildBodyRow($rec));            
             }
             return $body;
         }
@@ -134,9 +117,27 @@ class DataGrid2 extends Component
             if (($recIdx) % (12 / $this->rowWidth) === 0) {
                 $row = $body->add(new Tag('div', null, 'row'));
             }
-            $row->add($this->buildRow($rec, $rowClass));
+            $row->add($this->buildBodyRow($rec, $rowClass));
         }        
         return $body;
+    }
+    
+    /**
+     * Internal method for build a Datagrid row
+     * 
+     * @param type $row
+     * @return Tag
+     */
+    private function buildBodyRow($record, $class = 'row bcl-datagrid-body-row')
+    {
+        $tr = new Tag('div', null, $class);        
+        foreach ($this->columns as $column) {
+            $tr->add($column->buildTd($tr, $record));
+        }
+        if (!empty($record['_url_detail'])) {
+            $tr->att('data-url-detail', $record['_url_detail']);
+        }
+        return $tr;
     }
     
     /**
@@ -161,36 +162,7 @@ class DataGrid2 extends Component
         }
         return $row;
     }
-    
-    /**
-     * Internal method for build a Datagrid row
-     * 
-     * @param type $row
-     * @return Tag
-     */
-    private function buildRow($row, $class = 'row bcl-datagrid-body-row')
-    {
-        $tr = new Tag('div', null, $class);        
-        foreach ($this->columns as $properties) {
-            if (is_callable($properties['field'])) {
-                $properties['function'] = $properties['field'];
-                $value = null;
-            } else {
-                $value = array_key_exists($properties['field'], $row) ? 
-                         $row[$properties['field']] : 
-                         '<label class="label label-warning">No data found</label>';            
-            }
-            $cell = $tr->add(new Tag('div', null, 'bcl-datagrid-td'));            
-            $cell->add(
-                $this->valueFormatting($value, $cell, $properties, $row, $tr)
-            );
-        }
-        if (!empty($row['_url_detail'])) {
-            $tr->att('data-url-detail', $row['_url_detail']);
-        }
-        return $tr;
-    }
-    
+            
     /**
      * Build Datagrid title
      *      
@@ -203,45 +175,7 @@ class DataGrid2 extends Component
            ->add($this->title);
         return $tr;
     }
-    
-    /**
-     * Format a value of cell for correct visualization
-     * 
-     * @param string $value to format.
-     * @param object $cell container of value
-     * @param type $properties 
-     * @param type $rec record which contains value.
-     * @param type $tr row container object
-     * @return string
-     */
-    private function valueFormatting($value, &$cell, $properties, $rec, &$tr)
-    {        
-        switch($properties['type']) {
-            case self::FIELD_TYPE_CHECKBOX:
-                if (empty($value)) {
-                    break;
-                }
-                $class = $this->id.''.$properties['field'];
-                $checked = !empty($_POST[$class]) && !empty($_POST[$class][$value]) ? ' checked="checked"' : '';
-                $value = '<input type="checkbox" name="'.$class.'['.$value.']" class="'.$class.'" value="'.$value.'"'.$checked.'>';                
-                break;
-            case self::FIELD_TYPE_MONEY:
-                $value = is_numeric($value) ? number_format($value, 2, ',', '.') : $value;
-                $properties['class'] .= ' text-right';
-                break;
-            case self::FIELD_TYPE_COMMAND:
-                $properties['class'] .= ' cmd-row';
-                break;
-        }        
-        if (!empty($properties['function'])) {
-            $value = $properties['function']($value, $cell, $rec, $tr);    
-        }
-        if (!empty($properties['class'])) {
-            $cell->att('class', $properties['class'], true);
-        }
-        return ($value != 0 && empty($value)) ? '&nbsp;' : $value;
-    }
-    
+               
     /**
      * Add a data column view
      * 
@@ -260,14 +194,18 @@ class DataGrid2 extends Component
         callable $function = null,
         $fieldOrderBy = null
     ){
-        $this->columns[$label] = [
-            'field' => $field,
-            'fieldOrderBy' => empty($fieldOrderBy) ? $field : $fieldOrderBy,
-            'class' => $class,
-            'type' => $type,
-            'function' => $function            
-        ];
-        return $this;
+        $column = new DataGrid2Column(
+            $label,
+            $field,
+            $class,
+            $type,
+            $function,
+            $fieldOrderBy
+        );
+        $column->setParent($this->id);
+        $this->columns[$label] = $column;
+        return $column;
+        //$this->addColumn($label, $field, $class, $type, $function, $fieldOrderBy);
     }
     
     /**
