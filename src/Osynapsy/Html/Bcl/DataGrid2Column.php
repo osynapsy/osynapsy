@@ -25,7 +25,7 @@ class DataGrid2Column
             'xl' => 2
         ],
         'type' => 'string',
-        'builder' => null,
+        'function' => null,
         'class' => null,
         'classTd' => [],
         'label' => '&nbsp;',        
@@ -44,7 +44,7 @@ class DataGrid2Column
         $this->properties['field'] = $field;
         $this->properties['type'] = $type;
         $this->properties['class'] = $class;                
-        $this->properties['builder'] = $function;
+        $this->properties['function'] = $function;
         $this->properties['fieldOrderBy'] = empty($fieldOrderBy) ? $field : $fieldOrderBy;
         $this->addClassTd([$class]);
     }
