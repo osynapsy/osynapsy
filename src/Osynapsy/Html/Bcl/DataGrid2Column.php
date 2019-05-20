@@ -2,7 +2,6 @@
 namespace Osynapsy\Html\Bcl;
 
 use Osynapsy\Html\Tag;
-use Osynapsy\Html\Bcl\DataGrid2;
 
 /**
  * Description of DataGrid2Column
@@ -25,7 +24,8 @@ class DataGrid2Column
         ],
         'type' => 'string',
         'builder' => null,
-        'class' => null,        
+        'class' => null,
+        'classTd' => [],
         'label' => '&nbsp;',        
     ];
     private $parentId;
@@ -43,7 +43,8 @@ class DataGrid2Column
         $this->properties['type'] = $type;
         $this->properties['class'] = $class;                
         $this->properties['builder'] = $function;
-        $this->properties['fieldOrderBy'] = $fieldOrderBy;
+        $this->properties['fieldOrderBy'] = empty($fieldOrderBy) ? $field : $fieldOrderBy;
+        $this->addClassTd([$class]);
     }
     
     private function builCheckBoxLabel()
@@ -51,7 +52,13 @@ class DataGrid2Column
         return '<span class="fa fa-check bcl-datagrid-th-check-all" data-field-class="'.$this->parentId.''.$this->properties['field'].'"></span>';
     }
     
-    public function buildTh($paginationOrderByFields)
+    /**
+     * Build a head cell of DataGrid2 component    
+     * 
+     * @param array $orderedFields
+     * @return Tag
+     */
+    public function buildTh($orderedFields)
     {
         $rawLabel = $this->properties['label'];
         if (empty($rawLabel)) {
@@ -63,22 +70,37 @@ class DataGrid2Column
             $rawLabel = $this->builCheckBoxLabel();
         }
         $th = new Tag('div', null, $this->properties['class'].' bcl-datagrid-th');
-        $th->add(new Tag('span'))->add($rawLabel);
-        if (empty($paginationOrderByFields) || $this->properties['type'] === 'check') {
-            return $th;
+        $th->add(new Tag('span'))->add($rawLabel);        
+        $this->buildThOrderByDummy($th, $orderedFields);                
+        return $th;
+    }
+    
+    public function buildThOrderByDummy($th, $orderedFields)
+    {
+        if ($this->properties['type'] === self::FIELD_TYPE_CHECKBOX) {
+            return;
         }
         $orderByField = $this->properties['fieldOrderBy'];
-        $th->att('data-idx', $orderByField)->att('class', 'bcl-datagrid-th-order-by', true);
+        $th->att('data-idx', $orderByField)->att('class', 'bcl-datagrid-th-order-by', true);        
+        if (empty($orderedFields)) {
+            return;
+        }
         foreach ([$orderByField, $orderByField.' DESC'] as $i => $token) {
-            $key = array_search($token, $paginationOrderByFields);
+            $key = array_search($token, $orderedFields);
             if ($key !== false) {
                 $icon = ($key + 1).' <i class="fa fa-arrow-'.(empty($i) ? 'up' : 'down').'"></i>';
                 $th->add('<span class="bcl-datagrid-th-order-label">'.$icon.' </span>');
             }
         }
-        return $th;
     }
     
+    /**
+     * Build a body cell of DataGrid2 component    
+     * 
+     * @param Tag $tr
+     * @param type $record
+     * @return Tag
+     */
     public function buildTd(Tag $tr, array $record)
     {
         $properties = $this->properties;
@@ -125,8 +147,8 @@ class DataGrid2Column
         if (!empty($properties['function'])) {
             $value = $properties['function']($value, $cell, $rec, $tr);    
         }
-        if (!empty($properties['class'])) {
-            $cell->att('class', $properties['class'], true);
+        if (!empty($properties['class'])) {            
+            $cell->att('class', implode($this->properties['classTd']), true);
         }
         return ($value != 0 && empty($value)) ? '&nbsp;' : $value;
     }
@@ -150,5 +172,13 @@ class DataGrid2Column
     public function setParent($id)
     {
         $this->parentId = $id;
+    }
+    
+    public function addClassTd(array $class)
+    {
+        $this->properties['classTd'] = array_merge(
+            $this->properties['classTd'],
+            $class
+        );
     }
 }
