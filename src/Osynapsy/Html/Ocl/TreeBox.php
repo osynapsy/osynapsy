@@ -97,7 +97,7 @@ class TreeBox extends Component
         }
         $branchBody = $branch->add(new Tag('div', null, 'osy-treebox-node-body'));        
         if (!in_array($nodeId, $this->nodeOpenIds)) {
-            $branchBody->att('class', 'hidden', true);
+            $branchBody->att('class', 'hidden d-none', true);
         }
         $branchBody->add(
             $this->buildBranchChilds($nodeId, $level, $iconArray)
