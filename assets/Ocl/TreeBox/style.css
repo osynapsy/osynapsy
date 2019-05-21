@@ -80,3 +80,8 @@ div.osy-treebox-node-label:hover span.osy-treebox-node-command,
 div.osy-treebox-leaf:hover span.osy-treebox-node-command {
     visibility: visible;
 }
+
+div.osy-treebox-node-label,
+.osy-treebox-leaf {
+    height: 20px;
+}
