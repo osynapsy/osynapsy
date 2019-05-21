@@ -21,7 +21,7 @@ OclTreeBox =
            hdnOpenNodes.val(strOpenNodes + '['+nodeId+']');
         }        
         $(elm).toggleClass('minus');
-        $(elm).parent().next().toggleClass('hidden');
+        $(elm).parent().next().toggleClass('hidden').toggleClass('d-none');
         this.refreshComponents($(box).data('refreshOnOpen'));
     },
     clickLabel : function(elm)
