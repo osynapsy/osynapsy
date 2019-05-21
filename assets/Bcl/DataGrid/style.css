@@ -30,6 +30,9 @@
     border-right: 1px solid #ddd;
     background-color: #fdfdfd;
     position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .bcl-datagrid-thead > .bcl-datagrid-th:first-child {
     border-left: 1px solid transparent;
