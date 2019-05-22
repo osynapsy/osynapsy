@@ -19,8 +19,8 @@ class ListTree extends ListBox
     public $data = array();
     private $request = null;
     private $icon = array(
-        'open' => 'glyphicon-chevron-down',
-        'close' => 'glyphicon-chevron-right'
+        'open' => 'fa fa-chevron-down',
+        'close' => 'fa fa-chevron-right'
     );
     public function __construct($id)
     {
@@ -50,9 +50,9 @@ class ListTree extends ListBox
             $li->add(new Tag('div'))
                ->att('value',$rec[0])
                ->att('class','listbox-list-item'.($rec[0] == $this->request ? ' selected': ''))
-               ->add(($hasSublist ? '<small><span class="glyphicon '.$this->icon['close'].'"></span></small> ': '').$rec[1]);
+               ->add(($hasSublist ? '<small><span class="'.$this->icon['close'].'"></span></small> ': '').$rec[1]);
             if ($hasSublist) {
-                if ($childs = $this->buildBranch($this->groups[$rec[0]], 'listbox-sublist hidden')) {
+                if ($childs = $this->buildBranch($this->groups[$rec[0]], 'listbox-sublist hidden d-none')) {
                     $li->add($childs);
                 }
             }
