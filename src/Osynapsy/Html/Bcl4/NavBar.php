@@ -30,6 +30,7 @@ class NavBar extends Component
     {
         parent::__construct('nav', $id);
         $this->setData([],[]);
+        $this->requireCss('Bcl4/NavBar/style.css');
     }
     
     /**
@@ -78,7 +79,7 @@ class NavBar extends Component
      * @param int $level
      * @return type
      */
-    private function buildUlMenu(array $data, $level = 0)
+    private function buildUlMenu(array $data)
     {
         $ul = new Tag('ul', null, 'navbar-nav');
         if (empty($data) || !is_array($data)) {
@@ -87,26 +88,38 @@ class NavBar extends Component
         foreach($data as $label => $menu){
             $li = $ul->add(new Tag('li', null, 'nav-item'));
             if (is_array($menu)) {                
-                $li->att('class','dropdown',true)->add($this->buildSubMenu($li, $label, $menu, $level+1));                
+                $li->att('class','dropdown',true)->add(
+                    $this->buildSubMenu($li, $label, $menu)
+                );
                 continue;
             }            
-            $li->add(new Tag('a', null, 'nav-link'))->att('href',$menu)->add($label);
-            
+            $li->add(new Tag('a', null, 'nav-link'))
+               ->att('href',$menu)->add($label);            
         }
         return $ul;
     }
     
-    private function buildSubMenu($li, $label, array $data, $level) 
+    private function buildSubMenu($container, $label, array $data, $level = 0) 
     {
-        $li->add(new Tag('a', null, 'dropdown-toggle nav-link'))->att([
-               'href' => '#', 
-               'data-toggle' => 'dropdown',                
-               'aria-expanded' => '',
-                'aria-haspopup' => 'true'
-        ])->add($label);
-        $menu = $li->add(new Tag('div', null, 'dropdown-menu'));
+        $labelClass = (($level > 0) ? 'dropdown-item' : 'nav-link dropdown-toggle');
+        $a = $container->add(new Tag('a', null, $labelClass))->att([
+            'href' => '#', 
+            'data-toggle' => 'dropdown',                
+            'aria-expanded' => 'false',
+            'aria-haspopup' => 'true'
+        ]);
+        $a->add($label);
+        $menuClass = 'dropdown-menu';
+        if ($level > 0) {
+            $menuClass = 'dropdown-submenu d-none';
+            $a->att('class','dropdown-item-submenu');
+        }
+        $menu = $container->add(new Tag('div', null, $menuClass));
         foreach ($data as $label => $link) {
-            if ($link === 'hr'){
+            if (is_array($link)) {
+                $this->buildSubMenu($menu, $label, $link, $level + 1);
+                continue;
+            }elseif ($link === 'hr'){
                 $menu->add(new Tag('div', null, 'dropdown-divider'));
                 continue;
             }
