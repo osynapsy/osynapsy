@@ -20,7 +20,7 @@ class FileBox extends Component
     public $showImage = false;
     public $span;    
     
-    public function __construct($name, $postfix=false, $prefix=true)
+    public function __construct($name, $postfix = false, $prefix = true)
     {
          /* 
             http://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3/
@@ -32,25 +32,21 @@ class FileBox extends Component
         */
         $this->requireJs('Bcl/FileBox/script.js');
         
-        parent::__construct('dummy',$name);
+        parent::__construct('dummy', $name);
         $this->span = $this->add(new Tag('span'));
         $div = $this->add(new Tag('div'));
         $div->att('class','input-group')
-                    ->add(new Tag('span'))
-                    ->att('class', 'input-group-btn')
-                    ->add(new Tag('span'))
-                    ->att('class','btn btn-primary btn-file')
+                    ->add(new Tag('span', null, 'input-group-btn input-group-prepend'))                    
+                    ->add(new Tag('span', null, 'btn btn-primary btn-file'))                    
                     ->add('<input type="file" name="'.$name.'"><span class="fa fa-folder-open"></span>');
         $div->add('<input type="text" class="form-control" readonly>');
         if (!$postfix) {
             return;
         }
-        $div->add(new Tag('span'))
-             ->att('class', 'input-group-btn')
-             ->add(new Tag('button'))
-             ->att('class','btn btn-primary')
-             ->att('type','submit')
-             ->add('Send');        
+        $div->add(new Tag('span', null, 'input-group-btn input-group-append'))             
+            ->add(new Tag('button', null, 'btn btn-primary'))             
+            ->att('type','submit')
+            ->add('Send');        
     }
     
     protected function __build_extra__()
