@@ -54,5 +54,6 @@ trait FormCommands
         }
         $btnSave = new Button('btn_save', 'button', 'btn-primary', $label);
         $btnSave->setAction('save');
+        return $btnSave;
     }
 }
