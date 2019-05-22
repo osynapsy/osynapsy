@@ -25,6 +25,7 @@ class Pagination extends Component
     private $columns = array();
     private $entity = 'Record';
     protected $data = array();
+    protected $errors = [];
     private $db;
     private $filters = array();
     private $fields = array();
@@ -277,7 +278,7 @@ class Pagination extends Component
         return array_key_exists($key, $this->statistics) ? $this->statistics[$key] : null;
     }
     
-    public function loadData($requestPage = null)
+    public function loadData($requestPage = null, $exceptionOnError = false)
     {        
         if (empty($this->sql)) {
             return array();
@@ -293,8 +294,11 @@ class Pagination extends Component
             $this->statistics['rowsTotal'] = $this->db->execUnique($count, $this->par);
             $this->att('data-total-rows', $this->statistics['rowsTotal']);
         } catch(\Exception $e) {
-            echo $this->errors[] = '<pre>'.$count."\n".$e->getMessage().'</pre>';
-            return array();
+            $this->errors[] = '<pre>'.$count."\n".$e->getMessage().'</pre>';
+            if ($exceptionOnError) {
+                throw new \Exception('<span class="text-danger">'.$e->getMessage().'</span>'.PHP_EOL.PHP_EOL.$this->sql);
+            }
+            return [];
         }
         
         $this->calcPage($requestPage);
@@ -382,5 +386,10 @@ class Pagination extends Component
     public function getStatistics()
     {
         return $this->page;
+    }
+    
+    public function getErrors()
+    {
+        return implode(PHP_EOL, $this->errors);
     }
 }
