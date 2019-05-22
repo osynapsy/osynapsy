@@ -31,6 +31,8 @@ class Form extends Component
     private $alertCount=0;
     private $body;
     private $foot;
+    private $footLeft;
+    private $footRight;
     private $repo;
     private $headCommand;
     private $appendFootToMain = false;
@@ -124,14 +126,16 @@ class Form extends Component
         return $this->alert;
     }
     
-    public function foot($obj)
+    public function foot($obj, $right = false)
     {
         if (empty($this->foot)) {
-            $this->foot = new Tag('div');
-            $this->foot->att('class','clearfix');
+            $this->foot = new Tag('div', null, 'row');
+            $this->footLeft = $this->foot->add(new Tag('div', null, 'col-lg-6 col-xs-6 col-sm-6'));
+            $this->footRight = $this->foot->add(new Tag('div', null, 'col-lg-6 col-xs-6 col-sm-6 text-right'));           
         }
-        $this->foot->add($obj);
-        return is_object($obj) ? $obj : $this->foot;
+        $column = $right ? $this->footRight : $this->footLeft;
+        $column->add($obj);
+        return is_object($obj) ? $obj : $column;
     }
     
     public function getPanel()
@@ -139,7 +143,7 @@ class Form extends Component
         return $this->body;
     }
     
-    public function put($lbl, $obj, $x=0, $y=0, $width=1, $offset=null, $class='')
+    public function put($lbl, $obj, $x = 0, $y = 0, $width = 1, $offset = null, $class = '')
     {
         $this->body->put($lbl, $obj, $x, $y, $width, $offset, $class);
         return $this->body;
@@ -148,25 +152,35 @@ class Form extends Component
     public function setCommand($delete = false, $save = true, $back = true)
     {
         if ($save) {
-            $this->foot(new Button('btn_save', 'button', 'btn-primary pull-right'))
-                 ->setAction('save')
-                 ->att('style','min-width: 100px; margin-right: 10px;')
-                 ->add($save === true ? '<span class="glyphicon glyphicon-floppy-disk"></span> Salva' : $save);
+            $btnSave = new Button(
+                'btn_save', 
+                'button', 
+                'btn-primary',
+                '<span class="fa fa-floppy-o"></span> Salva'
+            );
+            $btnSave->setAction('save');
+            $this->foot($btnSave, true);
         }
         
         if ($delete) {
-            $this->foot(new Button('btn_delete', 'button', 'btn-danger pull-right'))
-                 ->setAction('delete')
-                 ->att('data-confirm', 'Sei sicuro di voler eliminare il record corrente?')                 
-                 ->att('style','min-width: 100px; margin-right: 10px;')
-                 ->add('<span class="glyphicon glyphicon-trash"></span> Elimina');
+            $btnDelete = new Button(
+                'btn_delete', 
+                'button', 
+                'btn-danger', 
+                '<span class="fa fa-trash-o"></span> Elimina'
+            );
+            $btnDelete->setAction('delete', null ,'Sei sicuro di voler eliminare il record corrente?');
+            $this->foot($btnDelete, true);
         }
 
         if ($back) {
-            $this->foot(new Button('btn_back'))
-                 ->att('class','cmd-back btn btn-default btn-secondary pull-left')
-                 ->att('style','margin-right: 10px; min-width: 100px;')
-                 ->add('<span class="glyphicon glyphicon-chevron-left"></span> Indietro');
+            $btnBack = new Button(
+                'btn_back', 
+                'button', 
+                'cmd-back btn btn-default btn-secondary',
+                '<span class="fa fa-arrow-left"></span> Indietro'
+            );
+            $this->foot($btnBack);
         }
     }
     
