@@ -266,31 +266,42 @@ class DbPdo extends \PDO implements InterfaceDbo
         $this->insert($table, array_merge($args, $conditions));
     }
     
-    public function select($table, array $conditions, array $fields = ['*'], $fetchMethod = 'ASSOC')
+    public function select($table, array $conditions, array $fields = ['*'], array $orderBy = [], $fetchMethod = 'ASSOC')
     {        
-        list($sql, $params) = $this->selectBuild($table, $fields, $conditions);
+        list($sql, $params) = $this->selectBuild($table, $fields, $conditions, $orderBy);
         return $this->execQuery($sql, $params, $fetchMethod);
     }
     
     public function selectOne($table, array $conditions, array $fields = ['*'], $fetchMethod = 'ASSOC')
     {        
-        list($sql, $params) = $this->selectBuild($table, $fields, $conditions);
+        list($sql, $params) = $this->selectBuild($table, $fields, $conditions, []);
         return $this->execUnique($sql, $params, $fetchMethod);
     }
     
-    private function selectBuild($table, array $fields, array $conditions)
+    private function selectBuild($table, array $fields, array $conditions, array $orderBy)
     {
-        $sql = 'SELECT '. implode(',', $fields) . ' FROM ' . $table;
+        $sql = ['SELECT '. implode(',', $fields), ' FROM ' . $table];
         if (empty($conditions)) {
             return $sql;
         }
         $where = $params = [];
         foreach ($conditions as $field => $value) {
+            if (is_null($value)) {
+                $where[] = $field.' is null';
+                continue;
+            }
+            if (is_numeric($field)) {
+                $where[] = $value;
+                continue;
+            }
             $where[] = $field.' = :'.sha1($field);
             $params[sha1($field)] = $value;
         }        
-        $sql .= ' WHERE '.implode(' AND ', $where);
-        return [$sql, $params];
+        $sql[] = 'WHERE '.implode(' AND ', $where);
+        if (empty($orderBy)) {
+            $sql[] = 'ORDER BY '.implode(' ', $orderBy);
+        }
+        return [implode(PHP_EOL, $sql), $params];
     }
     
     public function cast($field,$type)
