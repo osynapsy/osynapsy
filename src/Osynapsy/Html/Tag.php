@@ -143,6 +143,10 @@ class Tag
         $spaces = $this->tagdep != 0 ? PHP_EOL.str_repeat("  ",abs($this->tagdep)) : '';
         $strTag = $spaces.'<'.$tag;
         foreach ($this->attributes as $key => $value) {
+            if (is_object($value) && !method_exists($value, '__toString')) {
+                $strTag .= ' error="Attribute value is object ('.get_class($value).')"';
+                continue;
+            }
             $strTag .= ' '.$key.'="'.htmlspecialchars($value, ENT_QUOTES).'"';
             // la conversione del contentuto degli attributi viene fornita da Tag in modo
             // tale che non debba essere gestito dai suoi figli
