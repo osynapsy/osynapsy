@@ -164,7 +164,7 @@ class Form extends Component
 
         if ($back) {
             $this->foot(new Button('btn_back'))
-                 ->att('class','cmd-back btn btn-default pull-left')
+                 ->att('class','cmd-back btn btn-default btn-secondary pull-left')
                  ->att('style','margin-right: 10px; min-width: 100px;')
                  ->add('<span class="glyphicon glyphicon-chevron-left"></span> Indietro');
         }
