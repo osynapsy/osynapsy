@@ -124,19 +124,12 @@ class Panel extends Component
     {
         if (is_null($cell)) {
             return;
+        }        
+        $cel = $this->currentRow->add(new Tag('div'));        
+        if ($this->formType === 'horizontal') {            
+            $width += 4;                
         }
-        
-        $cel = $this->currentRow->add(new Tag('div'));
-        
-        switch($this->formType) {
-            case 'horizontal':
-                $width += 4;
-                break;
-        }
-        $class = [
-            'col-sm-'.$width, 
-            ' col-lg-'.$width
-        ];
+        $class = ['col-sm-'.$width, 'col-lg-'.$width];
         if (!empty($cell['offset'])) {
             $class[] = 'col-lg-offset-'.$cell['offset'];
             $class[] = 'offset-'.$cell['offset'];
@@ -145,18 +138,12 @@ class Panel extends Component
             $class[] =  $cell['class'];
         }
         $formGroup = $cel->att('class', implode(' ',$class))
-                         ->add(new Tag('div'))
-                         ->att('class','form-group');
-        
+                         ->add(new Tag('div', null, 'form-group'));        
         if (!empty($this->cellClass)) {
             $cel->att('class',$this->cellClass);
-        }
-        
-        unset($cell['width']);
-        unset($cell['class']);
-        unset($cell['offset']);
-        $formGroup->addFromArray($cell);
-        
+        }        
+        unset($cell['width'], $cell['class'], $cell['offset']);        
+        $formGroup->addFromArray($cell);        
         return $cel;
     }
     
@@ -190,7 +177,7 @@ class Panel extends Component
         $obj['lbl'] = $label;
     }
     
-    public function put($lbl, $obj, $row = 0, $col = 0, $width=1, $offset=null, $class='')
+    public function put($lbl, $obj, $row = 0, $col = 0, $width=1, $offset = null, $class = '')
     {
         if ($obj instanceof Tag) {
             $obj->att('data-label', strip_tags($lbl));
