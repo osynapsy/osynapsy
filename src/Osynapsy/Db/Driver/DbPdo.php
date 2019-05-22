@@ -289,8 +289,7 @@ class DbPdo extends \PDO implements InterfaceDbo
             if (is_null($value)) {
                 $where[] = $field.' is null';
                 continue;
-            }
-            if (is_numeric($field)) {
+            } elseif (is_numeric($field)) {
                 $where[] = $value;
                 continue;
             }
