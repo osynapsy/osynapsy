@@ -39,7 +39,7 @@ class DataGrid2Column
         $type = 'string',
         callable $function = null,
         $fieldOrderBy = null
-    ){
+    ){        
         $this->properties['label'] = $label;
         $this->properties['field'] = $field;
         $this->properties['type'] = $type;
