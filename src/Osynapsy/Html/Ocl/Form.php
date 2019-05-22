@@ -41,13 +41,12 @@ class Form extends Component
         $this->components[0]->setParameter('label-position','inside');
     }
 
-    public function put($obj,$lbl,$nam,$x=0,$y=0,$par=0)
+    public function put($obj, $lbl, $nam, $x=0, $y=0, $par=0)
     {
          //if (!class_exists($typ)) {echo $typ; return;}
          //$obj  = new $typ($nam);
          //$obj->label = $lbl;
-         if ($x == -1) //Se l'oggetto non ha position lo aggiungo in testa
-         {
+         if ($x == -1) { //Se l'oggetto non ha position lo aggiungo in testa         
              $this->add($obj,'first');
              $par = empty($par) ? -1 : $par; //$par = -1;
          }
