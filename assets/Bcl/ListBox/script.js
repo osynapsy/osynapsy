@@ -1,12 +1,11 @@
 olistbox = {
-    icoClose : 'glyphicon-chevron-right',
-    icoOpen  : 'glyphicon-chevron-down',
+    icoClose : 'fa-chevron-right',
+    icoOpen  : 'fa-chevron-down',
     init : function(){
-        console.log('ci sono');
         $('.listbox').on('click','.listbox-box',function(){
             var par = $(this).closest('.listbox');
             var width = par.width();            
-            $('.listbox-list',par).toggle();
+            $('.listbox-list',par).css('width', width+'px').toggle();
         }).on('click','.listbox-list .listbox-list-item',function(){
             $(this).closest('.listbox-list').toggle();
             var par = $(this).closest('.listbox');
@@ -16,12 +15,12 @@ olistbox = {
             $(this).addClass('selected');
         }).on('click','.'+this.icoClose,function(e){
             e.stopPropagation();
-            $(this).closest('div').next().removeClass('hidden');
+            $(this).closest('div').next().removeClass('hidden').removeClass('d-none');
             $(this).removeClass(olistbox.icoClose)
                    .addClass(olistbox.icoOpen);
         }).on('click','.'+this.icoOpen,function(e){
             e.stopPropagation();
-            $(this).closest('div').next().addClass('hidden');
+            $(this).closest('div').next().addClass('hidden').addClass('d-none');
             $(this).removeClass(olistbox.icoOpen)
                    .addClass(olistbox.icoClose);
         });
@@ -39,7 +38,11 @@ olistbox = {
         this.observer = new MutationObserver(
             function( mutations ) {
                 mutations.forEach(function( mutation ) {
-                    console.log( mutation.type, mutation.target, mutation.attributeName );
+                    //console.log( mutation.type, mutation.target, mutation.attributeName );
+                    var onchange = $(mutation.target).closest('.listbox').attr('onchange');
+                    if (onchange) {
+                        eval(onchange);
+                    }
                 });    
             }
         );
