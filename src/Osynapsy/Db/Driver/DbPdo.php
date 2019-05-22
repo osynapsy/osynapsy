@@ -265,7 +265,13 @@ class DbPdo extends \PDO implements InterfaceDbo
         } 
         $this->insert($table, array_merge($args, $conditions));
     }
-            
+    
+    public function select($table, array $conditions, array $fields = ['*'], $fetchMethod = 'ASSOC')
+    {        
+        list($sql, $params) = $this->selectBuild($table, $fields, $conditions);
+        return $this->execQuery($sql, $params, $fetchMethod);
+    }
+    
     public function selectOne($table, array $conditions, array $fields = ['*'], $fetchMethod = 'ASSOC')
     {        
         list($sql, $params) = $this->selectBuild($table, $fields, $conditions);
