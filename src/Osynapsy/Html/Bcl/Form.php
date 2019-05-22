@@ -24,6 +24,8 @@ use Osynapsy\Html\Bcl\Alert;
  */
 class Form extends Component
 {    
+    use FormCommands;
+    
     private $head;
     private $headCommandWidth = 12;
     public  $headClass = 'row';
@@ -40,12 +42,12 @@ class Form extends Component
     public function __construct($name, $mainComponent = 'Panel', $tag = 'form')
     {
         parent::__construct($tag, $name);
-        $this->repo = new Dictionary(array(
-           'foot' => array(
+        $this->repo = new Dictionary([
+           'foot' => [
                 'offset' => 1,            
                 'width' => 10
-            )
-        ));
+            ]
+        ]);
         //Form setting
         $this->att('name',$name)
              ->att('method','post')
@@ -61,10 +63,8 @@ class Form extends Component
     protected function __build_extra__()
     {
         if ($this->head) {
-            $this->add(new Tag('div'))
-                 ->att('class','block-header m-b')
-                 ->add(new Tag('div'))
-                 ->att('class', $this->headClass)
+            $this->add(new Tag('div', null, 'block-header m-b'))                 
+                 ->add(new Tag('div', null, $this->headClass))                 
                  ->add($this->head);
         }
         
@@ -94,6 +94,18 @@ class Form extends Component
     public function addCard($title)
     {
         $this->body->addCard($title);
+    }
+    
+    public function addHeadCommand($object, $space = 1)
+    {
+        if (empty($this->headCommand)) {            
+            $this->headCommand = $this->head($this->headCommandWidth); 
+            $this->headCommand->att('style','padding-top: 10px');
+        }
+        if ($space > 0) {
+            $this->headCommand->add(str_repeat('&nbsp;', $space));
+        }
+        $this->headCommand->add($object);
     }
     
     public function head($width = 12, $offset = 0)
@@ -141,8 +153,8 @@ class Form extends Component
     public function getPanel()
     {
         return $this->body;
-    }
-    
+    }       
+            
     public function put($lbl, $obj, $x = 0, $y = 0, $width = 1, $offset = null, $class = '')
     {
         $this->body->put($lbl, $obj, $x, $y, $width, $offset, $class);
@@ -151,51 +163,17 @@ class Form extends Component
     
     public function setCommand($delete = false, $save = true, $back = true)
     {
-        if ($save) {
-            $btnSave = new Button(
-                'btn_save', 
-                'button', 
-                'btn-primary',
-                '<span class="fa fa-floppy-o"></span> Salva'
-            );
-            $btnSave->setAction('save');
-            $this->foot($btnSave, true);
+        if ($save) {            
+            $this->foot($this->getCommandSave($save), true);
+        }        
+        if ($delete) {            
+            $this->foot($this->getCommandDelete(), true);
         }
-        
-        if ($delete) {
-            $btnDelete = new Button(
-                'btn_delete', 
-                'button', 
-                'btn-danger', 
-                '<span class="fa fa-trash-o"></span> Elimina'
-            );
-            $btnDelete->setAction('delete', null ,'Sei sicuro di voler eliminare il record corrente?');
-            $this->foot($btnDelete, true);
+        if ($back) {            
+            $this->foot($this->getCommandBack());
         }
-
-        if ($back) {
-            $btnBack = new Button(
-                'btn_back', 
-                'button', 
-                'cmd-back btn btn-default btn-secondary',
-                '<span class="fa fa-arrow-left"></span> Indietro'
-            );
-            $this->foot($btnBack);
-        }
-    }
-    
-    public function addHeadCommand($object, $space = 1)
-    {
-        if (empty($this->headCommand)) {            
-            $this->headCommand = $this->head($this->headCommandWidth); 
-            $this->headCommand->att('style','padding-top: 10px');
-        }
-        if ($space > 0) {
-            $this->headCommand->add(str_repeat('&nbsp;', $space));
-        }
-        $this->headCommand->add($object);
-    }
-    
+    }        
+            
     public function setType($type)
     {
         if ($type == 'horizontal') {
