@@ -47,7 +47,7 @@ trait FormCommands
         return $btnDelete;
     }
     
-    public function getCommandSave($label)
+    public function getCommandSave($label = true)
     {
         if ($label === true) {
             $label = '<span class="fa fa-floppy-o"></span> Salva';
