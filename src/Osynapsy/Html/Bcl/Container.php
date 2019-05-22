@@ -15,16 +15,19 @@ use Osynapsy\Html\Tag;
 
 class Container extends Tag
 {
+    //use Trait for make form command buttons
+    use FormCommands;
+    
     private $currentRow;
     private $foot;
     private $footLeft;
     private $footRight;
     
-    public function __construct($id, $tag='div')
+    public function __construct($id, $tag = 'div')
     {
         parent::__construct($tag, $id);
         if ($tag == 'form'){
-            $this->att('method','post');
+            $this->att('method', 'post');
         }
     }
 
@@ -34,8 +37,8 @@ class Container extends Tag
             $width = (12 - ($offset * 2)) / 2;
             $lgoffset = empty($offset) ? '' : ' col-lg-offset-'.$offset;
             $this->foot = $this->addRow();
-            $this->footLeft = $this->foot->add(new Tag('div'))->att('class', 'col-lg-'.$width.$lgoffset);
-            $this->footRight = $this->foot->add(new Tag('div'))->att('class', 'col-lg-'.$width.' text-right');
+            $this->footLeft = $this->foot->add(new Tag('div', null, 'col-lg-'.$width.$lgoffset));
+            $this->footRight = $this->foot->add(new Tag('div', null, 'col-lg-'.$width.' text-right'));
         }
         return empty($right) ? $this->footLeft : $this->footRight;        
     }
@@ -65,24 +68,13 @@ class Container extends Tag
     public function setCommand($delete = false, $save = true, $back = true, $offset = 0)
     {
         if ($delete) {
-            $this->getFoot(true, $offset)
-                 ->add(new Button('btn_delete', 'button', 'btn-danger'))
-                 ->setAction('delete')
-                 ->att('data-confirm', 'Sei sicuro di voler eliminare il record corrente?')
-                 ->add('<span class="glyphicon glyphicon-trash"></span> Elimina');
+            $this->getFoot(true, $offset)->add($this->getCommandDelete());                 
         }
         if ($save) {
-            $this->getFoot(true, $offset)
-                 ->add(new Button('btn_save', 'button', 'btn-primary'))
-                 ->setAction('save')
-                 ->add($save === true ? '<span class="glyphicon glyphicon-floppy-disk"></span> Salva' : $save);
-        }
-        
+            $this->getFoot(true, $offset)->add($this->getCommandSave($save));
+        }        
         if ($back) {
-            $this->getFoot()
-                 ->add(new Button('btn_back'))
-                 ->att('class','cmd-back btn btn-default')
-                 ->add('<span class="glyphicon glyphicon-chevron-left"></span> Indietro');
+            $this->getFoot()->add($this->getCommandBack());                 
         }
     }
 }
