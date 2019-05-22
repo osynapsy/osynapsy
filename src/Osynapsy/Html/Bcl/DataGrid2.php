@@ -38,7 +38,11 @@ class DataGrid2 extends Component
     {
         //If datagrid has pager get data from it.
         if (!empty($this->pagination)) {
-            $this->setData($this->pagination->loadData());
+            try {
+                $this->setData($this->pagination->loadData(null, true));
+            } catch (\Exception $e) {
+                $this->printError($e->getMessage());
+            }
         } 
         //If Datagrid has title append and show it.
         if (!empty($this->title)) {
@@ -55,7 +59,14 @@ class DataGrid2 extends Component
             $this->add($this->buildPagination());
         }        
     }
-            
+    
+    private function printError($error)
+    {
+        $this->setData([['error' => str_replace(PHP_EOL,'<br>',$error)]]);
+        $this->columns = [];
+        $this->addColumn('Error', 'error', 'col-lg-12');
+    }
+    
     /**
      * Internal method for build a Datagrid column head.
      * 
