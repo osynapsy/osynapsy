@@ -20,7 +20,7 @@ class Select
 {
     private $debug;
     private $dummy;
-    private $parent;
+    private $parent;    
     private $part = [
         'SELECT' => [
             'separator' => ','.PHP_EOL
@@ -48,7 +48,7 @@ class Select
     public function __construct($fields = [], $parent = null, $debug = false)
     {
         $this->debug = $debug;
-        $this->parent = $parent;
+        $this->parent = $parent;           
     }
     
     public function parameters(array $parameters = [])
@@ -179,15 +179,20 @@ class Select
     }
     
     public function if_($condition)
-    {
-        if (empty($this->dummy)) {
-            $this->dummy = new Select(null, $this);
-        }        
-        return $condition ? $this : $this->dummy; 
+    {                
+        return $condition ? $this : $this->getDummy(); 
     }
     
     public function endIf_()
     {
         return empty($this->parent) ? $this : $this->parent;
+    }       
+    
+    private function getDummy()
+    {
+        if (empty($this->dummy)) {
+            $this->dummy = new Select(null, $this);
+        }
+        return $this->dummy;
     }
 }
