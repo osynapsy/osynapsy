@@ -75,7 +75,7 @@ class DataGrid2 extends Component
     private function buildColumnHead()
     {
         $tr = new Tag('div');
-        $tr->att('class', 'row bcl-datagrid-thead hidden-xs');
+        $tr->att('class', 'row bcl-datagrid-thead hidden-xs .d-none .d-lg-block .d-xl-none');
         $orderByFields = $this->pagination ? explode(',', $this->pagination->getOrderBy()) : null;
         foreach(array_keys($this->columns) as $rawLabel) {
             $th = $this->columns[$rawLabel]->buildTh($orderByFields);
@@ -201,6 +201,10 @@ class DataGrid2 extends Component
         callable $function = null,
         $fieldOrderBy = null
     ){
+        if (is_callable($field)) {
+            $function = $field;
+            $field = '';
+        }
         $column = new DataGrid2Column(
             $label,
             $field,
