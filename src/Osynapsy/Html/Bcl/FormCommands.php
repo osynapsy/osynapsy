@@ -27,12 +27,13 @@ trait FormCommands
     
     public function getCommandClose()
     {
-        return new Button(
+        $button = new Button(
             'btn_close', 
             'button', 
             'cmd-close btn btn-default btn-secondary',
             '<span class="fa fa-times"></span> Chiudi'
         );
+        return $button->att('onclick', "parent.$('#amodal').modal('hide');");
     }
     
     public function getCommandDelete()
