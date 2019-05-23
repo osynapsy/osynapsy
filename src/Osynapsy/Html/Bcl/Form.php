@@ -161,7 +161,7 @@ class Form extends Component
         return $this->body;
     }
     
-    public function setCommand($delete = false, $save = true, $back = true)
+    public function setCommand($delete = false, $save = true, $back = true, $closeModal = false)
     {
         if ($save) {            
             $this->foot($this->getCommandSave($save), true);
@@ -171,6 +171,9 @@ class Form extends Component
         }
         if ($back) {            
             $this->foot($this->getCommandBack());
+        }
+        if ($closeModal) {            
+            $this->foot($this->getCommandClose());
         }
     }        
             
