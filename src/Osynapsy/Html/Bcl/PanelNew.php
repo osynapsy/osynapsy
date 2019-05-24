@@ -67,10 +67,10 @@ class PanelNew extends Component
         }
     }
     
-    public function addRow()
+    public function addRow($class = 'row')
     {
         $this->currentRow = $this->sections['body']->add(
-            new Tag('div', null, 'row')
+            new Tag('div', null, $class)
         );
         return $this->currentRow;
     }
