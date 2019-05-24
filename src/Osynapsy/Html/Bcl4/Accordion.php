@@ -66,8 +66,8 @@ class Accordion extends Component
     private function buildHeader($title, $targetId, $open)
     {
         $h2 = new Tag('span', null, 'm-0');
-        $h2->add(new Tag('button', null, 'btn'))->att([
-            'type' => 'button',
+        $h2->add(new Tag('span', null, 'btn'))->att([
+            //'type' => 'button',
             'data-toggle' => 'collapse',
             'role' => 'button',
             'data-target' => '#'.$targetId, 
