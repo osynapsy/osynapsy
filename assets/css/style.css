@@ -127,18 +127,26 @@ div#waitMask > div.message > div.progress {
 
 .osy-hr {
     color: #888;
-    font-size: 14px;
-    margin-top: 15px;
+    font-size: 14px;    
     position: relative;
-    display: block;
-    text-align: center;
+    display: block;    
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+    height: 20px;
 }
 
 .osy-hr span {
-    padding: 0 10px;
-    background-color: white;
+    padding: 1px 15px;
+    font-size: 0.75rem;
+    border: 1px dotted #eee;
+    border-radius: 0px 0px 5px;
+    background-color: #f8f8f8;
     z-index: 10;
-    position: relative;
+    position: absolute;    
+    min-width: 100px;
+    top: 9px;
+    right: 0px;
+    text-align: center;
 }
 
 .osy-hr:before {
