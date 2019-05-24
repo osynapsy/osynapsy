@@ -32,7 +32,7 @@ class Card extends Component
         $this->head  = new Tag('div');
         $this->head->att('class','card-header ch-alt clearfix');
         if (!empty($title)) {
-            $this->head->add('<h3 class="pull-left">'.$title.'</h3>');
+            $this->head->add('<div class="pull-left font-weight-bold">'.$title.'</div>');
         }
         $this->buildCommandContainer($commands);
         if (!empty($title) || !empty($commands)) {
