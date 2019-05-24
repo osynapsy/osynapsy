@@ -33,6 +33,7 @@ class PanelNew extends Component
     private $currentRow = null;
     private $currentColumn = null;
     private $title;
+    private $commands = [];
     
     public function __construct($id, $title='', $class = ' panel-default', $tag = 'div')
     {
@@ -44,18 +45,14 @@ class PanelNew extends Component
     
     public function addCommands(array $commands = [])
     {
-        $container = new Tag('div');
-        $container->att('class', 'panel-commands pull-right');
-        foreach($commands as $command) {
-            $container->add($command);
-        }
-        $this->getHead()->add($container);
+        $this->commands = array_merge($this->commands, $commands);        
         return $this;
     }
     
     protected function __build_extra__()
     {
         $this->buildTitle();
+        $this->buildCommands();
         $this->att('class', $this->classCss['main']);
         foreach ($this->sections as $key => $section){
             if (empty($section)) {
@@ -64,6 +61,19 @@ class PanelNew extends Component
             $section->att('class', $this->classCss[$key]);
             $this->add($section);
         }
+    }
+    
+    protected function buildCommands()
+    {
+        if (empty($this->commands)) {
+            return;
+        }
+        $container = $this->getHead()->add(
+            new Tag('div', null, 'panel-commands pull-right')
+        );         
+        foreach($this->commands as $command) {
+            $container->add($command);
+        }        
     }
     
     protected function buildTitle()
@@ -102,7 +112,7 @@ class PanelNew extends Component
     
     public function getHead()
     {
-        if (empty($this->sections['header'])) {
+        if (empty($this->sections['head'])) {
             $this->sections['head'] = new Tag('div');
         }
         return $this->sections['head'];
