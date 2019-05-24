@@ -34,25 +34,23 @@ class Tab extends Component
         $this->ul = $this->add(new Tag('ul'));
         $this->ul->att([
             'id' => $id.'_nav', 
-            'class' => 'nav nav-tabs',
+            'class' => 'nav nav-tabs mt-1',
             'role' => 'tablist',
             'data-tabs' => 'tabs'
         ]);
         $this->tabSelected = empty($_REQUEST[$this->id]) ? '1' : $_REQUEST[$this->id];
-        $this->tabContent = $this->add(new Tag('div'))->att('class','tab-content');
+        $this->tabContent = $this->add(new Tag('div', null, 'tab-content p-2'));
     }
     
     public function addCard($title)
     {
         $cardId = $this->id.'_'.$this->nCard++;
-        $li = $this->ul->add(new Tag('li'))->att('role','presentation');
-        $class = '';
+        $li = $this->ul->add(new Tag('li', null, 'nav-item'))->att('role','presentation');        
         if($this->tabSelected == $this->nCard) {
-            $class = 'active in';
-        }
-        $li->att('class',$class);
-        $li->add('<a href="#'.$cardId.'" data-toggle="tab">'.$title.'</a>');
-        $this->currentCard = $this->tabContent->add(new Panel($cardId))->att('class' , 'tab-pane fade no-border '.$class, true);
+            $li->att('class', 'active in', true);
+        }        
+        $li->add('<a href="#'.$cardId.'" data-toggle="tab" class="nav-link">'.$title.'</a>');
+        $this->currentCard = $this->tabContent->add(new Panel($cardId))->att('class' , 'tab-pane fade no-border', true);
         return $this->currentCard;
     }
     
