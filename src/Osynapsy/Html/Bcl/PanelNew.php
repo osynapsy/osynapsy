@@ -26,22 +26,21 @@ class PanelNew extends Component
         'main' => 'panel',
         'head' => 'panel-heading clearfix',
         'body' => 'panel-body',
-        'foot' => 'panel-footer'
+        'foot' => 'panel-footer',
+        'title' => 'panel-title'
     ];
     
     private $currentRow = null;
     private $currentColumn = null;
+    private $title;
     
     public function __construct($id, $title='', $class = ' panel-default', $tag = 'div')
     {
         parent::__construct($tag, $id);
-        $this->classCss['main'] = 'panel'.$class;
-        if (!empty($title)) {
-            $this->sections['head'] = new Tag('div');
-            $this->sections['head'];
-            $this->sections['head']->add('<div class="panel-title pull-left">'.$title.'</div>');
-        }
-        $this->sections['body'] = new Tag('div');        
+        $this->classCss['main'] = 'panel'.$class;        
+        $this->sections['head'] = new Tag('div'); 
+        $this->sections['body'] = new Tag('div');
+        $this->title = $title;        
     }
     
     public function addCommands(array $commands = [])
@@ -57,6 +56,7 @@ class PanelNew extends Component
     
     protected function __build_extra__()
     {
+        $this->buildTitle();
         $this->att('class', $this->classCss['main']);
         foreach ($this->sections as $key => $section){
             if (empty($section)) {
@@ -65,6 +65,16 @@ class PanelNew extends Component
             $section->att('class', $this->classCss[$key]);
             $this->add($section);
         }
+    }
+    
+    protected function buildTitle()
+    {
+        if (empty($this->title)) {
+            return;
+        }               
+        $this->sections['head']->add(
+            '<div class="'.$this->classCss['title'].' pull-left">'.$this->title.'</div>'
+        );
     }
     
     public function addRow($class = 'row')
@@ -91,7 +101,7 @@ class PanelNew extends Component
         return $this->sections['body'];
     }
     
-    public function setClass($body, $head = null, $foot = null, $main = null)
+    public function setClass($body, $head = null, $foot = null, $main = null, $title = null)
     {
         $this->classCss['body'] = $body;
         if (!is_null($head)) {
@@ -102,7 +112,10 @@ class PanelNew extends Component
         }
         if (!is_null($main)) {
             $this->classCss['main'] = $main;
-        }        
+        }
+        if (!is_null($title)) {
+            $this->classCss['title'] = $title;
+        }
         return $this;
     }
     
