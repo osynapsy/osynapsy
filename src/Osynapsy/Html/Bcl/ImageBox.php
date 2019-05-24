@@ -52,7 +52,7 @@ class ImageBox extends Component
         $this->dummy = $this->add(new Tag('label', null, 'osy-imagebox-dummy'))                            
                             ->att('for',$id);
         $file = $this->add(new Tag('input', $id, 'hidden'));
-        $file->att('type','file')->att('style','visibility: hidden;')->name = $id;
+        $file->att('type','file')->att('style','display: none;')->name = $id;
         
         $this->toolbar = new Tag('div');
         $this->toolbar->att('class','osy-imagebox-bcl-cmd');
