@@ -178,12 +178,17 @@ class Select
         return isset($this->part[$word]) && isset($this->part[$word]['postfix']) ? $this->part[$word]['postfix'] : ' ';
     }
     
-    public function if_($condition)
+    public function __if__($condition)
     {                
         return $condition ? $this : $this->getDummy(); 
     }
     
-    public function endIf_()
+    public function __else__()
+    {        
+        return empty($this->parent) ? $this->getDummy() : $this->parent;
+    }
+    
+    public function __endIf__()
     {
         return empty($this->parent) ? $this : $this->parent;
     }       
