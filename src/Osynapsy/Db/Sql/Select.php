@@ -185,6 +185,9 @@ class Select
     
     public function __else__()
     {        
+        //If parent is not set then prev if condition is verificated 
+        //else don't find
+        //If parent is set if condition is false then else case is verificated
         return empty($this->parent) ? $this->getDummy() : $this->parent;
     }
     
