@@ -297,7 +297,7 @@ class DbPdo extends \PDO implements InterfaceDbo
             $params[sha1($field)] = $value;
         }        
         $sql[] = 'WHERE '.implode(' AND ', $where);
-        if (empty($orderBy)) {
+        if (!empty($orderBy)) {
             $sql[] = 'ORDER BY '.implode(' ', $orderBy);
         }
         return [implode(PHP_EOL, $sql), $params];
