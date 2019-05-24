@@ -25,6 +25,7 @@ class Accordion extends Component
     public function __construct($id, $defaultOpen = 0)
     {
         parent::__construct('div', $id);
+        $this->requireCss('Bcl4/Accordion/style.css');
         $this->att('class','accordion osy-panel-accordion')
              ->att('role','tablist');
         $this->requireCss('Bcl/PanelAccordion/style.css');
@@ -65,9 +66,9 @@ class Accordion extends Component
     }
     
     private function buildHeader($title, $targetId, $open)
-    {
-        $h2 = new Tag('span', null, 'm-0');
-        $h2->add(new Tag('span'))->att([
+    {        
+        $span = new Tag('span', null, 'c-pointer');
+        $span->att([
             //'type' => 'button',
             'data-toggle' => 'collapse',
             'role' => 'button',
@@ -75,6 +76,6 @@ class Accordion extends Component
             'aria-expanded' => empty($open) ? 'false' : 'true',
             'aria-controls' => $targetId
         ])->add($title);
-        return $h2;
+        return $span;
     }
 }
