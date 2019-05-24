@@ -53,7 +53,8 @@ class Accordion extends Component
             'card-body collapse'.($open ? ' show' : ''),
             'card-header',
             'card-foot',
-            'card'
+            'card',
+            ''
         );
         $panel->addCommands($commands)->getBody()->att([
             'id' => $panelId.'_body',
@@ -66,7 +67,7 @@ class Accordion extends Component
     private function buildHeader($title, $targetId, $open)
     {
         $h2 = new Tag('span', null, 'm-0');
-        $h2->add(new Tag('span', null, 'btn'))->att([
+        $h2->add(new Tag('span'))->att([
             //'type' => 'button',
             'data-toggle' => 'collapse',
             'role' => 'button',
