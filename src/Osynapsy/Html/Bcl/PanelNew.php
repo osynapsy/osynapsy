@@ -37,8 +37,7 @@ class PanelNew extends Component
     public function __construct($id, $title='', $class = ' panel-default', $tag = 'div')
     {
         parent::__construct($tag, $id);
-        $this->classCss['main'] = 'panel'.$class;        
-        $this->sections['head'] = new Tag('div'); 
+        $this->classCss['main'] = 'panel'.$class;         
         $this->sections['body'] = new Tag('div');
         $this->title = $title;        
     }
@@ -50,7 +49,7 @@ class PanelNew extends Component
         foreach($commands as $command) {
             $container->add($command);
         }
-        $this->sections['head']->add($container);
+        $this->getHead()->add($container);
         return $this;
     }
     
@@ -72,7 +71,7 @@ class PanelNew extends Component
         if (empty($this->title)) {
             return;
         }               
-        $this->sections['head']->add(
+        $this->getHead()->add(
             '<div class="'.$this->classCss['title'].' pull-left">'.$this->title.'</div>'
         );
     }
@@ -99,6 +98,14 @@ class PanelNew extends Component
     public function getBody()
     {
         return $this->sections['body'];
+    }
+    
+    public function getHead()
+    {
+        if (empty($this->sections['header'])) {
+            $this->sections['head'] = new Tag('div');
+        }
+        return $this->sections['head'];
     }
     
     public function setClass($body, $head = null, $foot = null, $main = null, $title = null)
