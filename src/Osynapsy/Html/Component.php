@@ -208,12 +208,15 @@ class Component extends Tag
      * @param string $parameters parameters list (comma separated) to pass action
      * @return $this
      */
-    public function setAction($action, $parameters = null, $class = 'click-execute')
+    public function setAction($action, $parameters = null, $class = 'click-execute', $confirmMessage = null)
     {
         $this->setClass($class)
              ->att('data-action',$action);
         if (!empty($parameters) || $parameters === 0 || $parameters === '0') {
             $this->att('data-action-parameters', $parameters);
+        }
+        if (!empty($confirmMessage)) {
+            $this->att('data-confirm', $confirmMessage);
         }
         return $this;
     }
