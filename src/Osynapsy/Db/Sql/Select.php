@@ -183,6 +183,11 @@ class Select
         return $condition ? $this : $this->getDummy(); 
     }
     
+    public function __elseif__($condition)
+    {
+        return !empty($this->parent) && $condition ? $this->parent : $this->getDummy();
+    }
+    
     public function __else__()
     {        
         //If parent is not set then prev if condition is verificated 
@@ -191,7 +196,7 @@ class Select
         return empty($this->parent) ? $this->getDummy() : $this->parent;
     }
     
-    public function __endIf__()
+    public function __endif__()
     {
         return empty($this->parent) ? $this : $this->parent;
     }       
