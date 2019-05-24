@@ -44,7 +44,7 @@ trait FormCommands
             'btn-danger', 
             '<span class="fa fa-trash-o"></span> Elimina'
         );
-        $btnDelete->setAction('delete', null ,'Sei sicuro di voler eliminare il record corrente?');
+        $btnDelete->setAction('delete', null ,'click-execute', 'Sei sicuro di voler procedere con l\'eliminazione ?');
         return $btnDelete;
     }
     
