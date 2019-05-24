@@ -39,7 +39,7 @@ class PanelNew extends Component
         if (!empty($title)) {
             $this->sections['head'] = new Tag('div');
             $this->sections['head'];
-            $this->sections['head']->add('<h4 class="panel-title pull-left">'.$title.'</h4>');            
+            $this->sections['head']->add('<span class="panel-title pull-left">'.$title.'</span>');            
         }
         $this->sections['body'] = new Tag('div');        
     }
