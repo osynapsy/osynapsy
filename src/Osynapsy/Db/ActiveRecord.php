@@ -291,7 +291,7 @@ abstract class ActiveRecord implements InterfaceRecord
                 }                
                 $RecordExt->setValue(
                     $foreignIdx,
-                    $this->fieldExsist($field) ? $this->get($field) : $field
+                    $this->fieldExists($field) ? $this->get($field) : $field
                 );
             }            
             foreach($extendedValues as $field => $value) {           
