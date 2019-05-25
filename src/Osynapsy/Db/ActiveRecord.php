@@ -62,9 +62,9 @@ abstract class ActiveRecord implements InterfaceRecord
      * @param string $field
      * @return boolean
      */
-    public function fieldExsist($field)
+    public function fieldExists($field)
     {
-        return array_search($field, $this->fields) === false ? false : true; 
+        return in_array($field, $this->fields); 
     }
     
     /**
@@ -125,7 +125,7 @@ abstract class ActiveRecord implements InterfaceRecord
                     $searchArray[$field] = $this->get($this->keys[$foreignIdx]);
                     continue;
                 }                
-                $searchArray[$foreignIdx] = $this->fieldExsist($field) ? $this->get($field) : $field;
+                $searchArray[$foreignIdx] = $this->fieldExists($field) ? $this->get($field) : $field;
             }
             //old
             /*foreach ($this->keys as $idx => $field) {
@@ -194,6 +194,11 @@ abstract class ActiveRecord implements InterfaceRecord
         return false;
     }
     
+    public function getExtension($idx = 0)
+    {
+        return $this->extendRecord[$idx];
+    }
+    
     protected function init()
     {
     }
@@ -212,15 +217,18 @@ abstract class ActiveRecord implements InterfaceRecord
         if (empty($field)) {
             throw new \Exception("Field parameter is empty field={$field} value={$value}");
         }
-        if (!in_array($field, $this->fields)) {
-            $exists = $this->setValueInExtension($field, $value, $defaultValue);            
-            if (!$exists) {
-                throw new \Exception("Field {$field} do not exist");
-            }
-            $this->extendRecord[$field] = $value;
+        //If searched field is in actual record set activeRecord and return;
+        if ($this->fieldExists($field)) {
+            $this->activeRecord[$field] = ($value !== '0' && $value !== 0 && empty($value))  ? $defaultValue : $value;
+            return $this;           
         }        
-        $this->activeRecord[$field] = ($value !== '0' && $value !== 0 && empty($value))  ? $defaultValue : $value;        
-        return $this;
+        //If searched field is in a extension record set extendRecord and return;
+        if ($this->setValueInExtension($field, $value, $defaultValue)) {
+            $this->extendRecord[$field] = $value;
+            return $this;
+        }
+        //If field is not found throw a exception;
+        throw new \Exception("Field {$field} do not exist");        
     }
     
     private function setValueInExtension($field, $value = null, $defaultValue = null)
@@ -229,12 +237,12 @@ abstract class ActiveRecord implements InterfaceRecord
             return false;
         }       
         foreach($this->extensions as $extension) {
-            try{
-                $extension[0]->setValue($field, $value, $defaultValue);
-                return true;
-            } catch(\Exception $e) {
+            $record = $extension[0];
+            if (!$record->fieldExists($field)) {
                 continue;
-            }
+            }            
+            $record->setValue($field, $value, $defaultValue);
+            return true;            
         }        
         return false;
     }
@@ -267,35 +275,36 @@ abstract class ActiveRecord implements InterfaceRecord
         if (empty($this->extensions) || empty($this->extendRecord)) {
             return;
         }
+        $extendedValues = $this->extendRecord;
         foreach($this->extensions as $extension){
             /*foreach($this->keys as $idx => $field){
                 $extension[0]->setValue($extension[1][$idx], $this->get($field));
             }*/
-            
-            foreach($extension[1] as $foreignIdx => $field) {                
+            $RecordExt   = $extension[0];
+            $foreignKeys = $extension[1];            
+            foreach($foreignKeys as $foreignIdx => $field) {                
                 if (is_int($foreignIdx)) {                    
-                    $extension[0]->setValue(
-                        $field, 
-                        $this->get($this->keys[$foreignIdx])
-                    );
+                    $RecordExt->setValue($field, $this->get(
+                        $this->keys[$foreignIdx]
+                    ));
                     continue;
                 }                
-                $extension[0]->setValue(
+                $RecordExt->setValue(
                     $foreignIdx,
                     $this->fieldExsist($field) ? $this->get($field) : $field
                 );
-            }           
-            foreach($this->extendRecord as $field => $value) {           
+            }            
+            foreach($extendedValues as $field => $value) {           
                 //Intercept exception on setValue extended record;
-                try { 
-                    $extension[0]->setValue($field, $value);
-                    $this->activeRecord[$field] = $value;
-                    $this->originalRecord[$field] = $value;                
-                } catch (\Exception $e) {                    
+                if (!$RecordExt->fieldExists($field)) {
+                    continue;
                 }
-            }
-            
-            $extension[0]->save();
+                $RecordExt->setValue($field, $value);
+                $this->activeRecord[$field] = $value;
+                $this->originalRecord[$field] = $value;
+                unset($extendedValues[$field]);
+            }            
+            $RecordExt->save();
         }
     }
 
