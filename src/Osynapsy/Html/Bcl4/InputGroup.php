@@ -27,7 +27,7 @@ class InputGroup extends Component
     {
         parent::__construct('div');
         $this->setClass('input-group');
-        $this->buildPrefix($prefix, $name);
+        $this->buildPrefix($prefix);
                 
         if (is_object($name)) {
             $this->textBox = $this->add($name);
@@ -39,12 +39,12 @@ class InputGroup extends Component
         $this->setDimension($dimension);
     }
     
-    private function buildPrefix($prefix, $name)
+    private function buildPrefix($prefix)
     {
         if (empty($prefix)) {
             return;
         }
-        $this->add(new Tag('div', $name.'_prefix', 'input-group-prepend'))                 
+        $this->add(new Tag('div', null, 'input-group-prepend'))                 
              ->add($prefix);
     }
     
@@ -69,6 +69,9 @@ class InputGroup extends Component
     
     public function setDimension($dimension)
     {
+        if (empty($dimension)) {
+            return;
+        }
         $this->setClass('input-group-'.$dimension);
     }
 }
