@@ -102,6 +102,15 @@ abstract class EavRecord
             $this->activeRecord[$attributeId] = $attributeValue;
         }
     }
+    
+    public function fieldExist($field)
+    {
+        if (empty($this->fields)) {
+            return true;
+        }
+        return array_search($field, $this->fields) === false ? false : true;
+    }
+    
     /**
      * Find record in table through key value example : 1, [1,2]
      * 
