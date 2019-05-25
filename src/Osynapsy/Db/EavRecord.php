@@ -109,12 +109,9 @@ abstract class EavRecord
      * @param string $field
      * @return boolean
      */
-    public function fieldExist($field)
-    {
-        if (empty($this->fields)) {
-            return true;
-        }
-        return array_search($field, $this->fields) === false ? false : true;
+    public function fieldExists($field)
+    {        
+        return empty($this->fields) ? true : in_array($field, $this->fields);
     }
     
     /**
@@ -184,7 +181,7 @@ abstract class EavRecord
         if (empty($field)) {
             throw new \Exception('Field parameter is empty');
         }
-        if (!empty($this->fields) && !in_array($field, $this->fields)) {
+        if (!$this->fieldExists($field)) {
             throw new \Exception("Field {$field} do not exist in ".get_class($this));
         }
         if (in_array($field, $this->keys)) {
