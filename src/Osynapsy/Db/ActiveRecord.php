@@ -284,15 +284,17 @@ abstract class ActiveRecord implements InterfaceRecord
                     $foreignIdx,
                     $this->fieldExsist($field) ? $this->get($field) : $field
                 );
-            }
-            try { 
-                foreach($this->extendRecord as $field => $value) {           
+            }           
+            foreach($this->extendRecord as $field => $value) {           
+                //Intercept exception on setValue extended record;
+                try { 
                     $extension[0]->setValue($field, $value);
                     $this->activeRecord[$field] = $value;
                     $this->originalRecord[$field] = $value;                
+                } catch (\Exception $e) {                    
                 }
-            } catch (\Exception $e) {                    
             }
+            
             $extension[0]->save();
         }
     }
