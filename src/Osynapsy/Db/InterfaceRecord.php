@@ -8,7 +8,7 @@ namespace Osynapsy\Db;
  */
 interface InterfaceRecord
 {
-    public function fieldExist($field);
+    public function fieldExists($field);
     
     public function findByKey($key);
     
