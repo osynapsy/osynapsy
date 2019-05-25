@@ -109,25 +109,44 @@ class ErrorDispatcher
     
     public function dispatchException(\Exception $e)
     {
+        
         switch($e->getCode()) {
             case '403':
             case '404':
-                $this->response = $this->pageHttpError($e->getCode(), $e->getMessage());
+                $this->response = $this->pageHttpError(
+                    $e->getCode(), 
+                    $e->getMessage()
+                );
                 break;
             case '501':
-                $this->response = $this->pageTraceError($e->getMessage());
+                $this->response = $this->pageTraceError(
+                    $e->getMessage()
+                );
                 break;
             default :
-                $this->response = $this->pageTraceError($e->getMessage(), $e->getTrace());
+                $this->response = $this->pageTraceError(
+                    $this->formatMessage($e), 
+                    $e->getTrace()
+                );
                 break;
         }
         return $this->get();
     }
     
     public function dispatchError(\Error $e)
-    {
-        $this->response = $this->pageTraceError($e->getMessage(), $e->getTrace());
+    {        
+        $this->response = $this->pageTraceError(
+            $this->formatMessage($e), 
+            $e->getTrace()
+        );
         return $this->get();
+    }
+    
+    private function formatMessage($e)
+    {
+        $message = [$e->getCode() .' - '.$e->getMessage()];
+        $message[] = 'Line ' . $e->getLine() . ' of file ' . $e->getFile();
+        return implode(PHP_EOL, $message);
     }
     
     public function pageHttpError($errorCode, $message = 'Page not found')
@@ -146,7 +165,7 @@ class ErrorDispatcher
         return $this->pageTraceErrorHtml($message, $trace);
     }
     
-    private function pageTraceErrorHtml($message, $trace)
+    private function pageTraceErrorHtml($rawmessage, $trace)
     {
         $body = '';
         if (!empty($trace)) {
@@ -167,6 +186,7 @@ class ErrorDispatcher
             }
             $body .= '</table>';
         }
+        $message = nl2br($rawmessage);
         return <<<PAGE
             <div class="container">       
                 <div class="message">{$message}</div>
