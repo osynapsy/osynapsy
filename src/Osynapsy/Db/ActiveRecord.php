@@ -124,7 +124,7 @@ abstract class ActiveRecord implements InterfaceRecord
                 if (is_int($foreignIdx)) {                    
                     $searchArray[$field] = $this->get($this->keys[$foreignIdx]);
                     continue;
-                }
+                }                
                 $searchArray[$foreignIdx] = $this->fieldExsist($field) ? $this->get($field) : $field;
             }
             //old
@@ -210,7 +210,7 @@ abstract class ActiveRecord implements InterfaceRecord
     public function setValue($field, $value = null, $defaultValue = null)
     {
         if (empty($field)) {
-            throw new \Exception('Field parameter is empty');
+            throw new \Exception("Field parameter is empty field={$field} value={$value}");
         }
         if (!in_array($field, $this->fields)) {
             $exists = $this->setValueInExtension($field, $value, $defaultValue);            
@@ -268,9 +268,24 @@ abstract class ActiveRecord implements InterfaceRecord
             return;
         }
         foreach($this->extensions as $extension){
-            foreach($this->keys as $idx => $field){
+            /*foreach($this->keys as $idx => $field){
                 $extension[0]->setValue($extension[1][$idx], $this->get($field));
+            }*/
+            
+            foreach($extension[1] as $foreignIdx => $field) {                
+                if (is_int($foreignIdx)) {                    
+                    $extension[0]->setValue(
+                        $field, 
+                        $this->get($this->keys[$foreignIdx])
+                    );
+                    continue;
+                }                
+                $extension[0]->setValue(
+                    $foreignIdx,
+                    $this->fieldExsist($field) ? $this->get($field) : $field
+                );
             }
+            
             foreach($this->extendRecord as $field => $value) {
                 try {
                     $extension[0]->setValue($field, $value);
