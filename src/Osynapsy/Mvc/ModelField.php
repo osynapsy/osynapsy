@@ -29,12 +29,13 @@ class ModelField
     private $model;    
     public $type;
     
-    public function __construct($model, $nameOnDb, $nameOnView, $type = 'string')
+    public function __construct($model, $nameOnDb, $nameOnView, $type = 'string', $existInForm = true)
     {
         $this->model = $model;
         $this->name = $nameOnDb;
         $this->html = $nameOnView;
         $this->type = $type;
+        $this->existInForm = $existInForm;
     }
 
     public function __get($key)
@@ -52,6 +53,20 @@ class ModelField
         return implode(',', $this->repo);
     }
     
+    public function existInForm()
+    {
+        return $this->existInForm;
+    }
+
+    public function isNullable($v = null)
+    {
+        if (is_null($v)) { 
+            return $this->repo['nullable']; 
+        }
+        $this->repo['nullable'] = $v;
+        return $this;
+    }
+
     public function isPkey($b = null)
     {
         if (is_null($b)) {
@@ -66,16 +81,7 @@ class ModelField
         }
         return $this;
     }
-
-    public function isNullable($v = null)
-    {
-        if (is_null($v)) { 
-            return $this->repo['nullable']; 
-        }
-        $this->repo['nullable'] = $v;
-        return $this;
-    }
-
+    
     public function isUnique($v = null)
     {
         if (is_null($v)) { 
