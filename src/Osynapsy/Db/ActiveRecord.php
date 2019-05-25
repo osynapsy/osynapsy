@@ -285,14 +285,13 @@ abstract class ActiveRecord implements InterfaceRecord
                     $this->fieldExsist($field) ? $this->get($field) : $field
                 );
             }
-            
-            foreach($this->extendRecord as $field => $value) {
-                try {
+            try { 
+                foreach($this->extendRecord as $field => $value) {           
                     $extension[0]->setValue($field, $value);
                     $this->activeRecord[$field] = $value;
-                    $this->originalRecord[$field] = $value;
-                } catch (\Exception $e) {                    
+                    $this->originalRecord[$field] = $value;                
                 }
+            } catch (\Exception $e) {                    
             }
             $extension[0]->save();
         }
