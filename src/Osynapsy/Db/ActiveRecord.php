@@ -57,6 +57,17 @@ abstract class ActiveRecord implements InterfaceRecord
     }
     
     /**
+     * Check if field exist in record. Return true if exist and false isn't exist
+     * 
+     * @param string $field
+     * @return boolean
+     */
+    public function fieldExsist($field)
+    {
+        return array_search($field, $this->fields) === false ? false : true; 
+    }
+    
+    /**
      * Load record from database and store in originalRecord + activeRecord
      *
      * @param $reSearchParameters array of parameter (key = fieldname, value = value) ex.: ['id' => 5]
@@ -108,10 +119,18 @@ abstract class ActiveRecord implements InterfaceRecord
         }        
         $values = [];       
         foreach($this->extensions as $extension){             
-            $searchArray = [];
-            foreach($this->keys as $idx => $field){
-                $searchArray[$extension[1][$idx]] = $this->get($field);
-            }            
+            $searchArray = [];            
+            foreach($extension[1] as $foreignIdx => $field) {                
+                if (is_int($foreignIdx)) {                    
+                    $searchArray[$field] = $this->get($this->keys[$foreignIdx]);
+                    continue;
+                }
+                $searchArray[$foreignIdx] = $this->fieldExsist($field) ? $this->get($field) : $field;
+            }
+            //old
+            /*foreach ($this->keys as $idx => $field) {
+                $searchArray[$extension[1][$idx]] = $this->get($field);                                                    
+            } */           
             try {
                 $extens = $extension[0]->findByAttributes($searchArray); 
                 $values = array_merge($values, is_array($extens) ? $extens : []);
@@ -410,7 +429,7 @@ abstract class ActiveRecord implements InterfaceRecord
         if (empty($foreignKeys)) {
             throw new \Exception("Parameter foreignKeys is empty");
         }
-        $this->extensions[] = [$record, array_values($foreignKeys)];
+        $this->extensions[] = [$record, $foreignKeys];
     }
     
     /**
