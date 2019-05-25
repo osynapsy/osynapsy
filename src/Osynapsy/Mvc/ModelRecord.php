@@ -182,13 +182,11 @@ abstract class ModelRecord
         return $this->getController()->getResponse()->error();
     }
     
-    public function map($htmlField, $dbField = null, $value = null, $type = 'string')
-    {
-        $modelField = new ModelField($this, $dbField, $htmlField, $type);
-        $modelField->setValue(
-            isset($_REQUEST[$modelField->html]) ? $_REQUEST[$modelField->html] : null, 
-            $value
-        );        
+    public function map($formField, $dbField = null, $defaultValue = null, $type = 'string')
+    {        
+        $formValue = isset($_REQUEST[$formField]) ? $_REQUEST[$formField] : null;
+        $modelField = new ModelField($this, $dbField, $formField, $type, isset($_REQUEST[$formField]));
+        $modelField->setValue($formValue, $defaultValue);        
         $this->set('fields.'.$modelField->html, $modelField);        
         return $modelField;
     }
@@ -207,8 +205,8 @@ abstract class ModelRecord
             //Check if value respect rule
             $value = $this->sanitizeFieldValue($field);
             //If field isn't in readonly mode assign values to values list for store it in db
-            if (!$field->readonly && $field->name) {
-                $this->getRecord()->setValue($field->name, $value);
+            if (!$field->readonly & $field->existInForm() && $field->name) {
+                $this->getRecord()->setValue($field->name, $value);                
             }                        
         }
         //If occurred some error stop db updating
