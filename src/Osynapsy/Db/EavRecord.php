@@ -103,6 +103,12 @@ abstract class EavRecord
         }
     }
     
+    /**
+     * Check if field exsist into record;
+     * 
+     * @param string $field
+     * @return boolean
+     */
     public function fieldExist($field)
     {
         if (empty($this->fields)) {
