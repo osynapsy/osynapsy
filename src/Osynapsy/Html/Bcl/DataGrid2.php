@@ -119,7 +119,7 @@ class DataGrid2 extends Component
             }
             return $body;
         }
-        $rowClass =  'bcl-datagrid-body-row col-lg-'.$this->rowWidth;        
+        $rowClass =  'bcl-datagrid-body-row row col-lg-'.$this->rowWidth;        
         foreach ($this->data as $recIdx => $rec) {            
             if (($recIdx) % (12 / $this->rowWidth) === 0) {
                 $row = $body->add(new Tag('div', null, 'row'));
