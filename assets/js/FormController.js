@@ -229,7 +229,7 @@ var Osynapsy = new (function(){
                 });
                 break;
         }       
-    }
+    };
     
     pub.addWorker = function(name, url)
     {
@@ -246,8 +246,21 @@ var Osynapsy = new (function(){
         {
             var message = event.data;
             Osynapsy.notification(message.says);
+        };
+    };
+    
+    pub.typingEvent = function(obj)
+    {
+        if (pub.typingTimeout !== undefined) {
+            clearTimeout(pub.typingTimeout);
         }
-    }
+        pub.typingTimeout = setTimeout(function(){ 
+            var code = $(obj).attr('ontyping');
+            if (code) {
+                eval(code);
+            }
+        }, 500);  
+    };
     
     pub.kernel.message = 
     {
@@ -383,8 +396,7 @@ var Osynapsy = new (function(){
                 event.stopPropagation();
                 Osynapsy.action.execute(this);
             }).on('keydown','.onenter-execute',function(event){
-                event.stopPropagation();
-                //alert('ci sono');
+                event.stopPropagation();                
                 switch (event.keyCode) {
                     case 13 : //Enter
                     case 9:                                
@@ -406,6 +418,8 @@ var Osynapsy = new (function(){
                     $(this).attr('modal-height') ? $(this).attr('modal-height') : ($(window).innerHeight() - 250) + 'px',
                     $(this).attr('modal-dimension')
                 );
+            }).on('keyup', '.typing-execute', function(){                
+               Osynapsy.typingEvent(this);
             });
             FormController.fire('init');
         }
