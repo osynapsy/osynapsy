@@ -36,4 +36,14 @@ class TextBox extends InputBox
         }
         return $this;
     }
+    
+    public function onTyping($jsCode)
+    {
+        return $this->setClass('typing-execute')->att('ontyping', $jsCode);        
+    }
+    
+    public function onDblClick($jsCode)
+    {
+        return $this->att('ondblexecute', $jsCode);
+    }
 }
