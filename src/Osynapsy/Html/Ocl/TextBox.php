@@ -44,6 +44,6 @@ class TextBox extends InputBox
     
     public function onDblClick($jsCode)
     {
-        return $this->att('ondblexecute', $jsCode);
+        return $this->att('ondblclick', $jsCode);
     }
 }
