@@ -35,7 +35,7 @@ class ModelField
         $this->name = $nameOnDb;
         $this->html = $nameOnView;
         $this->type = $type;
-        $this->existInForm = $existInForm;
+        $this->existInForm = in_array($type, ['file','image']) ? true : $existInForm;
     }
 
     public function __get($key)
