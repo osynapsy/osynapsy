@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\Console;
+namespace Osynapsy\Helper\Console;
 
 use Osynapsy\Db\DbFactory;
 use Osynapsy\Console\Terminal;
