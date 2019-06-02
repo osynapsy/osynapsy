@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Utils;
+namespace Osynapsy\Helper\Auth\Jwt;
 
 /* 
  * To change this license header, choose License Headers in Project Properties.
@@ -7,7 +7,7 @@ namespace Osynapsy\Utils;
  * and open the template in the editor.
  */
 
-class TokenJwt
+class Token
 {    
     const HEADER = '{"alg": "HS256", "typ": "JWT"}';                
     
