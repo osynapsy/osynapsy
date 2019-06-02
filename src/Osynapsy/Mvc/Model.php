@@ -13,7 +13,7 @@ namespace Osynapsy\Mvc;
 
 use Osynapsy\Data\Dictionary;
 use Osynapsy\Mvc\ModelField;
-use Osynapsy\Network\UploadManager;
+use Osynapsy\Helper\Net\UploadManager;
 
 abstract class Model
 {
