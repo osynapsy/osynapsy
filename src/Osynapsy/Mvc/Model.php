@@ -62,6 +62,13 @@ abstract class Model
         return $this;
     }
     
+    protected function setAfterAction($insert, $update, $delete)
+    {
+        $this->repo->set('actions.after-insert', $insert)
+                   ->set('actions.after-update', $update)
+                   ->set('actions.after-delete', $delete);        
+    }
+    
     public function setSequence($seq)
     {
         $this->sequence = $seq;
