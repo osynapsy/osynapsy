@@ -113,6 +113,11 @@ var Osynapsy = new (function(){
         }
     };
     
+    pub.appendToUrl = function(value)
+    {
+        window.history.pushState(null, null, value);
+    };
+    
     pub.coalesce = function()
     {
         if (arguments.length === 0) {
