@@ -12,12 +12,15 @@
 namespace Osynapsy\Html\Bcl;
 
 use Osynapsy\Html\Tag;
+use Osynapsy\Html\Bcl\Alert;
 
 class Container extends Tag
 {
     //use Trait for make form command buttons
     use FormCommands;
     
+    private $alert;
+    private $alertCount = 0;
     private $currentRow;
     private $foot;
     private $footLeft;
@@ -31,6 +34,26 @@ class Container extends Tag
         }
     }
 
+    public function alert($label, $type = 'danger')
+    {
+        if (empty($this->alert)) {
+            $this->alert = $this->add(new Tag('div'));
+            $this->alert->att('class','transition animated fadeIn m-b-sm');
+        }
+        $icon = '';
+        switch ($type) {
+            case 'danger':
+                $icon = '<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span>';
+                break;
+        }
+        $alert = new Alert('al'.$this->alertCount, $icon.' '.$label, $type);
+        $alert->att('class','alert-dismissible text-center',true)
+              ->add(' <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
+        $this->alert->add($alert);
+        $this->alertCount++;
+        return $this->alert;
+    }
+    
     private function getFoot($right = false, $offset = 0)
     {
         if (empty($this->foot)) {
