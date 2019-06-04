@@ -57,7 +57,7 @@ class Card extends Component
     {
         if (empty($this->body)) {
             $this->body = $this->add(new PanelNew('panel'.$this->id));
-            $this->body->setClass('', '', '', 'card-body');
+            $this->body->setClass('', '', '', 'card-body p-3');
         }
         return $this->body;
     }
