@@ -28,7 +28,7 @@ use Osynapsy\Kernel\ErrorDispatcher;
  */
 class Kernel
 {
-    const VERSION = '0.4.4-DEV';
+    const VERSION = '0.5-DEV';
     
     public $router;
     public $request;
@@ -40,13 +40,13 @@ class Kernel
     /**
      * Kernel costructor
      * 
-     * @param string $fileconf path of the instance configuration file
+     * @param string $instanceConfigurationFile path of the instance configuration file
      * @param object $composer Instance of composer loader
      */
-    public function __construct($fileconf, $composer = null)
+    public function __construct($instanceConfigurationFile, $composer = null)
     {
         $this->composer = $composer;
-        $this->loader = new Loader($fileconf);
+        $this->loader = new Loader($instanceConfigurationFile);
         $this->request = new Request(
             $_GET, 
             $_POST,
