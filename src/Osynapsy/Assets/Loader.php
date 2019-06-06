@@ -26,19 +26,16 @@ class Loader extends Controller
     
     public function indexAction()
     {            
-        if (!$this->checkFile($this->basePath . $this->path)) {
-            return $this->pageNotFound();    
-        }        
+        return $this->getFile($this->basePath . $this->path);
     }   
             
-    private function checkFile($filename)
+    private function getFile($filename)
     {
         if (!is_file($filename)) {
-            return false;
+            throw new \Osynapsy\Kernel\KernelException('Page not found', 404);
         }
         $this->copyFileToCache($this->getRequest()->get('page.url'), $filename);        
-        $this->sendFile($filename);
-        return true;
+        return $this->sendFile($filename);
     }
     
     private function copyFileToCache($webPath, $assetsPath)
@@ -75,14 +72,7 @@ class Loader extends Controller
         }
         return copy($assetsPath, $currentPath);
     }
-    
-    public function pageNotFound()
-    {
-        ob_clean();
-        header('HTTP/1.1 404 Not Found');
-        return 'Page not found';        
-    }
-    
+
     private function sendFile($filename)
     {
         $offset = 86400 * 7;
@@ -91,6 +81,6 @@ class Loader extends Controller
         //output the HTTP header
         $this->getResponse()->setHeader('Expires', gmdate("D, d M Y H:i:s", time() + $offset) . " GMT");        
         $this->getResponse()->setContentType('text/'.$ext);
-        readfile($filename);
+        return file_get_contents($filename);
     }
 }
