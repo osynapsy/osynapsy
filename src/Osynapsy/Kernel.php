@@ -77,6 +77,17 @@ class Kernel
         );
     }
     
+    
+    public function getRequest()
+    {
+        return $this->request;
+    }
+    
+    public function getVersion()
+    {
+        return self::VERSION;
+    }
+    
     private function loadConfig($key, $name, $value)
     {
         $array = $this->loader->search($key);
@@ -143,15 +154,5 @@ class Kernel
             $errorDispatcher = new ErrorDispatcher($error, $this->request);
             return $errorDispatcher->dispatchError($error);
         }
-    }
-    
-    public function getRequest()
-    {
-        return $this->request;
-    }
-    
-    public function getVersion()
-    {
-        return self::VERSION;
-    }
+    }    
 }
