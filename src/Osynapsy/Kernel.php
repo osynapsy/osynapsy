@@ -161,7 +161,9 @@ class Kernel
                 404
             );
         }
-        $reqApp = $this->request->get("env.app.{$route->application}.controller");                 
+        $reqApp = $this->request->get("env.app.{$route->application}.controller");
+        //If isn't configured an app controller for current instance load default 
+        //App controller
         $applicationClass = empty($reqApp) ? '\\Osynapsy\\Mvc\\Application' : str_replace(':', '\\',$reqApp);        
         //If app has applicationController instance it before recall route controller;        
         $application = new $applicationClass($route, $this->request);
