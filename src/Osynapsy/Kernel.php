@@ -15,7 +15,7 @@ use Osynapsy\Http\Request;
 use Osynapsy\Kernel\Loader;
 use Osynapsy\Kernel\Route;
 use Osynapsy\Kernel\Router;
-use Osynapsy\Kernel\Starter;
+use Osynapsy\Kernel\Instance;
 use Osynapsy\Kernel\KernelException;
 use Osynapsy\Kernel\ErrorDispatcher;
 
@@ -132,9 +132,10 @@ class Kernel
         }
         try {
             $this->loadRoutes();
-            return $this->followRoute(
-                $this->router->dispatchRoute($requestUri)
-            );
+            $route = $this->router->dispatchRoute($requestUri);
+            $this->getRequest()->set('page.route', $route);
+            $starter = new Instance($this->request, $route);
+            return $starter->run();
         } catch (\Exception $exception) {
             $errorDispatcher = new ErrorDispatcher($this->request);
             return $errorDispatcher->dispatchException($exception);
@@ -142,18 +143,6 @@ class Kernel
             $errorDispatcher = new ErrorDispatcher($error, $this->request);
             return $errorDispatcher->dispatchError($error);
         }
-    }
-    
-    /**
-     * 
-     * @param Route $route
-     * @return string
-     */
-    public function followRoute(Route $route)
-    {
-        $this->getRequest()->set('page.route', $route);
-        $starter = new Starter($this->request, $route);
-        return $starter->run();  
     }
     
     public function getRequest()
