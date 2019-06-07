@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Mvc;
 
-use Osynapsy\Event\Dispatcher;
+use Osynapsy\Event\Dispatcher as EventDispatcher;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response;
 use Osynapsy\Http\ResponseJson as JsonResponse;
@@ -34,7 +34,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         $this->application = $application;
         $this->parameters = $request->get('page.route')->parameters;        
         $this->request = $request;
-        $this->dispatcher = new Dispatcher($this);
+        $this->dispatcher = new EventDispatcher($this);
         $this->loadObserver();
         $this->setState('init');
         $this->init();
@@ -124,7 +124,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     
     abstract public function init();
     
-    public function loadView($path, $params = array(), $return = false)
+    public function loadView($path, $params = [], $return = false)
     {
         $view = $this->getResponse()->getBuffer($path, $this);
         if ($return) {
