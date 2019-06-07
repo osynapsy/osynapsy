@@ -108,16 +108,17 @@ class Calendar extends Component
     {
         $toolbar = $this->add(new Tag('div', null, 'osy-calendar-toolbar'));
         //Button month navigation
-        $nav = $toolbar->add(new Tag('div', null, 'osy-calendar-toolbar-navigation'));
+        $nav = $toolbar->add(new Tag('div', null, 'osy-calendar-toolbar-navigation btn-group'));
         $nav->add('<input type="button" name="btn_prev" value="&lt;" class="osy-calendar-command btn btn-info btn-xs" data-date="'.($prev->format('Y-m-d')).'">');
         $nav->add('<input type="button" name="btn_next" value="&gt;" class="osy-calendar-command btn btn-info btn-xs" data-date="'.($next->format('Y-m-d')).'">');
         //Label current month
+        $nav->add('&nbsp;');
         $nav->add(new Tag('span', null, 'osy-calendar-toolbar-label'))->add($label);
         //Button calendar type
-        $dty = $toolbar->add(new Tag('div', null, 'osy-calendar-toolbar-type'));
-        $dty->add('<input type="submit" id="btn_daily" value="Giorno" class="osy-calendar-command'.($type=='daily' ? ' ui-state-active' : '').'">');
-        $dty->add('<input type="submit" id="btn_weekly" value="Settimana" class="osy-calendar-command'.($type=='weekly' ? ' ui-state-active' : '').'">');
-        $dty->add('<input type="submit" id="btn_monthly" value="Mese" class="osy-calendar-command'.($type=='monthly' ? ' ui-state-active' : '').'">');
+        $dty = $toolbar->add(new Tag('div', null, 'osy-calendar-toolbar-type btn-group'));
+        $dty->add('<input type="submit" id="btn_daily" value="Giorno" class="btn btn-primary osy-calendar-command'.($type=='daily' ? ' ui-state-active' : '').'">');
+        $dty->add('<input type="submit" id="btn_weekly" value="Settimana" class="btn btn-primary osy-calendar-command'.($type=='weekly' ? ' ui-state-active' : '').'">');
+        $dty->add('<input type="submit" id="btn_monthly" value="Mese" class="btn btn-primary osy-calendar-command'.($type=='monthly' ? ' ui-state-active' : '').'">');
         $toolbar->add('<br class="osy-clear">');
     }
         
