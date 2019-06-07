@@ -25,11 +25,7 @@ class Application
         $this->loadDatasources();
         $this->init();
     }
-    
-    protected function init()
-    {
-    }
-    
+            
     public function getDb($key = 0)
     {
         return $this->getDbFactory()->getConnection($key);
@@ -50,9 +46,15 @@ class Application
         return $this->route;
     }
     
+    protected function init()
+    {
+    }
+    
     private function loadDatasources()
     {            
-        $listDatasource = $this->getRequest()->search('db',"env.app.{$this->getRoute()->application}.datasources");
+        $listDatasource = $this->getRequest()->search('db',
+            "env.app.{$this->getRoute()->application}.datasources"
+        );
         $this->dbFactory = new DbFactory();
         foreach ($listDatasource as $datasource) {
             $connectionString = $datasource['@value'];
@@ -64,11 +66,6 @@ class Application
     public function run()
     {
         return true;
-    }
-    
-    public function setException($e)
-    {
-        $this->exceptions[] = $e;
     }
     
     public function runAction()
