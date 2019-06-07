@@ -156,7 +156,10 @@ class Kernel
     public function runApplication($route)
     {
         if (!$route->controller) {
-            throw new KernelException('No route to destination ('.$this->request->get('server.REQUEST_URI').')', 404);
+            throw new KernelException(
+                'No route to destination ('.$this->request->get('server.REQUEST_URI').')', 
+                404
+            );
         }
         $reqApp = $this->request->get("env.app.{$route->application}.controller");                 
         $applicationClass = empty($reqApp) ? '\\Osynapsy\\Mvc\\Application' : str_replace(':', '\\',$reqApp);        
