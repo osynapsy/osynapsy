@@ -74,8 +74,7 @@ class Application
             throw new \Osynapsy\Kernel\KernelException('Route not found', 404);
         }
         $classController = $this->route->controller;
-        $controller = new $classController($this->getRequest(), $this);
-        
+        $controller = new $classController($this->getRequest(), $this);        
         return (string) $controller->run();
     }
 }
