@@ -21,20 +21,20 @@ use Osynapsy\Mvc\ApplicationException;
  */
 class Instance
 {
-    private $env;
+    private $request;
     private $route;
     private $appController;    
     
-    public function __construct(Dictionary &$env, Route $currentRoute)
+    public function __construct(Dictionary &$request, Route $currentRoute)
     {
-        $this->env = $env;
+        $this->request = $request;
         $this->route = $currentRoute;        
     }
     
     private function checks()
     {
         if (!$this->route->controller) {
-            throw new KernelException('No route to destination ('.$this->env->get('server.REQUEST_URI').')', 404);
+            throw new KernelException('No route to destination ('.$this->request->get('server.REQUEST_URI').')', 404);
         }
         if (!$this->route->application) {
             throw new KernelException('No application defined', 405);
@@ -43,12 +43,12 @@ class Instance
     
     private function runApplicationController()
     {
-        $applicationController = str_replace(':', '\\', $this->env->get("env.app.{$this->route->application}.controller"));
+        $applicationController = str_replace(':', '\\', $this->request->get("env.app.{$this->route->application}.controller"));
         if (empty($applicationController)) {
             return true;
         }
         //If app has applicationController instance it before recall route controller;        
-        $this->appController = new $applicationController($this->route, $this->env);
+        $this->appController = new $applicationController($this->route, $this->request);
         if (!$this->appController->run()) {
             throw new ApplicationException('Access denied','501');
         }
@@ -59,7 +59,7 @@ class Instance
         if (empty($classController)) {
             throw new KernelException('Route not found', '404');
         }
-        $this->controller = new $classController($this->env, $this->appController);
+        $this->controller = new $classController($this->request, $this->appController);
         return (string) $this->controller->run();
     }
     
