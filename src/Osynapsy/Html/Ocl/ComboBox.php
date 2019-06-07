@@ -50,13 +50,19 @@ class ComboBox extends Component
         }        
         foreach ($this->data as $k => $item) {            
             $item = array_values(!is_array($item) ? [trim($item)] : $item);
-            $this->addOption($item[0], (isset($item[1]) ? $item[1] : $item[0]));            
+            $value = $item[0];
+            $label = isset($item[1]) ? $item[1] : $item[0];
+            $disabled = empty($item[2]) ? false : true;
+            $this->addOption($value, $label, $disabled);            
         }
     }
     
-    public function addOption($value, $label)
+    public function addOption($value, $label, $disabled = 0)
     {               
         $option = $this->add(new Tag('option'))->att('value', $value);
+        if ($disabled) {
+            $this->att('disabled','disabled');
+        }
         $option->add($this->nvl($label, $value));
         if ($this->currentValue == $value) {
             $option->att('selected', 'selected');
