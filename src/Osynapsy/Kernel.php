@@ -13,9 +13,7 @@ namespace Osynapsy;
 
 use Osynapsy\Http\Request;
 use Osynapsy\Kernel\Loader;
-use Osynapsy\Kernel\Route;
 use Osynapsy\Kernel\Router;
-use Osynapsy\Kernel\Instance;
 use Osynapsy\Kernel\KernelException;
 use Osynapsy\Kernel\ErrorDispatcher;
 
@@ -144,9 +142,8 @@ class Kernel
         try {
             $this->loadRoutes();
             $route = $this->router->dispatchRoute($requestUri);
-            $this->getRequest()->set('page.route', $route);
-            $starter = new Instance($this->request, $route);
-            return $starter->run();
+            $this->getRequest()->set('page.route', $route);            
+            return $this->runApplication($route);
         } catch (\Exception $exception) {
             $errorDispatcher = new ErrorDispatcher($this->request);
             return $errorDispatcher->dispatchException($exception);
@@ -154,5 +151,20 @@ class Kernel
             $errorDispatcher = new ErrorDispatcher($error, $this->request);
             return $errorDispatcher->dispatchError($error);
         }
-    }    
+    }
+    
+    public function runApplication($route)
+    {
+        if (!$route->controller) {
+            throw new KernelException('No route to destination ('.$this->request->get('server.REQUEST_URI').')', 404);
+        }
+        $reqApp = $this->request->get("env.app.{$route->application}.controller");                 
+        $applicationClass = empty($reqApp) ? '\\Osynapsy\\Mvc\\Application' : str_replace(':', '\\',$reqApp);        
+        //If app has applicationController instance it before recall route controller;        
+        $application = new $applicationClass($route, $this->request);
+        if (!$application->run()) {
+            throw new \Osynapsy\Mvc\ApplicationException('Access denied','501');
+        }
+        return (string) $application->runAction();
+    }
 }
