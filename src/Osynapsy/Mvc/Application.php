@@ -10,7 +10,7 @@ use Osynapsy\Db\DbFactory;
  *
  * @author Pietro
  */
-abstract class Application
+class Application
 {
     private $db;
     protected $route;    
@@ -26,7 +26,9 @@ abstract class Application
         $this->init();
     }
     
-    abstract protected function init();
+    protected function init()
+    {
+    }
     
     public function getDb($key = 0)
     {
@@ -67,5 +69,16 @@ abstract class Application
     public function setException($e)
     {
         $this->exceptions[] = $e;
+    }
+    
+    public function runAction()
+    {        
+        if (empty($this->route) || !$this->route->controller) {
+            throw new \Osynapsy\Kernel\KernelException('Route not found', 404);
+        }
+        $classController = $this->route->controller;
+        $controller = new $classController($this->getRequest(), $this);
+        
+        return (string) $controller->run();
     }
 }
