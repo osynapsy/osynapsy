@@ -41,7 +41,19 @@ class Instance
         }
     }
     
-    private function runApplicationController()
+    public function run()
+    {
+        $this->checks();
+        $this->runApplication();
+        $response = $this->runController(
+            $this->route->controller
+        );
+        if ($response !== false) {
+            return $response;
+        } 
+    }
+    
+    private function runApplication()
     {
         $applicationController = str_replace(':', '\\', $this->request->get("env.app.{$this->route->application}.controller"));
         if (empty($applicationController)) {
@@ -54,24 +66,12 @@ class Instance
         }
     }
     
-    private function runRouteController($classController)
+    private function runController($classController)
     {
         if (empty($classController)) {
             throw new KernelException('Route not found', '404');
         }
         $this->controller = new $classController($this->request, $this->appController);
         return (string) $this->controller->run();
-    }
-    
-    public function run()
-    {
-        $this->checks();
-        $this->runApplicationController();
-        $response = $this->runRouteController(
-            $this->route->controller
-        );
-        if ($response !== false) {
-            return $response;
-        } 
-    }
+    }        
 }
