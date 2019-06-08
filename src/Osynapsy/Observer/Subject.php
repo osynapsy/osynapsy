@@ -53,9 +53,12 @@ trait Subject
             return;
         }
         $observers = array_keys($observerList, str_replace('\\', ':', get_class($this)));
-        foreach($observers as $observer) {
-            $observerClass = '\\'.trim(str_replace(':','\\',$observer));
-            $this->attach(new $observerClass());
+        try {
+            foreach($observers as $observer) {
+                $observerClass = '\\'.trim(str_replace(':','\\',$observer));
+                $this->attach(new $observerClass());
+            }
+        } catch(\Error $e) {
         }
     }
     
