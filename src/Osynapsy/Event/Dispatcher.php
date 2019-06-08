@@ -18,22 +18,17 @@ namespace Osynapsy\Event;
  */
 class Dispatcher 
 {
-    public $request;
     private $controller;
-    private $init = false;
+    private $listeners = [];
     
     public function __construct($controller)
     {
         $this->controller = $controller;
-        $this->request = $controller->getRequest();
     }
     
     public function dispatch(Event $event)
     {
-        if (!$this->init) {
-            $this->init();
-        }
-        $listeners = $this->request->get('listeners');
+        $listeners = $this->getController()->getRequest()->get('listeners');
         if (empty($listeners)) {
             return;
         }
@@ -41,19 +36,21 @@ class Dispatcher
             if ($eventId != $event->getId()) {
                 continue;
             }
-            $listenerClass = '\\'.trim(str_replace(':','\\',$listener));
-            $handle = new $listenerClass($this->controller);
-            $this->trigger($handle);
+            $listenerId = '\\'.trim(str_replace(':','\\',$listener));
+            $this->getListener($listenerId)->trigger($event);
         }
     }
     
-    private function trigger(InterfaceListener $listener)
-    {                
-        $listener->trigger();
+    private function getController()
+    {
+        return $this->controller;
     }
     
-    private function init()
-    {
-        $this->init = true;
+    private function getListener($id)
+    {                
+        if (empty($this->listeners[$id])) {
+            $this->listeners[$id] = new $id($this->controller);
+        }
+        return $this->listeners[$id];
     }
 }
