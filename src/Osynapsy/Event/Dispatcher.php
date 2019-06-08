@@ -19,11 +19,13 @@ namespace Osynapsy\Event;
 class Dispatcher 
 {
     public $request;
+    private $controller;
     private $init = false;
     
-    public function __construct($request)
+    public function __construct($controller)
     {
-        $this->request = $request;
+        $this->controller = $controller;
+        $this->request = $controller->getRequest();
     }
     
     public function dispatch(Event $event)
