@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Action;
 
-use Osynapsy\ImageProcessing\Image;
+use Osynapsy\Helper\ImageProcessing\Image;
 
 /**
  * Description of CropTrait
