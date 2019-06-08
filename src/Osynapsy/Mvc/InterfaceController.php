@@ -16,7 +16,13 @@ use Osynapsy\Mvc\Application;
 
 interface InterfaceController
 {
-    public function __construct(Request $request = null, Application $application = null);
+    public function __construct(Request $request = null, Application $application = null);    
     
     public function getResponse();
+    
+    public function getRequest();
+    
+    public function getDb();
+    
+    public function run($action, $parameters = []);
 }
