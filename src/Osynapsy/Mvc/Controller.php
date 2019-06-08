@@ -27,6 +27,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     private $request;
     private $response;
     private $application;
+    private $actions = [];
     public $model;
     
     public function __construct(Request $request = null, $application = null)
@@ -41,6 +42,11 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         $this->setState('initEnd');
     }
     
+    public function actionAdd($id, $class)
+    {
+        $this->actions[$id] = $class;
+    }
+    
     public function deleteAction()
     {
         if ($this->model) {
@@ -48,14 +54,23 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         }
     }
     
-    private function execAction($action)
+    private function execAction($action, $actionParameters)
     {
         $this->setResponse(new JsonResponse());
         $this->setState($action.'ActionStart');
+        if (array_key_exists($action, $this->actions)) {
+            $actionClass = new \ReflectionClass($this->actions[$action]);
+            $actionInstance = $actionClass->newInstance($actionClass, $actionParameters);
+            $resp = $actionInstance->run();
+            if ($resp) {
+                $this->getResponse()->alertJs($resp);
+            }
+            return $this->getResponse();
+        }
         if (!method_exists($this, $action.'Action')) {
             return $this->getResponse()->alertJs('No action '.$action.' exist in '.get_class($this));
         }
-        $actionParameters = filter_input(\INPUT_POST , 'actionParameters', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        
         $response = !empty($actionParameters) 
                   ? call_user_func_array( [$this, $action.'Action'], $actionParameters) 
                   : $this->{$action.'Action'}();
@@ -133,11 +148,10 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         $this->response->addContent($view);
     }
     
-    public function run()
+    public function run($action, $parameters = [])
     {
-        $action = filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION');
         if (!empty($action)) {
-            return $this->execAction($action);
+            return $this->execAction($action, $parameters);
         }        
         $this->setResponse(new HtmlResponse())->loadTemplate(
             $this->getRequest()->get('page.route')->template,
