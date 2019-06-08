@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\ImageProcessing;
+namespace Osynapsy\Helper\ImageProcessing;
 
 class Image
 {
