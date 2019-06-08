@@ -18,11 +18,15 @@ interface InterfaceController
 {
     public function __construct(Request $request = null, Application $application = null);    
     
+    public function getDb();
+    
+    public function getDispatcher();
+    
+    public function getModel();
+    
     public function getResponse();
     
     public function getRequest();
-    
-    public function getDb();
     
     public function run($action, $parameters = []);
 }
