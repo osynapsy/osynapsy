@@ -27,7 +27,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     private $request;
     private $response;
     private $application;
-    private $actions = [];
+    private $externalActions = [];
     public $model;
     
     public function __construct(Request $request = null, $application = null)
@@ -54,25 +54,37 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         }
     }
     
-    private function execAction($action, $actionParameters)
+    private function execAction($action, $parameters)
     {
         $this->setResponse(new JsonResponse());
+        if (array_key_exists($action, $this->externalActions)) {
+            return $this->execExternalAction($action, $parameters);
+        }
+        if (method_exists($this, $action.'Action')) {
+            return $this->execInternalAction($action, $parameters);
+        }
+        return $this->getResponse()->alertJs('No action '.$action.' exist in '.get_class($this));
+    }
+    
+    private function execExternalAction($action, $parameters)
+    {
         $this->setState($action.'ActionStart');
-        if (array_key_exists($action, $this->actions)) {
-            $actionClass = new \ReflectionClass($this->actions[$action]);
-            $actionInstance = $actionClass->newInstance($actionClass, $actionParameters);
-            $resp = $actionInstance->run();
-            if ($resp) {
-                $this->getResponse()->alertJs($resp);
-            }
-            return $this->getResponse();
+        $actionClass = new \ReflectionClass($this->externalActions[$action]);
+        $actionInstance = $actionClass->newInstance($actionClass, $parameters);
+        $actionInstance->setController($this);
+        $resp = $actionInstance->run();
+        if ($resp) {
+            $this->getResponse()->alertJs($resp);
         }
-        if (!method_exists($this, $action.'Action')) {
-            return $this->getResponse()->alertJs('No action '.$action.' exist in '.get_class($this));
-        }
-        
-        $response = !empty($actionParameters) 
-                  ? call_user_func_array( [$this, $action.'Action'], $actionParameters) 
+        $this->setState($action.'ActionEnd');
+        return $this->getResponse();
+    }
+    
+    private function execInternalAction($action, $parameters)
+    {
+        $this->setState($action.'ActionStart');
+        $response = !empty($parameters) 
+                  ? call_user_func_array( [$this, $action.'Action'], $parameters) 
                   : $this->{$action.'Action'}();
         $this->setState($action.'ActionEnd');
         if (!empty($response) && is_string($response)) {
@@ -80,7 +92,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         }
         return $this->getResponse();
     }
-
+    
     final public function getApp()
     {
         return $this->application;
