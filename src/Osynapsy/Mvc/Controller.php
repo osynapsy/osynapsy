@@ -165,7 +165,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * 
      * @return \Osynapsy\Mvc\Application
      */
-    public function getDispacther()
+    public function getDispatcher()
     {
         return $this->dispatcher;
     }
@@ -221,17 +221,13 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     }    
     
     /**
-     * Return current state
-     * 
-     * @return string
+     * Child class must implement default Action indexAction.
      */
-    public function getState()
-    {
-        return $this->state;
-    }
-    
     abstract public function indexAction();
     
+    /**
+     * Child class must implement init method 
+     */
     abstract public function init();
     
     /**
