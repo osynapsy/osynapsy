@@ -19,6 +19,7 @@ namespace Osynapsy\Observer;
 trait Subject 
 {
     private $observers;
+    private $state;
     
     //add observer
     public function attach(\SplObserver $observer)
@@ -50,6 +51,11 @@ trait Subject
         foreach ($this->getObservers() as $value) {
             $value->update($this);
         }
+    }
+    
+    public function getState()
+    {
+        return $this->state;
     }
     
     public function setState( $state )
