@@ -42,11 +42,10 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         $this->application = $application;
         $this->parameters = $request->get('page.route')->parameters;        
         $this->request = $request;
-        $this->dispatcher = new EventDispatcher($this);
         $this->loadObserver();
-        $this->setState('init');
+        $this->setState('beforeInit');
         $this->init();
-        $this->setState('initEnd');
+        $this->setState('afterInit');
     }
     
     /**
@@ -79,12 +78,12 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      */
     private function execExternalAction($action, $parameters)
     {
-        $this->setState($action.'ActionStart');
+        $this->setState('beforeAction'.ucfirst($action));
         $actionClass = new \ReflectionClass($this->externalActions[$action]);
         $actionInstance = $actionClass->newInstance($actionClass, $parameters);
         $actionInstance->setController($this);
         $this->getResponse()->alertJs($actionInstance->run());
-        $this->setState($action.'ActionEnd');
+        $this->setState('afterAction'.ucfirst($action));
         return $this->getResponse();
     }
     
@@ -118,11 +117,11 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      */
     private function execInternalAction($action, $parameters)
     {
-        $this->setState($action.'ActionStart');
+        $this->setState('beforeAction'.ucfirst($action));
         $response = !empty($parameters) 
                   ? call_user_func_array( [$this, $action.'Action'], $parameters) 
                   : $this->{$action.'Action'}();
-        $this->setState($action.'ActionEnd');
+        $this->setState('afterAction'.ucfirst($action));
         if (!empty($response) && is_string($response)) {
             $this->getResponse()->alertJs($response);
         }
@@ -167,6 +166,9 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      */
     public function getDispatcher()
     {
+        if (empty($this->dispatcher)) {
+            $this->dispatcher = new EventDispatcher($this);
+        }
         return $this->dispatcher;
     }
     
