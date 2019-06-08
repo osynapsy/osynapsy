@@ -12,10 +12,11 @@
 namespace Osynapsy\Mvc;
 
 use Osynapsy\Http\Request;
+use Osynapsy\Mvc\Application;
 
 interface InterfaceController
 {
-    public function __construct(Request $request = null, $appController = null);
+    public function __construct(Request $request = null, Application $application = null);
     
     public function getResponse();
 }
