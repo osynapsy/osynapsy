@@ -6,9 +6,10 @@
 .osy-calendar-day, 
 .osy-calendar-day-dummy, 
 .osy-calendar-mounthly-head-column {
-    width: 14.1%; 
+    width: 14.28%; 
     float: left;
     margin: 0px;
+    position: relative;
 }
 
 .osy-calendar-day{
@@ -30,4 +31,10 @@
 }
 .osy-clear{
     clear: both;
+}
+.osy-calendar-day .day-num{
+    position: absolute;
+    top: 2px;
+    right: 5px;
+    font-weight: bold !important;
 }
