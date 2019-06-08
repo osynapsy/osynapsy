@@ -11,5 +11,5 @@ interface InterfaceAction
 {   
     public function run();
     
-    public function setController($controller);
+    public function setController(Controller $controller);
 }
