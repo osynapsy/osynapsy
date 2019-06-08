@@ -12,7 +12,7 @@
 namespace Osynapsy\Observer;
 
 /**
- * Description of Observer
+ * Implement Observer functionality into object which use Subject trait
  *
  * @author Peter
  */
@@ -21,18 +21,31 @@ trait Subject
     private $observers;
     private $state;
     
-    //add observer
+    /**
+     * Added observer
+     * 
+     * @param \SplObserver $observer
+     */
     public function attach(\SplObserver $observer)
     {
          $this->getObservers()->attach($observer);
     }
     
-    //remove observer
+    /**
+     * Remove observer
+     * 
+     * @param \SplObserver $observer
+     */
     public function detach(\SplObserver $observer)
     {    
         $this->getObservers()->detach($observer);
     }
     
+    /**
+     * Load observer from Request
+     * 
+     * @return type
+     */
     private function loadObserver()
     {
         $observerList = $this->getRequest()->get('observers');
@@ -46,24 +59,42 @@ trait Subject
         }
     }
     
+    /**
+     * Notify at all observers which object have changed state
+     */
     public function notify()
     {        
-        foreach ($this->getObservers() as $value) {
-            $value->update($this);
+        foreach ($this->getObservers() as $observer) {
+            $observer->update($this);
         }
     }
     
+    /**
+     * Return current state
+     * 
+     * @return string
+     */
     public function getState()
     {
         return $this->state;
     }
     
+    /**
+     * Set current state and notify update to observes
+     * 
+     * @param string $state
+     */
     public function setState( $state )
     {
         $this->state = $state;
         $this->notify();
     }
     
+    /**
+     * Get storage of observers
+     * 
+     * @return \SplObjectStorage()
+     */
     protected function getObservers()
     {
         if (is_null($this->observers)) {
