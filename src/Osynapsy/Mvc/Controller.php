@@ -240,7 +240,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * @param bool $return
      * @return void
      */
-    public function loadView($path, $params = [], $return = false)
+    public function loadView(string $path, array $params = [], bool $return = false)
     {
         $view = $this->getResponse()->getBuffer($path, $this);
         if ($return) {
