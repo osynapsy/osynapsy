@@ -18,6 +18,12 @@ class Application
     protected $dbFactory;
     protected $exceptions = [];
     
+    /**
+     * Constructor of application launcher.
+     * 
+     * @param Route $route
+     * @param Request $request
+     */
     public final function __construct(Route &$route, Request &$request)
     {
         $this->route = $route;
@@ -25,23 +31,44 @@ class Application
         $this->loadDatasources();
         $this->init();
     }
-            
-    public function getDb($key = 0)
+    
+    /**
+     * Return db connection request
+     * 
+     * @param int $key
+     * @return \Osynapsy\Db\Driver\InterfaceDbo
+     */
+    public function getDb(int $key = 0) : \Osynapsy\Db\Driver\InterfaceDbo
     {
         return $this->getDbFactory()->getConnection($key);
     } 
     
-    public function getDbFactory()
+    /**
+     * Return DbFactory
+     * 
+     * @return DbFactory
+     */
+    public function getDbFactory() : DbFactory
     {
         return $this->dbFactory;
     }
     
-    public function getRequest()
+    /**
+     * Return current Request
+     * 
+     * @return Request
+     */
+    public function getRequest() : Request
     {
         return $this->request;
     }
     
-    public function getRoute()
+    /**
+     * Return current route
+     * 
+     * @return Route
+     */
+    public function getRoute() : Route
     {
         return $this->route;
     }
@@ -50,6 +77,9 @@ class Application
     {
     }
     
+    /**
+     * Load datasources configurated into instance configuration file
+     */
     private function loadDatasources()
     {            
         $listDatasource = $this->getRequest()->search('db',
@@ -68,7 +98,13 @@ class Application
         return true;
     }
     
-    public function runAction()
+    /**
+     * Run request action from the user
+     * 
+     * @return string
+     * @throws \Osynapsy\Kernel\KernelException
+     */
+    public function runAction() : string
     {        
         if (empty($this->route) || !$this->route->controller) {
             throw new \Osynapsy\Kernel\KernelException('Route not found', 404);
