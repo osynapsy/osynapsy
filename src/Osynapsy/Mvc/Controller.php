@@ -54,7 +54,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * @param string $id
      * @param string $class
      */
-    public function actionAdd($id, $class)
+    public function actionAdd(string $id, string $class)
     {
         $this->actions[$id] = $class;
     }
@@ -76,7 +76,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * @param array $parameters
      * @return \Osynapsy\Http\Response
      */
-    private function execExternalAction($action, $parameters)
+    private function execExternalAction(string $action, array $parameters = []) : Response
     {
         $this->setState('beforeAction'.ucfirst($action));
         $actionClass = new \ReflectionClass($this->externalActions[$action]);
@@ -92,7 +92,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * 
      * @return \Osynapsy\Http\Response
      */
-    private function execIndexAction()
+    private function execIndexAction() : Response
     {
         $this->setResponse(new HtmlResponse())->loadTemplate(
             $this->getRequest()->get('page.route')->template,
@@ -115,7 +115,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * @param array $parameters
      * @return \Osynapsy\Http\Response
      */
-    private function execInternalAction($action, $parameters)
+    private function execInternalAction(string $action, array $parameters) : Response
     {
         $this->setState('beforeAction'.ucfirst($action));
         $response = !empty($parameters) 
@@ -133,7 +133,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * 
      * @return \Osynapsy\Mvc\Application
      */
-    final public function getApp()
+    final public function getApp() : \Osynapsy\Mvc\Application
     {
         return $this->application;
     }
@@ -144,7 +144,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * @param int $key
      * @return Db
      */
-    public function getDb($key = 0)
+    public function getDb($key = 0) : \Osynapsy\Db\Driver\InterfaceDbo
     {
         return $this->getApp()->getDb($key);
     }
@@ -164,7 +164,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * 
      * @return \Osynapsy\Mvc\Application
      */
-    public function getDispatcher()
+    public function getDispatcher() : EventDispatcher
     {
         if (empty($this->dispatcher)) {
             $this->dispatcher = new EventDispatcher($this);
@@ -207,7 +207,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * 
      * @return \Osynapsy\Http\Response
      */
-    public function getResponse()
+    public function getResponse() : Response
     {
         return $this->response;
     }
@@ -246,7 +246,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         if ($return) {
             return $view;
         }
-        $this->response->addContent($view);
+        $this->getResponse()->addContent($view);
     }
     
     /**
@@ -287,7 +287,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * @param Response $response
      * @return Response
      */
-    public function setResponse(Response $response)
+    public function setResponse(Response $response) : Response
     {
         return $this->response = $response;
     }
