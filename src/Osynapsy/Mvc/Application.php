@@ -75,10 +75,9 @@ class Application
         }
         $classController = $this->route->controller;
         $controller = new $classController($this->getRequest(), $this);
-        $parameters = filter_input(\INPUT_POST , 'actionParameters', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
         return (string) $controller->run(
             filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION'),
-            $parameters ?? []
+            filter_input(\INPUT_POST , 'actionParameters', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []
         );
     }
 }
