@@ -8,4 +8,16 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    position: relative;
+}
+
+.osynapsy-labelbox-command {
+    position: absolute;
+    top: 3px;
+    right: 6px;
+    visibility: hidden;
+}
+
+.osynapsy-labelbox:hover .osynapsy-labelbox-command {
+    visibility: visible;
 }
