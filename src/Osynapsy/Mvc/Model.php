@@ -367,6 +367,11 @@ abstract class Model
     {        
     }
     
+    public function setValue($field, $value, $defaultValue = null)
+    {
+        $this->repo->get('fields.'.$field)->setValue($value, $defaultValue);
+    }
+    
     public function softDelete($field, $value)
     {
         $this->softdelete = array($field => $value);

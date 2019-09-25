@@ -305,6 +305,11 @@ abstract class ModelRecord
                    ->set('actions.after-delete', $delete);        
     }
     
+    public function setValue($field, $value, $defaultValue = null)
+    {
+        $this->repo->get('fields.'.$field)->setValue($value, $defaultValue);
+    }
+    
     protected function afterUpload($filename, $field = null)
     {        
     }
