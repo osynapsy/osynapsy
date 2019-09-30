@@ -12,16 +12,15 @@
 namespace Osynapsy\Html\Bcl;
 
 use Osynapsy\Html\Component;
-use Osynapsy\Db\Driver\InterfaceDbo;
 use Osynapsy\Html\Ocl\HiddenBox;
 use Osynapsy\Html\Tag;
 
 class Autocomplete extends Component
 {
     private $emptyMessage;
-    private $ico = '<span class="fa fa-search"></span>';
-    private $db;
-    private $query = [
+    protected $ico = '<span class="fa fa-search"></span>';
+    protected $db;
+    protected $query = [
         'decode' => ['sql' => null, 'parameters' => []],
         'search' => ['sql' => null, 'parameters' => []]
     ];
@@ -61,8 +60,7 @@ class Autocomplete extends Component
                 'NUM'
             );            
         }
-        $this->add(new InputGroup($this->id, '', $this->ico))
-             ->att('class','osy-autocomplete',true)
+        $this->add($this->buildAutocomplete())             
              ->add(new HiddenBox('__'.$this->id));
     }
     
@@ -93,6 +91,12 @@ class Autocomplete extends Component
         }
     }
     
+    protected function buildAutocomplete()
+    {
+        $autocomplete = new InputGroup($this->id, '', $this->ico);
+        return $autocomplete->setClass('osy-autocomplete');
+    }
+
     public function setLabel($label)
     {
         $_REQUEST[$this->id] = $label;
