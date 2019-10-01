@@ -187,7 +187,7 @@ abstract class ModelRecord
         $formValue = isset($_REQUEST[$formField]) ? $_REQUEST[$formField] : null;
         $modelField = new ModelField($this, $dbField, $formField, $type, isset($_REQUEST[$formField]));
         $modelField->setValue($formValue, $defaultValue);        
-        $this->set('fields.'.$modelField->html, $modelField);        
+        $this->set('fields.'.$modelField->html, $modelField);
         return $modelField;
     }
     
@@ -201,13 +201,19 @@ abstract class ModelRecord
         $this->addAlert($this->beforeExec());
         
         //skim the field list for check value and build $values, $where and $key list
-        foreach ($this->repo->get('fields') as $field) {
+        foreach ($this->repo->get('fields') as $field) {            
+            if (!$field->readonly && !$field->name) {
+                 //If field isn't in readonly mode assign values to values list for store it in db
+                continue;
+            }
+            if (!$field->existInForm() && $this->getRecord()->getState() != 'insert') {
+                //If field isn't in form and it isn't a insert operation
+                continue;
+            }
             //Check if value respect rule
             $value = $this->sanitizeFieldValue($field);
-            //If field isn't in readonly mode assign values to values list for store it in db
-            if (!$field->readonly & $field->existInForm() && $field->name) {
-                $this->getRecord()->setValue($field->name, $value);                
-            }                        
+            //Set value in record
+            $this->getRecord()->setValue($field->name, $value);
         }
         //If occurred some error stop db updating
         if ($this->getController()->getResponse()->error()) { 
