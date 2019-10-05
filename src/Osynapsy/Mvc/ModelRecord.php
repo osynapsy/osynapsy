@@ -206,8 +206,8 @@ abstract class ModelRecord
                  //If field isn't in readonly mode assign values to values list for store it in db
                 continue;
             }
-            if (!$field->existInForm() && $this->getRecord()->getState() != 'insert') {
-                //If field isn't in form and it isn't a insert operation
+            if (!$field->existInForm() && !$field->getDefaultValue() && $this->getRecord()->getState() != 'insert') {
+                //If field isn't in form and it isn't a insert operation and it have not a default value
                 continue;
             }
             //Check if value respect rule
