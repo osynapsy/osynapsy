@@ -18,6 +18,7 @@ namespace Osynapsy\Db\Sql;
  */
 class Select 
 {
+    private $id;    
     private $debug;
     private $dummy;
     private $parent;    
@@ -45,10 +46,11 @@ class Select
     ];
     private $parameters = [];
     
-    public function __construct($fields = [], $parent = null, $debug = false)
+    public function __construct($fields = [], $parent = null, $debug = false, $id = 'main')
     {
         $this->debug = $debug;
-        $this->parent = $parent;           
+        $this->parent = empty($parent) ? $this : $parent;
+        $this->id = $id;        
     }
     
     public function parameters(array $parameters = [])
@@ -56,7 +58,7 @@ class Select
         $this->parameters = array_merge($this->parameters, $parameters);
         return $this;
     }
-    
+            
     private function isAssoc($array)
     {
         return !($array === array_values($array));
@@ -116,8 +118,7 @@ class Select
     }
     
     public function and_()
-    {
-        
+    {        
     }
     
     public function where($rawCondition, array $parameters = [], $operator = 'AND')
@@ -180,12 +181,12 @@ class Select
     
     public function __if__($condition)
     {                
-        return $condition ? $this : $this->getDummy(); 
+        return $condition ? $this->getMaster() : $this->getDummy(); 
     }
     
     public function __elseif__($condition)
     {
-        return !empty($this->parent) && $condition ? $this->parent : $this->getDummy();
+        return $condition ? $this->getMaster() : $this->getDummy();
     }
     
     public function __else__()
@@ -193,19 +194,29 @@ class Select
         //If parent is not set then prev if condition is verificated 
         //else don't find
         //If parent is set if condition is false then else case is verificated
-        return empty($this->parent) ? $this->getDummy() : $this->parent;
+        return $this->getId() === 'main' ? $this->getDummy() : $this->getMaster();
     }
     
     public function __endif__()
     {
-        return empty($this->parent) ? $this : $this->parent;
+        return $this->getMaster();
     }       
     
     private function getDummy()
     {
         if (empty($this->dummy)) {
-            $this->dummy = new Select(null, $this);
+            $this->dummy = new Select(null, $this->parent, false, 'dummy');
         }
         return $this->dummy;
     }
+    
+    public function getId()
+    {
+        return $this->id;
+    }
+    
+    private function getMaster()
+    {
+        return $this->parent;
+    }       
 }
