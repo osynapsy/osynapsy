@@ -25,8 +25,8 @@ class Dropdown extends Component
     public function __construct($name, $label, $align = 'left', $tag = 'div')
     {
         parent::__construct($tag);
-        $this->setClass('dropdown');
-        $this->add(new HiddenBox($name));
+        $this->setClass('btn-group');
+        //$this->add(new HiddenBox($name));
         $this->add($this->buildMainButton($name, $label));
         $this->align = $align;
     }
@@ -36,8 +36,8 @@ class Dropdown extends Component
         $this->button = new Button($name.'_btn', 'button', 'dropdown-toggle', $label);
         $this->button->att([
             'data-toggle' => 'dropdown',
-            'aria-haspopup' => 'false',
-             'aria-expanded' => 'false'
+            'aria-haspopup' => 'true',
+            'aria-expanded' => 'false'
         ]);
         return $this->button;
     }
@@ -45,7 +45,7 @@ class Dropdown extends Component
     protected function __build_extra__()
     {
         $list = $this->add(new Tag('div', null, 'dropdown-menu dropdown-menu-'.$this->align));        
-        $list->att('aria-labelledby', $this->id);         
+        $list->att('aria-labelledby', $this->getButton()->id);         
         foreach ($this->data as $rec) {
             if (is_object($rec)) {
                 $list->add($rec)->att('class', 'dropdown-item', true);                           
