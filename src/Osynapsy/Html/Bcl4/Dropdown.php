@@ -1,17 +1,10 @@
 <?php
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace Osynapsy\Html\Bcl4;
 
 use Osynapsy\Html\Tag;
 use Osynapsy\Html\Component;
-use Osynapsy\Html\Ocl\HiddenBox;
 use Osynapsy\Html\Bcl\Button;
+
 /**
  * Description of Dropdown
  *
@@ -19,14 +12,12 @@ use Osynapsy\Html\Bcl\Button;
  */
 class Dropdown extends Component
 {
-    private $list;
     private $button;
     private $align;
     public function __construct($name, $label, $align = 'left', $tag = 'div')
     {
         parent::__construct($tag);
-        $this->setClass('btn-group');
-        //$this->add(new HiddenBox($name));
+        $this->setClass('dropdown');
         $this->add($this->buildMainButton($name, $label));
         $this->align = $align;
     }
