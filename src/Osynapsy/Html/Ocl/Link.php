@@ -18,7 +18,8 @@ class Link extends Component
     public function __construct($id, $link, $label, $class = '')
     {
         parent::__construct('a', $id);        
-        $this->att('href', $link)->add($label);        
+        $this->att('href', $link === false ? 'javascript:void(0);' : $link)
+             ->add($label);        
         $this->SetClass($class);
     }        
 }
