@@ -487,6 +487,21 @@ abstract class ActiveRecord implements InterfaceRecord
         return false;
     }
     
+    public function __call($name, $arguments)
+    {
+        $cmd = substr($name, 0, 3);
+        if (!in_array($cmd, ['set','get'])) {
+            throw  new \Exception("Method {$name} not found");
+        }
+        $field = substr($name, 3);
+        switch($cmd) {
+            case 'set':
+                return $this->setValue($field, $arguments[0]);
+            case 'get':
+                return $this->get($field);
+        }
+    }
+    
     public function __get($field)
     {
         if (array_key_exists($field, $this->fields)) {
