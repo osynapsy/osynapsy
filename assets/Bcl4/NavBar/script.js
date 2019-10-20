@@ -31,5 +31,3 @@ if (window.FormController) {
         Bcl4NavBar.init();
     });
 }
-
-
