@@ -140,9 +140,15 @@ class Card extends Component
     public function setTitle($title, $text = null)
     {
         $this->getBody()->add('<h5 class="card-title">'.$title.'</h5>');
-        if (!empty($text)) {
-            $this->getBody()->add('<p class="card-text">'.$text.'</p>');    
+        $this->setText($text);
+    }
+    
+    public function setText($text)
+    {
+        if (empty($text)) {
+            return;
         }
+        $this->getBody()->add('<p class="card-text">'.$text.'</p>');
     }
     
     public function resetClass()
