@@ -141,7 +141,7 @@ class Card extends Component
     {
         $this->getBody()->add('<h5 class="card-title">'.$title.'</h5>');
         if (!empty($text)) {
-            $this->getBody()->add('<p class="card-text">'.$title.'</p>');    
+            $this->getBody()->add('<p class="card-text">'.$text.'</p>');    
         }
     }
     
