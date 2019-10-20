@@ -42,8 +42,15 @@ class NavBar2 extends Component
         $this->setClass('osy-bcl4-navbar navbar navbar-expand-sm');                
         $this->buildHeader();   
         $collapsable = $this->add(new Tag('div', $this->id.'Content', 'collapse navbar-collapse'));
-        $collapsable->add($this->buildUlMenu($this->data['primary'])->att('class','mr-auto', true)); 
-        $collapsable->add($this->buildUlMenu($this->data['secondary'])->att('class','float-right', true));
+        if (empty($this->data)) {
+            return;
+        }
+        if (!empty($this->data['primary'])) {
+            $collapsable->add($this->buildUlMenu($this->data['primary'])->att('class','mr-auto', true));
+        }
+        if (!empty($this->data['secondary'])) {
+            $collapsable->add($this->buildUlMenu($this->data['secondary'])->att('class','float-right', true));
+        }
     }
     
     /**
