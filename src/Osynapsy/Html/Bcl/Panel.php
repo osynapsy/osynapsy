@@ -17,91 +17,38 @@ use Osynapsy\Html\Component as Component;
 //Costruttore del pannello html
 class Panel extends Component
 {
-    private $cells = array();
-    private $cellClass;
-    private $currentRow = null;
-    private $bodyClass = 'panel-body';
-    private $rowClass = 'row';
-    private $tag = array('div' , 'div');
-    private $formType='normal';
-
+    private $cells = array();    
+    private $currentRow = null;        
+    private $tag = ['div' , 'div'];
+    private $formType = 'normal';
+    private $classes = [
+        'main' => 'panel',
+        'head' => 'panel-heading',
+        'body' => 'panel-body',
+        'foot' => 'panel-footer',
+        'row'  => 'row',
+        'cell' => null
+    ];
     private $head;
     private $body;
     private $foot;
     
-    public function __construct($id, $tag = 'div', $rowClass = null, $cellClass = null)
+    public function __construct($id, $tag = 'fieldset', $rowClass = null, $cellClass = null)
     {
-        parent::__construct('fieldset', $id);
-        $this->att('class','panel')
-             ->setParameter('label-position','outside');
+        parent::__construct($tag, $id);
+        $this->setParameter('label-position','outside');
         if (!empty($rowClass)) {
-            $this->rowClass = $rowClass;
+            $this->classes['row'] = $rowClass;
         }
         if (!empty($cellClass)) {
-            $this->cellClass = $cellClass;
+            $this->classes['cell'] = $cellClass;
         }
     }
-    
-    public function appendToHead($title,$dim=0)
-    {
-        if (empty($this->head)) {
-            $this->head = new Tag('div');
-            $this->head->att('class','panel-heading');
-        }
-        
-        if ($dim) {
-            $this->head->add(new Tag('h'.$dim))->add($title);
-        } else {
-            $this->head->add($title);
-        }
-    }
-    
-    public function appendToFoot($content)
-    {
-        if (empty($this->foot)) {
-            $this->foot = new Tag('div');
-            $this->foot->att('class','panel-footer');
-        }
-        $this->foot->add($content);
-        return $content;
-    }
-    
-    public function append($content)
-    {
-        if (empty($this->body)) {
-            $this->body = new Tag('div');
-            $this->body->att('class', $this->bodyClass);
-        }
-        if ($content) {
-            $this->body->add($content);
-            return $content;
-        }
-    }
-    
+            
     protected function __build_extra__()
     {
-        ksort($this->cells);
-        foreach($this->cells as $Row) {
-            ksort($Row);
-            $this->addRow();
-            foreach ($Row as $Column) {
-                //ksort($col);
-                foreach ($Column as $Cell) {
-                    $width = max($Cell['width'],1);
-                    $this->buildLabel($Cell);
-                    switch ($this->formType) {
-                        case 'horizontal':
-                            $div = new Tag('div');
-                            $div->att('class','col-sm-' . $width.' col-lg-'.$width)
-                                ->add($Cell['obj']);
-                            $Cell['obj'] = $div;
-                            break;
-                    }
-                    $this->addCell($Cell, $width);
-                    break;
-                }
-            }
-        }
+        $this->setClass($this->getClass('main'));
+        $this->buildBody();
         if ($this->head) {
             $this->add($this->head);
         }
@@ -113,14 +60,83 @@ class Panel extends Component
         }
     }
     
-    private function addRow()
+    
+    public function append($content)
+    {
+        if (empty($this->body)) {
+            $this->body = new Tag('div', null, $this->classes['body']);            
+        }
+        if ($content) {
+            $this->body->add($content);
+            return $content;
+        }
+    }
+            
+    private function appendRow()
     {
         $this->currentRow = $this->append(new Tag($this->tag[0]));
-        $this->currentRow->att('class', $this->rowClass);
+        $this->currentRow->att('class', $this->classes['row']);
         return $this->currentRow;
     }
     
-    private function addCell($cell = null, $width = null)
+    public function appendToHead($title, $dim = 0)
+    {
+        if (empty($this->head)) {
+            $this->head = new Tag('div');
+            $this->head->att('class', $this->classes['head']);
+        }        
+        if ($dim) {
+            $this->head->add(new Tag('h'.$dim))->add($title);
+        } else {
+            $this->head->add($title);
+        }
+    }
+    
+    public function appendToFoot($content)
+    {
+        if (empty($this->foot)) {
+            $this->foot = new Tag('div', null, $this->classes['foot']);            
+        }
+        $this->foot->add($content);
+        return $content;
+    }    
+    
+    private function buildBody()
+    {
+        ksort($this->cells);        
+        foreach($this->cells as $Row) {            
+            $this->buildRow($Row);
+        }
+    }
+    
+    private function buildRow(array $Row)
+    {
+        ksort($Row);
+        $this->appendRow();    
+        foreach ($Row as $Column) {            
+            $this->buildColumn($Column);
+        }
+    }
+    
+    private function buildColumn(array $Column)
+    {
+        foreach ($Column as $Cell) {
+            $width = max($Cell['width'],1);
+            $this->buildLabel($Cell);
+            switch ($this->formType) {
+                case 'horizontal':
+                    $div = new Tag('div');
+                    $div->att('class','col-sm-' . $width.' col-lg-'.$width)
+                        ->add($Cell['obj']);
+                    $Cell['obj'] = $div;
+                    break;
+            }
+            $this->buildCell($Cell, $width);
+            break;
+        }
+    }
+    
+    private function buildCell($cell = null, $width = null)
     {
         if (is_null($cell)) {
             return;
@@ -139,8 +155,8 @@ class Panel extends Component
         }
         $formGroup = $cel->att('class', implode(' ',$class))
                          ->add(new Tag('div', null, 'form-group'));        
-        if (!empty($this->cellClass)) {
-            $cel->att('class',$this->cellClass);
+        if (!empty($this->classes['cell'])) {
+            $cel->att('class', $this->classes['cell'], true);
         }        
         unset($cell['width'], $cell['class'], $cell['offset']);        
         $formGroup->addFromArray($cell);        
@@ -149,7 +165,7 @@ class Panel extends Component
     
     public function buildLabel(&$obj)
     {
-        $style='';
+        $style = '';
         if ($obj['lbl'] === false) {
             return;
         } elseif (is_object($obj['obj']) && ($obj['obj']->tag == 'button')) {
@@ -176,7 +192,15 @@ class Panel extends Component
         }
         $obj['lbl'] = $label;
     }
-    
+                    
+    public function getClass($part = null)
+    {
+        if (is_null($part)) {
+            return $this->classes;
+        }
+        return $this->classes[$part];
+    }
+            
     public function put($lbl, $obj, $row = 0, $col = 0, $width=1, $offset = null, $class = '')
     {
         if ($obj instanceof Tag) {
@@ -193,7 +217,22 @@ class Panel extends Component
     
     public function setBodyClass($class)
     {
-        $this->bodyClass = $class;
+        $this->setClassPart('body', $class);
+    }
+    
+    public function setClassPart($part, $class)
+    {
+        $this->classes[$part] = $class;
+    }
+    
+    public function setClasses($main, $head, $body, $foot, $row = 'row', $cell = null)
+    {
+        $this->setClassPart('main', $main);
+        $this->setClassPart('head', $head);
+        $this->setClassPart('body', $body);
+        $this->setClassPart('foot', $foot);
+        $this->setClassPart('row', $row);
+        $this->setClassPart('cell', $cell);
     }
     
     public function setType($type)
