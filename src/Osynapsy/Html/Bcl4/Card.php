@@ -36,12 +36,11 @@ class Card extends Component
     private $title;
     private $commands = [];
     
-    public function __construct($id, $title='', $class = 'card', $tag = 'div')
+    public function __construct($id, $class = 'card', $tag = 'div')
     {
         parent::__construct($tag, $id);
         $this->classCss['main'] = $class;         
-        $this->sections['body'] = new Tag('div');
-        $this->title = $title;        
+        $this->sections['body'] = new Tag($tag);      
     }
     
     public function addCommands(array $commands = [])
@@ -117,6 +116,11 @@ class Card extends Component
             $this->sections['header'] = new Tag('div');
         }
         return $this->sections['head'];
+    }
+    
+    public function getRow()
+    {
+        return $this->currentRow;
     }
     
     public function setClass($body, $head = null, $foot = null, $main = null, $title = null)
