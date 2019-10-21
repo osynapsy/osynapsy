@@ -26,18 +26,18 @@ class Form extends Component
 {    
     use FormCommands;
     
-    private $head;
-    private $headCommandWidth = 12;
+    protected $head;
+    protected $headCommandWidth = 12;
     public  $headClass = 'row';
-    private $alert;
-    private $alertCount=0;
-    private $body;
-    private $foot;
-    private $footLeft;
-    private $footRight;
-    private $repo;
-    private $headCommand;
-    private $appendFootToMain = false;
+    protected $alert;
+    protected $alertCount=0;
+    protected $body;
+    protected $foot;
+    protected $footLeft;
+    protected $footRight;
+    protected $repo;
+    protected $headCommand;
+    protected $appendFootToMain = false;
     
     public function __construct($name, $mainComponent = 'Panel', $tag = 'form')
     {
@@ -49,15 +49,9 @@ class Form extends Component
             ]
         ]);
         //Form setting
-        $this->att('name',$name)
-             ->att('method','post')
-             ->att('role','form');
-        $mainComponent = '\\Osynapsy\\Html\\Bcl\\'.$mainComponent;
-        $this->appendFootToMain = ($mainComponent === 'Panel');
+        $this->att(['name' => $name, 'method' => 'post', 'role' => 'form']);             
         //Body setting
-        $this->body = new $mainComponent($name.'_panel', 'div');
-        $this->body->setParameter('label-position','inside');
-        $this->body->tagdep =& $this->tagdep;         
+        $this->body = $this->buildMainComponent($mainComponent);                 
     }
     
     protected function __build_extra__()
@@ -89,6 +83,16 @@ class Form extends Component
             return;
         }
         $this->add($this->foot->get());
+    }
+    
+    protected function buildMainComponent($mainComponent)
+    {
+        $rawComponent = '\\Osynapsy\\Html\\Bcl\\'.$mainComponent;
+        $this->appendFootToMain = ($mainComponent === 'Panel');
+        $component = new $rawComponent($this->id.'_panel', 'div');
+        $component->setParameter('label-position','inside');
+        $component->tagdep =& $this->tagdep;
+        return $component;
     }
     
     public function addCard($title)
