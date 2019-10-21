@@ -59,8 +59,7 @@ class Panel extends Component
             $this->add($this->foot);
         }
     }
-    
-    
+        
     public function append($content)
     {
         if (empty($this->body)) {
