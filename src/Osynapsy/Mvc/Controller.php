@@ -217,9 +217,9 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * 
      * @return \Osynapsy\Kernel\Request
      */
-    public function getRequest()
+    public function getRequest($key = null)
     {
-        return $this->request;
+        return is_null($key) ? $this->request : $this->request->get($key); 
     }    
     
     /**
