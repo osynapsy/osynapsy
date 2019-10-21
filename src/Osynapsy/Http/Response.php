@@ -55,6 +55,11 @@ abstract class Response
         $this->repo['content'][$part][] = $content;
     }
     
+    public function addValue($key, $value)
+    {
+        $this->repo['content'][$key] = $value;
+    }
+    
     public function send($content, $part =  'main', $checkUnique = false)
     {
         $this->addContent($content, $part, $checkUnique);
