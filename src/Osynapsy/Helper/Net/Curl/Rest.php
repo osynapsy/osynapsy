@@ -83,13 +83,11 @@ class Rest
     public static function postJson($url, $data)
     {
         $json = json_encode($data, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP);
-        
-        $header = array(
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen($json)
-        );
-        
-        return self::post($url, $json, $header);
+                        
+        return self::post($url, $json, [
+            'Content-Type' => 'application/json',
+            'Content-Length' => strlen($json)
+        ]);
     }
     
     public static function setBaseUrl($url)
