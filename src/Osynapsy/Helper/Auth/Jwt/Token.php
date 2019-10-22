@@ -73,7 +73,7 @@ class Token
         }
         //If token is valid decode the fields
         $this->fields = json_decode(base64_decode($tokenPart[1]), true);
-        //Return true for cofirm which token is valid.
+        //Return true for confirm which token is valid.
         return true;
     }
     
@@ -82,6 +82,7 @@ class Token
         if ($this->check($token)) {
             return $this->fields;
         }
-        throw new AuthenticationException('Token ('.$token.') is invalid', 401);
+        $msg = empty($token) ? 'Token is empty' : 'Token ('.$token.') isn\'t valid';                    
+        throw new AuthenticationException($msg, 401);
     }        
 }
