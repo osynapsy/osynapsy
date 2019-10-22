@@ -82,6 +82,6 @@ class Token
         if ($this->check($token)) {
             return $this->fields;
         }
-        throw new AuthenticationException('Token is invalid');
+        throw new AuthenticationException('Token ('.$token.') is invalid', 401);
     }        
 }
