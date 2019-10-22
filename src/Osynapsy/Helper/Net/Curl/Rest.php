@@ -66,6 +66,10 @@ class Rest
         }
         curl_close($channel);
         
+        if (strpos($contentType, 'json') !== false) {
+            $resp = json_decode($resp);
+        }
+        
         return ['http-code' => $httpCode, 'content-type' => $contentType, 'response' => $resp];
     }
     
@@ -76,7 +80,7 @@ class Rest
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         foreach($options as $option => $value) {
             curl_setopt($ch, $option, $value);
-        }                               
+        }                     
         return self::getResponse($ch);
     }
     
