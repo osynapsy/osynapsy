@@ -58,9 +58,9 @@ class Application
      * 
      * @return Request
      */
-    public function getRequest() : Request
+    public function getRequest($key = null) : Request
     {
-        return $this->request;
+        return is_null($key) ? $this->request : $this->request->get($key);
     }
     
     /**
