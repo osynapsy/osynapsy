@@ -24,8 +24,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     use \Osynapsy\Observer\Subject;
     
     private $parameters;
-    private $dispatcher;
-    private $request;
+    private $dispatcher;    
     private $response;
     private $application;
     private $externalActions = [];
@@ -40,8 +39,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     public function __construct(Request $request = null, Application $application = null)
     {        
         $this->application = $application;
-        $this->parameters = $request->get('page.route')->parameters;        
-        $this->request = $request;
+        $this->parameters = $request->get('page.route')->parameters;                
         $this->loadObserver();
         $this->setState('beforeInit');
         $this->init();
@@ -219,7 +217,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      */
     public function getRequest($key = null)
     {
-        return is_null($key) ? $this->request : $this->request->get($key); 
+        return $this->getApp()->getRequest($key);
     }    
     
     /**
