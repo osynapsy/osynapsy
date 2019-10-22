@@ -35,8 +35,7 @@ class Rest
     public static function post($url, $data, $header = null, array $options = [])
     {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        //curl_setopt($ch, CURLOPT_HEADER,true);
+        curl_setopt($ch, CURLOPT_URL, $url);        
         if (!empty($header)) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         }
@@ -55,13 +54,13 @@ class Rest
         $resp = curl_exec($ch);
         
         $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
-        
+        $httpCode    = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if ($resp === false) {
             $resp = curl_errno($ch);
         }
         curl_close($ch);
         
-        return array($contentType, $resp);
+        return ['http-code' => $httpCode, 'content-type' => $contentType, 'response' => $resp];
     }
     
     public static function postJson($url, $data)
