@@ -116,6 +116,16 @@ abstract class Response
     }
     
     /**
+     * Set content of the response
+     * 
+     * @param string $value
+     */
+    public function setContent($value)
+    {
+        $this->repo['content'] = $value;
+    }
+    
+    /**
      * Set content type of the response
      * 
      * @param string $type
