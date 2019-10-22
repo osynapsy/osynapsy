@@ -75,6 +75,19 @@ class ResponseJson extends Response
     }
     
     /**
+     * Store a list of errors     
+     * 
+     * @param array $errorList     
+     * @return void
+     */    
+    public function errors(array $errorList)
+    {
+        foreach ($errorList as $error) {
+            $this->error($error[0], $error[1]);
+        }
+    }
+    
+    /**
      * Store a error message alias
      * 
      * If recall without parameter return if errors exists.
