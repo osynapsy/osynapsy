@@ -28,7 +28,9 @@ class Card extends Component
         'head' => 'card-header',
         'body' => 'card-body',
         'foot' => 'card-footer',
-        'title' => 'card-title'
+        'title' => 'card-title',
+        'row'   => 'row',
+        'cell'  => ''    
     ];
     
     private $currentRow = null;
@@ -86,10 +88,10 @@ class Card extends Component
         );
     }
     
-    public function addRow($class = 'row')
+    public function addRow()
     {
         $this->currentRow = $this->sections['body']->add(
-            new Tag('div', null, $class)
+            new Tag('div', null, $this->classCss['row'])
         );
         return $this->currentRow;
     }
@@ -101,7 +103,7 @@ class Card extends Component
         }
         $this->currentColumn = $this->currentRow->add(
             new Column($colspan, $offset)
-        );
+        )->setClass($this->classCss['cell']);                        
         return $this->currentColumn;
     }
     
@@ -123,6 +125,12 @@ class Card extends Component
         return $this->currentRow;
     }
     
+    
+    public function resetClass()
+    {
+        $this->setClass('','','','');
+    }
+    
     public function setClass($body, $head = null, $foot = null, $main = null, $title = null)
     {
         $this->classCss['body'] = $body;
@@ -141,6 +149,21 @@ class Card extends Component
         return $this;
     }
     
+    public function addClass($class)
+    {
+        $this->classCss['main'] .= ' '.$class;
+    }
+    
+    public function addClassRow($class)
+    {
+        $this->classCss['row'] .= ' '.$class;
+    }
+    
+    public function addClassCell($class)
+    {
+        $this->classCss['cell'] .= ' '.$class;
+    }
+    
     public function setTitle($title, $text = null)
     {
         $this->getBody()->add('<h5 class="card-title">'.$title.'</h5>');
@@ -155,8 +178,18 @@ class Card extends Component
         $this->getBody()->add('<p class="card-text">'.$text.'</p>');
     }
     
-    public function resetClass()
+    public function simulateTable(bool $padding = true)
     {
-        $this->setClass('','','','');
+        $this->classCss['body'] .= ' d-table';
+        $this->addClassRow('d-table-row');
+        $this->addClassCell('d-table-cell');
+        if (!$padding) {
+            $this->noPadding();
+        }
+    }
+
+    public function noPadding()
+    {
+        $this->addClassRow('no-gutters');
     }
 }
