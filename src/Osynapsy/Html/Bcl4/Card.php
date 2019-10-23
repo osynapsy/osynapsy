@@ -152,6 +152,7 @@ class Card extends Component
     public function addClass($class)
     {
         $this->classCss['main'] .= ' '.$class;
+        return $this;
     }
     
     public function addClassRow($class)
@@ -164,10 +165,14 @@ class Card extends Component
         $this->classCss['cell'] .= ' '.$class;
     }
     
-    public function setTitle($title, $text = null)
+    public function noPadding()
     {
-        $this->getBody()->add('<h5 class="card-title">'.$title.'</h5>');
-        $this->setText($text);
+        $this->addClassRow('no-gutters');
+    }
+    
+    public function setHeight100()
+    {
+        $this->addClass('h-100 d-line-block');
     }
     
     public function setText($text)
@@ -178,6 +183,12 @@ class Card extends Component
         $this->getBody()->add('<p class="card-text">'.$text.'</p>');
     }
     
+    public function setTitle($title, $text = null)
+    {
+        $this->getBody()->add('<h5 class="card-title">'.$title.'</h5>');
+        $this->setText($text);
+    }
+    
     public function simulateTable(bool $padding = true)
     {
         $this->classCss['body'] .= ' d-table';
@@ -186,10 +197,5 @@ class Card extends Component
         if (!$padding) {
             $this->noPadding();
         }
-    }
-
-    public function noPadding()
-    {
-        $this->addClassRow('no-gutters');
     }
 }
