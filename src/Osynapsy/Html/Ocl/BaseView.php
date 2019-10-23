@@ -27,6 +27,9 @@ abstract class BaseView
     protected function add($part)
     {
         $this->getController()->getResponse()->send($part);
+        if (is_object($part)) {
+            return $part;
+        }
     }
     
     public function get()
