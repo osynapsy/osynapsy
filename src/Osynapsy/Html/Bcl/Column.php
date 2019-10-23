@@ -36,6 +36,7 @@ class Column extends Component
     {
         foreach ($this->size as $size => $dimension) {
             if (empty($dimension['width'])) {
+                $this->setClass('col');
                 continue;
             }
             $class = 'col-'.$size.'-'.$dimension['width'];
