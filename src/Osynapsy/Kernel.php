@@ -26,7 +26,7 @@ use Osynapsy\Kernel\ErrorDispatcher;
  */
 class Kernel
 {
-    const VERSION = '0.5-DEV';
+    const VERSION = '0.6-DEV';
     
     public $router;
     public $request;
