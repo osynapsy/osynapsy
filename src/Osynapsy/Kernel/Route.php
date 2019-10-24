@@ -31,7 +31,7 @@ class Route
         $this->id = empty($id) ? sha1($uri) : $id;
         $this->uri = $uri;
         $this->application = trim($application);
-        $this->controller = trim(str_replace(':','\\',$controller));
+        $this->setController($controller);
         $this->template = $template;
         $this->route += $attributes;
     }
@@ -49,5 +49,10 @@ class Route
     public function __toString()
     {
         return $this->id;
+    }
+    
+    public function setController($controller)
+    {
+        $this->controller = trim(str_replace(':','\\',$controller));
     }
 }
