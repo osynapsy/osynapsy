@@ -18,19 +18,21 @@ class FormGroup extends Component
 {
     public $label;
     public $object;
-
-    public function __construct($object, $label = '&nbsp;', $class = 'form-group')
+    private $labelClass;
+    
+    public function __construct($object, $label = '&nbsp;', $class = 'form-group', $labelClass = 'font-weight-500')
     {
         parent::__construct('div');
         $this->att('class', $class);
         $this->label = $label;
+        $this->labelClass = $labelClass;
         $this->object = $object;
     }
     
     public function __build_extra__()
     {
         if (!empty($this->label)) {
-            $label = $this->add(new Tag('div'))->add(new Tag('label'));
+            $label = $this->add(new Tag('div'))->add(new Tag('label', null, $this->labelClass));
             $label->add($this->label);
             if (is_object($this->object)) {
                 $label->att('for',$this->object->id);
