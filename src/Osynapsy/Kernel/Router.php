@@ -17,13 +17,7 @@ class Router
     private $requestRoute;
     private $matchedRoute;
     //Rispettare l'ordine
-    private $patternPlaceholder = array(
-        '?i' => '([\\d]+){1}',        
-        '?I' => '([\\d]*){1}',
-        '?.' => '([.]+){1}',
-        '?w' => '([\\w-,]+){1}', 
-        '?*'  => '(.*){1}',
-        '?' => '([^\/]*)',
+    private $patternPlaceholder = [        
         '/'  => '\\/',
         //number
         '{i}' => '([\\d]+){1}',
@@ -34,8 +28,10 @@ class Router
         //all
         '{*}' => '(.*){1}',
         //all after /
-        '{?}' => '([^\/]*)'
-    );
+        '{?}' => '([^\/]*)',
+        //?????
+        '{.}' => '([.]+){1}'
+    ];
     
     public function __construct()
     {
@@ -70,33 +66,9 @@ class Router
             $this->matchedRoute->parameters = $uriDecoded;
         }        
         return $this->getRoute();
-    }
+    }        
     
     private function matchRoute($url)
-    {
-        $output = [];
-        if (substr_count($url, '{')) {
-            return $this->matchRouteNew($url);
-        }
-        switch (substr_count($url, '?')) {
-            case 0:
-                if ($url === $this->requestRoute) {
-                    $output[] = $url;  
-                }
-                break;
-            default:
-                $pattern = str_replace(
-                    array_keys($this->patternPlaceholder),
-                    array_values($this->patternPlaceholder),
-                    $url
-                );
-                preg_match('|^'.$pattern.'$|', $this->requestRoute, $output);
-                break;
-        }        
-        return empty($output) ? false : $output;
-    }
-    
-    private function matchRouteNew($url)
     {
         if (!substr_count($url, '{')) {
             return $url === $this->requestRoute ? [$url] : false;  
