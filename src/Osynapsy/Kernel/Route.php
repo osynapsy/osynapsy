@@ -25,7 +25,7 @@ class Route
         'controller' => null,
         'template' => null,
         'weight' => null,
-        'acceptedMethods' => ['*']
+        'acceptedMethods' => null
     ];
     
     public function __construct($id = '', $uri = '', $application = '', $controller = '', $template = '', array $attributes = [])
@@ -61,12 +61,15 @@ class Route
     
     public function setAcceptedMethods($methods)
     {        
+        if (empty($methods)) {
+            return;
+        }
         switch(gettype($methods)) {
             case 'string':
-                $this->route->acceptedMethods = explode(',', strtolower($methods));
+                $this->acceptedMethods = explode(',', strtolower($methods));
                 break;
             case 'array':
-                $this->route->acceptedMethods = $methods;
+                $this->acceptedMethods = $methods;
                 break;            
         }        
     }
