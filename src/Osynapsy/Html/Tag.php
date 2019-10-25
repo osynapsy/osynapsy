@@ -92,6 +92,11 @@ class Tag
         return $child;
     }
     
+    public function addClass($class)
+    {
+        return empty($class) ? $this : $this->att('class', $class, true);
+    }
+    
     /**
      * Add childs from array
      * 
