@@ -11,6 +11,12 @@
 
 namespace Osynapsy\Kernel;
 
+/**
+ * The router class process all ruotes of the application and search the route
+ * that match the request coming from the web
+ * 
+ * @author Pietro Celeste <p.celeste@osynapsy.net>
+ */
 class Router
 {
     private $routes;
@@ -40,16 +46,38 @@ class Router
         $this->matchedRoute = new Route('matched');
     }
     
+    /**
+     * Get the specified route
+     * 
+     * @param type $key identify of the route
+     * @return object
+     */
     public function get($key)
     {
         return $this->routes->get($key);
     }
     
+    /**
+     * Add route to the collection;
+     * 
+     * @param type $id  identify of the route
+     * @param type $url uri of the route
+     * @param type $controller controller of the ruote
+     * @param type $templateId template of the ruote
+     * @param type $application application of the ruote
+     * @param array $attributes other attributes of the ruote
+     */
     public function addRoute($id, $url, $controller, $templateId, $application, array $attributes = [])
     {        
         $this->routes->addRoute($id, $url, $application, $controller, $templateId, $attributes);        
     }
     
+    /**
+     * Process all the ruote of the collection and return the matched route
+     * 
+     * @param type $uriToMatch ruote request from the web client;
+     * @return object matched ruote;
+     */
     public function dispatchRoute($uriToMatch)
     {
         $this->requestRoute = empty($uriToMatch) ? '/' : $uriToMatch;
@@ -84,6 +112,12 @@ class Router
         return $this->getRoute();
     }        
     
+    /**
+     * Process the ruote passed and check if match che request uri.
+     * 
+     * @param type $route
+     * @return mixed return false if ruote passed don't match the request uri then return the matched ruote;
+     */
     private function matchRoute($route)
     {        
         if (!substr_count($route->uri, '{')){
@@ -118,6 +152,11 @@ class Router
         return $route;
     }
     
+    /**
+     * Return the matched uri
+     * 
+     * @return type
+     */
     public function getRoute()
     {
         return $this->matchedRoute;
