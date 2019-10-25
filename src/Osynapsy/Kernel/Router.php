@@ -16,6 +16,7 @@ class Router
     private $routes;
     private $requestRoute;
     private $matchedRoute;
+    
     //Rispettare l'ordine
     private $patternPlaceholder = [        
         '/'  => '\\/',
@@ -44,8 +45,8 @@ class Router
         return $this->routes->get($key);
     }
     
-    public function addRoute($id, $url, $controller, $templateId, $application, $attributes=array())
-    {    
+    public function addRoute($id, $url, $controller, $templateId, $application, array $attributes = [])
+    {        
         $this->routes->addRoute($id, $url, $application, $controller, $templateId, $attributes);        
     }
     
@@ -56,43 +57,63 @@ class Router
         if (!is_array($routes)) {
             return false;
         }
+        $requestMethod = strtolower(filter_input(\INPUT_SERVER, 'REQUEST_METHOD'));
         foreach($routes as $route) {
-            $uriDecoded = $this->matchRoute($route->uri);
-            if (!$uriDecoded) {
+            //Check if url accept request http method;         
+            if ($route->acceptedMethods !== ['*'] && !in_array($requestMethod, $route->acceptedMethods)) {
+               continue;
+            }
+            //Check if current route match request uri;
+            $matchedRoute = $this->matchRoute($route);
+            if ($matchedRoute === false) {
                 continue;
             }
-            $this->matchedRoute = $route;
-            $this->matchedRoute->uri = array_shift($uriDecoded);
-            $this->matchedRoute->parameters = $uriDecoded;
+            //If weight is_null requested uri is exactly current uri. Don't search more.
+            if (is_null($matchedRoute->weight)) {
+                $this->matchedRoute = $matchedRoute;
+                break;
+            }
+            //If weigth of previus mathced route is bigger of current matchedRoute then continue;
+            if (!empty($this->matchedRoute) && $this->matchedRoute->weight > $matchedRoute->weight) {
+                continue;
+            }
+            $this->matchedRoute = $matchedRoute;                        
         }        
         return $this->getRoute();
     }        
     
-    private function matchRoute($url)
-    {
-        if (!substr_count($url, '{')) {
-            return $url === $this->requestRoute ? [$url] : false;  
+    private function matchRoute($route)
+    {        
+        if (!substr_count($route->uri, '{')){
+            return $route->uri === $this->requestRoute ? $route : false;  
         }
         $output = $result = [];        
-        preg_match_all('/{.+?}/', $url, $output);
-        $braceParameters = array_merge(
-            ['/' => null] , 
-            empty($output) ? [] : array_flip($output[0])
-        );        
+        preg_match_all('/{.+?}/', $route->uri, $output);        
+        $braceParameters = array_merge(['/' => null] ,  array_flip($output[0]));        
         array_walk(
             $braceParameters, 
             function(&$value, $key, $placeholder) {            
                 if (array_key_exists($key, $placeholder)) {
-                    $value = $placeholder[$key];               
-                } else {
-                    $value = str_replace(['{','}'],['(',')'], $key);
+                    $value = $placeholder[$key];
+                    return;
                 }
+                $value = str_replace(['{','}'],['(',')'], $key);                
             }, 
             $this->patternPlaceholder
         );        
-        $pattern = str_replace(array_keys($braceParameters), array_values($braceParameters), $url);         
-        preg_match('/'.$pattern.'/', $this->requestRoute, $result);        
-        return empty($result) ? false : $result;
+        $pattern = str_replace(
+            array_keys($braceParameters),
+            array_values($braceParameters), 
+            $route->uri
+        );         
+        preg_match('/'.$pattern.'/', $this->requestRoute, $result);
+        if (empty($result)) {
+            return false;
+        }        
+        array_shift($result);
+        $route->parameters = $result;
+        $route->weight = count($result);
+        return $route;
     }
     
     public function getRoute()

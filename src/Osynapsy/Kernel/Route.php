@@ -23,17 +23,20 @@ class Route
         'uri' => null,
         'application' => null,
         'controller' => null,
-        'template' => null
+        'template' => null,
+        'weight' => null,
+        'acceptedMethods' => ['*']
     ];
     
-    public function __construct($id = '', $uri = '', $application = '', $controller = '', $template = '',array $attributes = [])
-    {
+    public function __construct($id = '', $uri = '', $application = '', $controller = '', $template = '', array $attributes = [])
+    {        
         $this->id = empty($id) ? sha1($uri) : $id;
         $this->uri = $uri;
         $this->application = trim($application);
         $this->setController($controller);
-        $this->template = $template;
+        $this->template = $template;        
         $this->route += $attributes;
+        $this->setAcceptedMethods($this->methods);
     }
     
     public function __get($key)
@@ -54,5 +57,17 @@ class Route
     public function setController($controller)
     {
         $this->controller = trim(str_replace(':','\\',$controller));
+    }
+    
+    public function setAcceptedMethods($methods)
+    {        
+        switch(gettype($methods)) {
+            case 'string':
+                $this->route->acceptedMethods = explode(',', strtolower($methods));
+                break;
+            case 'array':
+                $this->route->acceptedMethods = $methods;
+                break;            
+        }        
     }
 }
