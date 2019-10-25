@@ -124,8 +124,7 @@ class Card extends Component
     {
         return $this->currentRow;
     }
-    
-    
+        
     public function resetClass()
     {
         $this->setClass('','','','');
@@ -183,12 +182,18 @@ class Card extends Component
         $this->getBody()->add('<p class="card-text">'.$text.'</p>');
     }
     
-    public function setTitle($title, $text = null)
-    {
-        $this->getBody()->add('<h5 class="card-title">'.$title.'</h5>');
-        $this->setText($text);
+    public function setTitle($title, $tag = 'h5', $class = '')
+    {        
+        $this->getBody()->add(new Tag($tag, null, trim('card-title '.$class)))->add($title);        
     }
     
+    public function setCommand($command)
+    {
+        $this->setClass('position-relative mr-3');
+        $container = $this->add(new Tag('div', null, 'card-command position-absolute'));        
+        $container->att('style', 'top: 5px; right: 5px;')->add($command);        
+    }
+        
     public function simulateTable(bool $padding = true)
     {
         $this->classCss['body'] .= ' d-table';
