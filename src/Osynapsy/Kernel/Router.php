@@ -60,7 +60,7 @@ class Router
         $requestMethod = strtolower(filter_input(\INPUT_SERVER, 'REQUEST_METHOD'));
         foreach($routes as $route) {
             //Check if url accept request http method;         
-            if ($route->acceptedMethods !== ['*'] && !in_array($requestMethod, $route->acceptedMethods)) {
+            if (!is_null($route->acceptedMethods) && !in_array($requestMethod, $route->acceptedMethods)) {
                continue;
             }
             //Check if current route match request uri;
