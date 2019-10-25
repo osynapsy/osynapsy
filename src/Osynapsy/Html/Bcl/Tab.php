@@ -19,7 +19,7 @@ use Osynapsy\Html\Bcl\Panel;
 class Tab extends Component
 {
     private $ul;
-    private $nCard=0;
+    private $nCard = 0;
     private $currentCard;
     private $tabContent;
     private $tabSelected;
@@ -45,12 +45,13 @@ class Tab extends Component
     public function addCard($title)
     {
         $cardId = $this->id.'_'.$this->nCard++;
-        $li = $this->ul->add(new Tag('li', null, 'nav-item'))->att('role','presentation');        
         if($this->tabSelected == $this->nCard) {
-            $li->att('class', 'active in', true);
-        }        
-        $li->add('<a href="#'.$cardId.'" data-toggle="tab" class="nav-link">'.$title.'</a>');
-        $this->currentCard = $this->tabContent->add(new Panel($cardId))->att('class' , 'tab-pane fade no-border', true);
+            $selectedClassLink = ' active';
+            $selectedClassPanel = ' active show';
+        }
+        $li = $this->ul->add(new Tag('li', null, 'nav-item'))->att('role','presentation');                
+        $li->add('<a href="#'.$cardId.'" data-toggle="tab" class="nav-link'.$selectedClassLink.'">'.$title.'</a>');
+        $this->currentCard = $this->tabContent->add(new Panel($cardId))->att('class', 'tab-pane fade'.$selectedClassPanel, true);
         return $this->currentCard;
     }
     
