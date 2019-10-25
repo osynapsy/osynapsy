@@ -701,7 +701,7 @@ var FormController =
         }
         $('.modal').remove();
         var win  = '<div id="' + id + '" class="modal fade" role="dialog">\n';
-            win += '    <div class="modal-dialog '+dim+'" style="width: '+wdt+';">\n';
+            win += '    <div class="modal-dialog '+dim+'" style="max-width: '+wdt+';">\n';
             win += '        <div class="modal-content">\n';
             win += '            <div class="modal-header">\n';            
             win += '                <h5 class="modal-title">' + title + '</h5>';
