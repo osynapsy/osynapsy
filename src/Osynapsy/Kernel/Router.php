@@ -57,6 +57,7 @@ class Router
         if (!is_array($routes)) {
             return false;
         }
+        //Get current request method;
         $requestMethod = strtolower(filter_input(\INPUT_SERVER, 'REQUEST_METHOD'));
         foreach($routes as $route) {
             //Check if url accept request http method;         
@@ -65,6 +66,7 @@ class Router
             }
             //Check if current route match request uri;
             $matchedRoute = $this->matchRoute($route);
+            //If don't match (return value is false) jump next route;
             if ($matchedRoute === false) {
                 continue;
             }
@@ -73,7 +75,7 @@ class Router
                 $this->matchedRoute = $matchedRoute;
                 break;
             }
-            //If weigth of previus mathced route is bigger of current matchedRoute then continue;
+            //If weight of previous matched route is bigger of current matchedRoute then continue;
             if (!empty($this->matchedRoute) && $this->matchedRoute->weight > $matchedRoute->weight) {
                 continue;
             }
