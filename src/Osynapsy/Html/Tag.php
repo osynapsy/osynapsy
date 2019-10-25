@@ -61,7 +61,10 @@ class Tag
      */
     public function __set($attribute, $value)
     {
-       $this->attributes[$attribute] = $value;
+        if (is_array($value)) {
+            throw \Exception('Illegal content of value attribute' . print_r($value, true));
+        }
+        $this->attributes[$attribute] = $value;
     }
     
     /**
