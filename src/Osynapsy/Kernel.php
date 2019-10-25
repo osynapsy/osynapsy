@@ -106,10 +106,10 @@ class Kernel
             'OsynapsyAssetsManager',
             '/assets/osynapsy/'.self::VERSION.'/{*}',
             'Osynapsy\\Assets\\Loader',
-            '',
+            '',            
             'Osynapsy'
         );
-        $applications = $this->loader->get('app');
+        $applications = $this->loader->get('app');       
         if (empty($applications)) {
             throw new KernelException('No app configuration found', 1001);
         }
@@ -122,8 +122,8 @@ class Kernel
                 $id = isset($route['id']) ? $route['id'] : uniqid();
                 $uri = $route['path'];
                 $controller = $route['@value'];
-                $template = !empty($route['template']) ? $this->request->get('app.layouts.'.$route['template']) : '';
-                $this->router->addRoute($id, $uri, $controller, $template, $applicationId, $route);                
+                $template = !empty($route['template']) ? $this->request->get('app.layouts.'.$route['template']) : '';                
+                $this->router->addRoute($id, $uri, $controller, $template, $applicationId, $route);
             }
         }        
     }
