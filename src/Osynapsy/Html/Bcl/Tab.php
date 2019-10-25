@@ -31,27 +31,27 @@ class Tab extends Component
         $this->id = $id;
         $this->requireJs('Bcl/Tab/script.js');
         $this->add(new HiddenBox($id));
-        $this->ul = $this->add(new Tag('ul'));
-        $this->ul->att([
+        $this->ul = $this->add(new Tag('ul'))->att([
             'id' => $id.'_nav', 
             'class' => 'nav nav-tabs mt-1',
             'role' => 'tablist',
             'data-tabs' => 'tabs'
         ]);
         $this->tabSelected = empty($_REQUEST[$this->id]) ? '1' : $_REQUEST[$this->id];
-        $this->tabContent = $this->add(new Tag('div', null, 'tab-content p-2'));
+        $this->tabContent = $this->add(new Tag('div', null, 'tab-content p-2 bg-white border-left border-right border-bottom'));
     }
     
     public function addCard($title)
     {
         $cardId = $this->id.'_'.$this->nCard++;
+        $selectedClassLink = $selectedClassPanel = '';
         if($this->tabSelected == $this->nCard) {
             $selectedClassLink = ' active';
             $selectedClassPanel = ' active show';
         }
         $li = $this->ul->add(new Tag('li', null, 'nav-item'))->att('role','presentation');                
         $li->add('<a href="#'.$cardId.'" data-toggle="tab" class="nav-link'.$selectedClassLink.'">'.$title.'</a>');
-        $this->currentCard = $this->tabContent->add(new Panel($cardId))->att('class', 'tab-pane fade'.$selectedClassPanel, true);
+        $this->currentCard = $this->tabContent->add(new Panel($cardId))->setClass('tab-pane fade'.$selectedClassPanel);
         return $this->currentCard;
     }
     
