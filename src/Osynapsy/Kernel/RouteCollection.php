@@ -28,7 +28,7 @@ class RouteCollection extends Dictionary
     
     public function addRoute($id, $route, $application, $controller, $templateId = null, $attributes = [])
     {
-        $newRoute = new Route($id, $route, $application, $controller, $templateId, $attributes);        
+        $newRoute = new Route($id, $route, $application, $controller, $templateId, $attributes);
         $this->set('routes.'.$newRoute, $newRoute);
     }
 }
