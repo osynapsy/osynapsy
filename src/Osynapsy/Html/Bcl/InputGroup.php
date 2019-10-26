@@ -18,16 +18,14 @@ class InputGroup extends Component
 {
     protected $textBox;
     protected $postfix;
+    protected $prefix;
     
     public function __construct($name, $prefix = '', $postfix = '')
     {
         parent::__construct('div');
         $this->att('class','input-group');
         if (!empty($prefix)) {
-            $this->add(new Tag('span'))
-                 ->att('class', 'input-group-addon input-group-prepend')
-                 ->att('id',$name.'_prefix')
-                 ->add($prefix);
+            $this->prefix = $this->add($this->getFix($prefix, 'input-group-prepend'));            
         }
         if (is_object($name)) {
             $this->textBox = $this->add($name);
@@ -36,22 +34,35 @@ class InputGroup extends Component
             $this->textBox->att('aria-describedby',$name.'_prefix');
         }
         
-        if ($postfix) {
-            $this->postfix = $this->add(new Tag('span'))->att('class', 'input-group-addon input-group-append');
-            $this->postfix->add($postfix);
-            if (!is_object($postfix)) {
-                $this->postfix->att('class', 'input-group-text', true);
-            }
-        }
+        if (!empty($postfix)) {
+            $this->postfix = $this->add($this->getFix($postfix, 'input-group-append'));
+        }        
     }
     
-    public function getTextBox()
+    public function getFix($value, $addClass)
     {
-        return $this->textBox;
+        $class = 'input-group-text input-group-addon  '.$addClass;
+        if (!is_object($value)) {
+            $fix = new Tag('span', null, trim($class));        
+            $fix->add($value);
+        } else {
+            $fix = $value->addClass($class);
+        }
+        return $fix;
+    }
+            
+    public function getPrefix()
+    {
+        return $this->prefix;
     }
     
     public function getPostfix()
     {
         return $this->postfix;
+    }
+    
+    public function getTextBox()
+    {
+        return $this->textBox;
     }
 }
