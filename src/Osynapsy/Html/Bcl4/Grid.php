@@ -11,7 +11,8 @@ use Osynapsy\Html\Tag;
  */
 class Grid extends Component
 {
-    protected $cellSize = 4;    
+    protected $cellSize = 4;
+    protected $cellClass = ['border', 'p-3', 'rounded'];
     protected $currentRow;
     protected $residualRowSize = 0;
     protected $rows = [];
@@ -33,16 +34,16 @@ class Grid extends Component
             array_unshift($this->data, $this->addCommand);
         }
         foreach ($this->data as $key => $rec) {            
-            $this->addColumn($key, $rec);            
+            $this->addColumn($key, $rec, $this->cellSize);            
         }
     }        
     
-    private function addColumn($key, $rec)
+    public function addColumn($key, $rec, $size)
     {
-        $Column = $this->getRow()->add(
-            new Tag('div', null, 'col-lg-'.$this->cellSize)
+        $Column = $this->getRow($size)->add(
+            new Tag('div', null, 'col-lg-'.$size)
         );
-        $Column->add($this->buildCell($key, $rec));
+        return $Column->add($this->buildCell($key, $rec));
     }
     
     public function addCellCommand($cell, $command)
@@ -56,25 +57,30 @@ class Grid extends Component
     
     private function buildCell($key, $rec)
     {
-        $Cell = new Tag('div', $this->id.$key, 'border grid-cell p-3 rounded');
+        $Cell = new Tag('div', $this->id.$key, 'grid-cell '.implode(' ',$this->cellClass));
         $fnc = $this->formatValueFnc;
         $Cell->add($fnc($rec, $Cell, $this));
         return $Cell;
     }        
     
-    private function getRow($id = null)
+    private function getRow($cellSize, $id = null)
     {
         if (empty($this->residualRowSize)) {
             $this->currentRow = $this->add(new Tag('div', $id, 'row mb-3 grid-row'));
             $this->residualRowSize = 12;
         }
-        $this->residualRowSize -= $this->cellSize;
+        $this->residualRowSize -= $cellSize;
         return $this->currentRow;
     }
 
     public function setCellSize($size)
     {
         $this->cellSize = $size;
+    }
+    
+    public function setCellClass($cellClass)
+    {
+        $this->cellClass = explode(' ',$cellClass);
     }
     
     public function setSql($db, $sql, array $parameters = [])
