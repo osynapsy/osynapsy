@@ -26,12 +26,13 @@ class InputBox extends Component
 
     protected function __build_extra__()
     {
-        $value = $this->getGlobal($this->name, $_REQUEST);
+        $value = $this->getGlobal($this->name, $_REQUEST);        
         $this->att('value', (empty($value) && $value != '0' ? $this->defaultValue : $value));
     }
     
     public function setDefaultValue($value)
     {
         $this->defaultValue = $value;
+        return $this;
     }
 }
