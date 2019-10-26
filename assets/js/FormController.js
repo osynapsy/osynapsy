@@ -64,8 +64,7 @@ var Osynapsy = new (function(){
                     console.log(xhr);
                     alert(xhr.responseText);
                 }
-            };
-            console.log(callParameters.url);
+            };            
             if (!this.checkForUpload()) {               
                 var options = {
                     beforeSend : function() {
@@ -667,62 +666,61 @@ var FormController =
         });
         return $(win);
     },
-    modalAlert : function(title, message) {
+    modalAlert : function(title, message)
+    {
         if (!title) {
             title = 'Alert';
         }
         var win = this.modal('alert', title, message, null, null);        
         return $(win);
     },
-    modalConfirm : function(title, message, actionConfirm, actionCancel){
+    modalConfirm : function(title, message, actionConfirm, actionCancel)
+    {
         if (!title) {
             title = 'Conferm';
         }
         return this.modal('confirm', title, message, actionConfirm, actionCancel);
     },
-    modalWindow : function(id, title, url) {
-        var wdt = '90%';        
-        var hgt = ($(window).innerHeight() - 250) + 'px';
-        var form = null;
-        var dim = 'modal-lg';
+    modalWindow : function(id, title, url)
+    {               
+        var height = ($(window).innerHeight() - 250) + 'px';
+        var form = null;        
         if ($.isArray(url)) {
             form = url[1];
             url = url[0];
-            console.log(form);
         }
-        if (typeof arguments[3] !== 'undefined') {
-            wdt = arguments[3];
+        if (!Osynapsy.isEmpty(arguments[3])) {
+            var modalWidth = arguments[3];
         }        
-        if (typeof arguments[4] !== 'undefined') {
-            hgt = arguments[4];
-        }
-        if (typeof arguments[5] !== 'undefined') {
-            dim = arguments[5];
-        }
+        if (!Osynapsy.isEmpty(arguments[4])) {
+            height = arguments[4];
+        }        
         $('.modal').remove();
-        var win  = '<div id="' + id + '" class="modal fade" role="dialog">\n';
-            win += '    <div class="modal-dialog '+dim+'" style="max-width: '+wdt+';">\n';
-            win += '        <div class="modal-content">\n';
-            win += '            <div class="modal-header">\n';            
-            win += '                <h5 class="modal-title">' + title + '</h5>';
-            win += '                <button type="button" class="close" data-dismiss="modal">&times;</button>';
-            win += '            </div>';
-            win += '            <div class="modal-body">';
-            win += '                <i class="fa fa-spinner fa-spin" style="font-size:24px; position:absolute; margin-top:20px; margin-left: 20px; color:silver;"></i>';
-            win += '                <iframe onload="$(this).css(\'visibility\',\'\');" name="'+id+'" style="visibility:hidden; width: 100%; height:'+ hgt +'; border: 0px; border-radius: 3px;" border="0"></iframe>';
-            win += '            </div>';
-            //win += '            <div class="modal-footer">';
-            //win += '                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>';
-            //win += '            </div>';
-            win += '        </div>';
-            win += '    </div>';
-            win += '</div>';
-            win = $(win);
-        $('body').append(win);
+        var modalHtml  = '<div id="' + id + '" class="modal fade" role="dialog">\n';
+            modalHtml += '    <div class="modal-dialog modal-lg">\n';
+            modalHtml += '        <div class="modal-content">\n';
+            modalHtml += '            <div class="modal-header">\n';            
+            modalHtml += '                <h5 class="modal-title">' + title + '</h5>';
+            modalHtml += '                <button type="button" class="close" data-dismiss="modal">&times;</button>';
+            modalHtml += '            </div>';
+            modalHtml += '            <div class="modal-body">';
+            modalHtml += '                <i class="fa fa-spinner fa-spin" style="font-size:24px; position:absolute; margin-top:20px; margin-left: 20px; color:silver;"></i>';
+            modalHtml += '                <iframe onload="$(this).css(\'visibility\',\'\');" name="'+id+'" style="visibility:hidden; width: 100%; height:'+ height +'; border: 0px; border-radius: 3px;" border="0"></iframe>';
+            modalHtml += '            </div>';            
+            modalHtml += '        </div>';
+            modalHtml += '    </div>';
+            modalHtml += '</div>';
+        var modalWindow = $(modalHtml);        
+        if (!Osynapsy.isEmpty(modalWidth) && window.screen.availWidth > 1000) {            
+            $('.modal-dialog', modalWindow).css('max-width', modalWidth);                            
+        }
+        $('body').append(modalWindow);
         $('iframe', '#'+id).on('load', function(){
             
         });
-        if (form) {
+        if (Osynapsy.isEmpty(form)) {
+            $('iframe', '#'+id).attr('src',url);            
+        } else {
             var action = form.attr('action');
             var target = form.attr('target');
             var method = form.attr('method');
@@ -734,17 +732,14 @@ var FormController =
             form.attr('action', action?action:'');
             form.attr('target', target?target:'');
             form.attr('method', method?method:'');
-        } else {
-            $('iframe', '#'+id).attr('src',url);
         }
         $('iframe', '#'+id).on('load', function(){
             $(this).prev().hide();
         });
         $('#'+id).modal({
             keyboard : true
-        });
-        
-        return win;
+        });        
+        return modalWindow;
     }
 };
 
