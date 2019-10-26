@@ -20,10 +20,12 @@ class JQuery
 {
     private $elements = array();
     private $selector = '';
+    private $response;
     
-    public function __construct($selector)
+    public function __construct($selector, $response = null)
     {
         $this->selector = $selector;
+        $this->response = $response;
     }
     
     public function __call($method, $params)
@@ -35,14 +37,23 @@ class JQuery
     public function __toString()
     {
         $string = '$(\''.$this->selector.'\')';
-        foreach ($this->elements as $method => $params) {
-            $string .= '.'.$method.'(';
-            foreach ($params as $i => $par) {
-                $string .= empty($i) ? '' : ',';
-                $string .= is_string($par) ? '\''.addslashes($par).'\'' : $par;
-            }
-            $string .= ')';
+        foreach ($this->elements as $method => $parameters) {
+            $string .= $this->buildMethod($method, $parameters);
         }
         return $string;
+    }
+    
+    private function buildMethod($method, $parameters)
+    {
+        if (empty($parameters)) {
+            return ".{$method}())";        
+        }
+        $pars = implode("','", array_map(function($value){ return addslashes($value); }, $parameters));   
+        return '.'.$method."('$pars')";
+    }
+    
+    public function exec()
+    {
+        $this->response->js($this->__toString());
     }
 }

@@ -11,6 +11,8 @@
 
 namespace Osynapsy\Http;
 
+use Osynapsy\Html\Helper\JQuery;
+
 /**
  * Implements Json response
  * 
@@ -139,5 +141,10 @@ class ResponseJson extends Response
     public function js($cmd)
     {
         $this->message('command','execCode', str_replace(PHP_EOL,'\n',$cmd));
+    }
+    
+    public function jquery($selector)
+    {
+        return new JQuery($selector, $this);
     }
 }
