@@ -28,14 +28,7 @@ class TextBox extends InputBox
                  ->att('class','right osy-number',true);
         }
     }
-            
-    public function setValue($value)
-    {        
-        if (!array_key_exists($this->name, $_REQUEST)) {
-            $_REQUEST[$this->name] = $value;
-        }
-        return $this;
-    }
+    
     
     public function onTyping($jsCode)
     {
@@ -45,5 +38,31 @@ class TextBox extends InputBox
     public function onDblClick($jsCode)
     {
         return $this->att('ondblclick', $jsCode);
+    }
+    
+    public function setValue($value)
+    {        
+        if (!array_key_exists($this->name, $_REQUEST)) {
+            $this->setValueInRequest($value);
+        }
+        return $this;
+    }
+    
+    
+    private function setValueInRequest($value)
+    {
+        $arrName = explode('[', str_replace(']','',$this->name));
+        $request =& $_REQUEST;
+        $insert  = false;
+        foreach ($arrName as $part) {
+            if (!array_key_exists($part, $request)) {
+                $request[$part] = [];
+                $insert = true;
+            }
+            $request =& $request[$part];
+        }
+        if ($insert) {
+            $request = $value;
+        }
     }
 }
