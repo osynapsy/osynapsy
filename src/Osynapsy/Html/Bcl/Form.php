@@ -33,6 +33,7 @@ class Form extends Component
     protected $alertCount=0;
     protected $body;
     protected $foot;
+    protected $footClass;
     protected $footLeft;
     protected $footRight;
     protected $repo;
@@ -142,10 +143,15 @@ class Form extends Component
         return $this->alert;
     }
     
+    public function fixCommandBar($class = 'fixed-bottom p-2 b-light')
+    {
+       $this->footClass = $class; 
+    }
+    
     public function foot($obj, $right = false)
     {
         if (empty($this->foot)) {
-            $this->foot = new Tag('div', null, 'row m-t-10');
+            $this->foot = new Tag('div', null, trim('row m-t-10 '.$this->footClass));
             $this->footLeft = $this->foot->add(new Tag('div', null, 'col-lg-6 col-xs-6 col-sm-6'));
             $this->footRight = $this->foot->add(new Tag('div', null, 'col-lg-6 col-xs-6 col-sm-6 text-right'));           
         }
@@ -180,7 +186,7 @@ class Form extends Component
             $this->foot($this->getCommandSave($save), true);
         }        
     }        
-            
+    
     public function setType($type)
     {
         if ($type == 'horizontal') {
