@@ -683,19 +683,13 @@ var FormController =
     },
     modalWindow : function(id, title, url)
     {               
-        var height = ($(window).innerHeight() - 250) + 'px';
-        var form = null;        
-        if ($.isArray(url)) {
-            form = url[1];
-            url = url[0];
-        }
-        if (!Osynapsy.isEmpty(arguments[3])) {
-            var modalWidth = arguments[3];
-        }        
-        if (!Osynapsy.isEmpty(arguments[4])) {
-            height = arguments[4];
-        }        
         $('.modal').remove();
+        var modalHeight = Osynapsy.isEmpty(arguments[4]) ? ($(window).innerHeight() - 250) + 'px' : arguments[4];
+        var modalWidth  = Osynapsy.isEmpty(arguments[3]) ? null : arguments[3];        
+        if ($.isArray(url)) {
+            var form = url[1];
+            url = url[0];
+        }        
         var modalHtml  = '<div id="' + id + '" class="modal fade" role="dialog">\n';
             modalHtml += '    <div class="modal-dialog modal-lg">\n';
             modalHtml += '        <div class="modal-content">\n';
@@ -705,7 +699,7 @@ var FormController =
             modalHtml += '            </div>';
             modalHtml += '            <div class="modal-body">';
             modalHtml += '                <i class="fa fa-spinner fa-spin" style="font-size:24px; position:absolute; margin-top:20px; margin-left: 20px; color:silver;"></i>';
-            modalHtml += '                <iframe onload="$(this).css(\'visibility\',\'\');" name="'+id+'" style="visibility:hidden; width: 100%; height:'+ height +'; border: 0px; border-radius: 3px;" border="0"></iframe>';
+            modalHtml += '                <iframe onload="$(this).css(\'visibility\',\'\');" name="'+id+'" style="visibility:hidden; width: 100%; height:'+ modalHeight +'; border: 0px; border-radius: 3px;" border="0"></iframe>';
             modalHtml += '            </div>';            
             modalHtml += '        </div>';
             modalHtml += '    </div>';
@@ -715,9 +709,7 @@ var FormController =
             $('.modal-dialog', modalWindow).css('max-width', modalWidth);                            
         }
         $('body').append(modalWindow);
-        $('iframe', '#'+id).on('load', function(){
-            
-        });
+        //$('iframe', '#'+id).on('load', function(){});
         if (Osynapsy.isEmpty(form)) {
             $('iframe', '#'+id).attr('src',url);            
         } else {
@@ -736,9 +728,7 @@ var FormController =
         $('iframe', '#'+id).on('load', function(){
             $(this).prev().hide();
         });
-        $('#'+id).modal({
-            keyboard : true
-        });        
+        $('#'+id).modal({keyboard : true});        
         return modalWindow;
     }
 };
