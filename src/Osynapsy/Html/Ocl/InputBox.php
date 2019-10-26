@@ -35,4 +35,34 @@ class InputBox extends Component
         $this->defaultValue = $value;
         return $this;
     }
+    
+    public function setValue($value)
+    {        
+        if (array_key_exists($this->name, $_REQUEST)) {
+            return $this;
+        }
+        if (substr_count($this->name, '[')) {
+            return $this->setValueArrayInRequest($value);
+        }
+        $_REQUEST[$this->name] = $value;
+        return $this;
+    }
+        
+    private function setValueArrayInRequest($value)
+    {
+        $arrName = explode('[', str_replace(']','',$this->name));
+        $request =& $_REQUEST;
+        $insert  = false;
+        foreach ($arrName as $part) {
+            if (!array_key_exists($part, $request)) {
+                $request[$part] = [];
+                $insert = true;
+            }
+            $request =& $request[$part];
+        }
+        if ($insert) {
+            $request = $value;
+        }
+        return $this;
+    }
 }
