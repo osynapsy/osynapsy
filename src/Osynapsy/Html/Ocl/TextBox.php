@@ -47,8 +47,7 @@ class TextBox extends InputBox
         }
         return $this;
     }
-    
-    
+        
     private function setValueInRequest($value)
     {
         $arrName = explode('[', str_replace(']','',$this->name));
