@@ -26,6 +26,12 @@ class Grid extends Component
         $this->setFormatValue(function($rec){
             return is_array($rec) ? implode('<br>',$rec) : $rec;
         });
+        $this->add(
+            "<style>"
+            . "div.grid-cell:hover .card-command {display: block !important;}"
+            . ".card-command {position: absolute; text-align: right; display: none; width: 94%; height: 100%; top: 0px; left: 0px; opacity: 0.5; background-color: white; border: 1px dotted gray; margin-left: 30px;}"
+            ."</style>"
+         );
     }
     
     protected function __build_extra__(): void
@@ -51,11 +57,10 @@ class Grid extends Component
     
     public function addCellCommand($cell, $command)
     {
-        if (empty($command)) {
+        if (empty($cell) || empty($command)) {
             return;
-        }       
-        $container = $cell->add(new Tag('div', null, 'card-command position-absolute'));
-        $container->att('style', 'top: 1px; right: 18px;')->add($command);        
+        }
+        $cell->add(new Tag('div', null, 'card-command position-absolute'))->add($command);        
     }
     
     private function buildCell($rawid, $rec)
