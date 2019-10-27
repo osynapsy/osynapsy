@@ -42,7 +42,10 @@ class ScrollSpy extends Component
         if (empty($title)) {
             return;
         }
-        $this->currentPage->add($title);        
+        $cell = $this->currentPage->addCell([$title], $pageId.'Cell');
+        if (!empty($command)) {
+            $this->currentPage->addCellCommand($cell, $command);
+        }
     }
     
     public function addParagraph($title, $body, $id = null, $command = null)
