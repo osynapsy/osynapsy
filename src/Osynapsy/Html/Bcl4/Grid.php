@@ -30,20 +30,23 @@ class Grid extends Component
     
     protected function __build_extra__(): void
     {                
-        if ($this->addCommand) {
+        if (empty($this->data)) {
+            return;
+        }
+        if (empty($this->addCommand)) {
             array_unshift($this->data, $this->addCommand);
         }
         foreach ($this->data as $key => $rec) {            
-            $this->addColumn($key, $rec, $this->cellSize);            
+            $this->addCell($rec, $key, $this->cellSize);            
         }
     }        
     
-    public function addColumn($key, $rec, $size)
+    public function addCell($rec, $id = null, $size = 12, $class = null)
     {
         $Column = $this->getRow($size)->add(
-            new Tag('div', null, 'col-lg-'.$size)
+            new Tag('div', null, trim("col-lg-{$size} $class"))
         );
-        return $Column->add($this->buildCell($key, $rec));
+        return $Column->add($this->buildCell($id, $rec));
     }
     
     public function addCellCommand($cell, $command)
@@ -55,10 +58,11 @@ class Grid extends Component
         $container->att('style', 'top: 1px; right: 18px;')->add($command);        
     }
     
-    private function buildCell($key, $rec)
+    private function buildCell($rawid, $rec)
     {
-        $Cell = new Tag('div', $this->id.$key, 'grid-cell '.implode(' ',$this->cellClass));
-        $fnc = $this->formatValueFnc;
+        $id = is_numeric($rawid) ? $this->id.'_cell_'.$rawid : $rawid; 
+        $Cell = new Tag('div', $id, 'grid-cell '.implode(' ',$this->cellClass));
+        $fnc = $this->formatValueFnc;        
         $Cell->add($fnc($rec, $Cell, $this));
         return $Cell;
     }        
@@ -84,17 +88,15 @@ class Grid extends Component
     }
     
     public function setSql($db, $sql, array $parameters = [])
-    {
-        $this->db = $db;
-        $this->data = $this->db->execQuery($sql, $parameters);
+    {        
+        $this->data = $db->execQuery($sql, $parameters);
     }
     
     public function setAddCommand($command)
     {
         $this->addCommand = $command;
     }
-    
-    
+        
     public function setFormatValue(callable $fnc)
     {
         $this->formatValueFnc = $fnc;
