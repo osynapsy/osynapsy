@@ -29,7 +29,7 @@ class Grid extends Component
         $this->add(
             "<style>"
             . "div.grid-cell:hover .card-command {display: block !important;}"
-            . ".card-command {position: absolute; text-align: right; display: none; width: 94%; height: 100%; top: 0px; left: 0px; opacity: 0.5; background-color: white; border: 1px dotted gray; margin-left: 30px;}"
+            . ".card-command {position: absolute; text-align: right; display: none; width: 94%; height: 100%; top: 0px; left: 0px; opacity: 0.7; background-color: white; border: 1px dotted gray; margin-left: 30px; padding: 3px;}"
             ."</style>"
          );
     }
