@@ -57,7 +57,7 @@ class Token
         $tokenPart = explode('.', $token);
         //Guard clause token must be composed of three parts
         if (count($tokenPart) !== 3) {
-            return false;
+            throw new AuthenticationException('Token is invalid. It is not composed of three parts.', 401);
         }
         //Last part of token is the sign of token
         $recievedSignature = $tokenPart[2]; 
@@ -69,10 +69,13 @@ class Token
         );
         //Token is not valid if received signature is not equal to resulted signature        
         if ($resultedSignature !== $recievedSignature) {
-            return false;
+            throw new AuthenticationException('Token is invalid. Received signature is not equal to resulted signature.', 401);            
         }
         //If token is valid decode the fields
         $this->fields = json_decode(base64_decode($tokenPart[1]), true);
+        if (!empty($this->fields) && !empty($this->fields['Exp']) && $this->fields['Exp'] < time()) {
+            throw new AuthenticationException('Token is expired', 401);
+        }
         //Return true for confirm which token is valid.
         return true;
     }
@@ -81,8 +84,6 @@ class Token
     {
         if ($this->check($token)) {
             return $this->fields;
-        }
-        $msg = empty($token) ? 'Token is empty' : 'Token ('.$token.') isn\'t valid';                    
-        throw new AuthenticationException($msg, 401);
+        }        
     }        
 }
