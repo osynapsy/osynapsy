@@ -248,6 +248,20 @@ abstract class ActiveRecord implements InterfaceRecord
     }
     
     /**
+     * Flush array contente and set for every element value in the record.
+     * 
+     * @return void
+     * @throws \Exception
+     */    
+    public function setValues(array $values)
+    {
+        foreach($values as $field => $value) {
+            $this->setValue($field, $value);
+        }
+        return $this;
+    }
+    
+    /**
      * Save current active record on database
      * 
      * @return string
