@@ -36,7 +36,7 @@ class ScrollSpy extends Component
         $this->currentPage->setClass('bg-white border rounded mb-5 p-2');
         $this->currentPage->setFormatValue($this->paragraphFormatFunction);
         $this->pages[$pageId] = $this->currentPage;
-        $this->listIndex->add(new Tag('a', null, 'list-group-item list-group-item-action'))
+        $this->listIndex->add(new Tag('a', $this->id.'IndexItem'.$pid, 'list-group-item list-group-item-action'))
                         ->att('href', '#'.$pageId)
                         ->add(strip_tags($title) ?? 'Unamed');
         if (empty($title)) {
