@@ -96,7 +96,7 @@ abstract class ActiveRecord implements InterfaceRecord
             echo $sql;
         }
         try {            
-            $this->activeRecord = $this->dbConnection->execUnique($sql, $where['parameters'], 'ASSOC');
+            $this->activeRecord = $this->getDb()->execUnique($sql, $where['parameters'], 'ASSOC');
         } catch (\Exception $e) {
             throw new \Exception('Query error : '.$sql."\n".$e->getMessage(), 100);
         }        
@@ -162,7 +162,9 @@ abstract class ActiveRecord implements InterfaceRecord
             }
             $params[$key] = $raw[$idx]; 
         }
-        return $this->find($params);
+        $this->find($params);
+        $this->afterFindByKey();
+        return $this->activeRecord;
     }
     
     /**
@@ -331,7 +333,7 @@ abstract class ActiveRecord implements InterfaceRecord
     {
         $this->beforeInsert();        
         $sequenceId = $this->getSequenceNextValue();
-        $autoincrementId = $this->dbConnection->insert(
+        $autoincrementId = $this->getDb()->insert(
             $this->table,
             array_intersect_key($this->activeRecord, array_flip($this->fields()))
         );
@@ -373,7 +375,7 @@ abstract class ActiveRecord implements InterfaceRecord
         if (empty($this->searchCondition)) {
             throw new \Exception('Primary key is empty');
         }
-        $this->dbConnection->update(
+        $this->getDb()->update(
             $this->table,
             array_intersect_key($this->activeRecord, array_flip($this->fields())),
             $this->searchCondition
@@ -393,16 +395,9 @@ abstract class ActiveRecord implements InterfaceRecord
             throw new \Exception('Primary key is empty');
         }
         if (!empty($this->softDelete) && is_array($this->softDelete)) {
-            $this->dbConnection->update(
-                $this->table,
-                $this->softDelete,
-                $this->searchCondition
-            );
+            $this->getDb()->update($this->table, $this->softDelete, $this->searchCondition);
         } else {
-            $this->dbConnection->delete(
-                $this->table,
-                $this->searchCondition
-            );
+            $this->getDb()->delete($this->table, $this->searchCondition);
         }
         $this->afterDelete();
     }
@@ -538,7 +533,9 @@ abstract class ActiveRecord implements InterfaceRecord
     }
     
     protected function afterDelete(){}
-        
+    
+    protected function afterFindByKey(){}
+    
     protected function afterInsert(){}
     
     protected function afterSave(){}
