@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Db;
+namespace Osynapsy\Db\Record;
 
 /**
  * Description of InterfaceRecord

@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\Db;
+namespace Osynapsy\Db\Record;
 
 /**
  * Active record pattern implementation
@@ -23,7 +23,7 @@ namespace Osynapsy\Db;
  * @link     http://docs.osynapsy.org/ref/ActiveRecord
  */
 
-abstract class ActiveRecord implements InterfaceRecord
+abstract class Active implements InterfaceRecord
 {
     protected $dbConnection;
     private $activeRecord = [];
