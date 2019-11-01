@@ -55,15 +55,21 @@ class InputGroup extends Component
         if (empty($prefix)) {
             return;
         }
-        $this->getPrefix()->add($prefix);
+        if (is_object($prefix)) {
+            return $this->getPrefix()->add($prefix);
+        }
+        return $this->getPrefix()->add(new Tag('span', null, 'input-group-text'))->add($prefix);
     }
     
     public function append($postfix)
     {
         if (empty($postfix)) {
             return;
-        }        
-        $this->getPostfix()->add($postfix);
+        }
+         if (is_object($postfix)) {
+             return $this->getPostfix()->add($postfix);
+         }
+        $this->getPostfix()->add(new Tag('span', null, 'input-group-text'))->add($postfix);
     }
    
     public function getTextBox()
