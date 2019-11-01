@@ -11,6 +11,8 @@
 
 namespace Osynapsy\Db\Record;
 
+use Osynapsy\Db\Driver\InterfaceDbo;
+
 /**
  * Active record pattern implementation
  *
@@ -38,13 +40,14 @@ abstract class Active implements InterfaceRecord
     private $fields = [];
     private $extensions = [];
     private $debug = false;
+    
     /**
      * Object constructor
      *
      * @param PDO $dbCn A valid dbPdo wrapper
      * @return void
      */
-    public function __construct($dbCn, $debug = false) 
+    public function __construct(InterfaceDbo $dbCn, array $keyValues = [], $debug = false) 
     {
         $this->setDebug($debug);
         $this->dbConnection = $dbCn;
@@ -53,7 +56,10 @@ abstract class Active implements InterfaceRecord
         $this->sequence = $this->sequence();
         $this->fields = $this->fields();
         $this->softDelete = $this->softDelete();
-        $this->init();        
+        $this->init();
+        if (!empty($keyValues)) {
+            $this->findByKey($keyValues);
+        }
     }
     
     /**
