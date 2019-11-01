@@ -22,41 +22,50 @@ class InputGroup extends Component
 {
     protected $textBox;
     protected $postfix;
+    protected $prefix;
     
     public function __construct($name, $prefix = null, $postfix = null, $dimension = null)
     {
         parent::__construct('div');
         $this->setClass('input-group');
-        $this->buildPrefix($prefix);
-                
+        $this->prepend($prefix);                
         if (is_object($name)) {
-            $this->textBox = $this->add($name);
+            $this->textBox = $name;
         } else {
-            $this->textBox = $this->add(new TextBox($name));
+            $this->textBox = new TextBox($name);
             $this->textBox->att('aria-describedby', $name.'_prefix');
         }
-        $this->buildPostfix($postfix);
+        $this->append($postfix);
         $this->setDimension($dimension);
     }
     
-    private function buildPrefix($prefix)
+    public function __build_extra__(): void
+    {
+        if (!empty($this->prefix)) {
+            $this->add($this->prefix);
+        }
+        $this->add($this->textBox);
+        if (!empty($this->postfix)) {
+            $this->add($this->postfix);
+        }
+    }
+    
+    public function prepend($prefix)
     {
         if (empty($prefix)) {
             return;
         }
-        $this->add(new Tag('div', null, 'input-group-prepend'))                 
-             ->add($prefix);
+        $this->getPrefix()->add($prefix);
     }
     
-    private function buildPostfix($postfix)
+    public function append($postfix)
     {
         if (empty($postfix)) {
             return;
-        }
-        $this->postfix = $this->add(new Tag('div', null, 'input-group-append'));
-        $this->postfix->add($postfix);
+        }        
+        $this->getPostfix()->add($postfix);
     }
-    
+   
     public function getTextBox()
     {
         return $this->textBox;
@@ -64,7 +73,18 @@ class InputGroup extends Component
     
     public function getPostfix()
     {
+        if (empty($this->postfix)) {
+            $this->postfix = new Tag('div', null, 'input-group-append');
+        }
         return $this->postfix;
+    }
+    
+    public function getPrefix()
+    {
+        if (empty($this->prefix)) {
+            $this->prefix = new Tag('div', null, 'input-group-prepend');
+        }
+        return $this->prefix;
     }
     
     public function setDimension($dimension)
