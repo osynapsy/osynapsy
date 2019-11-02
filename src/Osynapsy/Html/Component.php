@@ -164,6 +164,26 @@ class Component extends Tag
     {
         self::requireFile($file, 'css');
     }
+                    
+    /**
+     * Set action to recall via ajax
+     * 
+     * @param string $action name of the action without Action final
+     * @param string $parameters parameters list (comma separated) to pass action
+     * @return $this
+     */
+    public function setAction($action, $parameters = null, $class = 'click-execute', $confirmMessage = null)
+    {
+        $this->setClass($class)
+             ->att('data-action',$action);
+        if (!empty($parameters) || $parameters === 0 || $parameters === '0') {
+            $this->att('data-action-parameters', $parameters);
+        }
+        if (!empty($confirmMessage)) {
+            $this->att('data-confirm', $confirmMessage);
+        }
+        return $this;
+    }
     
     /**
      * Append css class to component class attribute
@@ -189,6 +209,19 @@ class Component extends Tag
     }
     
     /**
+     * Set disabled property
+     * 
+     * @param boolen $condition evalute condition for set disabled property
+     * @return $this
+     */
+    public function setDisabled($condition)
+    {
+        if ($condition) {
+            $this->att('disabled', 'disabled');
+        }
+    }
+    
+    /**
      * Set value for internal parameter of component
      * 
      * @param string $key name of the parameter
@@ -202,26 +235,6 @@ class Component extends Tag
     }
     
     /**
-     * Set action to recall via ajax
-     * 
-     * @param string $action name of the action without Action final
-     * @param string $parameters parameters list (comma separated) to pass action
-     * @return $this
-     */
-    public function setAction($action, $parameters = null, $class = 'click-execute', $confirmMessage = null)
-    {
-        $this->setClass($class)
-             ->att('data-action',$action);
-        if (!empty($parameters) || $parameters === 0 || $parameters === '0') {
-            $this->att('data-action-parameters', $parameters);
-        }
-        if (!empty($confirmMessage)) {
-            $this->att('data-confirm', $confirmMessage);
-        }
-        return $this;
-    }
-    
-    /**
      * Set placeholder attribute
      * 
      * @param string $placeholder placeholder value    
@@ -231,5 +244,18 @@ class Component extends Tag
     {
         $this->att('placeholder', $placeholder);
         return $this;
+    }
+            
+    /**
+     * Set readonly property
+     * 
+     * @param boolen $condition evalute condition for set readonly property
+     * @return $this
+     */
+    public function setReadOnly($condition)
+    {
+        if ($condition) {
+            $this->att('readonly', 'readonly');
+        }
     }
 }
