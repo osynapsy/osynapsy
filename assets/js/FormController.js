@@ -348,8 +348,8 @@ var Osynapsy = new (function(){
             var win  = '<div id="' + id + '" class="modal fade" role="dialog">\n';
                 win += '    <div class="modal-dialog modal-xs">\n';
                 win += '        <div class="modal-content">\n';
-                win += '            <div class="modal-header">\n';
-                win += '                <h4 class="modal-title">' + title + '</h4>';   
+                win += '            <div class="modal-header bg-light">\n';
+                win += '                <h5 class="modal-title">' + title + '</h5>';   
                 win += '                <button type="button" class="close" data-dismiss="modal">&times;</button>';               
                 win += '            </div>';
                 win += '            <div class="modal-body" style="padding: 20px">';
@@ -362,9 +362,9 @@ var Osynapsy = new (function(){
                     win += '<button type="button" class="btn btn-default click-execute pull-right" data-dismiss="modal" data-action="'+ action[0] +'" data-action-parameters="' + (action[1] === 'undefined' ? '' : action[1]) +'">Conferma</button>';
                 }
                 if (!Osynapsy.isEmpty(actionCancel)) {
-                    win += '<button type="button" class="btn btn-default'+btnCloseClass+' click-execute" data-action="'+ actionCancel +'" data-dismiss="modal">Annulla</button>';
+                    win += '<button type="button" class="btn btn-secondary btn-default'+btnCloseClass+' click-execute" data-action="'+ actionCancel +'" data-dismiss="modal">Annulla</button>';
                 } else {
-                    win += '<button type="button" class="btn btn-default'+btnCloseClass+'" data-dismiss="modal">Annulla</button>';
+                    win += '<button type="button" class="btn btn-secondary btn-default'+btnCloseClass+'" data-dismiss="modal">Annulla</button>';
                 }
                 win += '            </div>';
                 win += '        </div>';
@@ -652,9 +652,9 @@ var FormController =
                 win += '<button type="button" class="btn btn-default click-execute pull-right" data-dismiss="modal" data-action="'+ action[0] +'" data-action-parameters="' + (action[1] === 'undefined' ? '' : action[1]) +'">Conferma</button>';
             }
             if (actionCancel) {
-                win += '<button type="button" class="btn btn-default'+btnCloseClass+' click-execute" data-action="'+ actionCancel +'" data-dismiss="modal">Annulla</button>';
+                win += '<button type="button" class="btn btn-light btn-default'+btnCloseClass+' click-execute" data-action="'+ actionCancel +'" data-dismiss="modal">Annulla</button>';
             } else {
-                win += '<button type="button" class="btn btn-default'+btnCloseClass+'" data-dismiss="modal">Annulla</button>';
+                win += '<button type="button" class="btn btn-light btn-default'+btnCloseClass+'" data-dismiss="modal">Annulla</button>';
             }
             win += '            </div>';
             win += '        </div>';
@@ -693,7 +693,7 @@ var FormController =
         var modalHtml  = '<div id="' + id + '" class="modal fade" role="dialog">\n';
             modalHtml += '    <div class="modal-dialog modal-lg">\n';
             modalHtml += '        <div class="modal-content">\n';
-            modalHtml += '            <div class="modal-header">\n';            
+            modalHtml += '            <div class="modal-header bg-light">\n';            
             modalHtml += '                <h5 class="modal-title">' + title + '</h5>';
             modalHtml += '                <button type="button" class="close" data-dismiss="modal">&times;</button>';
             modalHtml += '            </div>';
