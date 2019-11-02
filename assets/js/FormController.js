@@ -394,6 +394,7 @@ var Osynapsy = new (function(){
     pub.page = {
         init : function()
         {
+            Osynapsy.setParentModalTitle();
             $('body').on('change','.change-execute, .onchange-execute',function(){
                 Osynapsy.action.execute(this);
             }).on('click','.cmd-execute, .click-execute, .onclick-execute',function(event) {
@@ -530,6 +531,14 @@ var Osynapsy = new (function(){
                 $('#progress_idx').text(t +'%');
             }
         }
+    };
+    
+    pub.setParentModalTitle = function()
+    {
+        if (!window.frameElement) {
+            return;
+        }
+        parent.$('.modal-title', parent.$('#amodal')).html(document.title);
     };
     
     return pub;
