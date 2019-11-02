@@ -178,7 +178,7 @@ class Panel extends Component
         }
         $labelText = $obj['lbl'];
         $label = new Tag('label');
-        $label->att('class',($obj['obj'] instanceof panel ? 'osy-form-panel-label' : 'osy-component-label'))
+        $label->att('class',($obj['obj'] instanceof panel ? 'osy-form-panel-label' : 'osy-component-label font-weight-500'))
               ->att('for',is_object($obj['obj']) ? $obj['obj']->id : '')              
               ->add(trim($labelText));
         if (!empty($style)) {
