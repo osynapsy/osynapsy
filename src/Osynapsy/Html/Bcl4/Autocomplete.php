@@ -11,7 +11,7 @@ use Osynapsy\Html\Bcl4\InputGroup;
  */
 class AutoComplete extends AutocompleteBcl3
 {
-    protected $ico = '<span class="fa fa-search input-group-text"></span>';
+    protected $ico = '<span class="fa fa-search"></span>';
     
     public function __construct($id, $db = null)
     {
