@@ -151,7 +151,7 @@ class Form extends Component
     public function foot($obj, $right = false)
     {
         if (empty($this->foot)) {
-            $this->foot = new Tag('div', null, trim('row m-t-10 '.$this->footClass));
+            $this->foot = new Tag('div', null, trim('row mt-2 '.$this->footClass));
             $this->footLeft = $this->foot->add(new Tag('div', null, 'col-lg-6 col-xs-6 col-sm-6'));
             $this->footRight = $this->foot->add(new Tag('div', null, 'col-lg-6 col-xs-6 col-sm-6 text-right'));           
         }
