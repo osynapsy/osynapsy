@@ -17,4 +17,9 @@ class Form extends Bcl3_Form
             $this->body->setClasses('card', 'card-header', 'card-body', 'card-footer');
         }
     }
+    
+    public function resetClass()
+    {
+        $this->body->setClasses('', '', '', '');
+    }
 }
