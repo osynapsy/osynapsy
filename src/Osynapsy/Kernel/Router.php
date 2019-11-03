@@ -142,7 +142,7 @@ class Router
             array_values($braceParameters), 
             $route->uri
         );         
-        preg_match('/'.$pattern.'/', $this->requestRoute, $result);
+        preg_match('/^'.$pattern.'/', $this->requestRoute, $result);
         if (empty($result)) {
             return false;
         }        
