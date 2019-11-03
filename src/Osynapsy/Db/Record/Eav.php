@@ -192,15 +192,32 @@ abstract class Eav
     }
     
     /**
+     * Flush array contente and set for every element value in the record.
+     * 
+     * @return void
+     * @throws \Exception
+     */    
+    public function setValues(array $values)
+    {
+        foreach($values as $field => $value) {
+            $this->setValue($field, $value);
+        }
+        return $this;
+    }
+    
+    /**
      * Save current active record on database
      * 
      * @return string
      * @throws \Exception
      */
-    public function save()
+    public function save(array $values = [])
     {
         if (!$this->state) {
             throw new \Exception('Record is not updatable');
+        }
+        if (!empty($values)) {
+            $this->setValues($values);
         }
         $this->beforeSave();
         //$id = empty($this->originalRecord)? $this->insert() : $this->update();
