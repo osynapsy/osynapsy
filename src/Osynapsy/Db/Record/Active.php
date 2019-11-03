@@ -275,10 +275,13 @@ abstract class Active implements InterfaceRecord
      * @return string
      * @throws \Exception
      */
-    public function save()
+    public function save(array $values = [])
     {
         if (!$this->state) {
             throw new \Exception('Record is not updatable');
+        }
+        if (!empty($values)) {
+            $this->setValues($values);
         }
         $this->beforeSave();
         $id = empty($this->originalRecord)? $this->insert() : $this->update();
