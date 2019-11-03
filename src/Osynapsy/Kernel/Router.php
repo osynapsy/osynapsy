@@ -142,10 +142,10 @@ class Router
             array_values($braceParameters), 
             $route->uri
         );         
-        preg_match('/^'.$pattern.'/', $this->requestRoute, $result);
+        preg_match('/^'.$pattern.'$/', $this->requestRoute, $result);
         if (empty($result)) {
             return false;
-        }        
+        }
         array_shift($result);
         $route->parameters = $result;
         $route->weight = count($result);
