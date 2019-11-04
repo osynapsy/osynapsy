@@ -15,6 +15,7 @@ class Pagination
 {
     private $columns = [];
     private $entity = 'Record';
+    protected $childs = [];
     protected $data = [];
     private $db;
     private $id;
@@ -260,7 +261,45 @@ class Pagination
         
         return empty($this->data) ? [] : $this->data;
     }
-            
+    
+    private function loadChilds()
+    {
+        if (empty($this->childs)) {
+            return;
+        }
+        foreach ($this->childs as $fieldName => $childSql) {
+            $this->loadChild($childSql['sql'], $childSql['par'], $childSql['foreignKeys'], $fieldName);
+        }        
+    }
+    
+    private function loadChild($sql, $parameters, $foreignKeys, $fieldName)
+    {
+        $rs = $this->getDb()->execQuery($sql, $parameters, 'ASSOC');
+        foreach ($this->data as $key => $parentRecord) {
+            foreach($rs as $childRecord) {
+                if (empty($parentRecord[$fieldName])) {
+                    $parentRecord[$fieldName] = [];
+                }
+                $result = $this->matchChild($parentRecord, $childRecord, $foreignKeys, $fieldName);
+                if (empty($result)) {
+                    continue;
+                }
+                $parentRecord[$fieldName][] = $result;
+            }
+            $this->data[$key] = $parentRecord;
+        }
+    }
+    
+    private function matchChild($parentRecord, $childRecord, $foreignKeys)
+    {
+        foreach($foreignKeys as $childKey => $parentKey) {
+            if ($parentRecord[$parentKey] !== $childRecord[$childKey]) {
+                return;
+            }
+            return $childRecord;
+        }
+    }
+    
     public function setSort($default = null)
     {        
         $fields = $this->getRequest('get.sort');
@@ -287,6 +326,16 @@ class Pagination
         return $this;
     }
     
+    public function setSqlChilds($cmd, array $par = [], $foreignKeys = [], $fieldName = 'childs')
+    {        
+        $this->childs[$fieldName] = [
+            'sql' => $cmd,
+            'par' => $par,
+            'foreignKeys' => $foreignKeys
+        ];        
+        return $this;
+    }
+    
     public function setFilters(array $filters)
     {
         foreach($filters as $field => $value) {
@@ -307,4 +356,3 @@ class Pagination
         return json_encode($this->get());
     }
 }
-
