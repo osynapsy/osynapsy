@@ -47,7 +47,7 @@ class TextBox extends OclTextBox
         ],
         self::MASK_TIME => [
             'alias' => 'datetime',
-            'format' => 'HH:MM',
+            'inputFormat' => 'HH:MM',
             'placeholder' => 'hh:mm'
         ]        
     ];
