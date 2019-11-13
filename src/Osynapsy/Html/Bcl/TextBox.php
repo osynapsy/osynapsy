@@ -15,11 +15,15 @@ use Osynapsy\Html\Ocl\TextBox as OclTextBox;
 
 class TextBox extends OclTextBox
 {
-    const MASK_CURRENCY = 1;
-    const MASK_EURO = 2;
-    const MASK_TIME = 3;
-    const MASK_EMAIL = 5;
-    const MASK_IP = 10;
+    const MASK_CURRENCY = 10;
+    const MASK_CURRENCY_EURO = 11;    
+    const MASK_DATETIME = 20;
+    const MASK_DATE = 21;
+    const MASK_DATE_SQL = 22;
+    const MASK_DATE_US = 23;
+    const MASK_TIME = 25;
+    const MASK_EMAIL = 60;
+    const MASK_IP = 70;
     
     private $masks = [
         //convert boolean value true = 1 and false = 0
@@ -30,10 +34,7 @@ class TextBox extends OclTextBox
             'digitsOptional' => 0, 
             'placeholder' => '0'
         ],
-        SELF::MASK_EMAIL => [
-            'alias' => 'email'
-        ],
-        self::MASK_EURO => [
+        self::MASK_CURRENCY_EURO => [
             'alias' => 'numeric',
             'groupSeparator' => ',', 
             'autoGroup' => 1, 
@@ -42,6 +43,27 @@ class TextBox extends OclTextBox
             'prefix' => '€ ', 
             'placeholder' => '0'
         ],
+        SELF::MASK_DATETIME => [
+            'alias' => 'datetime'
+        ],        
+        SELF::MASK_DATE => [
+          'alias' => 'datetime',
+           'inputFormat' => 'dd/mm/yyyy',
+           'placeholder' => 'dd/mm/yyyy'  
+        ],
+        SELF::MASK_DATE_SQL => [
+          'alias' => 'datetime',
+           'inputFormat' => 'yyyy/dd/mm',
+           'placeholder' => 'yyyy/dd/mm'  
+        ],
+        SELF::MASK_DATE_US => [
+          'alias' => 'datetime',
+           'inputFormat' => 'mm/dd/yyyy',
+           'placeholder' => 'mm/dd/yyyy'  
+        ],
+        SELF::MASK_EMAIL => [
+            'alias' => 'email'
+        ],        
         SELF::MASK_IP => [
             'alias' => 'ip'
         ],
@@ -61,7 +83,7 @@ class TextBox extends OclTextBox
     public function setMask($id)
     {
         if (!array_key_exists($id, $this->masks)) {
-            throw new \Exception("component {$this->id} : Mask format {$id} not regnized");            
+            throw new \Exception("TextBox {$this->id} : Mask format {$id} not regnized");            
         }
         $mask = $this->masks[$id];
         $rules = array_map(function($key, $value) {
