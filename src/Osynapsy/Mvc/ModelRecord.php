@@ -21,7 +21,7 @@ abstract class ModelRecord
     private $record;
     private $controller = null;    
     protected $db = null;
-    protected $errorMessages = array(        
+    protected $errorMessages = [       
         'email' => 'Il campo <fieldname> non contiene un indirizzo mail valido.',
         'fixlength' => 'Il campo <fieldname> solo valori con lunghezza pari a ',
         'integer' => 'Il campo <fieldname> accetta solo numeri interi.',
@@ -30,7 +30,7 @@ abstract class ModelRecord
         'notnull' => 'Il campo <fieldname> è obbligatorio.',
         'numeric' => 'Il campo <fieldname> accetta solo valori numerici.',
         'unique' => '<value> è già presente in archivio.'
-    );    
+    ];    
     
     public function __construct($controller)
     {
@@ -202,6 +202,9 @@ abstract class ModelRecord
         
         //skim the field list for check value and build $values, $where and $key list
         foreach ($this->repo->get('fields') as $field) {            
+            //Check if value respect rule
+            $value = $this->sanitizeFieldValue($field);
+            //if field is readonly or don't have db field name skip other checks.
             if (!$field->readonly && !$field->name) {
                  //If field isn't in readonly mode assign values to values list for store it in db
                 continue;
@@ -210,8 +213,6 @@ abstract class ModelRecord
                 //If field isn't in form and it isn't a insert operation and it have not a default value
                 continue;
             }
-            //Check if value respect rule
-            $value = $this->sanitizeFieldValue($field);
             //Set value in record
             $this->getRecord()->setValue($field->name, $value);
         }
