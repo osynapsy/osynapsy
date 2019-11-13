@@ -193,3 +193,11 @@ div#waitMask > div.message > div.progress {
 .osy-pb-30 {padding-bottom: 30px;}
 
 .font-weight-500 {font-weight: 500;}
+
+input[type="text"].field-in-error, textarea.field-in-error {
+    background-color: white;
+    background-image: url(invalid_line.gif);
+    background-repeat: repeat-x;
+    background-position: bottom;
+    border-color: #cc3300;
+}
