@@ -251,9 +251,7 @@ abstract class Model
             $this->getController()->getResponse()->error('alert',$beforeError);			
 	}
         //Init arrays
-        $values = array();
-        $where = array();
-        $keys = array();
+        $keys = $values = $where = [];
         
         //skim the field list for check value and build $values, $where and $key list
         foreach ($this->repo->get('fields') as $field) {
