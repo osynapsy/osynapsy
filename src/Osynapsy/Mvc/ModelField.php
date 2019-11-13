@@ -58,6 +58,15 @@ class ModelField
         return $this->existInForm;
     }
 
+    public function isRequired($required = null)
+    {
+        if (is_null($required)) { 
+            return !$this->repo['nullable']; 
+        }
+        $this->repo['nullable'] = !$required;
+        return $this;
+    }
+    
     public function isNullable($v = null)
     {
         if (is_null($v)) { 
