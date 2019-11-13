@@ -121,15 +121,20 @@ class Component extends Tag
         return ( $a !== 0 && $a !== '0' && empty($a)) ? $b : $a;
     }
 
-    private static function requireFile($file,$type)
+    private static function requireFile($file, $type)
     {
         if (!array_key_exists($type, self::$require)) {
             self::$require[$type] = [];
         }
-        if (!in_array($file, self::$require[$type])) {
-            $fullPath = in_array($file[0], ['/','h']) ? $file : '/assets/osynapsy/'.Kernel::VERSION.'/'.$file;
-            self::$require[$type][] = $fullPath;
+        if (in_array($file, self::$require[$type])) {
+           return;
         }
+        if ($type === 'jscode') {
+            self::$require[$type][] = $file;
+            return;
+        }
+        $fullPath = in_array($file[0], ['/','h']) ? $file : '/assets/osynapsy/'.Kernel::VERSION.'/'.$file;
+        self::$require[$type][] = $fullPath;
     }
     
     /**
