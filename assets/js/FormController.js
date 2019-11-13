@@ -294,7 +294,10 @@ var Osynapsy = new (function(){
                 var cmp = $('#'+val[0]);
                 if ($(cmp).hasClass('field-in-error')){
                     return true;                
-                }            
+                }
+                if ($(cmp).length > 0) {
+                    $(cmp).addClass('field-in-error').on('change', function() { $(this).removeClass('field-in-error'); });                    
+                }
                 errors.push(cmp.length > 0 ? self.showErrorOnLabel(cmp, val[1]) : val[1]);
             });
             if (errors.length === 0) {
