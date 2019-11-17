@@ -115,7 +115,10 @@ var ODataGrid =
     initPagination : function()
     {
         $('body').on('click','.osy-datagrid-2-paging',function(){
-            ODataGrid.refreshAjax($(this).closest('div.osy-datagrid-2'), 'btn_pag=' + $(this).val());            
+            ODataGrid.refreshAjax(
+                $(this).closest('div.osy-datagrid-2'),
+                'btn_pag=' + $(this).val()
+            );
         });
     },
     refreshAjax : function(grid, afterRefresh)
