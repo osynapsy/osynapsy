@@ -116,24 +116,8 @@ var ODataGrid =
     },
     initPagination : function()
     {
-        $('.osy-datagrid-2').on('click','.osy-datagrid-2-paging',function(){
-            ODataGrid.refreshAjax(
-                $(this).closest('div.osy-datagrid-2'),
-                'btn_pag=' + $(this).val()
-            );
-            return;
-            var pag = parseInt($('.osy-datagrid-2-pagval',$(this).closest('.osy-datagrid-2-foot')).val());
-            var tot = $('.osy-datagrid-2-pagval',$(this).closest('.osy-datagrid-2-foot')).data('pagtot');
-            switch($(this).data('mov')){
-                case 'start': pag = 1;
-                              break;
-                case 'end'  : pag = tot;
-                              break;
-                default     : pag += parseInt($(this).data('mov'));
-                              break;
-            }            
-            $('.osy-datagrid-2-pagval',$(this).closest('.osy-datagrid-2-foot')).val(pag);
-            $('form').submit();
+        $('body').on('click','.osy-datagrid-2-paging',function(){
+            ODataGrid.refreshAjax($(this).closest('div.osy-datagrid-2'), 'btn_pag=' + $(this).val());            
         });
     },
     refreshAjax : function(grid, afterRefresh)
@@ -162,10 +146,7 @@ var ODataGrid =
                     if ($(this).hasClass('osy-treegrid')){
                         OTree.parentOpen();
                     }
-                }
-                if (!Osynapsy.isEmpty(afterRefresh)) {
-                    afterRefresh(response);
-                }
+                }                
             }
         });
     },
