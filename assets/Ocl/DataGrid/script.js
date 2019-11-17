@@ -78,7 +78,9 @@ var ODataGrid =
         OTree.init();
         this.initAdd();
         $('.osy-datagrid-2').each(function(){
-            this.refresh = function() {ODataGrid.refreshAjax(this);}
+            this.refresh = function() {
+                ODataGrid.refreshAjax(this);
+            };
         });
     },    
     initAdd : function()
