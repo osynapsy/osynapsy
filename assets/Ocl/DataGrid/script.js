@@ -105,12 +105,10 @@ var ODataGrid =
                 orderVal = orderVal.replace('[' + orderIdx + ' DESC]','');               
                 $(this).removeClass('.osy-datagrid-desc').removeClass('.osy-datagrid-asc');
             } else {
-                orderVal += '[' + orderIdx + ']';
-                //$('<span class="orderIcon glyphicon glyphicon-sort-by-alphabet"></span>').appendTo(this);
+                orderVal += '[' + orderIdx + ']';                
             }
             $('#'+gridId+'_pag').val(1);
-            orderFld.val(orderVal);
-            //console.log($('#'+grd.attr('id')+'_pag').val());
+            orderFld.val(orderVal);            
             ODataGrid.refreshAjax(grid);
         });
     },
