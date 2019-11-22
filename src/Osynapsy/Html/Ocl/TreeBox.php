@@ -14,7 +14,7 @@ namespace Osynapsy\Html\Ocl;
 use Osynapsy\Html\Tag;
 use Osynapsy\Html\Component;
 use Osynapsy\Html\Ocl\HiddenBox;
-
+use Osynapsy\Data\Tree;
 
 /**
  * Description of TreeBox
@@ -35,11 +35,11 @@ class TreeBox extends Component
     const CLASS_SELECTED_LABEL = 'osy-treebox-label-selected';
     const ICON_NODE_CONNECTOR_EMPTY = '<span class="tree tree-null">&nbsp;</span>';
     const ICON_NODE_CONNECTOR_LINE = '<span class="tree tree-con-4">&nbsp;</span>';
+    const ROOT_ID = '__ROOT__';
     const POSITION_BEGIN = 1;
     const POSITION_BETWEEN = 2;
     const POSITION_END = 3;
-    const ROOT_ID = '__ROOT__';
-    
+
     public function __construct($id)
     {
         parent::__construct('div', $id);
@@ -229,10 +229,11 @@ class TreeBox extends Component
     public function setData($data)
     {
         parent::setData($data);
-        if (!empty($this->data)){
-            $this->buildTreeData();
-            $this->buildPath(filter_input(\INPUT_POST, "{$this->id}_sel"));
+        if (empty($this->data)){
+            return $this;            
         }
+        $this->buildTreeData();                
+        $this->buildPath(filter_input(\INPUT_POST, "{$this->id}_sel"));
         return $this;
-    }    
+    }
 }
