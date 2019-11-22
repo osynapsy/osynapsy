@@ -15,13 +15,18 @@ namespace Osynapsy\Data;
  */
 class Tree
 {
+    const POSITION_BEGIN = 1;
+    const POSITION_BETWEEN = 2;
+    const POSITION_END = 3;
+    
     private $keyId;
     private $keyParent;
     private $keyIsOpen;
+    private $openNodes = [];
     private $dataSet;
     private $tree;
     
-    public function __construct($idKey, $parentKey, $isOpenKey, array $dataSet = [])
+    public function __construct($idKey, $parentKey, $isOpenKey = null, array $dataSet = [])
     {
         $this->keyId = $idKey;
         $this->keyParent = $parentKey;
@@ -38,31 +43,67 @@ class Tree
         return $rawDataSet;
     }   
     
-    protected function build(&$rawDataSet, $parentId = 0)
+    protected function build(&$rawDataSet, $parentId = 0, $level = 0)
     {
         $branch = [];
-        foreach ($rawDataSet[$parentId] as $child){
-            $childId = $child[$this->keyId];            
-            $child['parent'] = $parentId;            
-            if(!empty($rawDataSet[$childId])){
-               $child['childrens'] = $this->build($rawDataSet, $childId);
+        $lastIdx = count($rawDataSet[$parentId]) - 1;
+        foreach ($rawDataSet[$parentId] as $idx => $child){
+            $childId = $child[$this->keyId];
+            if (!empty($level)) {
+                $child['_parent'] =& $rawDataSet[$parentId];
             }
-            $branch[] = $child;
+            $child['_level'] = $level;
+            $child['_position'] = $this->setPosition($idx, $lastIdx);
+            if(!empty($rawDataSet[$childId])){
+               $child['_childrens'] = $this->build($rawDataSet, $childId, $level + 1);
+            }
+            $branch[$child[0]] = $child;
         } 
         return $branch;
     }
     
     public function get()
     {
-        if (is_null($this->tree)) {
-            $rawDataSet = $this->init();            
-            $this->tree = $this->build($rawDataSet);
-        }
+        if (!is_null($this->tree)) {
+            return $this->tree;
+        }        
+        $rawDataSet = $this->init();            
+        $this->tree = $this->build($rawDataSet);
         return $this->tree;
+    }
+    
+    public function openNodes(&$child)
+    {
+        if (empty($child)) {
+            return;
+        }
+        $child[$this->keyIsOpen] = 1;
+        if (empty($child['parent'])) {
+            return;
+        }
+        $this->openNodes($child['parent']);        
     }
     
     public function setDataset(array $dataset)
     {
         $this->dataSet = $dataset;
+    }
+    
+    /**
+     * Calcolo in che posizione si trova l'elemento (In testa = 1, nel mezzo = 2, alla fine = 99);
+     * 
+     * @param int $idx posizione dell'elemento
+     * @param int $last posizione dell'ultimo elemento
+     * @return int 
+     */
+    private function setPosition($idx, $last)
+    {        
+        if ($idx === $last) {
+            return self::POSITION_END;
+        }
+        if (empty($idx)) {
+            return self::POSITION_BEGIN;
+        }
+        return self::POSITION_BETWEEN;
     }
 }
