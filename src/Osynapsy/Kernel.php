@@ -74,8 +74,7 @@ class Kernel
             $this->loadConfig('listener', '@value', 'event')
         );
     }
-    
-    
+        
     public function getRequest()
     {
         return $this->request;
@@ -165,7 +164,7 @@ class Kernel
         //If isn't configured an app controller for current instance load default 
         //App controller
         $applicationClass = empty($reqApp) ? '\\Osynapsy\\Mvc\\Application' : str_replace(':', '\\',$reqApp);        
-        //If app has applicationController instance it before recall route controller;        
+        //If app has applicationController instance recall it before route controller;        
         $application = new $applicationClass($route, $this->request);
         if (!$application->run()) {
             throw new \Osynapsy\Mvc\ApplicationException('Access denied','501');
