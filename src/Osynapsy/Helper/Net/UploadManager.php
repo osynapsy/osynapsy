@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\Network;
+namespace Osynapsy\Helper\Net;
 
 class UploadManager
 {    
