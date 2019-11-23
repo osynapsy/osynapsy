@@ -23,9 +23,14 @@ class ResponseHtmlOcl extends ResponseHtml
     protected function buildResponse()
     {
         $componentIds = [];
-        if (!empty($_REQUEST['ajax'])) {
-            $componentIds = is_array($_REQUEST['ajax']) ? $_REQUEST['ajax'] : array($_REQUEST['ajax']);
+        if (!empty($_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS'])) {
+            $componentIds = explode(';', filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_HTML_COMPONENTS'));
         }
+        //$componentIds = [];
+        //TODO Eliminare codice commentato;
+        /*if (!empty($_REQUEST['ajax2'])) {
+            $componentIds = is_array($_REQUEST['ajax']) ? $_REQUEST['ajax'] : array($_REQUEST['ajax']);
+        }*/
         if (!empty($componentIds)) {
             $this->buildComponents($componentIds);      
             return;
