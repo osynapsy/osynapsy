@@ -49,7 +49,8 @@ var Osynapsy = new (function(){
             var callParameters = {
                 url  : actionUrl,
                 headers: {
-                    'Osynapsy-Action': action
+                    'Osynapsy-Action': action,
+                    'Accept': 'application/json'
                 },
                 type : 'post',
                 dataType : 'json',
