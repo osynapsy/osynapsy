@@ -44,5 +44,13 @@ class Request extends Dictionary
         $this->set('server.RAW_URL_PAGE', $url);
         $this->set('server.RAW_URL_SITE', $rawHost);
         $this->set('server.url', $rawHost);
+        if (!empty($server['HTTP_ACCEPT'])) {
+            $this->set('client.accept', explode(',', $server['HTTP_ACCEPT']));
+        }
+    }
+    
+    public function getAcceptedContentType()
+    {
+        return $this->get('client.accept');
     }
 }
