@@ -22,7 +22,7 @@ class ResponseJson extends Response
 {
     public function __construct()
     {
-        parent::__construct('text/json; charset=utf-8');
+        parent::__construct('application/json; charset=utf-8');
     }
     /**
      * Implements abstract method for build response
