@@ -465,6 +465,10 @@ var Osynapsy = new (function(){
             type : 'post',
             data : data,
             dataType : 'html',
+            headers: {
+                'Osynapsy-Html-Components': cmps.join(';'),
+                'Accept': 'text/html'
+            },
             success : function(response)
             {
                 Osynapsy.waitMask.remove();
