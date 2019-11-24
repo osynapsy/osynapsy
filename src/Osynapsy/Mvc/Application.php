@@ -3,6 +3,7 @@ namespace Osynapsy\Mvc;
 
 use Osynapsy\Kernel\Route;
 use Osynapsy\Http\Request;
+use Osynapsy\Http\Response;
 use Osynapsy\Db\DbFactory;
 
 /**
@@ -15,6 +16,7 @@ class Application
     private $db;
     protected $route;    
     protected $request;
+    protected $response;
     protected $dbFactory;
     protected $exceptions = [];
     
@@ -61,6 +63,16 @@ class Application
     public function getRequest($key = null)
     {
         return is_null($key) ? $this->request : $this->request->get($key);
+    }
+    
+    /**
+     * Return current Response
+     * 
+     * @return Response
+     */
+    public function getResponse() : Response
+    {
+        return $this->response;
     }
     
     /**
@@ -115,5 +127,15 @@ class Application
             filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION'),
             filter_input(\INPUT_POST , 'actionParameters', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []
         );
+    }
+    
+    /**
+     * Set current Response
+     * 
+     * @return Response
+     */    
+    public function setResponse(Response $response)
+    {
+        return $this->response = $response;
     }
 }
