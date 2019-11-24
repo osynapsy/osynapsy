@@ -5,6 +5,9 @@ use Osynapsy\Kernel\Route;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response;
 use Osynapsy\Db\DbFactory;
+use Osynapsy\Http\ResponseJson as JsonResponse;
+use Osynapsy\Http\ResponseHtmlOcl as HtmlResponse;
+use Osynapsy\Http\ResponseXml as XmlResponse;
 
 /**
  * Description of ApplicationController
@@ -30,7 +33,7 @@ class Application
     {
         $this->route = $route;
         $this->request = $request;
-        $this->loadDatasources();
+        $this->loadDatasources();        
         $this->init();
     }
     
@@ -87,6 +90,24 @@ class Application
     
     protected function init()
     {
+        $accept = $this->getRequest()->getAcceptedContentType();
+        if (empty($accept)) {
+            $accept = ['text/html'];            
+        }        
+        switch($accept[0]) {
+            case 'text/json':
+            case 'application/json':
+                ini_set("xdebug.overload_var_dump", "off");
+                $this->setResponse(new JsonResponse());
+                break;
+            case 'application/xml':
+                ini_set("xdebug.overload_var_dump", "off");
+                $this->setResponse(new XmlResponse());
+                break;
+            default:
+                $this->setResponse(new HtmlResponse());
+                break;
+        }
     }
     
     /**
