@@ -200,9 +200,9 @@ var Osynapsy = new (function(){
             case null:                
             case '':            
             case false:
-            return true;
-        default:
-            return false;
+                return true;
+            default:
+                return false;
         }
     };
     
