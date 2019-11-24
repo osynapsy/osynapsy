@@ -114,7 +114,7 @@ class ResponseHtml extends Response
         if (!$appendFormController) {
             return;
         }
-        $this->addJs('/assets/osynapsy/'.Kernel::VERSION.'/js/FormController.js');
+        $this->addJs('/assets/osynapsy/'.Kernel::VERSION.'/js/Osynapsy.js');
         $this->addCss('/assets/osynapsy/'.Kernel::VERSION.'/css/style.css');
     }
     
