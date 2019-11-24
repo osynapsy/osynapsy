@@ -13,9 +13,9 @@ namespace Osynapsy\Helper\Net\Curl;
 
 class Rest
 {
-    private static $baseurl = '';
+    private static $baseurl = '';    
     
-    private static function init($url, $rawheaders, $proxy = null)
+    private static function init($url, array $rawheaders = [], $proxy = null)
     {
         $ch = curl_init(self::$baseurl.$url);
         if (!empty($proxy)) {
@@ -33,15 +33,15 @@ class Rest
         return $ch;
     }
     
-    private function appendHeaders($channel, $rawheaders)
-    {
+    private function appendHeaders($channel, array $rawheaders = [])
+    {        
         if (empty($rawheaders)) {
             return;
         }
         $headers = [];
         foreach($rawheaders as $key => $value) {
             $headers[] = strtolower($key).': '.$value; 
-        }
+        }        
         curl_setopt($channel, \CURLOPT_HTTPHEADER, $headers);
     }
     
@@ -63,7 +63,7 @@ class Rest
         $httpCode    = curl_getinfo($channel, CURLINFO_HTTP_CODE);
         if ($resp === false) {
             $resp = curl_errno($channel);
-        }
+        }        
         curl_close($channel);
         
         if (strpos($contentType, 'json') !== false) {
@@ -73,9 +73,9 @@ class Rest
         return ['http-code' => $httpCode, 'content-type' => $contentType, 'response' => $resp];
     }
     
-    public static function post($url, $data, $header = null, array $options = [])
+    public static function post($url, $data, array $headers = [], array $options = [])
     {
-        $ch = self::init($url, $header);        
+        $ch = self::init($url, $headers);        
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         foreach($options as $option => $value) {
