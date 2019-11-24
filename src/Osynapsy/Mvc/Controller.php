@@ -91,9 +91,9 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      */
     private function execIndexAction() : Response
     {
-        $this->setResponse(new HtmlResponse())->loadTemplate(
-            $this->getRequest()->get('page.route')->template,
-            $this
+        //$this->setResponse(new HtmlResponse())->loadTemplate(
+        $this->loadTemplate(
+            $this->getRequest()->get('page.route')->template
         );
         if ($this->model) {
             $this->model->find();
@@ -230,6 +230,20 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     abstract public function init();
     
     /**
+     * Load html file template
+     * 
+     * @param string $path of template     
+     * @return void
+     */
+    public function loadTemplate(string $path)
+    {
+        if (empty($path)) {
+            return;
+        }
+        $this->getResponse()->loadTemplate($path, $this);
+    }
+    
+    /**
      * Load html file view in current response
      * 
      * @param string $path
@@ -258,7 +272,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         if (empty($action)) {
             return $this->execIndexAction();
         }        
-        $this->setResponse(new JsonResponse());
+        //$this->setResponse(new JsonResponse());
         if (array_key_exists($action, $this->externalActions)) {
             return $this->execExternalAction($action, $parameters);
         }
@@ -286,6 +300,6 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      */
     public function setResponse(Response $response) : Response
     {
-        return $this->getApp()->setResponse($response);
+        return $response; //$this->getApp()->setResponse($response);
     }
 }
