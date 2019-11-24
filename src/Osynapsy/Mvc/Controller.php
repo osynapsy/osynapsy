@@ -25,7 +25,6 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     
     private $parameters;
     private $dispatcher;    
-    private $response;
     private $application;
     private $externalActions = [];
     public $model;
@@ -207,7 +206,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      */
     public function getResponse() : Response
     {
-        return $this->response;
+        return $this->getApp()->getResponse();
     }
     
     /**
@@ -287,6 +286,6 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      */
     public function setResponse(Response $response) : Response
     {
-        return $this->response = $response;
+        return $this->getApp()->setResponse($response);
     }
 }
