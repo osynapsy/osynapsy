@@ -25,7 +25,7 @@ class Card extends Component
     
     private $classCss = [
         'main' => 'card',
-        'head' => 'card-header',
+        'header' => 'card-header',
         'body' => 'card-body',
         'foot' => 'card-footer',
         'title' => 'card-title',
@@ -117,7 +117,7 @@ class Card extends Component
         if (empty($this->sections['header'])) {
             $this->sections['header'] = new Tag('div');
         }
-        return $this->sections['head'];
+        return $this->sections['header'];
     }
     
     public function getRow()
