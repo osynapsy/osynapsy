@@ -29,11 +29,15 @@ BclAutocomplete = {
                         return;
                     }
                     var fieldId = $(this).attr('id');
-                    var dat = $('form').serialize() + '&ajax='+fieldId;                     
+                    var dat = $('form').serialize();
                     $.ajax({
                         type : 'post',
                         context : this,
                         data : dat,
+                        headers: {
+                            'Osynapsy-Html-Components': fieldId,
+                            'Accept': 'text/html'
+                        },
                         success : function(response) {                            
                             var listRows = $('#' + fieldId + '_list div.row',response);
                             if (listRows.length === 0) {
@@ -98,7 +102,7 @@ BclAutocomplete = {
         }).on('click','div.row',function(e){ 
             e.preventDefault();
             var parentid = $(this).closest('#search_content').data('parent');            
-            $('input#'+parentid).removeClass('osy-autocomplete-unselected').nextAll('#__'.parentid).val($(this).data('value'));
+            $('input#'+parentid).removeClass('osy-autocomplete-unselected').prev().val($(this).data('value'));
             $('input#'+parentid).val($(this).data('label'));
             if (!Osynapsy.isEmpty($('div#'+parentid).attr('onselect'))) {
                 eval($('div#'+parentid).attr('onselect'));
