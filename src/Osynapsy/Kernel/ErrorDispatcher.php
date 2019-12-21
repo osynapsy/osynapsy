@@ -152,13 +152,19 @@ class ErrorDispatcher
     public function pageHttpError($errorCode, $message = 'Page not found')
     {
         ob_clean();
-        header("HTTP/1.1 {$errorCode} {$this->httpStatusCodes[$errorCode]}");
+        http_response_code($errorCode);
+        //header("HTTP/1.1 {$errorCode} {$this->httpStatusCodes[$errorCode]}");
         return $message;
     }
     
     public function pageTraceError($message, $trace = [])
     {
         ob_clean();
+        if (empty($this->request->get('env.debug'))) {
+            $message = "<!--\n{$message}\n-->";
+            $message .= 'Internal server error';            
+            $trace = [];
+        }
         if (filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION')) {
             return $this->pageTraceErrorText($message, $trace);
         }

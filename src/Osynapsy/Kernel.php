@@ -144,10 +144,10 @@ class Kernel
             $this->getRequest()->set('page.route', $route);            
             return $this->runApplication($route);
         } catch (\Exception $exception) {
-            $errorDispatcher = new ErrorDispatcher($this->request);
+            $errorDispatcher = new ErrorDispatcher($this->getRequest());
             return $errorDispatcher->dispatchException($exception);
         } catch (\Error $error) {
-            $errorDispatcher = new ErrorDispatcher($error, $this->request);
+            $errorDispatcher = new ErrorDispatcher($this->getRequest());
             return $errorDispatcher->dispatchError($error);
         }
     }

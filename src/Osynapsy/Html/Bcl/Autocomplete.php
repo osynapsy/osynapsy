@@ -35,7 +35,7 @@ class Autocomplete extends Component
     
     public function __build_extra__()
     {
-        if (filter_input(\INPUT_POST, 'ajax') != $this->id) {            
+        if (filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_HTML_COMPONENTS') != $this->id) {            
             $this->addInput();
             return;
         }
