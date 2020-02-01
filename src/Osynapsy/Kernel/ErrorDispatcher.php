@@ -160,18 +160,28 @@ class ErrorDispatcher
     public function pageTraceError($message, $trace = [])
     {
         ob_clean();
-        if (empty($this->request->get('env.debug'))) {
-            $message = "<!--\n{$message}\n-->";
-            $message .= 'Internal server error';            
+        $comments = [];
+        if (empty($this->request->get('env.debug'))) {            
+            $comments[] = trim($message).PHP_EOL;
+            foreach ($trace as $step) {
+                $comment = '';
+                $comment .= (!empty($step['file']) ?  str_pad($step['file'], 80, ' ', STR_PAD_RIGHT) : '');
+                $comment .= (!empty($step['line']) ? str_pad("line {$step['line']}", 20, ' ', STR_PAD_RIGHT) : ''); 
+                $comment .= (!empty($step['class']) ? "{$step['class']}" : '');
+                $comment .= (!empty($step['function']) ? "->{$step['function']}" : '');
+                $comment .= (!empty($step['args']) ? "(".print_r($step['args'], true).")" : '');
+                $comments[] = $comment;
+            }            
+            $message = "<div>Internal server error</div>";
             $trace = [];
         }
         if (filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION')) {
             return $this->pageTraceErrorText($message, $trace);
         }
-        return $this->pageTraceErrorHtml($message, $trace);
+        return $this->pageTraceErrorHtml($message, $trace, $comments);
     }
     
-    private function pageTraceErrorHtml($rawmessage, $trace)
+    private function pageTraceErrorHtml($rawmessage, $trace, array $comments = [])
     {
         $body = '';
         if (!empty($trace)) {
@@ -193,11 +203,15 @@ class ErrorDispatcher
             $body .= '</table>';
         }
         $message = nl2br($rawmessage);
+        $comment = empty($comments) ? '' : implode(PHP_EOL, $comments);        
         return <<<PAGE
             <div class="container">       
                 <div class="message">{$message}</div>
                 {$body}
             </div>
+            <!--
+            {$comment}
+            -->
             <style>
                 * {font-family: Arial;}
                 body {margin: 0px;}
