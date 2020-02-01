@@ -13,9 +13,9 @@ namespace Osynapsy\Html\Ocl;
 
 class RadioBox extends InputBox
 {
-    public function __construct($name)
+    public function __construct($name, $id)
     {
-        parent::__construct('radio',$name);
+        parent::__construct('radio', $name, $id);
     }
     
     public function __build_extra__()
