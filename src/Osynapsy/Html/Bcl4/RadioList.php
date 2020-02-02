@@ -46,18 +46,18 @@ class RadioList extends OclRadioList
         //Workaround for associative array
         list($value, $label) = array_values($rec);       
         //Build radio container;
-        $class = ['radio'];
+        $class = ['form-check'];
         if ($this->inline) {
-            $class[] = 'radio-inline';
+            $class[] = 'form-check-inline';
         }
         $formCheck = new Tag('label', null, implode(' ', $class));
         //Build radio id;
         $radioId = "{$this->id}{$index}";
         //Append radio to container;
         $radio = $formCheck->add(new OclRadioBox($this->id, $radioId));        
-        $radio->att('value', $value);
+        $radio->setClass('form-check-input')->att('value', $value);
         //Append label to container;
-        $formCheck->add(new Tag('label'))->att('for',$radioId)->add($label);
+        $formCheck->add(new Tag('label', null, 'form-check-label'))->att('for',$radioId)->add($label);
         //Return container;
         return $formCheck;
     }
