@@ -15,6 +15,8 @@ use Osynapsy\Html\Ocl\TextBox as OclTextBox;
 
 class TextBox extends OclTextBox
 {
+    const MASK_INT = 1;
+    const MASK_FLOAT = 2;
     const MASK_CURRENCY = 10;
     const MASK_CURRENCY_EURO = 11;    
     const MASK_DATETIME = 20;
@@ -26,6 +28,21 @@ class TextBox extends OclTextBox
     const MASK_IP = 70;
     
     private $masks = [
+        //convert boolean value true = 1 and false = 0
+        self::MASK_INT  => [
+            'alias' => 'numeric',            
+            'autoGroup'=> 1, 
+            'digits' => 0,
+            'digitsOptional' => 0, 
+            'placeholder' => '0'
+        ],
+        self::MASK_FLOAT  => [
+            'alias' => 'numeric',            
+            'autoGroup'=> 1, 
+            'digits' => 2,
+            'digitsOptional' => 2, 
+            'placeholder' => '0'
+        ],
         //convert boolean value true = 1 and false = 0
         self::MASK_CURRENCY  => [
             'alias' => 'numeric',            
