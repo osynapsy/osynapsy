@@ -161,7 +161,7 @@ class ErrorDispatcher
     {
         ob_clean();
         $comments = [];
-        if (empty($this->request->get('env.debug'))) {            
+        if (empty($this->request->get('env.instance.debug'))) {            
             $comments[] = trim($message).PHP_EOL;
             foreach ($trace as $step) {
                 $comment = '';
