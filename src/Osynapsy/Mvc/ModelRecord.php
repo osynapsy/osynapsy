@@ -113,6 +113,7 @@ abstract class ModelRecord
     public function find()
     {        
         $this->loadRecordInRequest();
+        return $this->getRecord();
     }
     
     public function loadRecordInRequest()
