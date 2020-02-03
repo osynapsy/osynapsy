@@ -95,4 +95,9 @@ class DatePicker extends Component
     {
         $this->dateComponent->att('onchange', $code);
     }
+    
+    public function getTextBox()
+    {
+        return $this->dateComponent;
+    }
 }
