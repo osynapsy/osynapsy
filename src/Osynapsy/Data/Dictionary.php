@@ -216,7 +216,7 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
     {
         foreach($data as $key => $value) {
             if(!is_array($value)) {
-                $xml->addChild("$key","$value");
+                $xml->addChild("$key", htmlspecialchars("$value", ENT_QUOTES, "utf-8"));
                 continue;
             }                        
             if(is_numeric($key)){
