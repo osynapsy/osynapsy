@@ -475,8 +475,8 @@ var Osynapsy = new (function(){
                 var successRefresh = false;
                 for (var i in cmps) {
                     var componentID = '#'+ cmps[i];
-                    var componentRemote = $(response).find(componentID);
-                    if (componentRemote) {
+                    var componentRemote = $(response).find(componentID);                    
+                    if (componentRemote) {                        
                         $(componentID).replaceWith(componentRemote);
                         successRefresh = true;
                     }                    
