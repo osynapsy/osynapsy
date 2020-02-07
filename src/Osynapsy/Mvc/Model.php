@@ -56,6 +56,11 @@ abstract class Model
         return $this->repo->get($key);
     }
     
+    public function getDb()
+    {
+        return $this->db;
+    }
+    
     public function set($key, $value, $append=false)
     {
         $this->repo->set($key, $value);
