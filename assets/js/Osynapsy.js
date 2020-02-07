@@ -384,7 +384,7 @@ var Osynapsy = new (function(){
         {
             $('.modal').remove();
         },
-        show : function(title, message, actionConfirm = null, actionCancel = null){
+        show : function(title, message, actionConfirm, actionCancel){
             if (!title) { title = 'Alert'; }
             var modalId = actionConfirm !== null ? 'alert' : 'confirm';
             return this.build(modalId, title, message, actionConfirm, actionCancel);
