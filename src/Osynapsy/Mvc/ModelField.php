@@ -12,7 +12,15 @@
 namespace Osynapsy\Mvc;
 
 class ModelField 
-{
+{            
+    const TYPE_DATE = 'file';
+    const TYPE_EMAIL = 'email';
+    const TYPE_FILE = 'file';
+    const TYPE_IMAGE = 'image';
+    const TYPE_INTEGER = 'integer';
+    const TYPE_NUMBER = 'numeric';
+    const TYPE_STRING = 'string';
+    
     private $repo = array(
         'fixlength' => null,
         'is_pk' => false,
@@ -34,8 +42,7 @@ class ModelField
         $this->model = $model;
         $this->name = $nameOnDb;
         $this->html = $nameOnView;
-        $this->type = $type;
-        $this->existInForm = in_array($type, ['file','image']) ? true : $existInForm;
+        $this->setType($type, $existInForm);
     }
 
     public function __get($key)
@@ -121,6 +128,12 @@ class ModelField
         return $this;
     }
     
+    public function setType($type, $existInForm = true)
+    {
+        $this->type = $type;
+        $this->existInForm = in_array($type, ['file','image']) ? true : $existInForm;
+    }
+    
     public function setValue($value, $default = null)
     {
         if ($value !== '0' && $value !== 0 && empty($value)) {
@@ -148,5 +161,6 @@ class ModelField
     public function setUploadPath($path)
     {
         $this->uploadDir = $path;
+        $this->setType(self::TYPE_FILE);
     }
 }
