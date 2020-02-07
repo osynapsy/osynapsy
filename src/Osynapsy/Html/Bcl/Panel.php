@@ -147,7 +147,7 @@ class Panel extends Component
         $class = ['col-sm-'.$width, 'col-lg-'.$width];
         if (!empty($cell['offset'])) {
             $class[] = 'col-lg-offset-'.$cell['offset'];
-            $class[] = 'offset-'.$cell['offset'];
+            $class[] = 'offset-lg-'.$cell['offset'];
         }
         if (!empty($cell['class'])) {
             $class[] =  $cell['class'];
