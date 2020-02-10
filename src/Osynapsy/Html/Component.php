@@ -262,5 +262,6 @@ class Component extends Tag
         if ($condition) {
             $this->att('readonly', 'readonly');
         }
+        return $this;
     }
 }
