@@ -107,6 +107,7 @@ class TextBox extends OclTextBox
             return "'{$key}': ".(is_string($value) ? "'$value'" : $value);            
         }, array_keys($mask), $mask);
         $this->setMaskRaw(implode(', ', $rules));
+        return $this;
     }
     
     public function setMaskRaw($maskraw)
@@ -114,5 +115,6 @@ class TextBox extends OclTextBox
         $this->requireJs('Lib/inputmask-5.0.0-beta/dist/jquery.inputmask.js');
         $this->requireJsCode("$(':input').inputmask();");
         $this->att('data-inputmask', $maskraw);
+        return $this;
     }
 }
