@@ -149,12 +149,12 @@ class DataGridColumn
                 break;
         }        
         if (!empty($properties['function'])) {
-            $value = $properties['function']($value, $cell, $rec, $tr);    
+            $value = $properties['function']($value, $cell, $rec, $tr);            
         }
         if (!empty($properties['classTd'])) {            
             $cell->att('class', implode(' ', $properties['classTd']), true);
         }
-        return ($value != 0 && empty($value)) ? '&nbsp;' : $value;
+        return ($value != '0' && empty($value)) ? '&nbsp;' : $value;
     }
     
     private function formatCurrencyValue($rawValue, $type)
