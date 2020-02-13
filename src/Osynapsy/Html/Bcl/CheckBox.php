@@ -21,7 +21,7 @@ use Osynapsy\Html\Tag;
  */
 class CheckBox extends Component
 {
-    private $checkbox;    
+    protected $checkbox;    
     
     public function __construct($id, $label, $value = '1', $prefix = '')
     {
@@ -51,4 +51,3 @@ class CheckBox extends Component
         }
     }
 }
-
