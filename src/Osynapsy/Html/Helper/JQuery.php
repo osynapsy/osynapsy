@@ -48,8 +48,24 @@ class JQuery
         if (empty($parameters)) {
             return ".{$method}())";        
         }
-        $pars = implode("','", array_map(function($value){ return addslashes($value); }, $parameters));   
-        return '.'.$method."('$pars')";
+        $pars = implode(
+            ",", 
+            array_map(
+                function($value) { 
+                    switch (gettype($value)) {
+                        case 'boolean':
+                            return empty($value) ? 'false' : 'true';
+                        case 'integer':
+                        case 'double' :
+                            return $value;
+                        default:
+                            return "'".addslashes($value)."'";                    
+                    }
+                }, 
+                $parameters
+            )
+        );
+        return '.'.$method."($pars)";
     }
     
     public function exec()
