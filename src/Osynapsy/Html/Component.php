@@ -224,6 +224,7 @@ class Component extends Tag
         if ($condition) {
             $this->att('disabled', 'disabled');
         }
+        return $this;
     }
     
     /**
