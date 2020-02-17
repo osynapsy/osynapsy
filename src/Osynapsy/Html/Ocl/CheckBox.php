@@ -18,9 +18,9 @@ class CheckBox extends Component
 {    
     private $checkbox = null;
     
-    public function __construct($name)
+    public function __construct($name, $tag = 'span')
     {
-        parent::__construct('span',$name);
+        parent::__construct($tag, $name);
         $this->add('<input type="hidden" name="'.$name.'" value="0">');
         $this->checkbox = $this->add(new Tag('input'))->att([
             'id' => $name,
@@ -41,5 +41,5 @@ class CheckBox extends Component
     public function getCheckbox()
     {
         return $this->checkbox;
-    }
+    }        
 }
