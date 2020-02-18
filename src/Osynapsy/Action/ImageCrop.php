@@ -45,7 +45,7 @@ class ImageCrop
         $img = new Image('.'.$this->targetFile);        
         $img->crop($cropX, $cropY, $cropWidth, $cropHeight);
         if (!empty($filename) && $filename[0] !== '/') {
-            $filename = $this->pathinfo['dirname'].'/'.$filename;
+            $filename = $this->pathinfo['dirname'].'/'.$filename.'.'.$this->pathinfo['extension'];
         }
         if (!empty($newWidth) && !empty($newHeight)) {
             $img->resize($newWidth, $newHeight);
