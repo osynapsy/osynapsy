@@ -52,8 +52,11 @@ class Token
      * @param type $token
      * @return boolean
      */
-    public function check($token)
+    public function decode($token)
     { 
+        if (empty($token)) {
+            throw new AuthenticationException('Token is empty.', 404);
+        }
         $tokenPart = explode('.', $token);
         //Guard clause token must be composed of three parts
         if (count($tokenPart) !== 3) {
@@ -72,18 +75,10 @@ class Token
             throw new AuthenticationException('Token is invalid. Received signature is not equal to resulted signature.', 401);            
         }
         //If token is valid decode the fields
-        $this->fields = json_decode(base64_decode($tokenPart[1]), true);
+        $fields = json_decode(base64_decode($tokenPart[1]), true);
         if (!empty($this->fields) && !empty($this->fields['Exp']) && $this->fields['Exp'] < time()) {
             throw new AuthenticationException('Token is expired', 401);
         }
-        //Return true for confirm which token is valid.
-        return true;
-    }
-    
-    public function getFields($token)
-    {
-        if ($this->check($token)) {
-            return $this->fields;
-        }        
-    }        
+        return $fields;        
+    }              
 }
