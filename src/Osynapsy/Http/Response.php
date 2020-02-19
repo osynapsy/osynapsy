@@ -153,22 +153,30 @@ abstract class Response
      * @param string $value
      * @param unixdatetime $expiry
      */
-    public static function cookie($valueId, $value, $expiry = null, $excludeThirdLevel = true)
+    public static function cookie($valueId, $value, $expiry = null, $excludeThirdLevel = false)
     {        
         if (headers_sent()) {
            return false; 
         }
-        $domain = filter_input(\INPUT_SERVER,'SERVER_NAME');
-        if ($excludeThirdLevel) {
-            $app = explode('.',$domain);
-            if (count($app) == 3){ 
-                $domain = ".".$app[1].".".$app[2];
-            }
-        }
+        $domain = $excludeThirdLevel ? self::getDomain() : self::getServerName();
         if (empty($expiry)) {
             $expiry = time() + (86400 * 365);
         }
         return setcookie($valueId, $value, $expiry, "/", $domain);        
+    }
+    
+    private static function getDomain()
+    {
+        $domainPart = explode('.', self::getServerName());
+        if (count($domainPart) > 2){ 
+           unset($domainPart[0]);
+        }        
+        return '.'.implode('.', $domainPart);
+    }
+    
+    private static function getServerName()
+    {
+        return filter_input(\INPUT_SERVER, 'SERVER_NAME');
     }
     
     /**
