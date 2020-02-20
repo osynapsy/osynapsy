@@ -57,6 +57,11 @@ abstract class ModelRecord
         return $this->repo->get($key);
     }
     
+    public function getDb()
+    {
+        return $this->db;
+    }
+    
     protected function getController()
     {
         return $this->controller;
