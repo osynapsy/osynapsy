@@ -17,6 +17,11 @@ use Osynapsy\Helper\Net\UploadManager;
 
 abstract class Model
 {
+    const ACTION_AFTER_INSERT_HISTORY_PUSH_STATE = 'historyPushState';    
+    const ACTION_AFTER_EXEC_BACK = 'back';
+    const ACTION_AFTER_EXEC_NONE = false;
+    const ACTION_AFTER_EXEC_REFRESH = 'refresh';
+    
     private $repo;
     protected $controller = null;
     protected $sequence = null;
@@ -92,7 +97,7 @@ abstract class Model
             return; 
         }
         $where = array();
-        foreach ($this->repo->get('fields') as $i => $field) {
+        foreach ($this->repo->get('fields') as $field) {
             if ($field->isPkey()) { 
                 $where[$field->name] =  $field->value;
             }
@@ -113,7 +118,7 @@ abstract class Model
             );
         }
         $this->afterDelete();
-        if ($this->repo->get('actions.after-delete') === false) {
+        if ($this->repo->get('actions.after-delete') === self::ACTION_AFTER_EXEC_NONE) {
             return;
         }
         $this->controller->getResponse()->go($this->repo->get('actions.after-delete'));
@@ -137,16 +142,19 @@ abstract class Model
             $lastId = $this->db->insert($this->repo->get('table'), $values);
         }        
         $this->afterInsert($lastId);
-        if ($this->repo->get('actions.after-insert') === false) {
-            return;
-        }
-        switch ($this->repo->get('actions.after-insert')) {
-            case 'back':
-            case 'refresh':
-                $this->controller->getResponse()->go($this->repo->get('actions.after-insert'));                
+                
+        switch ($this->get('actions.after-insert')) {
+            case self::ACTION_AFTER_EXEC_NONE:
                 break;
+            case self::ACTION_AFTER_INSERT_HISTORY_PUSH_STATE:
+                $this->getController()->getResponse()->js("history.pushState(null,null,'{$lastId}');");
+                break;
+            case self::ACTION_AFTER_EXEC_BACK:
+            case self::ACTION_AFTER_EXEC_REFRESH:            
+                $this->getController()->getResponse()->go($this->get('actions.after-insert'));                
+                break;            
             default: 
-                $this->controller->getResponse()->go($this->repo->get('actions.after-insert').$lastId);                
+                $this->getController()->getResponse()->go($this->get('actions.after-insert').$lastId);                
                 break;
         }
     }
@@ -162,7 +170,7 @@ abstract class Model
         }
         $this->db->update($this->repo->get('table'), $values, $where);
         $this->afterUpdate();
-        if ($this->repo->get('actions.after-update') === false) {
+        if ($this->repo->get('actions.after-update') === self::ACTION_AFTER_EXEC_NONE) {
             return;
         }
         $this->controller->getResponse()->go($this->repo->get('actions.after-update'), false);        

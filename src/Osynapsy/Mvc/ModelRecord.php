@@ -16,7 +16,12 @@ use Osynapsy\Mvc\ModelField;
 use Osynapsy\Helper\Net\UploadManager;
 
 abstract class ModelRecord
-{
+{   
+    const ACTION_AFTER_INSERT_HISTORY_PUSH_STATE = 'historyPushState';    
+    const ACTION_AFTER_EXEC_BACK = 'back';
+    const ACTION_AFTER_EXEC_NONE = false;
+    const ACTION_AFTER_EXEC_REFRESH = 'refresh';
+    
     private $repo;
     private $record;
     private $controller = null;    
@@ -95,7 +100,7 @@ abstract class ModelRecord
         }        
         $this->getRecord()->delete();
         $this->afterDelete();
-        if ($this->repo->get('actions.after-delete') === false) {
+        if ($this->repo->get('actions.after-delete') === self::ACTION_AFTER_EXEC_NONE) {
             return;
         }
         $this->getController()->getResponse()->go($this->repo->get('actions.after-delete'));
@@ -146,14 +151,17 @@ abstract class ModelRecord
         $this->afterInsert($lastId);
         
         switch ($this->get('actions.after-insert')) {
-            case false:
-                return;
-            case 'back':
-            case 'refresh':
-                $this->controller->getResponse()->go($this->get('actions.after-insert'));                
+            case self::ACTION_AFTER_EXEC_NONE:
                 break;
+            case self::ACTION_AFTER_INSERT_HISTORY_PUSH_STATE:
+                $this->getController()->getResponse()->js("history.pushState(null,null,'{$lastId}');");
+                break;
+            case self::ACTION_AFTER_EXEC_BACK:
+            case self::ACTION_AFTER_EXEC_REFRESH:            
+                $this->getController()->getResponse()->go($this->get('actions.after-insert'));                
+                break;            
             default: 
-                $this->controller->getResponse()->go($this->get('actions.after-insert').$lastId);                
+                $this->getController()->getResponse()->go($this->get('actions.after-insert').$lastId);                
                 break;
         }
     }
@@ -163,7 +171,7 @@ abstract class ModelRecord
         $this->addAlert($this->beforeUpdate());        
         $id = $this->getRecord()->save();   
         $this->afterUpdate($id);
-        if ($this->repo->get('actions.after-update') === false) {
+        if ($this->repo->get('actions.after-update') === self::ACTION_AFTER_EXEC_NONE) {
             return;
         }
         $this->getController()->getResponse()->go($this->repo->get('actions.after-update'), false);        
