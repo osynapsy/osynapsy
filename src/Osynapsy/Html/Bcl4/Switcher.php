@@ -30,7 +30,7 @@ class Switcher extends Component
         return $this->checkBox;
     }
     
-    public function setAction($action, $parameters = null, $class = 'click-execute', $confirmMessage = null): \this
+    public function setAction($action, $parameters = null, $class = 'click-execute', $confirmMessage = null)
     {
         $this->checkBox->att([
             'data-action' => $action, 
