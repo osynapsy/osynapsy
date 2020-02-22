@@ -110,6 +110,6 @@ class Validator
         $this->isNotNull($field);
         $this->validateCharLength($field);
         $this->isUnique($field);
-        $this->validateType($field);        
+        $this->validateType($field);
     }
 }
