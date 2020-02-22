@@ -177,7 +177,7 @@ abstract class Eav
      * @throws \Exception
      */
     public function setValue($field, $value = null, $defaultValue = null)
-    {
+    {        
         if (empty($field)) {
             throw new \Exception('Field parameter is empty');
         }
@@ -278,7 +278,7 @@ abstract class Eav
             throw new \Exception('Primary key is empty');
         }
         $updateCondition = $this->searchCondition;
-        $valueToInsert = array_diff_key($this->activeRecord, $this->originalRecord);       
+        $valueToInsert = array_diff_key($this->activeRecord, $this->originalRecord);        
         foreach($valueToInsert as $virtualField => $value) {
             $params = $updateCondition;
             $params[$this->attributeIdField()] = $virtualField;
@@ -288,7 +288,7 @@ abstract class Eav
             //Add virtual field for make ugual db and original field.
             $this->originalRecord[$virtualField] = $value;
         }
-        $valueToUpdate = array_diff($this->activeRecord, $this->originalRecord);                
+        $valueToUpdate = array_diff_assoc($this->activeRecord, $this->originalRecord);        
         foreach($valueToUpdate as $virtualField => $value) {
             $updateCondition[$this->attributeIdField()] = $virtualField;
             $this->dbConnection->update(
