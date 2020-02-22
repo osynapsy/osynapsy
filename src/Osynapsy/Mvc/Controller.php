@@ -15,8 +15,6 @@ use Osynapsy\Event\Dispatcher as EventDispatcher;
 use Osynapsy\Mvc\Application;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response;
-use Osynapsy\Http\ResponseJson as JsonResponse;
-use Osynapsy\Http\ResponseHtmlOcl as HtmlResponse;
 use Osynapsy\Observer\InterfaceSubject;
 
 abstract class Controller implements InterfaceController, InterfaceSubject
@@ -76,9 +74,14 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     private function execExternalAction(string $action, array $parameters = []) : Response
     {
         $this->setState('beforeAction'.ucfirst($action));
-        $actionClass = new \ReflectionClass($this->externalActions[$action]);
-        $actionInstance = $actionClass->newInstance($parameters);
+        if (gettype($this->externalActions[$action]) === 'string') {
+            $actionClass = new \ReflectionClass($this->externalActions[$action]);
+            $actionInstance = $actionClass->newInstance();
+        } else {
+            $actionInstance = $this->externalActions[$action];
+        }
         $actionInstance->setController($this);
+        $actionInstance->setParameters($parameters);
         $this->getResponse()->alertJs($actionInstance->execute());
         $this->setState('afterAction'.ucfirst($action));
         return $this->getResponse();
