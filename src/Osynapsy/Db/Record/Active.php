@@ -40,7 +40,7 @@ abstract class Active implements InterfaceRecord
     private $fields = [];
     private $extensions = [];
     private $debug = false;
-    public $autoincrementId;
+    public $lastAutoincrementId;
     
     /**
      * Object constructor
@@ -360,7 +360,7 @@ abstract class Active implements InterfaceRecord
      */
     private function loadRecordAfterInsert($id)
     {
-        $this->autoincrementId = $id;
+        $this->lastAutoincrementId = $id;
         if (!empty($id) && count($this->keys) == 1) {                     
             $this->findByKey($id);
             return;
