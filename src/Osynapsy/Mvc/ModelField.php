@@ -13,7 +13,7 @@ namespace Osynapsy\Mvc;
 
 class ModelField 
 {            
-    const TYPE_DATE = 'file';
+    const TYPE_DATE = 'date';
     const TYPE_EMAIL = 'email';
     const TYPE_FILE = 'file';
     const TYPE_IMAGE = 'image';
@@ -34,6 +34,7 @@ class ModelField
         'defaultValue' => null,
         'uploadDir' => '/upload'
     );
+    public $value;
     private $model;    
     public $type;
     
@@ -141,11 +142,19 @@ class ModelField
         }
         $this->value = $this->rawvalue = $value;
         $this->defaultValue = $default;
-        if ($this->type == 'date' && !empty($value) && strpos($value, '/') !== false) {
-            list($dd, $mm, $yy) = explode('/', $this->value );
-            $this->value = "$yy-$mm-$dd";            
-        }       
+        if ($this->type === self::TYPE_DATE) {
+            $this->adjustDateValue();
+        }
         return $this;
+    }
+    
+    private function adjustDateValue()
+    {
+        if (empty($this->value) || strpos($this->value, '/') === false) {
+            return;
+        }
+        list($day, $month, $year) = explode('/', $this->value);
+        $this->value = sprintf("%s-%s-%s", $year, $month, $day);
     }
     
     public function getValue()
