@@ -12,6 +12,7 @@
 namespace Osynapsy\Mvc\Model;
 
 use Osynapsy\Data\Dictionary;
+use Osynapsy\Mvc\Controller;
 use Osynapsy\Mvc\ModelField;
 use Osynapsy\Helper\Net\UploadManager;
 
@@ -68,7 +69,7 @@ abstract class Record
         return $this->getController()->getDb();
     }
     
-    protected function getController()
+    protected function getController() : Controller
     {
         return $this->controller;
     }
@@ -192,7 +193,7 @@ abstract class Record
                 continue;
             }
             //Set value in record
-            $this->getRecord()->setValue($field->name, $field->value);
+            $this->getRecord()->setValue($field->name, $field->value);            
         }
     }
     
