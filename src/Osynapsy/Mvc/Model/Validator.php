@@ -9,7 +9,7 @@ use Osynapsy\Mvc\ModelField;
  * @author pietr
  */
 class Validator
-{
+{    
     const ERROR_NOT_EMAIL = 'Il campo <fieldname> non contiene un indirizzo mail valido.';
     const ERROR_NOT_NULL = 'Il campo <fieldname> è obbligatorio.';
     const ERROR_NOT_NUMERIC = 'Il campo <fieldname> accetta solo valori numerici.';
@@ -18,7 +18,7 @@ class Validator
     const ERROR_LENGTH_EXCEEDS = 'Il campo <fieldname> accetta massimo ';
     const ERROR_LENGTH_MIN = 'Il campo <fieldname> accetta minimo';
     const ERROR_LENGTH_FIX = 'Il campo <fieldname> solo valori con lunghezza pari a ';
-    
+     
     private $model;
     
     public function __construct($model)
@@ -57,7 +57,7 @@ class Validator
     public function isEmail($value)
     {
         if (!empty($value) && filter_var($value, \FILTER_VALIDATE_EMAIL) === false) {
-            throw new Exception(self::ERROR_NOT_EMAIL);
+            throw new \Exception(self::ERROR_NOT_EMAIL);
         }
     }
     
@@ -93,17 +93,13 @@ class Validator
     {   
         $value = $field->value;
         switch ($field->type) {
-            case 'float':
-            case 'money':
-            case 'numeric':
-            case 'number':
+            case ModelField::TYPE_NUMBER:
                 $this->isFloat($value);
                 break;
-            case 'integer':
-            case 'int':
+            case ModelField::TYPE_INTEGER:            
                 $this->isInteger($value);
                 break;
-            case 'email':
+            case ModelField::TYPE_EMAIL:
                 $this->isEmail($value);
                 break;
         }
