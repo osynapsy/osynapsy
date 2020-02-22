@@ -178,7 +178,9 @@ abstract class Record
         //skim the field list for check value and build $values, $where and $key list
         foreach ($this->repo->get('fields') as $field) {            
             //Check if value respect rule
-            $this->validateField($field);
+            if ($field->existInForm()) {
+                $this->validateField($field);
+            }            
             //If field is file or image grab upload
             if (in_array($field->type, ['image', 'file'])) {
                 $this->grabUploadedFile($field);
