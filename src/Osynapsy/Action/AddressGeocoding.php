@@ -10,9 +10,8 @@ class AddressGeocoding
 {
     //put your code here
     public static function getLatLng($address)
-    {
-           $address = trim($address);
-           $geourl = "http://maps.googleapis.com/maps/api/geocode/json?address={$address}&sensor=false&region=it";
+    {           
+           $geourl = sprintf("http://maps.googleapis.com/maps/api/geocode/json?address=%s&sensor=false&region=it", trim($address));
            
            // Create cUrl object to grab XML content using $geourl
            $c = curl_init();
