@@ -22,7 +22,8 @@ class ModelField
     const TYPE_STRING = 'string';
     
     private $repo = array(
-        'fixlength' => null,
+        'existInForm' => true,
+        'fixlength' => null,        
         'is_pk' => false,
         'maxlength' => null,
         'minlength' => null,
@@ -31,7 +32,7 @@ class ModelField
         'rawvalue' => null,
         'unique' => false,
         'value' => null,
-        'defaultValue' => null,
+        'defaultValue' => null,        
         'uploadDir' => '/upload'
     );
     public $value;
@@ -43,7 +44,7 @@ class ModelField
         $this->model = $model;
         $this->name = $nameOnDb;
         $this->html = $nameOnView;
-        $this->setType($type, $existInForm);
+        $this->setType($type, $existInForm);        
     }
 
     public function __get($key)
