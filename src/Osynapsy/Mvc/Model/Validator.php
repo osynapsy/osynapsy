@@ -41,6 +41,7 @@ class Validator
    
     public function isUnique($field)
     {
+        $value = $field->value;
         if (!$field->isUnique() || empty($value)) {
             return;
         }
