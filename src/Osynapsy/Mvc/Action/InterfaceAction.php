@@ -9,10 +9,10 @@ use Osynapsy\Mvc\Controller;
  * @author pietr
  */
 interface InterfaceAction 
-{   
-    public function __construct(array $parameters);
-    
+{           
     public function execute();
     
     public function setController(Controller $controller);
+    
+    public function setParameters(array $parameters);
 }
