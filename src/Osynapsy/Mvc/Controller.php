@@ -77,9 +77,9 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     {
         $this->setState('beforeAction'.ucfirst($action));
         $actionClass = new \ReflectionClass($this->externalActions[$action]);
-        $actionInstance = $actionClass->newInstance($actionClass, $parameters);
+        $actionInstance = $actionClass->newInstance($parameters);
         $actionInstance->setController($this);
-        $this->getResponse()->alertJs($actionInstance->run());
+        $this->getResponse()->alertJs($actionInstance->execute());
         $this->setState('afterAction'.ucfirst($action));
         return $this->getResponse();
     }
@@ -90,8 +90,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * @return \Osynapsy\Http\Response
      */
     private function execIndexAction() : Response
-    {
-        //$this->setResponse(new HtmlResponse())->loadTemplate(
+    {        
         $this->loadTemplate(
             $this->getRequest()->get('page.route')->template
         );
@@ -272,7 +271,6 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         if (empty($action)) {
             return $this->execIndexAction();
         }        
-        //$this->setResponse(new JsonResponse());
         if (array_key_exists($action, $this->externalActions)) {
             return $this->execExternalAction($action, $parameters);
         }
@@ -290,6 +288,18 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         if ($this->model) {
             $this->model->save();
         }
+    }
+    
+    /**
+     * Set external class action for manage action
+     * 
+     * @param string $actionName
+     * @param string $actionClass
+     * @return void
+     */
+    public function setExternalAction($actionName, $actionClass)
+    {
+        $this->externalActions[$actionName] = $actionClass;
     }
     
     /**
