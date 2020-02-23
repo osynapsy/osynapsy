@@ -13,7 +13,7 @@ var Osynapsy = new (function(){
             if (Osynapsy.isEmpty($(source).attr('id'))) {
                 return;
             }
-            this.dispatchRemote($(source).closest('form'), event);
+            this.dispatchRemote($(source), event);
         },
         dispatchRemote : function(object, event)
         {
