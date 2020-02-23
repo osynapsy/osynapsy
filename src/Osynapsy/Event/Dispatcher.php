@@ -18,12 +18,12 @@ namespace Osynapsy\Event;
  */
 class Dispatcher 
 {
-    private $controller;
-    private $listeners = [];    
+    private static $controller;
+    public static $listeners = [];    
     
     public function __construct($controller)
     {
-        $this->controller = $controller;
+        self::$controller = $controller;
     }
     
     public function dispatch(Event $event)
@@ -34,10 +34,10 @@ class Dispatcher
     
     private function triggerEvent(Event $event)
     {
-        if (empty($this->listeners[$event->getId()])) {
+        if (empty(self::$listeners[$event->getId()])) {
             return;
         }
-        foreach($this->listeners[$event->getId()] as $listener) {                        
+        foreach(self::$listeners[$event->getId()] as $listener) {                        
             $listener->trigger($event);
         }
     }
@@ -62,12 +62,12 @@ class Dispatcher
     
     private function getController()
     {
-        return $this->controller;
+        return self::$controller;
     }        
     
-    public function addListener(callable $trigger, array $eventIDs)
+    public static function addListener(callable $trigger, array $eventIDs)
     {
-        $listener = new class($this->getController()) implements InterfaceListener
+        $listener = new class(self::$controller) implements InterfaceListener
         {            
             private $controller;
             private $trigger;
@@ -90,10 +90,10 @@ class Dispatcher
         };
         $listener->setTrigger($trigger);
         foreach ($eventIDs as $eventId) {
-            if (!array_key_exists($eventId, $this->listeners)) {
-                $this->listeners[$eventId] = [];
+            if (!array_key_exists($eventId, self::$listeners)) {
+                self::$listeners[$eventId] = [];
             }
-            $this->listeners[$eventId][] = $listener;
+            self::$listeners[$eventId][] = $listener;
         }
     }
 }
