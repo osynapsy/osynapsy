@@ -18,8 +18,8 @@ use Osynapsy\Kernel;
  */
 class Component extends Tag
 {    
-    protected static $require = [];    
     protected static $ids = [];
+    protected static $require = [];
     protected $data = [];
     protected $__par = [];
 
@@ -121,6 +121,24 @@ class Component extends Tag
         return ( $a !== 0 && $a !== '0' && empty($a)) ? $b : $a;
     }
 
+    public function onClick(callable $listener)
+    {
+        $this->setClass('dispatch-event dispatch-event-click');
+        $this->addListener('Click', $listener);
+    }
+    
+    public function onChange(callable $listener)
+    {        
+        $this->setClass('dispatch-event dispatch-event-change');
+        $this->addListener('Change', $listener);
+    }
+    
+    protected function addListener($event, callable $listener)
+    {
+        $eventId = sprintf('%s%s', $this->id, $event);
+        \Osynapsy\Event\Dispatcher::addListener($listener, [$eventId]);
+    }
+    
     private static function requireFile($file, $type)
     {
         if (!array_key_exists($type, self::$require)) {
