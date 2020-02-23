@@ -6,6 +6,45 @@ var Osynapsy = new (function(){
         plugin : {}
     };
     
+    pub.event = 
+    {
+        dispatch : function(source, event)
+        {
+            if (Osynapsy.isEmpty($(source).attr('id'))) {
+                return;
+            }
+            this.dispatchRemote($(source).closest('form'), event);
+        },
+        dispatchRemote : function(object, event)
+        {
+            var actionUrl = window.location.href;
+            if (Osynapsy.isEmpty($(object).closest('form').attr('action'))) {
+                actionUrl =  $(object).closest('form').attr('action');
+            } 
+            $.ajax({
+                data : $(object).closest('form').serialize()+'&actionParameters[]=' + $(object).attr('id') + event,
+                url  : actionUrl,
+                headers: {
+                    'Osynapsy-Action': 'dispatchLocalEvent',                    
+                    'Accept': 'application/json'
+                },
+                type : 'post',
+                dataType : 'json',
+                success : function(response){            
+                    Osynapsy.waitMask.remove();
+                    Osynapsy.kernel.message.dispatch(response);
+                },
+                error: function(xhr, status, error) {                
+                    Osynapsy.waitMask.remove();
+                    console.log(status);
+                    console.log(error);
+                    console.log(xhr);
+                    alert(xhr.responseText);
+                }
+            });
+        }
+    };
+    
     pub.action = 
     {
         execute : function(object)
@@ -399,7 +438,7 @@ var Osynapsy = new (function(){
         init : function()
         {
             Osynapsy.setParentModalTitle();
-            $('body').on('change','.change-execute, .onchange-execute',function(){
+            $('body').on('change','.change-execute, .onchange-execute', function(){
                 Osynapsy.action.execute(this);
             }).on('click','.cmd-execute, .click-execute, .onclick-execute',function(event) {
                 //event.stopPropagation();
@@ -429,6 +468,11 @@ var Osynapsy = new (function(){
                 );
             }).on('keyup', '.typing-execute', function(){                
                Osynapsy.typingEvent(this);
+            }).on('click change', '.dispatch-event', function(ev){
+                var eventClass = 'dispatch-event-' + ev.type;
+                if ($(this).hasClass(eventClass)) {
+                    Osynapsy.event.dispatch(this, event.type.charAt(0).toUpperCase() + event.type.slice(1));
+                }                
             });
             FormController.fire('init');
         }
