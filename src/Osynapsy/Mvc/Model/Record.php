@@ -12,6 +12,7 @@
 namespace Osynapsy\Mvc\Model;
 
 use Osynapsy\Data\Dictionary;
+use Osynapsy\Event\EventLocal;
 use Osynapsy\Mvc\Controller;
 use Osynapsy\Mvc\ModelField;
 use Osynapsy\Helper\Net\UploadManager;
@@ -21,6 +22,15 @@ abstract class Record
     const BEHAVIOR_INSERT = 'insert';
     const BEHAVIOR_UPDATE = 'update';
     const BEHAVIOR_DELETE = 'delete';
+    
+    const EVENT_BEFORE_SAVE = 'beforeSave';
+    const EVENT_BEFORE_INSERT = 'beforeInsert';
+    const EVENT_BEFORE_UPDATE = 'beforeUpdate';    
+    const EVENT_BEFORE_DELETE = 'beforeDelete';
+    const EVENT_AFTER_SAVE = 'afterSave';
+    const EVENT_AFTER_INSERT = 'afterInsert';
+    const EVENT_AFTER_UPDATE = 'afterUpdate';
+    const EVENT_AFTER_DELETE = 'afterDelete';
     
     private $repo;    
     private $record;
@@ -43,6 +53,12 @@ abstract class Record
         $this->initRecord();
         $this->afterInit();
     }       
+    
+    public function addListenerLocal(callable $trigger, array $eventIDs)
+    {        
+        array_walk($eventIDs, function (&$value, $key, $namespace) { $value = $namespace.'\\'.$value;}, get_class($this));
+        $this->getController()->getDispatcher()->addListener($trigger, $eventIDs);
+    }
     
     protected function afterInit()
     {        
@@ -72,6 +88,11 @@ abstract class Record
     protected function getController() : Controller
     {
         return $this->controller;
+    }
+    
+    protected function dispatchEvent($event)
+    {
+        $this->getController()->getDispatcher()->dispatch(new EventLocal($event, $this));
     }
     
     public function getException()
@@ -156,7 +177,8 @@ abstract class Record
     public function save()
     {                
         //Recall before exec method with arbirtary code
-        $this->beforeExec();                        
+        $this->beforeExec();
+        $this->dispatchEvent(self::EVENT_BEFORE_SAVE);
         //Fill Record with values from html form
         $this->fillRecord();        
         //If occurred some error stop db updating and return exception
@@ -171,6 +193,7 @@ abstract class Record
         }
         //Recall after exec method with arbirtary code
         $this->afterExec();
+        $this->dispatchEvent(self::EVENT_AFTER_SAVE);
     }
     
     private function fillRecord()
