@@ -12,6 +12,8 @@
 namespace Osynapsy\Mvc;
 
 use Osynapsy\Event\Dispatcher as EventDispatcher;
+use Osynapsy\Event\Event;
+use Osynapsy\Html\Component as ComponentHtml;
 use Osynapsy\Mvc\Application;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response;
@@ -81,6 +83,16 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         $actionInstance->execute();
         $this->setState('afterAction'.ucfirst($action));
         return $this->getResponse();
+    }
+    
+    public function dispatchLocalEventAction($eventId)
+    {        
+        if ($this->model) {
+            $this->model->find();
+        }
+        //Call indexAction for load component html and theirs listeners
+        $this->indexAction();        
+        $this->getDispatcher()->dispatch(new Event($eventId, $this));
     }
     
     /**
@@ -235,9 +247,9 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      */
     public function loadTemplate(string $path)
     {
-        if (empty($path)) {
+        if (empty($path) || !method_exists($this->getResponse(), 'loadTemplate')) {
             return;
-        }
+        }        
         $this->getResponse()->loadTemplate($path, $this);
     }
     
