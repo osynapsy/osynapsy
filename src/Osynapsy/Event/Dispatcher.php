@@ -19,7 +19,7 @@ namespace Osynapsy\Event;
 class Dispatcher 
 {
     private $controller;
-    private $listeners = [];
+    private $listeners = [];    
     
     public function __construct($controller)
     {
@@ -28,29 +28,72 @@ class Dispatcher
     
     public function dispatch(Event $event)
     {
+        $this->loadGlobalListeners($event->getId());
+        $this->triggerEvent($event);
+    }
+    
+    private function triggerEvent(Event $event)
+    {
+        if (empty($this->listeners[$event->getId()])) {
+            return;
+        }
+        foreach($this->listeners[$event->getId()] as $listener) {                        
+            $listener->trigger($event);
+        }
+    }
+    
+    private function loadGlobalListeners($eventId)
+    {
         $listeners = $this->getController()->getRequest()->get('listeners');
         if (empty($listeners)) {
             return;
         }
-        foreach($listeners as $listener => $eventId) {
-            if ($eventId != $event->getId()) {
+        foreach($listeners as $listener => $listenerEventId) {
+            if ($listenerEventId != $eventId) {
                 continue;
             }
+            if (!array_key_exists($eventId, $this->listeners2)) {
+                $this->listeners[$eventId] = [];
+            }            
             $listenerId = '\\'.trim(str_replace(':','\\',$listener));
-            $this->getListener($listenerId)->trigger($event);
+            $this->listeners[$eventId][] = new $listenerId($this->getController());
         }
     }
     
     private function getController()
     {
         return $this->controller;
-    }
+    }        
     
-    private function getListener($id)
-    {                
-        if (empty($this->listeners[$id])) {
-            $this->listeners[$id] = new $id($this->controller);
+    public function addListener(callable $trigger, array $eventIDs)
+    {
+        $listener = new class($this->getController()) implements InterfaceListener
+        {            
+            private $controller;
+            private $trigger;
+            
+            public function __construct($controller)
+            {
+                $this->controller = $controller;
+            }
+                        
+            public function setTrigger(callable $callable)
+            {
+                $this->trigger = $callable;               
+            }
+            
+            public function trigger(Event $event)
+            {
+                $trigger = $this->trigger;
+                $trigger($event);
+            }
+        };
+        $listener->setTrigger($trigger);
+        foreach ($eventIDs as $eventId) {
+            if (!array_key_exists($eventId, $this->listeners)) {
+                $this->listeners[$eventId] = [];
+            }
+            $this->listeners[$eventId][] = $listener;
         }
-        return $this->listeners[$id];
     }
 }
