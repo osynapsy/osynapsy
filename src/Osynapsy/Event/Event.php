@@ -18,13 +18,13 @@ namespace Osynapsy\Event;
  */
 class Event 
 {
-    private $origin;
-    private $eventId;
+    protected $origin;
+    protected $eventId;
     
     public function __construct($eventId, $origin)
     {
         $this->origin = $origin;
-        $this->eventId = $eventId;
+        $this->setEventId($eventId);
     }
     
     public function getOrigin()
@@ -34,12 +34,17 @@ class Event
     
     public function getNameSpace()
     {
-        return get_class($this->origin).'\\'.$this->eventId;
+        return get_class($this->origin);
     }
     
     public function getId()
     {
         return $this->eventId;
+    }
+    
+    protected function setEventId($eventId)
+    {
+        $this->eventId = $eventId;
     }
     
     public function trigger()
