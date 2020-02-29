@@ -98,4 +98,9 @@ class DatePicker extends Component
     {
         $this->dateComponent->att('onchange', $code);
     }
+    
+    public function setDisabled($condition)
+    {
+        $this->dateComponent->setDisabled($condition);
+    }
 }
