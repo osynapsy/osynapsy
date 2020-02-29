@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Helper\Auth\Jwt;
+namespace Osynapsy\Auth\Jwt;
 
 class AuthenticationException extends \Exception
 {

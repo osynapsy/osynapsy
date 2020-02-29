@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Helper\Auth\Jwt;
+namespace Osynapsy\Auth\Jwt;
 
 /* 
  * To change this license header, choose License Headers in Project Properties.
