@@ -91,6 +91,11 @@ class DatePicker extends Component
         $_REQUEST[$this->datePickerId] = empty($date) ? date('d/m/Y') : $date;        
     }
     
+    public function setDisabled($condition)
+    {
+        $this->dateComponent->setDisabled($condition);
+    }
+    
     public function onChange($code)
     {
         $this->dateComponent->att('onchange', $code);
