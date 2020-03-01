@@ -22,26 +22,27 @@ use Osynapsy\Html\Tag;
  */
 class Pagination extends Component
 {
-    private $columns = array();
+    private $columns = [];
     private $entity = 'Record';
-    protected $data = array();
+    protected $data = [];
     protected $errors = [];
+    protected $pageDimensionPalceholder = '- Dimensione pagina -';
     private $db;
-    private $filters = array();
-    private $fields = array();
+    private $filters = [];
+    private $fields = [];
     private $loaded = false;
     private $par;
     private $sql;  
     private $orderBy = null;
     private $parentComponent;
     private $position = 'center';
-    private $statistics = array(
+    private $statistics = [
         //Dimension of the pag in row;
         'pageDimension' => 10,
         'pageTotal' => 1,
         'pageCurrent' => 1,
         'rowsTotal' => 0
-    ); 
+    ]; 
     private $pageDimensions = [
         1 => ['10', '10 righe'],
         2 => ['20', '20 righe'],
@@ -240,7 +241,7 @@ class Pagination extends Component
     public function getPageDimensionsCombo()
     {
         $Combo = new ComboBox($this->id.(strpos($this->id, '_') ? '_page_dimension' : 'PageDimension'));
-        $Combo->setPlaceholder('- Dimensione pagina -');
+        $Combo->setPlaceholder($this->pageDimensionPalceholder);
         $Combo->att('onchange',"Osynapsy.refreshComponents(['{$this->parentComponent}'])")
               ->att('style','margin-top: 20px;')
               ->setArray($this->pageDimensions);
@@ -361,6 +362,11 @@ class Pagination extends Component
             $dimension = $pageDimension * $key;
             $this->pageDimensions[$key] = [$dimension, "{$dimension} righe"];
         }
+    }
+    
+    public function setPageDimensionPlaceholder($label)
+    {
+        $this->pageDimensionPalceholder = $label;
     }
     
     public function setParentComponent($componentId)
