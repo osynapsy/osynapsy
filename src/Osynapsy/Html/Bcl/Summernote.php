@@ -20,5 +20,10 @@ class Summernote extends TextArea
         $this->requireCss('Lib/summernote-0.8.9/summernote.css');
         $this->requireJs('Lib/summernote-0.8.9/summernote.js');
         $this->requireJs('Bcl/Summernote/script.js');  
-    }    
+    }
+    
+    public function setHeight(int $heightInPixel)
+    {
+        $this->att('data-height', $heightInPixel);
+    }
 }

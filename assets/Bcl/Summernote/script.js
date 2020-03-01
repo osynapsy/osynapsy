@@ -8,6 +8,8 @@ BclSummernote =
                 BclSummernote.uploadPath = upath;
             }
             var self = this;
+            var vheight = Osynapsy.isEmpty($(this).data('height')) ? 300 : $(this).data('height');
+            console.log(vheight);
             $(this).summernote({
                 callbacks: {
                     onkeyup: function(e) {
@@ -22,7 +24,7 @@ BclSummernote =
                         BclSummernote.upload(files[0], editor, welEditable);
                     }
                 },
-                height: 300,
+                height: vheight,
                 tabsize: 4,
             });
         });
