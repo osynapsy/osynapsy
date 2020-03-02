@@ -10,6 +10,7 @@ use Osynapsy\Html\Tag;
  */
 class DataGridColumn 
 {        
+    const FIELD_TYPE_DATE_EU = 'date';
     const FIELD_TYPE_MONEY = 'money';
     const FIELD_TYPE_EURO  = 'euro';
     const FIELD_TYPE_DOLLAR  = 'dollar';
@@ -137,6 +138,10 @@ class DataGridColumn
                     break;
                 }                       
                 $value = $this->buildCheckBox($value);                
+                break;
+            case self::FIELD_TYPE_DATE_EU:
+                $datetime = \DateTime::createFromFormat('Y-m-d', $value);                
+                $value = $datetime === false ? $value : $datetime->format('d/m/Y');
                 break;
             case self::FIELD_TYPE_EURO:
             case self::FIELD_TYPE_MONEY:
