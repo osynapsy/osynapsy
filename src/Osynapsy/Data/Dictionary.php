@@ -209,11 +209,11 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
         return $plain;
     }
     
-    public function xmlSerialize($rootElement = 'root')
+    public function xmlSerialize($rootElement = 'root', $carriageReturn = true)
     {
         $xml = new \SimpleXMLElement('<'.$rootElement.'/>');
         $this->arrayToXml($this->repo, $xml);
-        return str_replace('><','>'.PHP_EOL.'<',$xml->asXML());
+        return $carriageReturn ? str_replace('><','>'.PHP_EOL.'<',$xml->asXML()) : $xml->asXml();
     }
     
     public function arrayToXml($data, &$xml)
