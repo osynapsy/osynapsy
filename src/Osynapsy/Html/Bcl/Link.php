@@ -23,4 +23,12 @@ class Link extends OclLink
             'modal-height' => $height
         ]);
     }
+    
+    public function setDisabled($condition)
+    {
+        if ($condition) {
+            $this->att(['href' => 'javascipt:void(0);', 'onclick' => 'event.stopPropagation();']);
+        }
+        return $this;
+    }
 }
