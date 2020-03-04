@@ -50,10 +50,9 @@ class DatePicker extends Component
         }
     }
     
-    public function setAction($action, $parameters = null, $confirmMessage = null, $class = 'change-execute')
+    public function setAction($action, $parameters = null, $confirmMessage = null, $class = 'change-execute datepicker-change')
     {
-        $this->dateComponent->setAction($action, $parameters, $class, $confirmMessage);
-        $this->dateComponent->setClass('datepicker-change');        
+        $this->dateComponent->setAction($action, $parameters, $class, $confirmMessage);        
     }
     
     /**
