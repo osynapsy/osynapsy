@@ -50,6 +50,12 @@ class DatePicker extends Component
         }
     }
     
+    public function setAction($action, $parameters = null, $confirmMessage = null, $class = 'change-execute')
+    {
+        $this->dateComponent->setAction($action, $parameters, $class, $confirmMessage);
+        $this->dateComponent->setClass('datepicker-change');        
+    }
+    
     /**
      * 
      * @param type $min accepted mixed input (ISO DATE : YYYY-MM-DD or name of other component date #name)
@@ -98,7 +104,7 @@ class DatePicker extends Component
     
     public function onChange($code)
     {
-        $this->dateComponent->att('onchange', $code);
+        $this->dateComponent->setClass('datepicker-change')->att('onchange', $code);
     }
     
     public function getTextBox()
