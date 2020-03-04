@@ -16,9 +16,14 @@ use Osynapsy\Html\Ocl\HiddenBox;
 
 class Alert extends Component
 {
+    const ALERT_INFO = 'info';
+    const ALERT_SUCCESS = 'success';
+    const ALERT_DANGER = 'danger';
+    const ALERT_WARNING = 'warning';
+    
     protected $hiddenBox;
     
-    public function __construct($id, $value, $type='info')
+    public function __construct($id, $value, $type = self::ALERT_INFO)
     {
         parent::__construct('div', $id.'_label');
         $this->hiddenBox = $this->add(new HiddenBox($id));
