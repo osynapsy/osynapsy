@@ -229,6 +229,11 @@ class DataGrid extends Component
         return $this->pagination;        
     }
     
+    public function getRowsCount()
+    {
+        return count($this->data);
+    }
+    
     /**
      * Hide Header
      * 
