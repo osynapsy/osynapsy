@@ -27,13 +27,13 @@ BclDatePicker =
                     opt['maxDate'] = new Date(maxDate);
                 }
             }
-            var onchange = $(this).attr('onchange');            
-            if (typeof onchange !== 'undefined') {                 
-                $(this).on('dp.change', function(){                    
-                    eval(onchange); 
-                });                
-            }
             $(this).datetimepicker(opt);
+        });
+        $('body').on('dp.change', '.datepicker-change', function(){
+            if ($(this).hasClass('change-execute')) {
+                Osynapsy.action.execute(this);
+            }
+            $(this).trigger('change');            
         });
     }
 };
