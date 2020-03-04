@@ -123,24 +123,18 @@ class Form extends Component
         return $column;
     }
     
-    public function alert($label, $type='danger')
+    public function alert($label = null, $type = 'danger')
     {
         if (empty($this->alert)) {
             $this->alert = new Tag('div');
             $this->alert->att('class','transition animated fadeIn m-b-sm');
-        }
-        $icon = '';
-        switch ($type) {
-            case 'danger':
-                $icon = '<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span>';
-                break;
-        }
-        $alert = new Alert('al'.$this->alertCount, $icon.' '.$label, $type);
-        $alert->att('class','alert-dismissible text-center',true)
-              ->add(' <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
+        }        
+        $alert = new Alert('alert_'.$this->alertCount, $label, $type);
+        $alert->setDismissible(true);
+        $alert->showIcon(true);
         $this->alert->add($alert);
         $this->alertCount++;
-        return $this->alert;
+        return $alert;
     }
     
     public function fixCommandBar($class = 'fixed-bottom p-2 b-light')
