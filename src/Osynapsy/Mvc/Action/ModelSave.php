@@ -64,9 +64,7 @@ class ModelSave extends Base
         }
         $this->getResponse()->js("history.pushState(null,null,'{$parameterToUrlAppend}');");
     }
-    
-   
-    
+           
     private function sendErrors($errors)
     {
         foreach($errors as $fieldHtml => $error) {
