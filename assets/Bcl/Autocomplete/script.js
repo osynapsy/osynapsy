@@ -102,8 +102,8 @@ BclAutocomplete = {
         }).on('click','div.row',function(e){ 
             e.preventDefault();
             var parentid = $(this).closest('#search_content').data('parent');            
-            $('input#'+parentid).removeClass('osy-autocomplete-unselected').prev().val($(this).data('value'));
-            $('input#'+parentid).val($(this).data('label'));
+            $('input#'+parentid).removeClass('osy-autocomplete-unselected').val($(this).data('label'));
+            $('input#__'+parentid).val($(this).data('value'));            
             if (!Osynapsy.isEmpty($('div#'+parentid).attr('onselect'))) {
                 eval($('div#'+parentid).attr('onselect'));
             }
