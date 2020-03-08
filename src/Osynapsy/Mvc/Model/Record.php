@@ -173,7 +173,6 @@ abstract class Record
     public function save()
     {                
         //Recall before exec method with arbirtary code
-        $this->beforeExec();
         $this->dispatchEvent(self::EVENT_BEFORE_SAVE);
         //Fill Record with values from html form
         $this->fillRecord();        
@@ -188,7 +187,6 @@ abstract class Record
             $this->update();
         }
         //Recall after exec method with arbirtary code
-        $this->afterExec();
         $this->dispatchEvent(self::EVENT_AFTER_SAVE);
     }
     
