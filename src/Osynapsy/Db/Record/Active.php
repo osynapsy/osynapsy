@@ -27,11 +27,14 @@ use Osynapsy\Db\Driver\InterfaceDbo;
 
 abstract class Active implements InterfaceRecord
 {
+    const BEHAVIOR_INSERT = 'insert';
+    const BEHAVIOR_UPDATE = 'update';
+    
     protected $dbConnection;
     private $activeRecord = [];
     private $extendRecord = [];
     private $originalRecord = [];
-    private $state = 'insert';
+    private $behavior = self::BEHAVIOR_INSERT;
     private $sequence;
     private $table;    
     private $searchCondition = [];        
@@ -115,7 +118,7 @@ abstract class Active implements InterfaceRecord
         if (empty($this->activeRecord)) {
             return [];
         }
-        $this->state = 'update';
+        $this->behavior = self::BEHAVIOR_UPDATE;
         return $this->activeRecord;
     }
     
@@ -278,7 +281,7 @@ abstract class Active implements InterfaceRecord
      */
     public function save(array $values = [])
     {
-        if (!$this->state) {
+        if (!$this->behavior) {
             throw new \Exception('Record is not updatable');
         }
         if (!empty($values)) {
@@ -420,11 +423,21 @@ abstract class Active implements InterfaceRecord
      */
     public function reset()
     {
-        $this->state = 'insert';
+        $this->behavior = self::BEHAVIOR_INSERT;
         $this->activeRecord = [];
         $this->originalRecord = [];
         $this->searchCondition = [];
         return $this;
+    }
+    
+    /**
+     * Get current state of active record
+     * 
+     * @return string
+     */
+    public function getBehavior()
+    {
+        return $this->behavior;
     }
     
     /**
@@ -444,7 +457,7 @@ abstract class Active implements InterfaceRecord
      */
     public function getState()
     {
-        return $this->state;
+        return $this->behavior;
     }
     
     /**
