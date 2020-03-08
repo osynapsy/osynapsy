@@ -168,6 +168,19 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         return $this->dispatcher;
     }
     
+    /**
+     * Return external action
+     * 
+     * @return \Osynapsy\Mvc\Application
+     */
+    final public function getExternalAction($actionId)
+    {
+        if (array_key_exists($actionId, $this->externalActions) ){
+            throw new \Exception(sprinf("No external action %s exists", $actionId));
+        }
+        return $this->externalActions[$actionId];
+    }
+    
      /**
      * Return model instance
      * 
