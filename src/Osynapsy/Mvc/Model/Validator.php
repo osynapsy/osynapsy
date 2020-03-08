@@ -111,5 +111,10 @@ class Validator
         $this->validateCharLength($field);
         $this->isUnique($field);
         $this->validateType($field);
+        $this->extraChecks();
+    }
+    
+    public function extraChecks()
+    {        
     }
 }
