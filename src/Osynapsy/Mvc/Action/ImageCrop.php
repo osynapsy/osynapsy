@@ -8,7 +8,7 @@ use Osynapsy\Helper\ImageProcessing\Image;
  *
  * @author Pietro
  */
-class CropImage implements Base
+class ImageCrop implements Base
 {    
     protected $field; 
     private $targetFile;
