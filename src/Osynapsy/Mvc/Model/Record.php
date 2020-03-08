@@ -43,8 +43,8 @@ abstract class Record
     public function __construct($controller)
     {
         $this->controller = $controller;
-        $this->controller->setExternalAction('save', new \Osynapsy\Mvc\Action\ModelSave());
-        $this->controller->setExternalAction('delete', new \Osynapsy\Mvc\Action\ModelDelete());
+        $this->controller->setExternalAction('save', new \Osynapsy\Mvc\Model\Action\Save());
+        $this->controller->setExternalAction('delete', new \Osynapsy\Mvc\Model\Action\Delete());
         $this->record = $this->record();        
         $this->repo = new Dictionary();
         $this->repo->set('fields',[])                   

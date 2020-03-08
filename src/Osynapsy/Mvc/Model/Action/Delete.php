@@ -1,12 +1,14 @@
 <?php
 namespace Osynapsy\Mvc\Action;
 
+use Osynapsy\Mvc\Action\Base;
+
 /**
  * Description of ModelDelete action;
  *
  * @author Pietro
  */
-class ModelDelete extends Base
+class Delete extends Base
 {        
     public function execute()
     {        

@@ -44,18 +44,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         $this->setState('beforeInit');
         $this->init();
         $this->setState('afterInit');
-    }
-    
-    /**
-     * Add an external action class
-     * 
-     * @param string $id
-     * @param string $class
-     */
-    public function actionAdd(string $id, string $class)
-    {
-        $this->actions[$id] = $class;
-    }
+    }        
     
     /**
      * Default deleteAction recall delete method of model if exists
