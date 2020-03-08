@@ -1,14 +1,15 @@
 <?php
-namespace Osynapsy\Mvc\Action;
+namespace Osynapsy\Mvc\Model\Action;
 
 use Osynapsy\Mvc\Model\ModelErrorException;
+use Osynapsy\Mvc\Action\Base;
 
 /**
  * Description of Save
  *
  * @author Pietro
  */
-class ModelSave extends Base
+class Save extends Base
 {                
     public function execute()
     {        

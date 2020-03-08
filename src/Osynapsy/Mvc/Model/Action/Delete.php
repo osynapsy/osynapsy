@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Mvc\Action;
+namespace Osynapsy\Mvc\Model\Action;
 
 use Osynapsy\Mvc\Action\Base;
 
