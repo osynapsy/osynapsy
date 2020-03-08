@@ -31,6 +31,7 @@ abstract class Record
     const EVENT_AFTER_INSERT = 'afterInsert';
     const EVENT_AFTER_UPDATE = 'afterUpdate';
     const EVENT_AFTER_DELETE = 'afterDelete';
+    const EVENT_AFTER_UPLOAD = 'afterUpload';
     
     private $repo;    
     private $record;
@@ -51,17 +52,12 @@ abstract class Record
                    ->set('values',[]);
         $this->init();
         $this->initRecord();
-        $this->afterInit();
     }       
     
     public function addListenerLocal(callable $trigger, array $eventIDs)
     {        
         array_walk($eventIDs, function (&$value, $key, $namespace) { $value = $namespace.'\\'.$value;}, get_class($this));
         $this->getController()->getDispatcher()->addListener($trigger, $eventIDs);
-    }
-    
-    protected function afterInit()
-    {        
     }
     
     private function initRecord()
@@ -73,6 +69,11 @@ abstract class Record
             }            
         }
         $this->getRecord()->findByAttributes($keys);        
+    }
+    
+    protected function dispatchEvent($event)
+    {
+        $this->getController()->getDispatcher()->dispatch(new EventLocal($event, $this));
     }
     
     public function get($key)
@@ -88,11 +89,6 @@ abstract class Record
     protected function getController() : Controller
     {
         return $this->controller;
-    }
-    
-    protected function dispatchEvent($event)
-    {
-        $this->getController()->getDispatcher()->dispatch(new EventLocal($event, $this));
     }
     
     public function getException()
@@ -186,7 +182,7 @@ abstract class Record
             throw $this->exception;
         }
         //If where list is empty execute db insert else execute a db update
-        if ($this->getRecord()->getState() == 'insert') {
+        if ($this->getRecord()->getBeahvior() == 'insert') {
             $this->insert();
         } else {
             $this->update();
@@ -252,26 +248,31 @@ abstract class Record
     
     public function insert()
     {                
-        $this->behavior = self::BEHAVIOR_INSERT;
-        $this->beforeInsert();        
-        $lastId = $this->getRecord()->save();
-        $this->afterInsert($lastId);
+        $this->setBehavior(self::BEHAVIOR_INSERT);        
+        $this->dispatchEvent(self::EVENT_BEFORE_INSERT);
+        $this->getRecord()->save();
+        $this->dispatchEvent(self::EVENT_AFTER_INSERT);
     }
 
     public function update()
     {     
-        $this->behavior = self::BEHAVIOR_UPDATE;
-        $this->beforeUpdate();  
-        $id = $this->getRecord()->save();   
-        $this->afterUpdate($id);        
+        $this->setBehavior(self::BEHAVIOR_UPDATE);        
+        $this->dispatchEvent(self::EVENT_BEFORE_UPDATE);
+        $this->getRecord()->save();        
+        $this->dispatchEvent(self::EVENT_AFTER_UPDATE);
     }
     
     public function delete()
     {    
-        $this->behavior = self::BEHAVIOR_DELETE;
-        $this->beforeDelete();        
-        $this->getRecord()->delete();
-        $this->afterDelete();
+        $this->setBehavior(self::BEHAVIOR_DELETE);             
+        $this->dispatchEvent(self::EVENT_BEFORE_DELETE);
+        $this->getRecord()->delete();        
+        $this->dispatchEvent(self::EVENT_AFTER_DELETE);
+    }
+    
+    public function setBehavior($behavior)
+    {
+        $this->behavior = $behavior;
     }
     
     public function setValue($field, $value, $defaultValue = null)
@@ -281,38 +282,6 @@ abstract class Record
     
     protected function afterUpload($filename, $field = null)
     {        
-    }
-    
-    protected function beforeExec()
-    {
-    }
-    
-    protected function beforeInsert()
-    {
-    }
-    
-    protected function beforeUpdate()
-    {
-    }
-    
-    protected function beforeDelete()
-    {
-    }
-    
-    protected function afterExec()
-    {
-    }
-    
-    protected function afterInsert($id)
-    {
-    }
-    
-    protected function afterUpdate()
-    {
-    }
-    
-    protected function afterDelete()
-    {
     }
     
     abstract protected function init();  
