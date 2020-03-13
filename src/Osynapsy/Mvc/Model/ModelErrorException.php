@@ -14,20 +14,28 @@ class ModelErrorException extends \Exception
     
     public function setError($message)
     {
-        $this->errors[] = $message;
+        $this->errors[] = $message; 
+        $this->appendToMessage($message);
     }
     
-    public function setErrorOnField(ModelField $field, $errorMessage)
+    public function setErrorOnField(ModelField $field, $rawErrorMessage)
     {
-        $this->errors[$field->html] = str_replace(
+        $errorMessage = str_replace(
             ['<fieldname>', '<value>'],
             ['<!--'.$field->html.'-->', $field->value],
-            $errorMessage
+            $rawErrorMessage
         );
+        $this->errors[$field->html] = $errorMessage;
+        $this->appendToMessage($errorMessage);
     }
 
     public function getErrors()
     {
         return $this->errors;
+    }
+    
+    public function appendToMessage($message)
+    {
+        $this->message .= PHP_EOL.$message;
     }
 }
