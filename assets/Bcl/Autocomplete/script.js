@@ -99,7 +99,10 @@ BclAutocomplete = {
             } else {
                 $('.row.selected').removeClass('selected').next().addClass('selected');
             }
-        }).on('click','div.row',function(e){ 
+        }).on('click','div.row',function(e) {
+            if ($(this).hasClass('empty-message')) {
+                return;
+            }
             e.preventDefault();
             var parentid = $(this).closest('#search_content').data('parent');            
             $('input#'+parentid).removeClass('osy-autocomplete-unselected').val($(this).data('label'));
