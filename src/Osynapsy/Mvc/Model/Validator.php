@@ -1,7 +1,7 @@
 <?php
 namespace Osynapsy\Mvc\Model;
 
-use Osynapsy\Mvc\ModelField;
+use Osynapsy\Mvc\Model\Field;
 
 /**
  * Description of ModelFieldCheck
@@ -89,23 +89,23 @@ class Validator
         }
     }
     
-    public function validateType(ModelField $field)
+    public function validateType(Field $field)
     {   
         $value = $field->value;
         switch ($field->type) {
-            case ModelField::TYPE_NUMBER:
+            case Field::TYPE_NUMBER:
                 $this->isFloat($value);
                 break;
-            case ModelField::TYPE_INTEGER:            
+            case Field::TYPE_INTEGER:            
                 $this->isInteger($value);
                 break;
-            case ModelField::TYPE_EMAIL:
+            case Field::TYPE_EMAIL:
                 $this->isEmail($value);
                 break;
         }
     }
     
-    public function validate(ModelField $field)
+    public function validate(Field $field)
     {
         $this->isNotNull($field);
         $this->validateCharLength($field);

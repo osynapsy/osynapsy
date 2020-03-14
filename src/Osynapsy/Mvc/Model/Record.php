@@ -14,7 +14,7 @@ namespace Osynapsy\Mvc\Model;
 use Osynapsy\Data\Dictionary;
 use Osynapsy\Event\EventLocal;
 use Osynapsy\Mvc\Controller;
-use Osynapsy\Mvc\ModelField;
+use Osynapsy\Mvc\Model\Field;
 use Osynapsy\Helper\Net\UploadManager;
 
 abstract class Record
@@ -156,13 +156,13 @@ abstract class Record
         }
     }
     
-    public function map($formField, $dbField = null, $defaultValue = null, $type = 'string')
+    public function map($fieldNameOnForm, $fieldNameOnRecord = null, $defaultValue = null, $type = 'string')
     {        
-        $formValue = isset($_REQUEST[$formField]) ? $_REQUEST[$formField] : null;
-        $modelField = new ModelField($this, $dbField, $formField, $type, isset($_REQUEST[$formField]));
-        $modelField->setValue($formValue, $defaultValue);        
-        $this->set('fields.'.$modelField->html, $modelField);
-        return $modelField;
+        $formValue = isset($_REQUEST[$fieldNameOnForm]) ? $_REQUEST[$fieldNameOnForm] : null;
+        $field = new Field($this, $fieldNameOnRecord, $fieldNameOnForm, $type, isset($_REQUEST[$fieldNameOnForm]));
+        $field->setValue($formValue, $defaultValue);        
+        $this->set('fields.'.$field->html, $field);
+        return $field;
     }
     
     /**

@@ -1,7 +1,7 @@
 <?php
 namespace Osynapsy\Mvc\Model;
 
-use Osynapsy\Mvc\ModelField;
+use Osynapsy\Mvc\Model\Field;
 
 /**
  * Description of ModelErrorException
@@ -18,7 +18,7 @@ class ModelErrorException extends \Exception
         $this->appendToMessage($message);
     }
     
-    public function setErrorOnField(ModelField $field, $rawErrorMessage)
+    public function setErrorOnField(Field $field, $rawErrorMessage)
     {
         $errorMessage = str_replace(
             ['<fieldname>', '<value>'],
