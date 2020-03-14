@@ -175,8 +175,8 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      */
     final public function getExternalAction($actionId)
     {
-        if (array_key_exists($actionId, $this->externalActions) ){
-            throw new \Exception(sprinf("No external action %s exists", $actionId));
+        if (!array_key_exists($actionId, $this->externalActions) ){
+            throw new \Exception(sprintf("No external action %s exists", $actionId));
         }
         return $this->externalActions[$actionId];
     }
