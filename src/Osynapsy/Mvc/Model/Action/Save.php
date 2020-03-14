@@ -81,17 +81,17 @@ class Save extends Base
         $this->pageRefresh();
     }
     
-    protected function pageBack()
+    public function pageBack()
     {
         $this->getResponse()->go('back');
     }
     
-    protected function pageRefresh()
+    public function pageRefresh()
     {        
         $this->getResponse()->go('refresh');
     }
     
-    protected function historyPushState($parameterToUrlAppend)
+    public function historyPushState($parameterToUrlAppend)
     {
         if (empty($parameterToUrlAppend)) {
             return;
