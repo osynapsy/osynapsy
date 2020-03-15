@@ -147,4 +147,22 @@ class ResponseJson extends Response
     {
         return new JQuery($selector, $this);
     }
+    
+    public function pageBack()
+    {
+        $this->go('back');
+    }
+    
+    public function pageRefresh()
+    {        
+        $this->go('refresh');
+    }
+    
+    public function historyPushState($parameterToUrlAppend)
+    {
+        if (empty($parameterToUrlAppend)) {
+            return;
+        }
+        $this->js("history.pushState(null,null,'{$parameterToUrlAppend}');");
+    }
 }
