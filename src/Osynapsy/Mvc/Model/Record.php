@@ -38,6 +38,7 @@ abstract class Record
     private $exception;
     private $controller;
     private $validator;
+    protected $softDelete;
     public $uploadOccurred = false;
     public $behavior;
     
@@ -240,8 +241,6 @@ abstract class Record
             $this->getController()->getResponse()->error('alert', $e->getMessage());
             $field->readonly = true;            
         }        
-        $this->set('actions.after-update','refresh');
-        $this->afterUpload($field->value, $field);
     }
     
     public function insert()
@@ -264,7 +263,11 @@ abstract class Record
     {    
         $this->setBehavior(self::BEHAVIOR_DELETE);             
         $this->dispatchEvent(self::EVENT_BEFORE_DELETE);
-        $this->getRecord()->delete();        
+        if (empty($this->softDelete)) {
+            $this->getRecord()->delete();
+        } else {
+            $this->getRecord()->save($this->softDelete);
+        }
         $this->dispatchEvent(self::EVENT_AFTER_DELETE);
     }
     
@@ -278,9 +281,10 @@ abstract class Record
         $this->repo->get('fields.'.$field)->setValue($value, $defaultValue);
     }
     
-    protected function afterUpload($filename, $field = null)
-    {        
-    }
+    public function softDelete($field, $value)
+    {
+        $this->softDelete = [$field => $value];
+    }        
     
     abstract protected function init();  
     
