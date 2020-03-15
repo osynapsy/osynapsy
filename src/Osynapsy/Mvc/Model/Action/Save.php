@@ -22,10 +22,10 @@ class Save extends Base
     
     public function __construct()
     {
-        $this->setTrigger(self::EVENT_AFTER_EXECUTE, [$this, 'afterExecute']);
-        $this->setTrigger(self::EVENT_AFTER_INSERT, [$this, 'afterInsert']);
-        $this->setTrigger(self::EVENT_AFTER_UPDATE, [$this, 'afterUpdate']);
-        $this->setTrigger(self::EVENT_AFTER_UPLOAD, [$this, 'afterUpload']);
+        $this->setTrigger([self::EVENT_AFTER_EXECUTE], [$this, 'afterExecute']);
+        $this->setTrigger([self::EVENT_AFTER_INSERT], [$this, 'afterInsert']);
+        $this->setTrigger([self::EVENT_AFTER_UPDATE], [$this, 'afterUpdate']);
+        $this->setTrigger([self::EVENT_AFTER_UPLOAD], [$this, 'afterUpload']);
     }
     
     public function execute()
@@ -44,32 +44,29 @@ class Save extends Base
     public function afterExecute()
     {
         if ($this->getModel()->uploadOccurred) {
-            $this->afterUpload();
+            $this->executeTrigger(self::EVENT_AFTER_UPLOAD);            
             return;
         }
         if ($this->getModel()->behavior === 'insert') {
-            $this->afterInsert();
+            $this->executeTrigger(self::EVENT_AFTER_INSERT);            
             return;
         }
-        $this->afterUpdate();
+        $this->executeTrigger(self::EVENT_AFTER_UPDATE);        
     }       
 
     public function afterInsert()
-    {
-        $this->executeTrigger(self::EVENT_AFTER_INSERT);
+    {        
         $this->getResponse()->historyPushState($this->getModel()->getLastId());
         $this->getResponse()->pageRefresh();
     }
 
     public function afterUpdate()
-    {
-        $this->executeTrigger(self::EVENT_AFTER_UPDATE);
+    {        
         $this->getResponse()->pageBack();
     }
     
     public function afterUpload()
-    {
-        $this->executeTrigger(self::EVENT_AFTER_UPLOAD);
+    {        
         $this->getResponse()->historyPushState($this->getModel()->getLastId());
         $this->getResponse()->pageRefresh();
     }
