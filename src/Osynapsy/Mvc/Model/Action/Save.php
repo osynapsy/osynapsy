@@ -10,46 +10,36 @@ use Osynapsy\Mvc\Action\Base;
  * @author Pietro
  */
 class Save extends Base
-{                
-    protected $events = [
-        'beforeExecute' => null,
-        'beforeInsert' => null,    
-        'beforeUpdate' => null,    
-        'beforeUpload' => null,
-        'afterExecute' => null,    
-        'afterInsert'  => null,
-        'afterUpdate'  => null,
-        'afterUpload'  => null
-    ];
+{    
+    const EVENT_AFTER_EXECUTE = 'afterExecute';
+    const EVENT_AFTER_INSERT = 'afterInsert';
+    const EVENT_AFTER_UPDATE = 'afterUpdate';
+    const EVENT_AFTER_UPLOAD = 'afterUpload';
+    const EVENT_BEFORE_EXECUTE = 'beforeExecute';    
+    const EVENT_BEFORE_INSERT = 'beforeInsert';   
+    const EVENT_BEFORE_UPDATE = 'beforeUpdate';    
+    const EVENT_BEFORE_UPLOAD = 'beforeUpload';
     
     public function __construct()
     {
-        $this->setTrigger('afterExecute', [$this, 'afterExecute']);
-        $this->setTrigger('afterInsert', [$this, 'afterInsert']);
-        $this->setTrigger('afterUpdate', [$this, 'afterUpdate']);
-        $this->setTrigger('afterUpload', [$this, 'afterUpload']);
+        $this->setTrigger(self::EVENT_AFTER_EXECUTE, [$this, 'afterExecute']);
+        $this->setTrigger(self::EVENT_AFTER_INSERT, [$this, 'afterInsert']);
+        $this->setTrigger(self::EVENT_AFTER_UPDATE, [$this, 'afterUpdate']);
+        $this->setTrigger(self::EVENT_AFTER_UPLOAD, [$this, 'afterUpload']);
     }
     
     public function execute()
     {        
         try {
-            $this->executeTrigger('beforeExecute');
-            $this->getController()->getModel()->save();
-            $this->executeTrigger('afterExecute');
+            $this->executeTrigger(self::EVENT_BEFORE_EXECUTE);
+            $this->getModel()->save();
+            $this->executeTrigger(self::EVENT_AFTER_EXECUTE);
         } catch (ModelErrorException $e) {
             $this->sendErrors($e->getErrors());
         } catch (\Exception $e) {
             $this->sendErrors(['alert' => $e->getMessage()]);
         }
-    }
-    
-    protected function executeTrigger($eventId)
-    {
-        if (empty($this->events[$eventId])) {
-            return;
-        }        
-        call_user_func($this->events[$eventId], $this);
-    }
+    }        
 
     public function afterExecute()
     {
@@ -66,17 +56,20 @@ class Save extends Base
 
     public function afterInsert()
     {
+        $this->executeTrigger(self::EVENT_AFTER_INSERT);
         $this->getResponse()->historyPushState($this->getModel()->getLastId());
         $this->getResponse()->pageRefresh();
     }
 
     public function afterUpdate()
     {
+        $this->executeTrigger(self::EVENT_AFTER_UPDATE);
         $this->getResponse()->pageBack();
     }
     
     public function afterUpload()
     {
+        $this->executeTrigger(self::EVENT_AFTER_UPLOAD);
         $this->getResponse()->historyPushState($this->getModel()->getLastId());
         $this->getResponse()->pageRefresh();
     }
@@ -86,10 +79,5 @@ class Save extends Base
         foreach($errors as $fieldHtml => $error) {
             $this->getResponse()->error($fieldHtml, $error);
         }
-    }
-
-    public function setTrigger($event, callable $function)
-    {
-        $this->events[$event] = $function;
-    }
+    }   
 }
