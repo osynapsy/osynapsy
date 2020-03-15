@@ -9,19 +9,25 @@ use Osynapsy\Mvc\Action\Base;
  * @author Pietro
  */
 class Delete extends Base
-{        
+{    
+    public function __construct()
+    {        
+        $this->setTrigger(['afterDelete'], [$this, 'afterDelete']);
+    }
+    
     public function execute()
     {        
         try {
-            $this->controller->getModel()->delete();
-            $this->afterDelete();
+            $this->executeTrigger('beforeDelete');
+            $this->getModel()->delete();
+            $this->executeTrigger('afterDelete');
         } catch(\Exception $e) {
-            $this->controller->getResponse()->alertJs($e->getMessage());
+            $this->getResponse()->alertJs($e->getMessage());
         }        
     }
     
     public function afterDelete()
     {
-        $this->controller->getResponse()->go('back');
+        $this->getResponse()->go('back');
     }        
 }
