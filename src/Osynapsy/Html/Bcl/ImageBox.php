@@ -46,7 +46,7 @@ class ImageBox extends Component
         $this->requireCss('Bcl/ImageBox/style.css');        
         $this->requireJs('Bcl/ImageBox/script.js');
         parent::__construct('div',$id.'_box');
-        $this->att('class','osy-imagebox-bcl')->att('data-action','save');
+        $this->att('class','osy-imagebox-bcl')->att('data-action','upload');
         $this->att('data-preserve-aspect-ratio', 0);
         $this->add(new HiddenBox($id));
         $this->dummy = $this->add(new Tag('label', null, 'osy-imagebox-dummy'))                            
