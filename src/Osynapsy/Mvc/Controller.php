@@ -303,6 +303,11 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         }
     }
     
+    public function uploadAction()
+    {
+        $this->saveAction();
+    }
+    
     /**
      * Set external class action for manage action
      * 
