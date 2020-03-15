@@ -66,43 +66,25 @@ class Save extends Base
 
     public function afterInsert()
     {
-        $this->historyPushState($this->getModel()->getLastId());
-        $this->pageRefresh();
+        $this->getResponse()->historyPushState($this->getModel()->getLastId());
+        $this->getResponse()->pageRefresh();
     }
 
     public function afterUpdate()
     {
-        $this->pageBack();
+        $this->getResponse()->pageBack();
     }
     
     public function afterUpload()
     {
-        $this->historyPushState($this->getModel()->getLastId());
-        $this->pageRefresh();
+        $this->getResponse()->historyPushState($this->getModel()->getLastId());
+        $this->getResponse()->pageRefresh();
     }
-    
-    public function pageBack()
-    {
-        $this->getResponse()->go('back');
-    }
-    
-    public function pageRefresh()
-    {        
-        $this->getResponse()->go('refresh');
-    }
-    
-    public function historyPushState($parameterToUrlAppend)
-    {
-        if (empty($parameterToUrlAppend)) {
-            return;
-        }
-        $this->getResponse()->js("history.pushState(null,null,'{$parameterToUrlAppend}');");
-    }
-           
+       
     private function sendErrors($errors)
     {
         foreach($errors as $fieldHtml => $error) {
-            $this->getController()->getResponse()->error($fieldHtml, $error);
+            $this->getResponse()->error($fieldHtml, $error);
         }
     }
 
