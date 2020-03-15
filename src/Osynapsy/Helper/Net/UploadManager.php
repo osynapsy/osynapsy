@@ -73,7 +73,7 @@ class UploadManager
         if (!empty($alert)) {
             throw new \Exception($alert);            
         } elseif(empty($fileNameFinal)) {             
-            throw new \Exception('Filename is empty for field '.$componentName);
+            throw new \Exception('Filename is empty for field '.$componentName, 404);
         } elseif (empty($fileNameTemp)) {            
             throw new \Exception('Temporary filename is empty for field '.$componentName);
         }       
