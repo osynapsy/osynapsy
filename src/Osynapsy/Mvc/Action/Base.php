@@ -12,8 +12,17 @@ abstract class Base implements InterfaceAction
 {
     protected $controller;
     protected $parameters;
+    protected $triggers = [];
     
     abstract public function execute();
+    
+    protected function executeTrigger($eventId)
+    {
+        if (empty($this->triggers[$eventId])) {
+            return;
+        }        
+        call_user_func($this->triggers[$eventId], $this);
+    }
     
     public function getController()
     {
@@ -38,5 +47,12 @@ abstract class Base implements InterfaceAction
     public function setParameters(array $parameters)
     {
         $this->parameters = $parameters;
+    }
+    
+    public function setTrigger(array $events, callable $function)
+    {
+        foreach ($events as $event) {
+            $this->triggers[$event] = $function;
+        }
     }
 }
