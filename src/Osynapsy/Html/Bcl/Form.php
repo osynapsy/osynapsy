@@ -189,9 +189,9 @@ class Form extends Component
         $this->body->setType($type);
     }
     
-    public function setTitle($title, $subTitle = null, $size = 6)
+    public function setTitle($title, $subTitle = null, $size = 6, $hsize = 'h2')
     {
-        $objTitle = new Tag('h2');
+        $objTitle = new Tag($hsize);
         $objTitle->add($title);
         $column = $this->head($size);
         $column->push(false, $objTitle, false);
