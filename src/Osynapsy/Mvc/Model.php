@@ -364,6 +364,7 @@ abstract class Model
         $upload = new UploadManager();
         try {
             $field->value = $upload->saveFile($field->html, $field->uploadDir);
+            $field->readonly = false;
         } catch(\Exception $e) {
             $this->controller->getResponse()->error('alert', $e->getMessage());
             $field->readonly = true;            

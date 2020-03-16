@@ -309,6 +309,7 @@ abstract class ModelRecord
         $upload = new UploadManager();
         try {
             $field->value = $upload->saveFile($field->html, $field->uploadDir);
+            $field->readonly = false;
         } catch(\Exception $e) {
             $this->getController()->getResponse()->error('alert', $e->getMessage());
             $field->readonly = true;            
