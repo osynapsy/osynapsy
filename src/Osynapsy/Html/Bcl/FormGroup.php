@@ -20,7 +20,7 @@ class FormGroup extends Component
     public $object;
     private $labelClass;
     
-    public function __construct($object, $label = '&nbsp;', $class = 'form-group', $labelClass = 'font-weight-500')
+    public function __construct($object, $label = '&nbsp;', $class = 'form-group', $labelClass = 'font-weight-500 text-nowrap')
     {
         parent::__construct('div');
         $this->att('class', $class);
