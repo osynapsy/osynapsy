@@ -11,11 +11,9 @@
 
 namespace Osynapsy\Mvc\Model;
 
-use Osynapsy\Data\Dictionary;
 use Osynapsy\Event\EventLocal;
 use Osynapsy\Mvc\Controller;
 use Osynapsy\Mvc\Model\Field;
-use Osynapsy\Helper\Net\UploadManager;
 
 abstract class Record
 {       
@@ -33,7 +31,7 @@ abstract class Record
     const EVENT_AFTER_DELETE = 'afterDelete';
     const EVENT_AFTER_UPLOAD = 'afterUpload';
     
-    private $repo;    
+    private $fields = [];    
     private $record;
     private $exception;
     private $controller;
@@ -47,13 +45,11 @@ abstract class Record
         $this->controller = $controller;
         $this->controller->setExternalAction('save', new \Osynapsy\Mvc\Model\Action\Save());
         $this->controller->setExternalAction('delete', new \Osynapsy\Mvc\Model\Action\Delete());
+        $this->controller->setExternalAction('upload', new \Osynapsy\Mvc\Model\Action\Upload());
         $this->record = $this->record();        
-        $this->repo = new Dictionary();
-        $this->repo->set('fields',[])                   
-                   ->set('values',[]);
         $this->init();
         $this->initRecord();
-    }       
+    }
     
     public function addListenerLocal(callable $trigger, array $eventIDs)
     {        
@@ -64,10 +60,10 @@ abstract class Record
     private function initRecord()
     {
         $keys = [];
-        foreach($this->get('fields') as $field) {
+        foreach($this->fields as $field) {
             if ($field->isPkey()) {
                 $keys[$field->name] = $field->getDefaultValue();
-            }            
+            }       
         }
         $this->getRecord()->findByAttributes($keys);        
     }
@@ -75,11 +71,6 @@ abstract class Record
     protected function dispatchEvent($event)
     {
         $this->getController()->getDispatcher()->dispatch(new EventLocal($event, $this));
-    }
-    
-    public function get($key)
-    {
-        return $this->repo->get($key);
     }
     
     public function getDb()
@@ -100,9 +91,9 @@ abstract class Record
         return $this->exception;
     }
     
-    public function getField($field)
+    public function getField($fieldId)
     {
-        return $this->get('fields.'.$field);
+        return $this->fields[$fieldId];
     }
     
     public function getLastId()
@@ -128,12 +119,6 @@ abstract class Record
         return $this->getRecord()->getValue($key);
     }
     
-    public function set($key, $value)
-    {
-        $this->repo->set($key, $value);
-        return $this;
-    }              
-    
     public function find()
     {        
         $values = $this->getRecord()->get();
@@ -146,7 +131,7 @@ abstract class Record
         if (empty($values)) {
             return;
         }
-        foreach($this->get('fields') as $field) {
+        foreach($this->fields as $field) {
             if (array_key_exists($field->html, $_REQUEST)) {
                 continue;
             }
@@ -162,7 +147,7 @@ abstract class Record
         $formValue = isset($_REQUEST[$fieldNameOnForm]) ? $_REQUEST[$fieldNameOnForm] : null;
         $field = new Field($this, $fieldNameOnRecord, $fieldNameOnForm, $type, isset($_REQUEST[$fieldNameOnForm]));
         $field->setValue($formValue, $defaultValue);        
-        $this->set('fields.'.$field->html, $field);
+        $this->fields[$field->html] = $field;
         return $field;
     }
     
@@ -176,7 +161,7 @@ abstract class Record
         //Recall before exec method with arbirtary code
         $this->dispatchEvent(self::EVENT_BEFORE_SAVE);
         //Fill Record with values from html form
-        $this->fillRecord();        
+        $this->fillRecord();
         //If occurred some error stop db updating and return exception
         if (!empty($this->exception) && !empty($this->exception->getErrors())) {            
             throw $this->exception;
@@ -194,14 +179,10 @@ abstract class Record
     private function fillRecord()
     {
         //skim the field list for check value and build $values, $where and $key list
-        foreach ($this->repo->get('fields') as $field) {            
+        foreach ($this->fields as $field) {            
             //Check if value respect rule
             if ($field->existInForm()) {
                 $this->validateField($field);
-            }            
-            //If field is file or image grab upload
-            if (in_array($field->type, ['image', 'file'])) {
-                $this->grabUploadedFile($field);
             }
             //if field is readonly or don't have db field name skip other checks.
             if (!$field->readonly && !$field->name) {
@@ -224,23 +205,6 @@ abstract class Record
         } catch(\Exception $e) {
             $this->getException()->setErrorOnField($field, $e->getMessage());
         }
-    }
-    
-    private function grabUploadedFile(&$field)
-    {
-        if (!is_array($_FILES) || !array_key_exists($field->html, $_FILES) || empty($_FILES[$field->html]['name'])) {
-            $field->readonly = true;            
-            $field->value = $this->getRecord()->get($field->name);
-            return;
-        }                
-        $upload = new UploadManager();
-        try {
-            $field->value = $upload->saveFile($field->html, $field->uploadDir);
-            $this->uploadOccurred = true;
-        } catch(\Exception $e) {
-            $this->getController()->getResponse()->error('alert', $e->getMessage());
-            $field->readonly = true;            
-        }        
     }
     
     public function insert()
@@ -276,9 +240,9 @@ abstract class Record
         $this->behavior = $behavior;
     }
     
-    public function setValue($field, $value, $defaultValue = null)
+    public function setValue($fieldId, $value, $defaultValue = null)
     {
-        $this->repo->get('fields.'.$field)->setValue($value, $defaultValue);
+        $this->fields[$fieldId]->setValue($value, $defaultValue);
     }
     
     public function softDelete($field, $value)

@@ -134,6 +134,9 @@ class Field
     {
         $this->type = $type;
         $this->existInForm = in_array($type, ['file','image']) ? true : $existInForm;
+        if (in_array($type, ['file','image'])) {
+            $this->readonly = true;
+        }
     }
     
     public function setValue($value, $default = null)
