@@ -49,8 +49,7 @@ class ImageBox extends Component
         $this->att('class','osy-imagebox-bcl')->att('data-action','upload');
         $this->att('data-preserve-aspect-ratio', 0);
         $this->add(new HiddenBox($id));
-        $this->dummy = $this->add(new Tag('label', null, 'osy-imagebox-dummy'))                            
-                            ->att('for',$id);
+        $this->dummy = $this->add(new Tag('label', null, 'osy-imagebox-dummy'))->att('for',$id);
         $file = $this->add(new Tag('input', $id, 'hidden'));
         $file->att('type','file')->att('style','display: none;')->name = $id;
         
@@ -64,7 +63,7 @@ class ImageBox extends Component
         $this->checkCrop();
         $this->buildImageTag();
         $this->toolbar
-             ->add('<button type="button" class="btn btn-danger cmd-execute pull-right image-delete osy-imagebox-bcl-image-delete" data-action="deleteImage" data-action-parameters="'.$this->image['webPath'].'"><span class="fa fa-trash"></span>');   
+             ->add('<button type="button" class="btn btn-danger cmd-execute pull-right image-delete osy-imagebox-bcl-image-delete" data-action="deleteImage" data-action-parameters="'.$this->image['webPath'].','.$this->id.'"><span class="fa fa-trash"></span>');   
         if (empty($this->image['object'])) {
             $this->dummy
                  ->add(new Tag('span'))
