@@ -33,7 +33,8 @@ class ImageBox extends Component
     private $resizeMethod = 'resize';
     private $toolbar;
     private $dummy;
-    private $cropActive = false;    
+    private $cropActive = false;
+    private $fileBox;    
     private $action = array(
         'crop' => 'crop',
         'delete' => 'deleteImage'
@@ -45,13 +46,13 @@ class ImageBox extends Component
         $this->requireJs('Lib/rcrop/script.js');
         $this->requireCss('Bcl/ImageBox/style.css');        
         $this->requireJs('Bcl/ImageBox/script.js');
-        parent::__construct('div',$id.'_box');
+        parent::__construct('div', $id.'_box');
         $this->att('class','osy-imagebox-bcl')->att('data-action','upload');
         $this->att('data-preserve-aspect-ratio', 0);
         $this->add(new HiddenBox($id));
         $this->dummy = $this->add(new Tag('label', null, 'osy-imagebox-dummy'))->att('for',$id);
-        $file = $this->add(new Tag('input', $id, 'hidden'));
-        $file->att('type','file')->att('style','display: none;')->name = $id;
+        $this->fileBox = $this->add(new Tag('input', $id, 'hidden'));
+        $this->fileBox->att('type','file')->att('style','display: none;')->name = $id;
         
         $this->toolbar = new Tag('div');
         $this->toolbar->att('class','osy-imagebox-bcl-cmd');
@@ -63,7 +64,7 @@ class ImageBox extends Component
         $this->checkCrop();
         $this->buildImageTag();
         $this->toolbar
-             ->add('<button type="button" class="btn btn-danger cmd-execute pull-right image-delete osy-imagebox-bcl-image-delete" data-action="deleteImage" data-action-parameters="'.$this->image['webPath'].','.$this->id.'"><span class="fa fa-trash"></span>');   
+             ->add('<button type="button" class="btn btn-danger cmd-execute pull-right image-delete osy-imagebox-bcl-image-delete" data-action="deleteImage" data-action-parameters="'.$this->image['webPath'].','.$this->fileBox->id.'"><span class="fa fa-trash"></span>');   
         if (empty($this->image['object'])) {
             $this->dummy
                  ->add(new Tag('span'))
