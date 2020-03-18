@@ -14,11 +14,15 @@ namespace Osynapsy\Html\Bcl;
 use Osynapsy\Helper\ImageProcessing\Image;
 use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
+use Osynapsy\Html\Bcl\Button;
 use Osynapsy\Html\Ocl\HiddenBox;
 
 class ImageBox extends Component
 {
-    private $image = array(
+    const ACTION_CROP_IMAGE = 'cropImage';
+    const ACTION_DELETE_IMAGE = 'deleteFile';
+    
+    private $image = [
         'object' => null,
         'webPath' => null,
         'diskPath' => null,
@@ -28,17 +32,12 @@ class ImageBox extends Component
         'maxwidth' => 0,
         'maxheight' => 0,
         'domain' => ''
-    );
-    private $debug = false;
-    private $resizeMethod = 'resize';
-    private $toolbar;
-    private $dummy;
+    ];
     private $cropActive = false;
+    private $debug = false;
+    private $dummy;    
     private $fileBox;    
-    private $action = array(
-        'crop' => 'crop',
-        'delete' => 'deleteImage'
-    );
+    private $toolbar;
     
     public function __construct($id)
     {
@@ -50,31 +49,43 @@ class ImageBox extends Component
         $this->att('class','osy-imagebox-bcl')->att('data-action','upload');
         $this->att('data-preserve-aspect-ratio', 0);
         $this->add(new HiddenBox($id));
-        $this->dummy = $this->add(new Tag('label', null, 'osy-imagebox-dummy'))->att('for',$id);
+        $this->dummy = $this->add(new Tag('label', null, 'osy-imagebox-dummy'))->att('for', $id);
         $this->fileBox = $this->add(new Tag('input', $id, 'hidden'));
-        $this->fileBox->att('type','file')->att('style','display: none;')->name = $id;
-        
-        $this->toolbar = new Tag('div');
-        $this->toolbar->att('class','osy-imagebox-bcl-cmd');
+        $this->fileBox->att('type','file')->att('style','display: none;')->name = $id;        
+        $this->toolbar = new Tag('div', null, 'osy-imagebox-bcl-cmd');        
     }
 
     protected function __build_extra__()
     {
         $this->getImage();
         $this->checkCrop();
-        $this->buildImageTag();
-        $this->toolbar
-             ->add('<button type="button" class="btn btn-danger cmd-execute pull-right image-delete osy-imagebox-bcl-image-delete" data-action="deleteImage" data-action-parameters="'.$this->image['webPath'].','.$this->fileBox->id.'"><span class="fa fa-trash"></span>');   
+        $this->imageFactory();
+        $this->toolbar->add($this->buttonDeleteImageFactory());   
         if (empty($this->image['object'])) {
-            $this->dummy
-                 ->add(new Tag('span'))
-                 ->att('class', 'fa fa-camera glyphicon glyphicon-camera');
-            if ($this->image['maxwidth']) {
-                $this->dummy->att('style','width : '.$this->image['maxwidth'].'px; height : '.$this->image['maxheight'].'px;');
-            }
+            $this->dummyEmptyFactory();
             return;
         }        
         $this->add($this->toolbar);        
+    }
+    
+    protected function buttonDeleteImageFactory()
+    {
+        $button = new Button($this->id.'_delete_image', 'button', 'btn-danger pull-right osy-imagebox-bcl-image-delete', '<i class="fa fa-trash"></i>');
+        $button->setAction(self::ACTION_DELETE_IMAGE, $this->image['webPath'].','.$this->fileBox->id, 'click-execute', 'Sei sicuro di voler eliminare l\'immagine?');
+        return $button;
+    }
+
+    protected function iconCameraFactory()
+    {
+        return new Tag('span', null, 'fa fa-camera glyphicon glyphicon-camera');
+    }
+
+    protected function dummyEmptyFactory()
+    {
+        $this->dummy->add($this->iconCameraFactory());
+        if ($this->image['maxwidth']) {
+            $this->dummy->att('style', sprintf('width : %spx; height : %spx;', $this->image['maxwidth'], $this->image['maxheight']));
+        }
     }
     
     private function getImage()
@@ -95,15 +106,16 @@ class ImageBox extends Component
         $this->image['formFactor'] = $this->image['width'] / $this->image['height'];
     }
     
-    private function buildImageTag()
+    private function imageFactory()
     {
         if (!file_exists($this->image['diskPath'])) { 
             return;
         }
         if ($this->cropActive) {
-            $this->image['object'] = $this->add(new Tag('img', null, 'imagebox-main'))
-                                          ->att('src', $this->image['domain'].$this->image['webPath'])                                          
-                                          ->att('data-action',$this->action['crop']);
+            $this->image['object'] = $this->add(new Tag('img', null, 'imagebox-main'))->att([
+                'src' => $this->image['domain'].$this->image['webPath'],
+                'data-action' => self::ACTION_CROP_IMAGE
+            ]);                                          
         } else {
             $this->image['object'] = $this->dummy->add(new Tag('img'))->att('src', $this->image['domain'].$this->image['webPath']);
         }
@@ -154,28 +166,8 @@ class ImageBox extends Component
         $this->image['maxheight'] = $height;
         $this->image['formFactorIdeal'] = $width / $height;
         return $this;
-    }
-    
-    public function setResizeByCrop()
-    {
-        $this->resizeMethod = 'crop';
-        return $this;
-    }
-    
-    public static function crop($path, $newWidth, $newHeight, $x, $y, $w, $h)
-    {
-        $img = new Image($path);       
-        $img->resize($newWidth, $newHeight);
-        $img->crop($x, $y, $w, $h);
-        $img->save($path);
-        return true;
-    }
-    
-    public function setCropAction($action)
-    {
-        $this->action['crop'] = $action;
-    }
-    
+    }        
+            
     public function activeDebug()
     {
         $this->debug = true;
