@@ -42,15 +42,16 @@ abstract class Record
     
     public function __construct($controller)
     {
-        $this->controller = $controller;
-        $this->controller->setExternalAction('save', new \Osynapsy\Mvc\Model\Action\Save());
-        $this->controller->setExternalAction('delete', new \Osynapsy\Mvc\Model\Action\Delete());
-        $this->controller->setExternalAction('upload', new \Osynapsy\Mvc\Model\Action\Upload());
-        $this->controller->setExternalAction('deleteFile', new \Osynapsy\Mvc\Model\Action\DeleteFile());
-        $this->controller->setExternalAction('cropImage', new \Osynapsy\Mvc\Model\Action\CropImage());
-        $this->record = $this->record();        
+        $this->controller = $controller;        
+        $this->record = $this->record();
+        $this->initExternalAction();
         $this->init();
         $this->initRecord();
+    }
+    
+    protected function dispatchEvent($event)
+    {
+        $this->getController()->getDispatcher()->dispatch(new EventLocal($event, $this));
     }
     
     public function addListenerLocal(callable $trigger, array $eventIDs)
@@ -70,9 +71,13 @@ abstract class Record
         $this->getRecord()->findByAttributes($keys);        
     }
     
-    protected function dispatchEvent($event)
+    protected function initExternalAction()
     {
-        $this->getController()->getDispatcher()->dispatch(new EventLocal($event, $this));
+        $this->getController()->setExternalAction('save', new \Osynapsy\Mvc\Model\Action\Save());
+        $this->getController()->setExternalAction('delete', new \Osynapsy\Mvc\Model\Action\Delete());
+        $this->getController()->setExternalAction('upload', new \Osynapsy\Mvc\Model\Action\Upload());
+        $this->getController()->setExternalAction('deleteFile', new \Osynapsy\Mvc\Model\Action\DeleteFile());
+        $this->getController()->setExternalAction('cropImage', new \Osynapsy\Mvc\Model\Action\CropImage());
     }
     
     public function getDb()
