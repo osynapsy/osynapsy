@@ -34,11 +34,10 @@ class FileBox extends Component
         
         parent::__construct('dummy', $name);
         $this->span = $this->add(new Tag('span'));
-        $div = $this->add(new Tag('div'));
-        $div->att('class','input-group')
-                    ->add(new Tag('span', null, 'input-group-btn input-group-prepend'))                    
-                    ->add(new Tag('span', null, 'btn btn-primary btn-file'))                    
-                    ->add('<input type="file" name="'.$name.'"><span class="fa fa-folder-open"></span>');
+        $div = $this->add(new Tag('div', null, 'input-group'));
+        $div->add(new Tag('span', null, 'input-group-btn input-group-prepend'))                    
+            ->add(new Tag('span', null, 'btn btn-primary btn-file'))                    
+            ->add('<input type="file" name="'.$name.'"><span class="fa fa-folder-open"></span>');
         $div->add('<input type="text" class="form-control" readonly>');
         if (!$postfix) {
             return;
@@ -58,6 +57,11 @@ class FileBox extends Component
             $this->span->add(new Tag('img'))->att('src',$_REQUEST[$this->id]);
             return;
         } 
+        $this->downloadFileFactory();
+    }
+    
+    protected function downloadFileFactory()
+    {
         $pathinfo = pathinfo($_REQUEST[$this->id]);            
         $filename = $pathinfo['filename'].(!empty($pathinfo['extension']) ? '.'.$pathinfo['extension'] : '');
         $download = new Tag('a');
@@ -66,5 +70,5 @@ class FileBox extends Component
         $label->att('style','padding: 10px; background-color: #ddd; margin-bottom: 10px;');
         $label->setLabel($download);
         $this->span->add($label);        
-    }   
+    }
 }
