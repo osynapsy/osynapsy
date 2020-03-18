@@ -9,7 +9,7 @@ use Osynapsy\Helper\ImageProcessing\Image;
  *
  * @author Pietro Celeste
  */
-class ImageCrop extends Base
+class CropImage extends Base
 {
     protected $documentRoot;
     protected $fieldModel;

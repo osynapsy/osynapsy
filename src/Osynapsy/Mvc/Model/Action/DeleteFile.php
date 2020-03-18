@@ -8,15 +8,15 @@ use Osynapsy\Mvc\Action\Base;
  *
  * @author Pietro Celeste
  */
-class ImageDelete extends Base
+class DeleteFile extends Base
 {
     private $fieldModel;
     
     public function execute()
     {                            
         $this->loadFieldModel();
-        $this->deleteImageFromDb();        
-        $this->deleteImageFromDisk();
+        $this->deleteFileFromDb();        
+        $this->deleteFileFromDisk();
         $this->refreshPage();
     }
     
@@ -25,7 +25,7 @@ class ImageDelete extends Base
          $this->fieldModel = $this->getModel()->getField($this->parameters[1]);
     }
     
-    public function deleteImageFromDisk()
+    public function deleteFileFromDisk()
     {
         $webPathImage = $this->getModel()->getRecord()->get($this->fieldModel->name);
         $documentRoot = filter_input(\INPUT_SERVER, 'DOCUMENT_ROOT');
@@ -34,7 +34,7 @@ class ImageDelete extends Base
         }
     }
     
-    public function deleteImageFromDb()
+    public function deleteFileFromDb()
     {        
         $fieldDbName = $this->fieldModel->name;        
         $this->getModel()->getRecord()->save([$fieldDbName => null]);        
