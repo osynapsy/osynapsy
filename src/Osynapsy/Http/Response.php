@@ -60,6 +60,15 @@ abstract class Response
         $this->repo['content'][$key] = $value;
     }
     
+    public function clearCache()
+    {
+        $this->setHeader("Expires","Tue, 01 Jan 2000 00:00:00 GMT");
+        $this->setHeader("Last-Modified", gmdate("D, d M Y H:i:s") . " GMT");
+        $this->setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        $this->setHeader("Cache-Control", "post-check=0, pre-check=0", false);
+        $this->setHeader("Pragma","no-cache");
+    }
+    
     public function send($content, $part =  'main', $checkUnique = false)
     {
         $this->addContent($content, $part, $checkUnique);
