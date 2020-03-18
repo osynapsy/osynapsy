@@ -50,12 +50,18 @@ BclImageBox2 =
     crop : function(button)
     {
         var parent = $(button).closest('.osy-imagebox-bcl');
+        var fieldId = $('input[type=file]', parent).attr('id');
         var cropObj = $('img.imagebox-main', parent).rcrop('getValues');
+        var resizeWidth = $(parent).data('maxWidth');
+        var resizeHeight = $(parent).data('maxHeight');
         var data = [
             cropObj.width,
             cropObj.height,
             cropObj.x,
-            cropObj.y
+            cropObj.y,
+            fieldId,
+            resizeWidth,
+            resizeHeight
         ];
         $('img.imagebox-main', parent).data('action-parameters', Array.from(data).join(','));
         FormController.execute($('img.imagebox-main', parent));
