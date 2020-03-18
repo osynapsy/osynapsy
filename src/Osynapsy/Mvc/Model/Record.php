@@ -46,6 +46,8 @@ abstract class Record
         $this->controller->setExternalAction('save', new \Osynapsy\Mvc\Model\Action\Save());
         $this->controller->setExternalAction('delete', new \Osynapsy\Mvc\Model\Action\Delete());
         $this->controller->setExternalAction('upload', new \Osynapsy\Mvc\Model\Action\Upload());
+        $this->controller->setExternalAction('deleteFile', new \Osynapsy\Mvc\Model\Action\DeleteFile());
+        $this->controller->setExternalAction('cropImage', new \Osynapsy\Mvc\Model\Action\CropImage());
         $this->record = $this->record();        
         $this->init();
         $this->initRecord();
@@ -147,7 +149,7 @@ abstract class Record
         $formValue = isset($_REQUEST[$fieldNameOnForm]) ? $_REQUEST[$fieldNameOnForm] : null;
         $field = new Field($this, $fieldNameOnRecord, $fieldNameOnForm, $type, isset($_REQUEST[$fieldNameOnForm]));
         $field->setValue($formValue, $defaultValue);        
-        $this->fields[$field->html] = $field;
+        $this->fields[$field->html] = $field;        
         return $field;
     }
     
