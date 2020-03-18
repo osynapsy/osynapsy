@@ -10,34 +10,56 @@ use Osynapsy\Mvc\Action\Base;
  */
 class DeleteFile extends Base
 {
+    private $documentRoot;
     private $fieldModel;
+    private $fieldDbName;    
+    private $fileWebPath;
     
     public function execute()
     {                            
-        $this->loadFieldModel();
-        $this->deleteFileFromDb();        
-        $this->deleteFileFromDisk();
-        $this->refreshPage();
+        try {
+            $this->loadDocumentRootPath();
+            $this->loadFieldModel();
+            $this->loadFileWebPath();
+            $this->deleteFileFromDisk();
+            $this->deleteFileReferenceFromDb();            
+            $this->refreshPage();
+        } catch (\Exception $e) {
+            $this->getResponse()->alertJs($e->getMessage());
+        }
+    }
+    
+    protected function loadDocumentRootPath()
+    {
+        $this->documentRoot = filter_input(\INPUT_SERVER, 'DOCUMENT_ROOT');
+        if (substr($this->documentRoot, -1) !== '/') {
+            $this->documentRoot .= '/';
+        }
     }
     
     private function loadFieldModel()
     {
          $this->fieldModel = $this->getModel()->getField($this->parameters[1]);
+         $this->fieldDbName = $this->fieldModel->name;
+    }
+    
+    protected function loadFileWebPath()
+    {
+        $this->fileWebPath = $this->getModel()->getRecord()->get($this->fieldDbName);
     }
     
     public function deleteFileFromDisk()
     {
-        $webPathImage = $this->getModel()->getRecord()->get($this->fieldModel->name);
-        $documentRoot = filter_input(\INPUT_SERVER, 'DOCUMENT_ROOT');
-        if (is_file($documentRoot.'/'.$webPathImage)) {
-            @unlink($documentRoot.'/'.$webPathImage);
+        $filePath = $this->documentRoot.$this->fileWebPath;
+        if (!is_file($filePath)) {
+            throw new \Exception(sprintf('Il file %s non esiste. Impossibile eliminarlo', $filePath));
         }
+        @unlink($filePath);
     }
     
-    public function deleteFileFromDb()
+    public function deleteFileReferenceFromDb()
     {        
-        $fieldDbName = $this->fieldModel->name;        
-        $this->getModel()->getRecord()->save([$fieldDbName => null]);        
+        $this->getModel()->getRecord()->save([$this->fieldDbName => null]);        
     }
     
     public function refreshPage()
