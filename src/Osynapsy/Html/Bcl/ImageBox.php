@@ -11,7 +11,6 @@
 
 namespace Osynapsy\Html\Bcl;
 
-use Osynapsy\Helper\ImageProcessing\Image;
 use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
 use Osynapsy\Html\Bcl\Button;
@@ -33,105 +32,131 @@ class ImageBox extends Component
         'maxheight' => 0,
         'domain' => ''
     ];
-    private $cropActive = false;
-    private $debug = false;
-    private $dummy;    
-    private $fileBox;    
-    private $toolbar;
+    protected $rawId;
+    protected $cropActive = false;
+    protected $dummy;    
+    protected $fileBox;    
     
     public function __construct($id)
     {
+        $this->rawId = $id;
         $this->requireCss('Lib/rcrop/style.css');
         $this->requireJs('Lib/rcrop/script.js');
         $this->requireCss('Bcl/ImageBox/style.css');        
         $this->requireJs('Bcl/ImageBox/script.js');
         parent::__construct('div', $id.'_box');
-        $this->att('class','osy-imagebox-bcl')->att('data-action','upload');
+        $this->att('class','osy-imagebox-bcl text-center')->att('data-action', 'upload');
         $this->att('data-preserve-aspect-ratio', 0);
-        $this->add(new HiddenBox($id));
-        $this->dummy = $this->add(new Tag('label', null, 'osy-imagebox-dummy'))->att('for', $id);
-        $this->fileBox = $this->add(new Tag('input', $id, 'hidden'));
-        $this->fileBox->att('type','file')->att('style','display: none;')->name = $id;        
-        $this->toolbar = new Tag('div', null, 'osy-imagebox-bcl-cmd');        
+        $this->add(new HiddenBox($id));        
+        $this->fileBoxFactory();     
     }
 
     protected function __build_extra__()
     {
-        $this->getImage();
-        $this->checkCrop();
-        $this->imageFactory();
-        $this->toolbar->add($this->buttonDeleteImageFactory());   
-        if (empty($this->image['object'])) {
-            $this->dummyEmptyFactory();
-            return;
+        try {
+            $this->loadImagePaths();
+            $this->setImageData();
+            $this->setCropState();            
+            $this->imageFactory();            
+        } catch (\Exception $e) {
+            if ($e->getCode() === 404) {
+                $this->dummyWithIconCameraFactory();
+            }
+        } finally {
+            $this->toolbarFactory();
+        }
+    }
+    
+    protected function toolbarFactory()
+    {
+        $toolbar = $this->add(new Tag('div', null, 'osy-imagebox-bcl-cmd text-center'));        
+        if ($this->cropActive) {
+            $this->setClass('crop');
+            $toolbar->add('<button type="button" class="crop-command btn btn-info btn-sm"><span class="fa fa-crop"></span></button> ');
+            $toolbar->add('<button type="button" class="zoomin-command btn btn-info btn-sm"><span class="fa fa-search-plus"></span></button> ');
+            $toolbar->add('<button type="button" class="zoomout-command btn btn-info btn-sm mr-5"><span class="fa fa-search-minus"></span></button> ');
         }        
-        $this->add($this->toolbar);        
+        $toolbar->add($this->buttonUploadImageFactory());
+        if ($this->image['diskPath']) {
+            $toolbar->add($this->buttonDeleteImageFactory());
+        }
     }
     
     protected function buttonDeleteImageFactory()
     {
-        $button = new Button($this->id.'_delete_image', 'button', 'btn-danger pull-right osy-imagebox-bcl-image-delete', '<i class="fa fa-trash"></i>');
-        $button->setAction(self::ACTION_DELETE_IMAGE, $this->image['webPath'].','.$this->fileBox->id, 'click-execute', 'Sei sicuro di voler eliminare l\'immagine?');
+        $button = new Button($this->id.'_delete_image', 'button', 'btn-danger btn-sm', '<i class="fa fa-trash"></i>');
+        $button->setAction(self::ACTION_DELETE_IMAGE, $this->image['webPath'].','.$this->rawId, 'click-execute', 'Sei sicuro di voler eliminare l\'immagine?');
+        return $button;
+    }     
+    
+    protected function buttonUploadImageFactory()
+    {
+        $button = new Tag('label', null,'btn btn-warning btn-sm mt-2');
+        $button->att('for', $this->rawId)->add('<i class="fa fa-upload"></i>');        
         return $button;
     }
-
-    protected function iconCameraFactory()
+    
+    protected function dummyWithIconCameraFactory()
     {
-        return new Tag('span', null, 'fa fa-camera glyphicon glyphicon-camera');
-    }
-
-    protected function dummyEmptyFactory()
-    {
+        $this->dummy = $this->add(new Tag('label', null, 'osy-imagebox-dummy'))->att('for', $this->rawId);
         $this->dummy->add($this->iconCameraFactory());
         if ($this->image['maxwidth']) {
             $this->dummy->att('style', sprintf('width : %spx; height : %spx;', $this->image['maxwidth'], $this->image['maxheight']));
         }
     }
     
-    private function getImage()
+    protected function fileBoxFactory()
     {
-        if (empty($_REQUEST[$this->dummy->for])) {
-            return;
+        $this->fileBox = $this->add(new Tag('input', $this->rawId));
+        $this->fileBox->att([
+            'type' => 'file',
+            'accept' => 'image/*;',
+            'capture' => 'camera',
+            'name' => $this->rawId,
+            'style' => 'display: none;'
+        ]);        
+    }
+    
+    protected function iconCameraFactory()
+    {
+        return new Tag('span', null, 'fa fa-camera glyphicon glyphicon-camera');
+    }
+            
+    private function imageFactory()
+    {        
+        if ($this->cropActive) {
+            $this->image['object'] = $this->att('class', 'text-center', true)->add(new Tag('img', null, 'imagebox-main'))->att([
+                'src' => $this->image['domain'].$this->image['webPath'],
+                'data-action' => self::ACTION_CROP_IMAGE
+            ]);                                          
+        } else {
+            $this->image['object'] = $this->add(new Tag('img'))->att('src', $this->image['domain'].$this->image['webPath']);
         }
-        $this->image['webPath'] = $_REQUEST[$this->dummy->for];
-        $this->image['diskPath'] = $_SERVER['DOCUMENT_ROOT'].$this->image['webPath'];
+    }
+    
+    protected function loadImagePaths()
+    {        
+        if (empty($_REQUEST[$this->rawId])) {
+            throw new \Exception('Field is empty', 404);
+        }
+        $this->image['webPath'] = $_REQUEST[$this->rawId];
+        $this->image['diskPath'] = filter_input(\INPUT_SERVER , 'DOCUMENT_ROOT') . $this->image['webPath'];
+    }
+    
+    protected function setImageData()
+    {
         if (file_exists($this->image['diskPath'])) {
             $this->image['dimension'] = getimagesize($this->image['diskPath']);
         }
         if (empty($this->image['dimension'])) {
-            return;
+            throw new \Exception('File not found', 404);
         }
         $this->image['width'] = $this->image['dimension'][0];
         $this->image['height'] = $this->image['dimension'][1];
         $this->image['formFactor'] = $this->image['width'] / $this->image['height'];
     }
     
-    private function imageFactory()
-    {
-        if (!file_exists($this->image['diskPath'])) { 
-            return;
-        }
-        if ($this->cropActive) {
-            $this->image['object'] = $this->add(new Tag('img', null, 'imagebox-main'))->att([
-                'src' => $this->image['domain'].$this->image['webPath'],
-                'data-action' => self::ACTION_CROP_IMAGE
-            ]);                                          
-        } else {
-            $this->image['object'] = $this->dummy->add(new Tag('img'))->att('src', $this->image['domain'].$this->image['webPath']);
-        }
-        $width = $this->image['width'];
-        $height = $this->image['height'];
-        if ($this->image['height'] > $this->image['maxheight']) {
-            $height = $this->image['maxheight'];
-            $width  = ceil($this->image['width'] * ($this->image['maxheight'] / $this->image['height']));
-        } elseif ($this->image['width'] > $this->image['maxwidth']) {
-            $width  = $this->image['width'];
-            $height = ceil($this->image['height'] * ($this->image['maxwidth'] / $this->image['width']));
-        }
-        $this->image['object'];
-    }
-    
-    private function checkCrop()
+    protected function setCropState()
     {    
         if (empty($this->image['maxwidth'])){
             return;
@@ -145,16 +170,8 @@ class ImageBox extends Component
         $this->att('data-img-width', $this->image['width']);
         $this->att('data-img-height', $this->image['height']);
         $this->att('data-zoom','1');
-        $this->setClass('crop');
-        $this->toolbar->add('<button type="button" class="crop-command btn btn-info btn-sm"><span class="fa fa-crop"></span></button> ');
-        $this->toolbar->add('<button type="button" class="zoomin-command btn btn-info btn-sm"><span class="fa fa-search-plus"></span></button> ');
-        $this->toolbar->add('<button type="button" class="zoomout-command btn btn-info btn-sm"><span class="fa fa-search-minus"></span></button> ');
-        if ($this->debug) {
-            $this->setClass('debug');
-            $this->toolbar->add('<input type="text" name="'.$this->id.'_debug" class="debug" value="">');
-        }
-    }        
-        
+    }
+    
     public function setDomain($domain)
     {
         $this->image['domain'] = $domain;
@@ -166,11 +183,6 @@ class ImageBox extends Component
         $this->image['maxheight'] = $height;
         $this->image['formFactorIdeal'] = $width / $height;
         return $this;
-    }        
-            
-    public function activeDebug()
-    {
-        $this->debug = true;
     }
     
     public function setPreserveAspectRatio($value)
