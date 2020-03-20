@@ -21,7 +21,10 @@ class DataGrid extends Component
     private $pagination;
     private $showHeader = true;
     private $title;
+    private $body;
     private $rowWidth = 12;
+    private $totalFunction;
+    protected $totals = [];
     
     public function __construct($name)
     {
@@ -53,7 +56,8 @@ class DataGrid extends Component
             $this->add($this->buildColumnHead());
         }
         //Append Body to datagrid container.
-        $this->add($this->buildBody());
+        $this->bodyFactory();
+        $this->add($this->body);
         //If datagrid has pager append to foot and show it.
         if (!empty($this->pagination)) {
             $this->add($this->buildPagination());
@@ -93,12 +97,11 @@ class DataGrid extends Component
      * @param type $body
      * @return type
      */
-    private function buildEmptyMessage($body)
+    private function emptyMessageFactory()
     {
-        $body->add(
+        $this->body->add(
             '<div class="row"><div class="col-lg-12 text-center">'.$this->emptyMessage.'</div></div>'
-        );
-        return $body;
+        );        
     }
     
     /**
@@ -106,27 +109,56 @@ class DataGrid extends Component
      * 
      * @return Tag
      */
-    private function buildBody()
+    private function bodyFactory()
     {
-        $body = new Tag('div');
-        $body->att('class','bcl-datagrid-body');        
+        $this->body = new Tag('div');
+        $this->body->att('class','bcl-datagrid-body');        
         if (empty($this->data)) {
-            return $this->buildEmptyMessage($body);
+            $this->emptyMessageFactory();
+            return;
         }        
         if ($this->rowWidth === 12) {
-            foreach ($this->data as $recIdx => $rec) {            
-                $body->add($this->buildBodyRow($rec));            
-            }
-            return $body;
+            $this->normalBodyFactory();
+            return;
         }
+        $this->bodyWithRowOversizeFactory();     
+    }
+    
+    protected function normalBodyFactory()
+    {        
+        foreach ($this->data as $rec) {            
+            $this->body->add($this->bodyRowFactory($rec));
+            $this->execTotalFunction($rec);
+        }
+        $this->execTotalFunction([false]);        
+    }
+    
+    protected function execTotalFunction(array $rec)
+    {
+        if (empty($this->totalFunction)) {
+            return;
+        }
+        $function = $this->totalFunction;
+        $tr = $function($rec, $this->totals);
+        if (!empty($tr)) {
+           $this->body->add($tr);
+        }
+    }
+    
+    protected function bodyWithRowOversizeFactory()
+    {
         $rowClass =  'bcl-datagrid-body-row row col-lg-'.$this->rowWidth;        
         foreach ($this->data as $recIdx => $rec) {            
             if (($recIdx) % (12 / $this->rowWidth) === 0) {
-                $row = $body->add(new Tag('div', null, 'row'));
+                $row = $this->body->add(new Tag('div', null, 'row'));
             }
-            $row->add($this->buildBodyRow($rec, $rowClass));
-        }        
-        return $body;
+            $row->add($this->bodyRowFactory($rec, $rowClass));
+            if (empty($this->totalFunction)) {
+                continue;
+            }
+            $function = $this->totalFunction;
+            $function($rec, $this->totals);
+        } 
     }
     
     /**
@@ -135,7 +167,7 @@ class DataGrid extends Component
      * @param type $row
      * @return Tag
      */
-    private function buildBodyRow($record, $class = 'row bcl-datagrid-body-row')
+    private function bodyRowFactory($record, $class = 'row bcl-datagrid-body-row')
     {
         $tr = new Tag('div', null, $class);        
         foreach ($this->columns as $column) {
@@ -319,5 +351,10 @@ class DataGrid extends Component
     {
         $this->title = $title;
         return $this;
+    }
+    
+    public function setTotalFunction(callable $function)
+    {
+        $this->totalFunction = $function;
     }
 }
