@@ -192,7 +192,7 @@ abstract class Record
                 $this->validateField($field);
             }
             //if field is readonly or don't have db field name skip other checks.
-            if (!$field->readonly && !$field->name) {
+            if ($field->readonly || !$field->name) {
                  //If field isn't in readonly mode assign values to values list for store it in db
                 continue;
             }
