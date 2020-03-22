@@ -147,7 +147,7 @@ class Tag
         if (empty($tag) || $tag == 'dummy') {
             return $content;
         }
-        $spaces = $this->tagdep != 0 ? PHP_EOL.str_repeat("  ",abs($this->tagdep)) : '';
+        $spaces = $this->tagdep != 0 ? PHP_EOL.str_repeat(" ",abs($this->tagdep)) : '';
         $strTag = $spaces.'<'.$tag;
         foreach ($this->attributes as $key => $value) {
             if (is_object($value) && !method_exists($value, '__toString')) {
