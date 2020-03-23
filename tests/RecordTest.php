@@ -30,7 +30,7 @@ final class RecordTest extends TestCase
     private function getConnection()
     {
         $Factory = new DbFactory();
-        $Factory->createConnection('mysql:localhost:erp_spinit:webuser:webpassword');
+        $Factory->createConnection('mysql:localhost:x:y:z');
         return $Factory->getConnection(0);
     }
     
