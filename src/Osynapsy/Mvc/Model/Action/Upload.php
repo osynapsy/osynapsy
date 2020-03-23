@@ -30,8 +30,11 @@ class Upload extends Base
             return;
         }
         $this->getModel()->save();
+        if ($this->getModel()->behavior === 'insert') {
+            $this->getResponse()->historyPushState($this->getModel()->getLastId());            
+        }
         $this->getResponse()->pageRefresh();
-    }
+    }    
     
     protected function getUploadManager()
     {
@@ -63,4 +66,6 @@ class Upload extends Base
         }
         return $field;
     }
+    
+    
 }
