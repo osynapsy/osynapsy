@@ -34,7 +34,7 @@ abstract class Active implements InterfaceRecord
     private $activeRecord = [];
     private $extendRecord = [];
     private $originalRecord = [];
-    private $behavior = self::BEHAVIOR_INSERT;
+    private $behavior;
     private $sequence;
     private $table;    
     private $searchCondition = [];        
@@ -54,7 +54,8 @@ abstract class Active implements InterfaceRecord
     public function __construct(InterfaceDbo $dbCn, array $keyValues = [], $debug = false) 
     {
         $this->setDebug($debug);
-        $this->dbConnection = $dbCn;
+        $this->dbConnection = $dbCn;        
+        $this->behavior = self::BEHAVIOR_INSERT;
         $this->keys = $this->primaryKey();
         $this->table = $this->table();
         $this->sequence = $this->sequence();
