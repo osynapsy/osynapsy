@@ -67,8 +67,8 @@ abstract class Record
             if ($field->isPkey()) {
                 $keys[$field->name] = $field->getDefaultValue();
             }       
-        }
-        $this->getRecord()->findByAttributes($keys);        
+        }        
+            $this->getRecord()->findByAttributes($keys);        
     }
     
     protected function initExternalAction()
@@ -166,15 +166,15 @@ abstract class Record
     public function save()
     {                
         //Recall before exec method with arbirtary code
-        $this->dispatchEvent(self::EVENT_BEFORE_SAVE);
+        $this->dispatchEvent(self::EVENT_BEFORE_SAVE);                
         //Fill Record with values from html form
         $this->fillRecord();
         //If occurred some error stop db updating and return exception
         if (!empty($this->exception) && !empty($this->exception->getErrors())) {            
             throw $this->exception;
-        }
+        }        
         //If where list is empty execute db insert else execute a db update
-        if ($this->getRecord()->getBeahvior() == 'insert') {
+        if ($this->getRecord()->getBehavior() == 'insert') {
             $this->insert();
         } else {
             $this->update();
