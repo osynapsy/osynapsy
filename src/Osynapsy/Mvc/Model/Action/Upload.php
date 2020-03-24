@@ -2,6 +2,7 @@
 namespace Osynapsy\Mvc\Model\Action;
 
 use Osynapsy\Helper\Net\UploadManager;
+use Osynapsy\Mvc\Model\ModelErrorException;
 use Osynapsy\Mvc\Action\Base;
 
 /**
@@ -14,27 +15,37 @@ class Upload extends Base
     protected $uploadSuccessful = 0;
     protected $uploadManager; 
 
-
     public function execute()
     {
-        if (!is_array($_FILES)) {
-            return;
-        }
-        foreach (array_keys($_FILES) as $fieldName) {
-            if (empty($_FILES[$fieldName]) || empty($_FILES[$fieldName])) {
-                continue;
+        try {
+            $this->saveFiles();
+            $this->getModel()->save();        
+            if ($this->getModel()->behavior === 'insert') {
+                $this->afterInsert();           
             }
-            $this->grabFile($fieldName);
+            $this->getResponse()->pageRefresh();
+        } catch (ModelErrorException $e) {
+            $this->sendErrors($e->getErrors());
+            $this->resetFileBoxFields();
+        } catch (\Exception $e) {
+            $this->getResponse()->alertJs($e->getMessage());
+            $this->resetFileBoxFields();
         }
-        if (empty($this->uploadSuccessful)) {
-            return;
-        }
-        $this->getModel()->save();
-        if ($this->getModel()->behavior === 'insert') {
-            $this->getResponse()->historyPushState($this->getModel()->getLastId());            
-        }
-        $this->getResponse()->pageRefresh();
     }    
+    
+    protected function afterInsert()
+    {
+        $this->getResponse()->historyPushState($this->getModel()->getLastId());
+    }
+    
+    protected function getModelField($fieldName)
+    {
+        $field = $this->getModel()->getField($fieldName);
+        if (empty($field)) {
+            throw new \Exception("Field {$fieldName} not found", 404);
+        }
+        return $field;
+    }
     
     protected function getUploadManager()
     {
@@ -43,29 +54,39 @@ class Upload extends Base
         }
         return $this->uploadManager;
     }
-
-    protected function grabFile($fieldName)
+    
+    protected function resetFileBoxFields()
     {
-        try {
-            $field = $this->getModelField($fieldName);            
-            $field->value = $this->getUploadManager()->saveFile($field->html, $field->uploadDir);            
-            $field->readonly = false;            
-            $this->uploadSuccessful++;
-        } catch (\Exception $e) {
-            if ($e->getCode() != 404) { 
-                $this->getResponse()->alertJs($e->getMessage());
-            }
+        foreach (array_keys($_FILES) as $fieldName) {
+            $this->getResponse()->jquery("#{$fieldName}")->val('')->exec();
         }
     }
     
-    protected function getModelField($fieldName)
+    protected function saveFiles()
     {
-        $field = $this->getModel()->getField($fieldName);
-        if (empty($field)) {
-            throw new \Exception('Field not found', 404);
+        if (!is_array($_FILES)) {
+            throw new \Exception('No files is uploaded', 204);
         }
-        return $field;
+        $this->getController()->getApp()->debug($_FILES);
+        foreach (array_keys($_FILES) as $fieldName) {
+            if (!empty($_FILES[$fieldName]) && !empty($_FILES[$fieldName]['name'])) {
+                $this->saveFile($fieldName);
+            }            
+        }
     }
     
-    
+    protected function saveFile($fieldName)
+    {        
+        $field = $this->getModelField($fieldName);            
+        $field->value = $this->getUploadManager()->saveFile($field->html, $field->uploadDir);            
+        $field->readonly = false;            
+        $this->uploadSuccessful++;        
+    }
+        
+    private function sendErrors($errors)
+    {
+        foreach($errors as $fieldHtml => $error) {
+            $this->getResponse()->error($fieldHtml, $error);
+        }
+    } 
 }
