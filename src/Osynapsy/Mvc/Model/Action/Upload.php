@@ -66,8 +66,7 @@ class Upload extends Base
     {
         if (!is_array($_FILES)) {
             throw new \Exception('No files is uploaded', 204);
-        }
-        $this->getController()->getApp()->debug($_FILES);
+        }        
         foreach (array_keys($_FILES) as $fieldName) {
             if (!empty($_FILES[$fieldName]) && !empty($_FILES[$fieldName]['name'])) {
                 $this->saveFile($fieldName);
