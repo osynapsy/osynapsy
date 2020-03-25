@@ -122,7 +122,7 @@ class Client
     private $timeout = '60';
     private $debug = false;
     private $certificateVerify = false;
-    private $errors = [];
+    public $errors = [];
     private $response = [];
     private $contextOptions = [];
     
@@ -268,7 +268,11 @@ class Client
         $this->putRow('DATA');
         //fputs($this->conn, $email);  /* transmit the entire email here */
         //return substr($this->getServerResponse(),0,3) != '250'  ? false : true;
-        return $this->putRow($email) != '250' ? false : true; /* transmit the entire email here */
+        $response = $this->putRow($email);/* transmit the entire email here */
+        if ($response != '250') {
+            $this->errors[] = $email;
+            throw new \Exception('Mail don\'t send : '.$response);
+        }
     }
 
     private function setRecipients($to) /* assumes there is at least one recipient */
