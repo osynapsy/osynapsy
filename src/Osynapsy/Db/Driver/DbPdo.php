@@ -132,7 +132,9 @@ class DbPdo extends \PDO implements InterfaceDbo
     public function execQuery($sql, $parameters = null, $fetchMethod = null, $fetchColumnIdx = null)
     {
         $this->cursor = $this->prepare($sql);
-        $this->cursor->execute($parameters);
+        if (!empty($parameters) && is_array($parameters)) {
+            $this->cursor->execute($parameters);        
+        }
         if (!is_null($fetchColumnIdx)) {
             return $this->cursor->fetchAll(\PDO::FETCH_COLUMN, $fetchColumnIdx);
         } 
@@ -154,8 +156,8 @@ class DbPdo extends \PDO implements InterfaceDbo
     }
 
     public function execUnique($sql, $parameters = null, $fetchMethod = self::FETCH_NUM)
-    {
-        $raw = $this->execQuery($sql, $parameters, $fetchMethod);       
+    {        
+        $raw = $this->execQuery($sql, $parameters, $fetchMethod);        
         if (empty($raw)) {
             return null;
         }
