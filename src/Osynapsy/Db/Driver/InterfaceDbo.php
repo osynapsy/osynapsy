@@ -50,6 +50,8 @@ interface InterfaceDbo
     
     public function insert($table, array $values);
     
+    public function replace($table, array $values, array $conditions);
+    
     public function rollback();
     
     public function update($table, array $values, array $conditions);
