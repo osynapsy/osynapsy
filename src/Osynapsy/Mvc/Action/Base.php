@@ -29,6 +29,11 @@ abstract class Base implements InterfaceAction
         return $this->controller;
     }
     
+    public function getDb()
+    {
+        return $this->controller->getDb();
+    }
+    
     public function getModel()
     {
         return $this->getController()->getModel();
