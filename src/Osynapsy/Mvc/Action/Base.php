@@ -2,6 +2,7 @@
 namespace Osynapsy\Mvc\Action;
 
 use Osynapsy\Mvc\Controller;
+use Osynapsy\Db\Driver\InterfaceDbo;
 
 /**
  * Description of Base
@@ -29,7 +30,7 @@ abstract class Base implements InterfaceAction
         return $this->controller;
     }
     
-    public function getDb()
+    public function getDb() : InterfaceDbo
     {
         return $this->controller->getDb();
     }
