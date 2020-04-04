@@ -14,26 +14,25 @@ namespace Osynapsy\Helper\Net\Curl;
 class Rest
 {
     private static $baseurl = '';    
+    private static $channel;
+    private static $response;    
     
     private static function init($url, array $rawheaders = [], $proxy = null)
-    {
-        $ch = curl_init(self::$baseurl.$url);
-        if (!empty($proxy)) {
-            $proxy = explode(':', $proxy);
-            curl_setopt($ch, \CURLOPT_PROXY, $proxy[0]);
-            curl_setopt($ch, \CURLOPT_PROXYPORT, $proxy[1]);
-        }
-        self::appendHeaders($ch, $rawheaders);
-        curl_setopt($ch, \CURLOPT_COOKIEFILE, true);
-        curl_setopt($ch, \CURLOPT_COOKIEJAR, true);
-        curl_setopt($ch, \CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, \CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, \CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36');
-        curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
-        return $ch;
+    {        
+        self::$channel = curl_init(self::$baseurl.$url);
+        self::setProxy($proxy);
+        self::appendHeaders($rawheaders);
+        self::appendOptions([        
+            \CURLOPT_COOKIEFILE => true,
+            \CURLOPT_COOKIEJAR => true,
+            \CURLOPT_SSL_VERIFYHOST => false,
+            \CURLOPT_SSL_VERIFYPEER => false,
+            \CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
+            \CURLOPT_RETURNTRANSFER => true        
+        ]);
     }
     
-    private function appendHeaders($channel, array $rawheaders = [])
+    private function appendHeaders(array $rawheaders = [])
     {        
         if (empty($rawheaders)) {
             return;
@@ -42,46 +41,45 @@ class Rest
         foreach($rawheaders as $key => $value) {
             $headers[] = strtolower($key).': '.$value; 
         }        
-        curl_setopt($channel, \CURLOPT_HTTPHEADER, $headers);
+        curl_setopt(self::$channel, \CURLOPT_HTTPHEADER, $headers);
     }
     
+    private static function appendOptions(array $options)
+    {
+        if (empty($options)) {
+            return;
+        }
+        foreach ($options as $option => $value) {
+            curl_setopt(self::$channel, $option, $value);
+        }
+    }
+        
     public static function get($url, $data = [], $headers = [], $proxy = null)
     {        
-        if (!empty($data)) {
-            $url .= '?'.http_build_query($data);
-        }
-        $ch = self::init($url, $headers);
-        curl_setopt($ch, \CURLOPT_CUSTOMREQUEST, "GET");        
-        return self::getResponse($ch);  
+        self::init($url . (empty($data) ? '' : '?'.http_build_query($data)), $headers);
+        self::setProxy($proxy);
+        self::appendOptions([\CURLOPT_CUSTOMREQUEST => "GET"]);
+        return self::getResponse();
     }
     
-    private static function getResponse($channel)
+    private static function getResponse()
     {
-        $resp = curl_exec($channel);
-        
-        $contentType = curl_getinfo($channel, CURLINFO_CONTENT_TYPE);
-        $httpCode    = curl_getinfo($channel, CURLINFO_HTTP_CODE);
-        if ($resp === false) {
-            $resp = curl_errno($channel);
-        }        
-        curl_close($channel);
-        
-        if (strpos($contentType, 'json') !== false) {
-            $resp = json_decode($resp);
-        }
-        
-        return ['http-code' => $httpCode, 'content-type' => $contentType, 'response' => $resp];
+        self::$response  = new \stdClass();
+        self::$response->content = curl_exec(self::$channel);        
+        self::$response->code = curl_getinfo(self::$channel, CURLINFO_HTTP_CODE);
+        self::$response->type = curl_getinfo(self::$channel, CURLINFO_CONTENT_TYPE);
+        self::validateResponse();
+        curl_close(self::$channel);
+        return self::$response;
     }
     
     public static function post($url, $data, array $headers = [], array $options = [])
     {
-        $ch = self::init($url, $headers);        
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        foreach($options as $option => $value) {
-            curl_setopt($ch, $option, $value);
-        }                     
-        return self::getResponse($ch);
+        self::init($url, $headers);
+        $options[\CURLOPT_POST] = true;
+        $options[\CURLOPT_POSTFIELDS] = $data;
+        self::appendOptions($options);
+        return self::getResponse(self::$channel);
     }
     
     public static function postJson($url, $data)
@@ -97,5 +95,27 @@ class Rest
     public static function setBaseUrl($url)
     {
         self::$baseurl = $url;
+    }
+        
+    private static function setProxy($proxy)
+    {
+        if (empty($proxy)) {
+            return;            
+        }
+        $proxyPart = explode(':', $proxy);
+        self::appendOptions([
+            \CURLOPT_PROXY => $proxyPart[0],
+            \CURLOPT_PROXYPORT => $proxyPart[1]
+        ]);            
+    }
+    
+    private static function validateResponse()
+    {
+        if (self::$response->content === false) {
+            throw new \Exception(curl_errno(self::$channel), self::$response->code);
+        }
+        if (self::$response->code !== 200) {
+            throw new \Exception(curl_errno(self::$channel), self::$response->code);
+        }
     }
 }
