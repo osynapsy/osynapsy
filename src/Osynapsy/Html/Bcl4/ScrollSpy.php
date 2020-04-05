@@ -58,15 +58,20 @@ class ScrollSpy extends Component
             $this->currentPage->addCellCommand($cell, $command);
         }
         return $cell;
-    }
+    }        
     
-    public function setFormatParagraphFunction(callable $function)
+    public function getCurrentPage()
     {
-        $this->paragraphFormatFunction = $function;
+        return $this->currentPage;
     }
     
     public function getIndex()
     {        
         return $this->listIndex;
+    }
+    
+    public function setFormatParagraphFunction(callable $function)
+    {
+        $this->paragraphFormatFunction = $function;
     }
 }
