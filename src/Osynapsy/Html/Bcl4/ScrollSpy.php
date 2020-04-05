@@ -15,17 +15,20 @@ class ScrollSpy extends Component
     private $currentPage = null;
     private $paragraphFormatFunction;
     private $listIndex;
+    private $scrollSpyPosition = 'position-relative';
     
     public function __construct($id, $height = '100vh', $tag = 'div')
     {
         parent::__construct($tag, $id);
         $this->setClass('scrollspy position-relative bg-light d-block border p-5');        
         $this->att(['data-spy' => "scroll", 'data-target'=> '#'.$this->id.'Index', 'data-offset'=> '50']);
-        $this->style = 'overflow-y: scroll;height: '.$height;
+        if (!empty($height)) {
+            $this->style = 'overflow-y: scroll;height: '.$height;
+        }
         $this->setFormatParagraphFunction(function($rec) {
             return implode('', $rec);
         });
-        $this->listIndex = new Tag('div', $this->id.'Index', 'list-group');
+        $this->listIndex = new Tag('div', $this->id.'Index', 'list-group');        
     }
    
     public function addPage($title = null, $pid = null, $command = null)
@@ -74,4 +77,16 @@ class ScrollSpy extends Component
     {
         $this->paragraphFormatFunction = $function;
     }
+    
+    public function setTopLeftIndex(int $top, int $left, int $width = 200)
+    {
+        $this->listIndex->att('class', ' fixed-top', true);
+        $this->listIndex->att('style', sprintf('top: %spx; left: %spx; width: %spx;', $top, $left, $width));
+    }
+    
+    public function setTopRightIndex(int $top, int $right, int $width = 200)
+    {
+        $this->listIndex->att('class', ' fixed-top', true);
+        $this->listIndex->att('style', sprintf('top: %spx; right: %spx; width: %spx;', $top, $right, $width));
+    }    
 }
