@@ -47,22 +47,7 @@ var Osynapsy = new (function(){
     
     pub.action = 
     {
-        execute : function(object)
-        {
-            var form = $(object).closest('form');
-            var action = $(object).data('action');        
-            if (Osynapsy.isEmpty(action)) {
-                alert('Attribute data-action don\'t set.');
-                return;
-            }
-            if (!Osynapsy.isEmpty($(object).data('confirm'))) {
-                if (!confirm($(object).data('confirm'))) {
-                    return;
-                }   
-            }          
-            this.remoteExecute(action, form, this.grabActionParameters(object));
-        },
-        grabActionParameters : function(object)
+        parametersFactory : function(object)
         {
             if (Osynapsy.isEmpty($(object).data('action-parameters'))) {
                 return false;
@@ -79,6 +64,22 @@ var Osynapsy = new (function(){
                 values.push('actionParameters[]=' + encodeURIComponent(value));
             }
             return values.join('&');
+        },
+        execute : function(object)
+        {
+            var form = $(object).closest('form');
+            var action = $(object).data('action');
+            if (Osynapsy.isEmpty(action)) {
+                alert('Attribute data-action don\'t set.');
+                return;
+            }
+            if (!Osynapsy.isEmpty($(object).data('confirm'))) {
+                if (!confirm($(object).data('confirm'))) {
+                    return;
+                }   
+            }
+            this.source = object;
+            this.remoteExecute(action, form, this.parametersFactory(object));
         },        
         remoteExecute : function(action, form, actionParameters)
         {
@@ -87,15 +88,16 @@ var Osynapsy = new (function(){
             $('.field-in-error').removeClass('field-in-error');
             var callParameters = {
                 url  : actionUrl,
+                context: source,
                 headers: {
                     'Osynapsy-Action': action,
                     'Accept': 'application/json'
                 },
                 type : 'post',
                 dataType : 'json',
-                success : function(response){            
+                success : function(response) {            
                     Osynapsy.waitMask.remove();
-                    Osynapsy.kernel.message.dispatch(response);
+                    Osynapsy.kernel.message.dispatch(response, this);
                 },
                 error: function(xhr, status, error) {                
                     Osynapsy.waitMask.remove();
@@ -149,7 +151,8 @@ var Osynapsy = new (function(){
                 }
             });
             return upload;        
-        }
+        },
+        source : null
     };
     
     pub.appendToUrl = function(value)
