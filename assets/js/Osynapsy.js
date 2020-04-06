@@ -87,8 +87,7 @@ var Osynapsy = new (function(){
             var actionUrl = Osynapsy.isEmpty($(form).attr('action')) ? window.location.href : $(form).attr('action');
             $('.field-in-error').removeClass('field-in-error');
             var callParameters = {
-                url  : actionUrl,
-                context: source,
+                url  : actionUrl,                
                 headers: {
                     'Osynapsy-Action': action,
                     'Accept': 'application/json'
@@ -647,6 +646,9 @@ var FormController =
     },
     execCode : function(code)
     {
+        if (Osynapsy.action.source) {
+            var self = Osynapsy.action.source;
+        }
         eval(code.replace(/(\r\n|\n|\r)/gm,""));
     },
     observe : function(target, fnc){
