@@ -14,14 +14,15 @@ class ScrollSpy extends Component
     private $pages = [];
     private $currentPage = null;
     private $paragraphFormatFunction;
-    private $listIndex;
-    private $scrollSpyPosition = 'position-relative';
+    private $listIndex;    
     
-    public function __construct($id, $height = '100vh', $tag = 'div')
+    public function __construct($id, $height = '100vh', $tag = 'div', $enableSpyTag = true)
     {
         parent::__construct($tag, $id);
-        $this->setClass('scrollspy position-relative bg-light d-block border p-5');        
-        $this->att(['data-spy' => "scroll", 'data-target'=> '#'.$this->id.'Index', 'data-offset'=> '50']);
+        $this->setClass('scrollspy position-relative bg-light d-block border p-5');
+        if ($enableSpyTag) {
+            $this->att(['data-spy' => "scroll", 'data-target'=> '#'.$this->id.'Index', 'data-offset'=> '50']);            
+        }
         if (!empty($height)) {
             $this->style = 'overflow-y: scroll;height: '.$height;
         }
