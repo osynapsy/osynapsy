@@ -207,22 +207,22 @@ class Card extends Component
     public function setTopLeftIndex(int $top, int $left, int $width = 200)
     {
         $this->setTopFixed();
-        $this->listIndex->att('style', sprintf('top: %spx; left: %spx; width: %spx;', $top, $left, $width));
+        $this->att('style', sprintf('top: %spx; left: %spx; width: %spx;', $top, $left, $width));
     }
     
     public function setTopRightIndex(int $top, int $right, int $width = 200)
     {
         $this->setTopFixed();
-        $this->listIndex->att('style', sprintf('top: %spx; right: %spx; width: %spx;', $top, $right, $width));
+        $this->att('style', sprintf('top: %spx; right: %spx; width: %spx;', $top, $right, $width));
     }  
     
     public function setTopFixed()
     {
-        $this->listIndex->att('class', ' fixed-top', true);
+        $this->att('class', ' fixed-top', true);
     }
     
     public function setBottomFixed()
     {
-        $this->listIndex->att('class', ' fixed-bottom', true);
+        $this->att('class', ' fixed-bottom', true);
     }
 }
