@@ -220,4 +220,9 @@ class Card extends Component
     {
         $this->listIndex->att('class', ' fixed-top', true);
     }
+    
+    public function setBottomFixed()
+    {
+        $this->listIndex->att('class', ' fixed-bottom', true);
+    }
 }
