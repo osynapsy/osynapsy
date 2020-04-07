@@ -15,21 +15,21 @@ class ScrollSpy extends Component
     private $currentPage = null;
     private $paragraphFormatFunction;
     private $listIndex;    
+    private $spyElementId;
+    private $spyOffset;
     
-    public function __construct($id, $height = '100vh', $tag = 'div', $enableSpyTag = true)
+    public function __construct($id, $height = '100vh', $tag = 'div')
     {
         parent::__construct($tag, $id);
-        $this->setClass('scrollspy position-relative bg-light d-block border p-5');
-        if ($enableSpyTag) {
-            $this->att(['data-spy' => "scroll", 'data-target'=> '#'.$this->id.'Index', 'data-offset'=> '50']);            
-        }
+        $this->setClass('scrollspy position-relative bg-light d-block border p-5');        
         if (!empty($height)) {
             $this->style = 'overflow-y: scroll;height: '.$height;
         }
         $this->setFormatParagraphFunction(function($rec) {
             return implode('', $rec);
         });
-        $this->listIndex = new Tag('div', $this->id.'Index', 'list-group');        
+        $this->listIndex = new Tag('div', $this->id.'Index', 'list-group');
+        $this->setSpySourceId($this->id, 50);
     }
    
     public function addPage($title = null, $pid = null, $command = null)
@@ -89,5 +89,18 @@ class ScrollSpy extends Component
     {
         $this->listIndex->att('class', ' fixed-top', true);
         $this->listIndex->att('style', sprintf('top: %spx; right: %spx; width: %spx;', $top, $right, $width));
-    }    
+    }
+    
+    public function setSpySourceId($jquerySourceId, $offset = 50)
+    {
+        $jqueryDestinationId = sprintf('#%sIndex', $this->id);
+        $this->setJavascript(
+            sprintf(
+                "$(document).ready(function() { $('%s').scrollspy({target: '%s', offset: %s}); });", 
+                $jquerySourceId,
+                $jqueryDestinationId,
+                $offset
+            )
+        );
+    }
 }

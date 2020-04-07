@@ -203,4 +203,21 @@ class Card extends Component
             $this->noPadding();
         }
     }
+        
+    public function setTopLeftIndex(int $top, int $left, int $width = 200)
+    {
+        $this->setTopFixed();
+        $this->listIndex->att('style', sprintf('top: %spx; left: %spx; width: %spx;', $top, $left, $width));
+    }
+    
+    public function setTopRightIndex(int $top, int $right, int $width = 200)
+    {
+        $this->setTopFixed();
+        $this->listIndex->att('style', sprintf('top: %spx; right: %spx; width: %spx;', $top, $right, $width));
+    }  
+    
+    public function setTopFixed()
+    {
+        $this->listIndex->att('class', ' fixed-top', true);
+    }
 }
