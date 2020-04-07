@@ -143,8 +143,7 @@ class Component extends Tag
     {
         if (!array_key_exists($type, self::$require)) {
             self::$require[$type] = [];
-        }
-        if (in_array($file, self::$require[$type])) {
+        } elseif (in_array($file, self::$require[$type])) {
            return;
         }
         if ($type === 'jscode') {
@@ -282,5 +281,10 @@ class Component extends Tag
             $this->att('readonly', 'readonly');
         }
         return $this;
+    }
+    
+    public function setJavascript($code)
+    {
+        self::$require['jscode'] = [$code];
     }
 }
