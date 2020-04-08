@@ -118,6 +118,30 @@ class PanelNew extends Component
         return $this->sections['head'];
     }
     
+    public function resetClass()
+    {
+        $this->setClass('','','','');
+    }
+    
+    public function pushHorizontalField($label, $field, $info = '', $labelColumnWidth = 3)
+    {        
+        $this->classCss['main'] = 'form-horizontal';
+        $row = $this->addRow()->att('class', 'form-group');
+        $offset = $labelColumnWidth;
+        if (!empty($label)) {
+            $row->add(new Tag('label', null, sprintf('col-sm-%s control-label', $labelColumnWidth)))->add($label);
+            $offset = 0;
+        }
+        if (!empty($label) && is_object($field)) {
+            $field->att('data-label', $label);            
+        }        
+        $fieldContainer = $row->add(new Tag('div', null, sprintf('col-sm-%s col-sm-offset-%s', 12 - $labelColumnWidth, $offset)));
+        $fieldContainer->add($field);
+        if (!empty($info)) {
+            $fieldContainer->add(new Tag('div'))->add($info);
+        }        
+    }
+    
     public function setClass($body, $head = null, $foot = null, $main = null, $title = null)
     {
         $this->classCss['body'] = $body;
@@ -134,10 +158,5 @@ class PanelNew extends Component
             $this->classCss['title'] = $title;
         }
         return $this;
-    }
-    
-    public function resetClass()
-    {
-        $this->setClass('','','','');
-    }
+    }        
 }
