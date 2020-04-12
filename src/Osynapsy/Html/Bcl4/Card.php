@@ -206,11 +206,11 @@ class Card extends Component
         
     public function setTopLeftIndex(int $top, int $left, int $width = 200)
     {        
-        $this->att('style', sprintf('position: fixed; z-index: 1050; top: %spx; left: %spx; width: %spx;', $top, $left, $width));
+        $this->att('style', sprintf('position: fixed; z-index: 1030; top: %spx; left: %spx; width: %spx;', $top, $left, $width));
     }
     
     public function setTopRightIndex(int $top, int $right, int $width = 200)
     {
-        $this->att('style', sprintf('position: fixed; z-index: 1050; top: %spx; right: %spx; width: %spx;', $top, $right, $width));
+        $this->att('style', sprintf('position: fixed; z-index: 1030; top: %spx; right: %spx; width: %spx;', $top, $right, $width));
     }
 }
