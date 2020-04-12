@@ -218,11 +218,11 @@ class Card extends Component
     
     public function setTopFixed()
     {
-        $this->att('class', ' fixed-top', true);
+        $this->classCss['main'] .= ' fixed-top';
     }
     
     public function setBottomFixed()
     {
-        $this->att('class', ' fixed-bottom', true);
+        $this->classCss['main'] .= ' fixed-bottom';
     }
 }
