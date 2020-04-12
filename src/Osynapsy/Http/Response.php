@@ -167,7 +167,7 @@ abstract class Response
         if (headers_sent()) {
            return false; 
         }
-        $domain = $excludeThirdLevel ? self::getDomain() : self::getServerName();
+        $domain = $excludeThirdLevel ? self::getDomain() : self::getServerName();        
         if (empty($expiry)) {
             $expiry = time() + (86400 * 365);
         }
