@@ -345,10 +345,14 @@ var Osynapsy = new (function(){
             if (errors.length === 0) {
                 return;
             }
-            pub.modal.show(
-                'Si sono verificati i seguenti errori',
-                '<ul><li>' + errors.join('</li><li>') +'</li></ul>'
-            );
+            if (typeof $().modal === 'function') {				
+		pub.modal.show(
+                    'Si sono verificati i seguenti errori',
+                    '<ul><li>' + errors.join('</li><li>') +'</li></ul>'
+		);
+		return;
+            } 
+            alert('Si sono verificati i seguenti errori : \n' + errors.join("\n").replace(/(<([^>]+)>)/ig,""));
         },
         dispatchCommands : function(response)
         {
@@ -415,7 +419,7 @@ var Osynapsy = new (function(){
                 win += '        </div>';
                 win += '    </div>';
                 win += '</div>';
-            $('body').append($(win));
+            $('body').append($(win));            
             $('#'+id).modal({
                 keyboard : true
             });
