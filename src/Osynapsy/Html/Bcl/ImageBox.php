@@ -57,13 +57,12 @@ class ImageBox extends Component
             $this->loadImagePaths();
             $this->setImageData();
             $this->setCropState();            
-            $this->imageFactory();            
+            $this->imageFactory();
+            $this->toolbarFactory();
         } catch (\Exception $e) {
             if ($e->getCode() === 404) {
                 $this->dummyWithIconCameraFactory();
             }
-        } finally {
-            $this->toolbarFactory();
         }
     }
     
