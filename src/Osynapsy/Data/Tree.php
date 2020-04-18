@@ -49,15 +49,15 @@ class Tree
         $lastIdx = count($rawDataSet[$parentId]) - 1;
         foreach ($rawDataSet[$parentId] as $idx => $child){
             $childId = $child[$this->keyId];
-            if (!empty($level)) {
-                $child['_parent'] =& $rawDataSet[$parentId];
-            }
             $child['_level'] = $level;
             $child['_position'] = $this->setPosition($idx, $lastIdx);
             if(!empty($rawDataSet[$childId])){
                $child['_childrens'] = $this->build($rawDataSet, $childId, $level + 1);
             }
-            $branch[$child[0]] = $child;
+            if (!empty($child[$this->keyIsOpen])) {
+                $this->openNodes[] = $child[$this->keyParent];
+            }
+            $branch[$child[$this->keyId]] = $child;
         } 
         return $branch;
     }
@@ -70,6 +70,11 @@ class Tree
         $rawDataSet = $this->init();            
         $this->tree = $this->build($rawDataSet);
         return $this->tree;
+    }
+    
+    public function getOpenNodes()
+    {
+        return $this->openNodes;
     }
     
     public function openNodes(&$child)
