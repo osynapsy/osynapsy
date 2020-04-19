@@ -23,11 +23,7 @@ use Osynapsy\Data\Tree;
  */
 class TreeBox2 extends Component
 {    
-    private $refreshOnClick = [];
-    private $refreshOnOpen = [];
-    private $nodeOpenIds = [];
-    private $nodeSelectedId;
-    private $pathSelected = [];
+    private $nodeOpenIds = [];    
     private $dataTree;
     
     const CLASS_SELECTED_LABEL = 'osy-treebox-label-selected';
@@ -95,7 +91,7 @@ class TreeBox2 extends Component
         $class = "osy-treebox-branch-command tree-plus-".(!empty($node['_level']) && $node['_position'] === self::POSITION_BEGIN ? self::POSITION_BETWEEN : $node['_position']);
         if (empty($node['_childrens'])){ 
             $class = "tree-con-{$node['_position']}";    
-        } elseif (in_array($node[0], $this->nodeOpenIds)) { //If node is open load minus icon
+        } elseif (in_array($node[0], $this->nodeOpenIds) || !empty($node[3])) { //If node is open load minus icon
             $class .= ' minus';
         }
         //Sovrascrivo l'ultima icona con il l'icona/segmento corrispondente al comando / posizione        
