@@ -95,19 +95,14 @@ class TreeBox2 extends Component
         $icons[$node['_level']] = sprintf('<span class="tree %s">&nbsp;</span>', $class);        
         return implode('',$icons);
     }
-    
-    private function buildTreeData()
-    {        
-        $this->dataTree = new Tree(0, 2, 3, $this->getData());        
-    }
-    
-    public function setData($data)
+            
+    public function setData($data, $keyId = 0, $keyParentId = 2, $keyIsOpen = 3)
     {
         parent::setData($data);
         if (empty($this->data)){
-            return $this;            
-        }        
-        $this->buildTreeData();        
+            return $this;
+        }
+        $this->dataTree = new Tree($keyId, $keyParentId, $keyIsOpen, $this->getData());         
         return $this;
     }        
 }
