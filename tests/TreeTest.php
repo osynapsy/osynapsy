@@ -25,11 +25,10 @@ class TreeTest extends TestCase
     public function testResult() : void
     {
         $treeObject = $this->getTreeObject();
-        $tree = $treeObject->get();
-        var_dump($treeObject->getOpenNodes());
+        $tree = $treeObject->get();        
         $this->assertEquals($tree, [
-            1 => ['id' => 1, 'parent' => null, 'isopen' => 0, '_level' => 0, '_position' => 3, '_childrens' => [
-                2 => ['id' => 2, 'parent' => 1, 'isopen' => 0, '_level' => 1, '_position' => 3, '_childrens' => [
+            1 => ['id' => 1, 'parent' => null, 'isopen' => 1, '_level' => 0, '_position' => 3, '_childrens' => [
+                2 => ['id' => 2, 'parent' => 1, 'isopen' => 1, '_level' => 1, '_position' => 3, '_childrens' => [
                     3 => ['id' => 3, 'parent' => 2, 'isopen' => 1, '_level' => 2, '_position' => 3]
                 ]]
             ]]
