@@ -24,6 +24,7 @@ class Tree
     private $keyIsOpen;
     private $openNodes = [];
     private $dataSet;
+    private $rawTree;
     private $tree;
     
     public function __construct($idKey, $parentKey, $isOpenKey = null, array $dataSet = [])
@@ -34,30 +35,24 @@ class Tree
         $this->setDataset($dataSet);
     }
     
-    protected function init()
-    {
-        $rawDataSet = [];
-        foreach ($this->dataSet as $rec){
-            $rawDataSet[$rec[$this->keyParent] ?? 0][] = $rec;
-        }        
-        return $rawDataSet;
-    }   
-    
-    protected function build(&$rawDataSet, $parentId = 0, $level = 0)
+    protected function branchFactory(&$rawDataSet, $parentId = 0, $level = 0)
     {
         $branch = [];
         $lastIdx = count($rawDataSet[$parentId]) - 1;
         foreach ($rawDataSet[$parentId] as $idx => $child){
             $childId = $child[$this->keyId];
             $child['_level'] = $level;
-            $child['_position'] = $this->setPosition($idx, $lastIdx);
+            $child['_position'] = $this->setPosition($idx, $lastIdx);            
             if(!empty($rawDataSet[$childId])){
-               $child['_childrens'] = $this->build($rawDataSet, $childId, $level + 1);
+               $child['_childrens'] = $this->branchFactory($rawDataSet, $childId, $level + 1);
+               if (in_array($childId, $this->openNodes)) {
+                   $child[$this->keyIsOpen] = 1;
+               }
             }
             if (!empty($child[$this->keyIsOpen])) {
                 $this->openNodes[] = $child[$this->keyParent];
             }
-            $branch[$child[$this->keyId]] = $child;
+            $branch[$childId] = $child;
         } 
         return $branch;
     }
@@ -66,27 +61,23 @@ class Tree
     {
         if (!is_null($this->tree)) {
             return $this->tree;
-        }        
-        $rawDataSet = $this->init();            
-        $this->tree = $this->build($rawDataSet);
+        }
+        $this->rawTreeFactory();
+        $this->tree = $this->branchFactory($this->rawTree);
         return $this->tree;
     }
     
     public function getOpenNodes()
     {
         return $this->openNodes;
-    }
+    }        
     
-    public function openNodes(&$child)
+    protected function rawTreeFactory()
     {
-        if (empty($child)) {
-            return;
-        }
-        $child[$this->keyIsOpen] = 1;
-        if (empty($child['parent'])) {
-            return;
-        }
-        $this->openNodes($child['parent']);        
+        $this->rawTree = [];
+        foreach ($this->dataSet as $rec){
+            $this->rawTree[$rec[$this->keyParent] ?? 0][] = $rec;
+        }        
     }
     
     public function setDataset(array $dataset)
