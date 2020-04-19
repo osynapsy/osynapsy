@@ -28,10 +28,7 @@ class TreeBox2 extends Component
     
     const CLASS_SELECTED_LABEL = 'osy-treebox-label-selected';
     const ICON_NODE_CONNECTOR_EMPTY = '<span class="tree tree-null">&nbsp;</span>';
-    const ICON_NODE_CONNECTOR_LINE = '<span class="tree tree-con-4">&nbsp;</span>';
-    const POSITION_BEGIN = 1;
-    const POSITION_BETWEEN = 2;
-    const POSITION_END = 3;
+    const ICON_NODE_CONNECTOR_LINE = '<span class="tree tree-con-4">&nbsp;</span>';    
     const ROOT_ID = 0;
     
     public function __construct($id)
@@ -81,14 +78,14 @@ class TreeBox2 extends Component
     protected function node($item, $icons = []) : Tag
     {        
         if ($item['_level'] > -1){
-            $icons[$item['_level']] = $item['_position'] === self::POSITION_END ? self::ICON_NODE_CONNECTOR_EMPTY: self::ICON_NODE_CONNECTOR_LINE;        
+            $icons[$item['_level']] = $item['_position'] === Tree::POSITION_END ? self::ICON_NODE_CONNECTOR_EMPTY: self::ICON_NODE_CONNECTOR_LINE;        
         }        
         return empty($item['_childrens']) ? $this->leaf($item, $icons) : $this->branch($item, $icons);
     }
     
     private function icon($node, $icons = [])
     {        
-        $class = "osy-treebox-branch-command tree-plus-".(!empty($node['_level']) && $node['_position'] === self::POSITION_BEGIN ? self::POSITION_BETWEEN : $node['_position']);
+        $class = "osy-treebox-branch-command tree-plus-".(!empty($node['_level']) && $node['_position'] === Tree::POSITION_BEGIN ? Tree::POSITION_BETWEEN : $node['_position']);
         if (empty($node['_childrens'])){ 
             $class = "tree-con-{$node['_position']}";    
         } elseif (in_array($node[0], $this->nodeOpenIds) || !empty($node[3])) { //If node is open load minus icon
@@ -111,7 +108,6 @@ class TreeBox2 extends Component
             return $this;            
         }        
         $this->buildTreeData();        
-        //$this->buildPath(filter_input(\INPUT_POST, "{$this->id}_sel"));
         return $this;
     }        
 }
