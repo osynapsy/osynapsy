@@ -28,8 +28,8 @@ BclDatePicker =
                 } else {
                     opt['maxDate'] = new Date(maxDate);
                 }
-            }
-            $(this).datetimepicker(opt);
+            }            
+            $(this).datetimepicker(opt);            
         });
         $('body').on('dp.change', '.datepicker-change', function(){
             if ($(this).hasClass('change-execute')) {
