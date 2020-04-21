@@ -24,14 +24,27 @@ class DatePicker extends Component
     public function __construct($id)
     {
         $this->datePickerId = $id;        
-        $this->pushRequirement();
-        
-        parent::__construct('div',$id.'_datepicker');
+        $this->pushRequirement();        
+        parent::__construct('div', $id.'_datepicker');
         $this->att('class','input-group');
-        $this->dateComponent = $this->add(new TextBox($id))
-                                    ->att('class','date date-picker form-control')
-                                    ->att('onclick','$(this).next().click()');
-        $this->add('<div class="input-group-append" data-target="#'.$id.'" data-toggle="datetimepicker"><div class="input-group-text"><i class="fa fa-calendar"></i></div></div>');
+        $this->fieldDateBoxFactory();
+        $this->fieldInputGruopAppendFactory();
+    }
+    
+    protected function fieldInputGruopAppendFactory()
+    {
+        $this->add('<div class="input-group-append" data-target="#'.$this->datePickerId.'" data-toggle="datetimepicker"><div class="input-group-text"><i class="fa fa-calendar"></i></div></div>');
+    }
+    
+    protected function fieldDateBoxFactory()
+    {
+        $this->dateComponent = $this->add(new TextBox($this->datePickerId));
+        
+        $this->dateComponent->att([
+            'class' => 'date-picker form-control datetimepicker-input',
+            'data-toggle' => 'datetimepicker', 
+            'data-target'=> '#'.$this->datePickerId            
+        ]);
     }
     
     public static function pushRequirement()
