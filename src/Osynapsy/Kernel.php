@@ -143,7 +143,7 @@ class Kernel
         if (!empty($submessage)) {
             $exception->setInfoMessage($submessage);
         }
-        return $submessage;
+        return $exception;
     }
     
     protected function runApplication()
@@ -159,11 +159,11 @@ class Kernel
     
     protected function validateRouteController()
     {
-        if (!empty($this->route) || $this->route->controller) {            
+        if (!empty($this->route) && $this->route->controller) {            
             return;
         }
-        throw $this->raiseException(404, "'Page not found", sprintf(
-            'THE REQUEST PAGE (%s) NOT EXIST ON THIS SERVER',
+        throw $this->raiseException(404, "Page not found", sprintf(
+            'THE REQUEST PAGE NOT EXIST ON THIS SERVER <br><br> %s',
             $this->request->get('server.REQUEST_URI')
         ));
     }
