@@ -27,6 +27,8 @@ use Osynapsy\Kernel\Error\Dispatcher as ErrorDispatcher;
 class Kernel
 {
     const VERSION = '0.6-DEV';
+    const DEFAULT_APP_CONTROLLER = '\\Osynapsy\\Mvc\\Application';
+    const DEFAULT_ASSET_CONTROLLER = 'Osynapsy\\Assets\\Loader';
     
     public $router;
     public $request;
@@ -79,16 +81,10 @@ class Kernel
     private function loadRoutes()
     {        
         $this->router = new Router($this->request);
-        $this->router->addRoute(
-            'OsynapsyAssetsManager',
-            '/assets/osynapsy/'.self::VERSION.'/{*}',
-            'Osynapsy\\Assets\\Loader',
-            '',            
-            'Osynapsy'
-        );
+        $this->router->addRoute('OsynapsyAssetsManager', '/assets/osynapsy/'.self::VERSION.'/{*}', self::DEFAULT_ASSET_CONTROLLER, '', 'Osynapsy');
         $applications = $this->loader->get('app');       
         if (empty($applications)) {
-            throw new KernelException('No app configuration found', 1001);
+            throw $this->raiseException(1001, 'No app configuration found');
         }
         foreach (array_keys($applications) as $applicationId) {
             $routes = $this->loader->search('route', "app.{$applicationId}");
@@ -132,18 +128,26 @@ class Kernel
     
     public function runApplication($route)
     {
-        if (!$route->controller) {
-            $exception = new KernelException('Page not found', 404);
-            $exception->setInfoMessage(sprintf('THE REQUEST PAGE (%s) NOT EXIST ON THIS SERVER', $this->request->get('server.REQUEST_URI')));
-            throw $exception;
+        if (!$route->controller) {            
+            throw $this->raiseException(404, "'Page not found", sprintf(
+                'THE REQUEST PAGE (%s) NOT EXIST ON THIS SERVER',
+                $this->request->get('server.REQUEST_URI')
+            ));
         }
         $reqApp = $this->request->get("env.app.{$route->application}.controller");
-        //If isn't configured an app controller for current instance load default 
-        //App controller
-        $applicationClass = empty($reqApp) ? '\\Osynapsy\\Mvc\\Application' : str_replace(':', '\\',$reqApp);        
-        //If app has applicationController instance recall it before route controller;        
+        //If isn't configured an app controller for current instance load default App controller
+        $applicationClass = empty($reqApp) ? self::DEFAULT_APP_CONTROLLER : str_replace(':', '\\', $reqApp);        
         $application = new $applicationClass($route, $this->request);
         $application->run();
         return (string) $application->runAction();
+    }
+    
+    protected function raiseException($code, $message, $submessage = '')
+    {
+        $exception = new KernelException($message, $code);
+        if (!empty($submessage)) {
+            $exception->setInfoMessage($submessage);
+        }
+        return $submessage;
     }
 }
