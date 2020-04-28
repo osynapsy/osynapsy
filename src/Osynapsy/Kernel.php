@@ -15,7 +15,7 @@ use Osynapsy\Http\Request;
 use Osynapsy\Kernel\Loader;
 use Osynapsy\Kernel\Router;
 use Osynapsy\Kernel\KernelException;
-use Osynapsy\Kernel\ErrorDispatcher;
+use Osynapsy\Kernel\Error\Dispatcher as ErrorDispatcher;
 
 /**
  * The Kernel is the core of Osynapsy
