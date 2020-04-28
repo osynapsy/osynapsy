@@ -143,7 +143,7 @@ class Dispatcher
     {
         ob_clean();
         http_response_code($e->getCode());
-        $pageError = $this->htmlPageFactory();
+        $pageError = $this->htmlPageFactory();        
         $pageError->setMessage($e->getMessage() . ' | '.$e->getCode(), $e->getInfoMessage());        
         $this->response = $pageError->get();
     }
