@@ -18,13 +18,13 @@ class Installer
 {
     private $terminal;
     private $answer;
-    private $questions = array (
+    private $questions = [
         'dbtype' => "Digit db type (mysql, sqlite, oracle, postgres) : ",
         'dbhost' => "Digit db host : ",
         'dbname' => "Digit db name : ",
         'dbuser' => "Digit db user : ",
         'dbpwd'  => "Digit db pass : "
-    );
+    ];
     
     public function __construct()
     {
@@ -50,13 +50,22 @@ class Installer
     
     private function testDatabaseConnection($connectionString)
     {
-        try {
-            $cn = DbFactory::connection($connectionString);
+        try {            
+            $this->printLnMessage("Db Connetting test.....");
+            $DbFactory = new DbFactory();
+            $DbFactory->createConnection($connectionString);
+            $this->printLnMessage('Connection ok');
         } catch (Exception $e) {
-            print $e->getMessage();
+            $this->printMessage($e->getMessage());
             return;
         }
-        print 'Connection ok'.PHP_EOL;
+        
+    }
+    
+    protected function printLnMessage($message)
+    {
+        print $message.PHP_EOL;
+        sleep(1);
     }
     
     private function printQuestion($section, $key, $question)
@@ -68,7 +77,7 @@ class Installer
     private function finish()
     {
         file_put_contents('config.ini',implode(':',$this->answer));
-        print $this->terminal->label(print_r($answer,true));
+        print $this->terminal->label(print_r($this->answer,true));
         print PHP_EOL;
     }
 }
