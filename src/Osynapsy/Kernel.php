@@ -26,17 +26,19 @@ use Osynapsy\Kernel\Error\Dispatcher as ErrorDispatcher;
  */
 class Kernel
 {
-    const VERSION = '0.6-DEV';
+    const VERSION = '0.6.1-DEV';
     const DEFAULT_APP_CONTROLLER = '\\Osynapsy\\Mvc\\Application';
     const DEFAULT_ASSET_CONTROLLER = 'Osynapsy\\Assets\\Loader';
     
-    public $router;
+    public $route;    
+    public $router;    
     public $request;
+    public $requestUri;
     public $controller;
     public $appController;
     private $loader;    
     private $composer;
-    
+        
     /**
      * Kernel costructor
      * 
@@ -75,6 +77,11 @@ class Kernel
         return $result;
     }
     
+    protected function loadRequestUri()
+    {
+        $this->requestUri = strtok(filter_input(INPUT_SERVER, 'REQUEST_URI'), '?');
+    }
+    
     /**
      * Load in router object all route of application present in config file
      */
@@ -101,22 +108,26 @@ class Kernel
         }        
     }
     
+    protected function findActiveRoute()
+    {
+        $this->route = $this->router->dispatchRoute($this->requestUri);
+        $this->getRequest()->set('page.route', $this->route);
+    }
+    
     /**
      * Run process to get response starting to request uri
      * 
      * @param string $requestUri is Uri requested from 
      * @return string 
      */
-    public function run($requestUri = null)
-    {
-        if (is_null($requestUri)) {
-            $requestUri = strtok(filter_input(INPUT_SERVER, 'REQUEST_URI'), '?');
-        }
+    public function run()
+    {                    
         try {
+            $this->loadRequestUri();
             $this->loadRoutes();
-            $route = $this->router->dispatchRoute($requestUri);
-            $this->getRequest()->set('page.route', $route);            
-            return $this->runApplication($route);
+            $this->findActiveRoute();
+            $this->validateRouteController();
+            return $this->runApplication();
         } catch (\Exception $exception) {
             $errorDispatcher = new ErrorDispatcher($this->getRequest());
             return $errorDispatcher->dispatchException($exception);
@@ -125,23 +136,7 @@ class Kernel
             return $errorDispatcher->dispatchError($error);
         }
     }
-    
-    public function runApplication($route)
-    {
-        if (!$route->controller) {            
-            throw $this->raiseException(404, "'Page not found", sprintf(
-                'THE REQUEST PAGE (%s) NOT EXIST ON THIS SERVER',
-                $this->request->get('server.REQUEST_URI')
-            ));
-        }
-        $reqApp = $this->request->get("env.app.{$route->application}.controller");
-        //If isn't configured an app controller for current instance load default App controller
-        $applicationClass = empty($reqApp) ? self::DEFAULT_APP_CONTROLLER : str_replace(':', '\\', $reqApp);        
-        $application = new $applicationClass($route, $this->request);
-        $application->run();
-        return (string) $application->runAction();
-    }
-    
+        
     protected function raiseException($code, $message, $submessage = '')
     {
         $exception = new KernelException($message, $code);
@@ -149,5 +144,27 @@ class Kernel
             $exception->setInfoMessage($submessage);
         }
         return $submessage;
+    }
+    
+    protected function runApplication()
+    {        
+        $reqApp = $this->request->get(sprintf("env.app.%s.controller", $this->route->application));
+        //If isn't configured an app controller for current instance load default App controller
+        $applicationClass = empty($reqApp) ? self::DEFAULT_APP_CONTROLLER : str_replace(':', '\\', $reqApp);        
+        $application = new $applicationClass($this->route, $this->request);
+        $application->run();
+        return (string) $application->runAction();
+    }
+    
+    
+    protected function validateRouteController()
+    {
+        if (!empty($this->route) || $this->route->controller) {            
+            return;
+        }
+        throw $this->raiseException(404, "'Page not found", sprintf(
+            'THE REQUEST PAGE (%s) NOT EXIST ON THIS SERVER',
+            $this->request->get('server.REQUEST_URI')
+        ));
     }
 }
