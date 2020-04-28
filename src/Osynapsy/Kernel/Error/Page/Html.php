@@ -27,12 +27,13 @@ class Html implements InterfacePage
         $trace = $this->renderTrace();
         $this->containerClass = empty($trace) ? 'container-center' : 'container';
         $messageFontSize = empty($trace) ? 'font-2em' : 'font-1em';
-        $message = nl2br($this->message);
+        $title = strip_tags($this->message);
+        $message = nl2br($this->message);        
         $comment = implode(PHP_EOL, $this->comments);
         $submessage = $this->submessage;
         return <<<PAGE
             <html>
-                <title>{$message}</title>
+                <title>{$title}</title>
             <head>
                 <style>
                 * {font-family: Arial;}
