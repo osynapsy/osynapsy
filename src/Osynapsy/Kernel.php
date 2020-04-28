@@ -45,34 +45,12 @@ class Kernel
     {
         $this->composer = $composer;
         $this->loader = new Loader($instanceConfigurationFile);
-        $this->request = new Request(
-            $_GET, 
-            $_POST,
-            [],
-            $_COOKIE,
-            $_FILES,
-            $_SERVER
-        );
-        $this->request->set(
-            'app.parameters',
-            $this->loadConfig('parameter', 'name', 'value')
-        );
-        $this->request->set(
-            'env',
-            $this->loader->get()
-        );        
-        $this->request->set(
-            'app.layouts',
-            $this->loadConfig('layout', 'name', 'path')
-        );
-        $this->request->set(
-            'observers',
-            $this->loadConfig('observer', '@value', 'subject')
-        );
-        $this->request->set(
-            'listeners',
-            $this->loadConfig('listener', '@value', 'event')
-        );
+        $this->request = new Request($_GET, $_POST, [], $_COOKIE, $_FILES, $_SERVER);
+        $this->request->set('app.parameters', $this->loadConfig('parameter', 'name', 'value'));
+        $this->request->set('env', $this->loader->get());        
+        $this->request->set('app.layouts', $this->loadConfig('layout', 'name', 'path'));
+        $this->request->set('observers', $this->loadConfig('observer', '@value', 'subject'));
+        $this->request->set('listeners', $this->loadConfig('listener', '@value', 'event'));
     }
         
     public function getRequest()
