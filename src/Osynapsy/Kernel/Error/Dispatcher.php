@@ -11,6 +11,8 @@
 
 namespace Osynapsy\Kernel\Error;
 
+use Osynapsy\Kernel\Error\Page\Html as PageHtml;
+
 /**
  * Description of ErrorDispatcher
  *
@@ -108,26 +110,17 @@ class Dispatcher
     }
     
     public function dispatchException(\Exception $e)
-    {
-        
+    {        
         switch($e->getCode()) {
             case '403':
             case '404':
-                $this->response = $this->pageHttpError(
-                    $e->getCode(), 
-                    $e->getMessage()
-                );
+                 $this->httpErrorFactory($e);
                 break;
             case '501':
-                $this->response = $this->pageTraceError(
-                    $e->getMessage()
-                );
+                $this->pageTraceError($e->getMessage());
                 break;
             default :
-                $this->response = $this->pageTraceError(
-                    $this->formatMessage($e), 
-                    $e->getTrace()
-                );
+                $this->pageTraceError($this->formatMessage($e), $e->getTrace());
                 break;
         }
         return $this->get();
@@ -135,26 +128,24 @@ class Dispatcher
     
     public function dispatchError(\Error $e)
     {        
-        $this->response = $this->pageTraceError(
-            $this->formatMessage($e), 
-            $e->getTrace()
-        );
+        $this->pageTraceError($e->getMessage(), $e->getTrace());
         return $this->get();
     }
     
-    private function formatMessage($e)
+    private function formatMessage(\Exception $e)
     {
         $message = [$e->getCode() .' - '.$e->getMessage()];
         $message[] = 'Line ' . $e->getLine() . ' of file ' . $e->getFile();
         return implode(PHP_EOL, $message);
     }
     
-    public function pageHttpError($errorCode, $message = 'Page not found')
+    public function httpErrorFactory(\Exception $e)
     {
         ob_clean();
-        http_response_code($errorCode);
-        //header("HTTP/1.1 {$errorCode} {$this->httpStatusCodes[$errorCode]}");
-        return $message;
+        http_response_code($e->getCode());
+        $pageError = $this->htmlPageFactory();
+        $pageError->setMessage($e->getMessage() . ' | '.$e->getCode(), $e->getInfoMessage());        
+        $this->response = $pageError->get();
     }
     
     public function pageTraceError($message, $trace = [])
@@ -176,52 +167,19 @@ class Dispatcher
             $trace = [];
         }
         if (filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION')) {
-            return $this->pageTraceErrorText($message, $trace);
+             $this->pageTraceErrorText($message, $trace);
+            return;
         }
-        return $this->pageTraceErrorHtml($message, $trace, $comments);
+        $pageError = $this->htmlPageFactory();
+        $pageError->setMessage($message);
+        $pageError->setTrace($trace);
+        $pageError->setComment($comments);
+        $this->response = $pageError->get();       
     }
     
-    private function pageTraceErrorHtml($rawmessage, $trace, array $comments = [])
+    private function htmlPageFactory()
     {
-        $body = '';
-        if (!empty($trace)) {
-            $body .= '<table style="border-collapse: collapse;">';
-            $body .= '<tr>';
-            $body .= '<th>Class</th>';
-            $body .= '<th>Function</th>';
-            $body .= '<th>File</th>';
-            $body .= '<th>Line</th>';
-            $body .= '</tr>';
-            foreach ($trace as $step) {
-                $body .= '<tr>';
-                $body .= '<td>'.(!empty($step['class']) ? $step['class'] : '&nbsp;').'</td>';
-                $body .= '<td>'.(!empty($step['function']) ? $step['function'] : '&nbsp;').'</td>';
-                $body .= '<td>'.(!empty($step['file']) ? $step['file'] : '&nbsp;').'</td>';
-                $body .= '<td>'.(!empty($step['line']) ? $step['line'] : '&nbsp;').'</td>';            
-                $body .= '</tr>';            
-            }
-            $body .= '</table>';
-        }
-        $message = nl2br($rawmessage);
-        $comment = empty($comments) ? '' : implode(PHP_EOL, $comments);        
-        return <<<PAGE
-            <div class="container">       
-                <div class="message">{$message}</div>
-                {$body}
-            </div>
-            <!--
-            {$comment}
-            -->
-            <style>
-                * {font-family: Arial;}
-                body {margin: 0px;}
-                div.container {margin: 0px; max-width: 1024px; margin: auto;}
-                table {width: 100%; margin-top: 20px;}
-                .message {background-color: #B0413E; color: white; padding: 10px; font-weight: bold;}
-                td,th {font-size: 12px; font-family: Arial; padding: 3px; border: 0.5px solid silver}
-            </style>
-PAGE;
-                    
+        return new PageHtml();        
     }
     
     private function pageTraceErrorText($message, $trace = [])
@@ -234,7 +192,7 @@ PAGE;
             $message .= $step['line'].' - ';
             $message .= $step['file'].PHP_EOL;
         }
-        return $message;
+        $this->response = $message;
     }
     
     public function get()
