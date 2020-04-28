@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\Kernel;
+namespace Osynapsy\Kernel\Error;
 
 /**
  * Description of ErrorDispatcher
@@ -18,7 +18,7 @@ namespace Osynapsy\Kernel;
  * 
  * @author Pietro Celeste <p.celeste@spinit.it>
  */
-class ErrorDispatcher
+class Dispatcher
 {
     private $httpStatusCodes = [
         100 => 'Continue',
