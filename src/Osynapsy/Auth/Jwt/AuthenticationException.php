@@ -1,7 +1,7 @@
 <?php
 namespace Osynapsy\Auth\Jwt;
 
-class AuthenticationException extends \Exception
+class AuthenticationException extends \Osynapsy\Kernel\KernelException
 {
     public function __construct($message = "", $code = 0, \Throwable $previous = NULL)
     {
