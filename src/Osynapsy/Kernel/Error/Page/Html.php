@@ -11,6 +11,7 @@ use Osynapsy\Kernel\Error\InterfacePage;
 class Html implements InterfacePage
 {
     public $code = 400;
+    public $containerClass = '';
     public $comments = [];
     public $message;
     public $submessage;
@@ -23,7 +24,9 @@ class Html implements InterfacePage
     
     public function render()
     {
-        $body = $this->renderTrace();        
+        $trace = $this->renderTrace();
+        $this->containerClass = empty($trace) ? 'container-center' : 'container';
+        $messageFontSize = empty($trace) ? 'font-2em' : 'font-1em';
         $message = nl2br($this->message);
         $comment = implode(PHP_EOL, $this->comments);
         $submessage = $this->submessage;
@@ -34,17 +37,18 @@ class Html implements InterfacePage
                 <style>
                 * {font-family: Arial;}
                 body {margin: 0px; position: relative;}
-                div.container {position: absolute; top: 40%; width: 100%; text-align: center; margin: auto;}
+                div.container-center {position: absolute; top: 40%; width: 100%; text-align: center; margin: auto;}                
                 table {width: 100%; margin-top: 20px;}
-                .message {font-size: 2em;}
+                .font-2em {font-size: 2em;}
+                .font-1em {font-size: 1em;}
                 .submessage {font-size: 0.35em; margin-top: 10px; color: #ccc;}
                 td,th {font-size: 12px; font-family: Arial; padding: 3px; border: 0.5px solid silver}
             </style>
             </head>
             <body>
-            <div class="container">       
-                <div class="message">{$message}<br><div class="submessage">{$submessage}</div></div>
-                {$body}
+            <div class="{$this->containerClass}">       
+                <div class="message {$messageFontSize}">{$message}<br><div class="submessage">{$submessage}</div></div>
+                {$trace}
             </div>
             <!--
             {$comment}
