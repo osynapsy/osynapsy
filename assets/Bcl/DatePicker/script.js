@@ -5,7 +5,7 @@ BclDatePicker =
         $('.date-picker').each(function(){
             var self = this;
             var opt = {
-                format: $(this).data('format'),
+                format: $(this).data('date-format'),
                 //Serve ad evitare l'autocompilazione con la data odierna se il campo è vuoto.
                 useCurrent: false
             };
@@ -28,7 +28,7 @@ BclDatePicker =
                 } else {
                     opt['maxDate'] = new Date(maxDate);
                 }
-            }            
+            } 
             $(this).datetimepicker(opt);            
         });
         $('body').on('dp.change', '.datepicker-change', function(){
