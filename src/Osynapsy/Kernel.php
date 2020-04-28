@@ -146,7 +146,7 @@ class Kernel
         } catch (\Exception $exception) {
             $errorDispatcher = new ErrorDispatcher($this->getRequest());
             return $errorDispatcher->dispatchException($exception);
-        } catch (\Error $error) {
+        } catch (\Error $error) {            
             $errorDispatcher = new ErrorDispatcher($this->getRequest());
             return $errorDispatcher->dispatchError($error);
         }
@@ -155,10 +155,9 @@ class Kernel
     public function runApplication($route)
     {
         if (!$route->controller) {
-            throw new KernelException(
-                'No route to destination ('.$this->request->get('server.REQUEST_URI').')', 
-                404
-            );
+            $exception = new KernelException('Page not found', 404);
+            $exception->setInfoMessage(sprintf('THE REQUEST PAGE (%s) NOT EXIST ON THIS SERVER', $this->request->get('server.REQUEST_URI')));
+            throw $exception;
         }
         $reqApp = $this->request->get("env.app.{$route->application}.controller");
         //If isn't configured an app controller for current instance load default 
