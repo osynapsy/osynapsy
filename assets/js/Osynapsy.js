@@ -604,7 +604,7 @@ var Osynapsy = new (function(){
 
 var FormController = 
 {
-    repo : 
+    repo :
     {
         event : { init : {} },
         componentInit : {}
@@ -621,7 +621,7 @@ var FormController =
     {
         if (evt in this.repo['event']){
             for (var i in this.repo['event'][evt] ){
-                try{
+                try{                    
                     this.repo['event'][evt][i]();
                 } catch(err) {                    
                     console.log(err);
