@@ -21,9 +21,18 @@ class KernelException extends \Exception
     private $submessage;
     
     public function __construct($message, $code = 0, Exception $previous = null)
-    {
-        // make sure everything is assigned properly
+    {        
         parent::__construct($message, $code, $previous);
+    }
+    
+    public function setMessage($message)
+    {
+        $this->message = $message;
+    }
+    
+    public function setCode($code)
+    {
+        $this->code = $code;
     }
     
     public function setInfoMessage($message)
