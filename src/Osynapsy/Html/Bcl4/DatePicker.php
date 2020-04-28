@@ -15,25 +15,24 @@ use Osynapsy\Html\Component;
 use Osynapsy\Html\Bcl\TextBox;
 
 class DatePicker extends Component
-{
-    private $text;
+{    
     private $datePickerId;
-    private $dateComponent;
-    private $format = 'DD/MM/YYYY';
+    private $dateComponent;    
+    protected $format = 'DD/MM/YYYY';
     
     public function __construct($id)
     {
         $this->datePickerId = $id;        
         $this->pushRequirement();        
         parent::__construct('div', $id.'_datepicker');
-        $this->att('class','input-group');
+        $this->att(['class' => 'input-group date date-picker' , 'data-target-input'=> 'nearest']);
         $this->fieldDateBoxFactory();
         $this->fieldInputGruopAppendFactory();
     }
     
     protected function fieldInputGruopAppendFactory()
     {
-        $this->add('<div class="input-group-append" data-target="#'.$this->datePickerId.'" data-toggle="datetimepicker"><div class="input-group-text"><i class="fa fa-calendar"></i></div></div>');
+        $this->add('<div class="input-group-append" data-target="#'.$this->id.'" data-toggle="datetimepicker"><div class="input-group-text"><i class="fa fa-calendar"></i></div></div>');
     }
     
     protected function fieldDateBoxFactory()
@@ -41,23 +40,23 @@ class DatePicker extends Component
         $this->dateComponent = $this->add(new TextBox($this->datePickerId));
         
         $this->dateComponent->att([
-            'class' => 'date-picker form-control datetimepicker-input',
-            'data-toggle' => 'datetimepicker', 
-            'data-target'=> '#'.$this->datePickerId            
+            'class' => 'form-control datetimepicker-input',
+            'data-toggle' => 'datetimepicker',
+            'data-target' => sprintf('#%s',$this->id)
         ]);
     }
     
     public static function pushRequirement()
     {
-        self::requireCss('Lib/tempusdominus-5.0.0/style.css');
+        self::requireCss('Lib/tempusdominus-5.0.1/style.css');
         self::requireJs('Lib/momentjs-2.17.1/moment.js');
-        self::requireJs('Lib/tempusdominus-5.0.0/script.js');
+        self::requireJs('Lib/tempusdominus-5.0.1/script.js');
         self::requireJs('Bcl/DatePicker/script.js');        
     }
     
     protected function __build_extra__()
     {
-        $this->dateComponent->att('data-format', $this->format);
+        $this->att('data-date-format', $this->format);
         if (!empty($_REQUEST[$this->datePickerId])) {            
             $data = explode('-', $_REQUEST[$this->datePickerId]);
             if (count($data) >= 3 && strlen($data[0]) == 4) {
