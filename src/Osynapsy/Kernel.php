@@ -166,9 +166,7 @@ class Kernel
         $applicationClass = empty($reqApp) ? '\\Osynapsy\\Mvc\\Application' : str_replace(':', '\\',$reqApp);        
         //If app has applicationController instance recall it before route controller;        
         $application = new $applicationClass($route, $this->request);
-        if (!$application->run()) {
-            throw new \Osynapsy\Mvc\ApplicationException('Access denied','501');
-        }
+        $application->run();
         return (string) $application->runAction();
     }
 }
