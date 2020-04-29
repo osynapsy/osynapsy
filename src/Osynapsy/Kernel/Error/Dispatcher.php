@@ -12,6 +12,7 @@
 namespace Osynapsy\Kernel\Error;
 
 use Osynapsy\Kernel\Error\Page\Html as PageHtml;
+use Osynapsy\Kernel\KernelException;
 
 /**
  * Description of ErrorDispatcher
@@ -143,8 +144,8 @@ class Dispatcher
     {
         ob_clean();
         http_response_code($e->getCode());
-        $pageError = $this->htmlPageFactory();        
-        $pageError->setMessage($e->getMessage() . ' | '.$e->getCode(), $e->getInfoMessage());        
+        $pageError = $this->htmlPageFactory(); 
+        $pageError->setMessage($e->getMessage() . ' | '.$e->getCode(), method_exists($e, 'getInfoMessage') ? $e->getInfoMessage() : '');        
         $this->response = $pageError->get();
     }
     
