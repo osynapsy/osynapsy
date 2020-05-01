@@ -125,8 +125,9 @@ class Client
     public $errors = [];
     private $response = [];
     private $contextOptions = [];
+    private $currentResponse;
     
-    public function __construct($server, $port, $username=null, $password=null, $secure=null)
+    public function __construct($server, $port, $username = null, $password = null, $secure = null)
     {
         $this->server = $server;
         $this->port = $port;
@@ -139,14 +140,8 @@ class Client
         if (in_array($this->secure,['tls','ssl'])) {
             $this->verifyCertificate(false);
         }
-        if(!$this->connect()) {
-            return;
-        }
-        if(!$this->auth()) {
-            return;
-        }
-        $this->isLogin = true;
-        return;
+        $this->connect();
+        $this->auth();
     }
 
     /* Connect to the server */
@@ -164,12 +159,11 @@ class Client
             $streamContext
         );        
         if (!$this->conn) {
-            $this->response[] = 'ERROR : '.$errno .' '. $errstr;
+            $this->raiseException(sprintf('ERROR : %s %s', $errno, $errstr));
         }
         if (substr($this->getServerResponse(),0,3) != '220') {             
-            return false;             
+            $this->raiseException($this->currentResponse);
         }
-        return true;
     }
 
     public function verifyCertificate($verify)
@@ -187,45 +181,41 @@ class Client
     private function auth()
     {        
         $this->putRow('HELO ' . $this->localhost);        
-        if(strtolower(trim($this->secure)) == 'tls' && !$this->authTls()) {
-            return false;
+        if ($this->secure == 'tls') {
+            $this->authTls();
         }
-        if($this->server == 'localhost') {
-            return true;            
+        if ($this->server == 'localhost') {
+            $this->isLogin = true;
+            return;
         }        
         if ($this->putRow('AUTH LOGIN') != '334') { 
-            return false;
+            $this->raiseException($this->currentResponse);
         }
         if ($this->putRow(base64_encode($this->username)) != '334') {
-            return false;
+            $this->raiseException($this->currentResponse);
         }
         if ($this->putRow(base64_encode($this->password)) != '235') {
-            return false;
+            $this->raiseException($this->currentResponse);
         }        
-        return true;
+        $this->isLogin = true;
     }
         
     private function authTls()
     {
         if ($this->putRow('STARTTLS') != '220') {
-            return false;
+            $this->raiseException($this->currentResponse);
         }        
-        stream_socket_enable_crypto(
-            $this->conn,
-            true, 
-            STREAM_CRYPTO_METHOD_TLS_CLIENT
-        );
+        stream_socket_enable_crypto($this->conn, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
         if ($this->putRow('HELO ' . $this->localhost) != '250') {
-            return false;
+            $this->raiseException($this->currentResponse);
         }
-        return true;
     }
     
     private function putRow($command)
     {
         fputs($this->conn, $command . $this->newline);
-        $resp = $this->getServerResponse();        
-        return substr($resp,0,3);
+        $this->currentResponse = $this->getServerResponse();        
+        return substr($this->currentResponse, 0, 3);
     }
     
     /* send the email message */
@@ -245,7 +235,7 @@ class Client
         }
         $email .= "Subject: $subject" . $this->newline;
         $email .= "MIME-Version: 1.0" . $this->newline;
-        if($this->contentType == "multipart/mixed") {
+        if ($this->contentType == "multipart/mixed") {
             $boundary = $this->generateBoundary();
             $message = $this->multipartMessage($message,$boundary);
             $email .= "Content-Type: $this->contentType;" . $this->newline;
@@ -268,18 +258,20 @@ class Client
         $this->putRow('DATA');
         //fputs($this->conn, $email);  /* transmit the entire email here */
         //return substr($this->getServerResponse(),0,3) != '250'  ? false : true;
-        $response = $this->putRow($email);/* transmit the entire email here */
-        if ($response != '250') {
+        /* transmit the entire email here */
+        if ($this->putRow($email) != '250') {
             $this->errors[] = $email;
-            throw new \Exception('Mail don\'t send : '.$response);
+            throw new \Exception(sprintf("Mail don't send : %s", $this->currentResponse));
         }
     }
 
     private function setRecipients($to) /* assumes there is at least one recipient */
     { 
         $r = 'To: ';
-        if(!($to=='')) { $r .= $to . ','; }
-        if(count($this->recipients)>0) {
+        if (!($to == '')) { 
+            $r .= $to . ',';            
+        }
+        if (count($this->recipients) > 0) {
             for($i=0;$i<count($this->recipients);$i++) {
                 $r .= $this->recipients[$i] . ',';
             }
@@ -377,7 +369,7 @@ class Client
     {
         $addr = $emailaddr;
         $strSpace = strrpos($emailaddr,' ');
-        if($strSpace > 0) {
+        if ($strSpace > 0) {
             $addr = substr($emailaddr, $strSpace+1);
             $addr = str_replace("<","",$addr);
             $addr = str_replace(">","",$addr);
@@ -416,41 +408,40 @@ class Client
             $this->altBody = strip_html_tags($htmlpart); 
         }
         $altBoundary = $this->generateBoundary();
-        ob_start(); //Turn on output buffering
+        //ob_start(); //Turn on output buffering
         $parts  = "This is a multi-part message in MIME format." . $this->newline . $this->newline;
         $parts .= "--" . $boundary . $this->newline;
-
         $parts .= "Content-Type: multipart/alternative;" . $this->newline;
         $parts .= "    boundary=\"$altBoundary\"" . $this->newline . $this->newline;
-
         $parts .= "--" . $altBoundary . $this->newline;
         $parts .= "Content-Type: text/plain; charset=$this->charset" . $this->newline;
         $parts .= "Content-Transfer-Encoding: $this->transferEncodeing" . $this->newline . $this->newline;
         $parts .= $this->altBody . $this->newline . $this->newline;
-
         $parts .= "--" . $altBoundary . $this->newline;
         $parts .= "Content-Type: text/html; charset=$this->charset" . $this->newline;
         $parts .= "Content-Transfer-Encoding: $this->transferEncodeing" . $this->newline . $this->newline;
         $parts .= $htmlpart . $this->newline . $this->newline;
-
         $parts .= "--" . $altBoundary . "--" . $this->newline . $this->newline;
-
-        if(count($this->attachments) > 0) {
-          for($i=0;$i<count($this->attachments);$i++) {
+        if (count($this->attachments) > 0) {
+            for ($i=0; $i<count($this->attachments); $i++) {
                 $attachment = chunk_split(base64_encode(file_get_contents($this->attachments[$i])));
                 $filename = basename($this->attachments[$i]);
                 $ext = pathinfo($filename, PATHINFO_EXTENSION);
                 $parts .= "--" . $boundary . $this->newline;
-              $parts .= "Content-Type: application/$ext; name=\"$filename\"" . $this->newline;
+                $parts .= "Content-Type: application/$ext; name=\"$filename\"" . $this->newline;
                 $parts .= "Content-Transfer-Encoding: base64" . $this->newline;
                 $parts .= "Content-Disposition: attachment; filename=\"$filename\"" . $this->newline . $this->newline;
-                $parts .=  $attachment . $this->newline;
-          }
+                $parts .= $attachment . $this->newline;
+            }
         }
 
-        $parts .= "--" . $boundary . "--";
-
-        $message = ob_get_clean(); //Turn off output buffering
+        $parts .= "--" . $boundary . "--";        
+        //$message = ob_get_clean(); //Turn off output buffering
         return $parts;
+    }
+    
+    protected function raiseException($message)
+    {
+        throw new \Exception($message);
     }
 }
