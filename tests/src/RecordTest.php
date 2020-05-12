@@ -9,7 +9,8 @@ final class RecordTest extends TestCase
 {
     private function getRecord()
     {
-        return new class($this->getConnection()) extends RecordActive {
+        return new class($this->getConnection()) extends RecordActive
+        {
             public function table()
             {
                 return 'tbl_test';
