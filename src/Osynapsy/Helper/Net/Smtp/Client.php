@@ -147,9 +147,7 @@ class Client
     /* Connect to the server */
     private function connect()
     {
-        $streamContext = stream_context_create(
-            $this->contextOptions
-        );
+        $streamContext = stream_context_create($this->contextOptions);
         $this->conn = stream_socket_client(
             $this->server.':'.$this->port,
             $errno,
@@ -254,7 +252,6 @@ class Client
         $this->sendRecipients($this->recipients);
         $this->sendRecipients($this->cc);
         $this->sendRecipients($this->bcc);
-
         $this->putRow('DATA');
         //fputs($this->conn, $email);  /* transmit the entire email here */
         //return substr($this->getServerResponse(),0,3) != '250'  ? false : true;
