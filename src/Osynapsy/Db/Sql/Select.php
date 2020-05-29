@@ -16,12 +16,12 @@ namespace Osynapsy\Db\Sql;
  *
  * @author Peter
  */
-class Select 
+class Select
 {
-    private $id;    
+    private $id;
     private $debug;
     private $dummy;
-    private $parent;    
+    private $parent;
     private $part = [
         'SELECT' => [
             'separator' => ','.PHP_EOL
@@ -33,6 +33,9 @@ class Select
         'WHERE' => [
             'separator' => ' '
         ],
+        'GROUP BY' => [
+            'separator' => ','.PHP_EOL
+        ],
         'ORDER BY' => [
             'separator' => ','.PHP_EOL
         ]
@@ -42,28 +45,29 @@ class Select
         'FROM' => [],
         'JOIN' => [],
         'WHERE' => [],
+        'GROUP BY' => [],
         'ORDER BY' => []
     ];
     private $parameters = [];
-    
+
     public function __construct($fields = [], $parent = null, $debug = false, $id = 'main')
     {
         $this->debug = $debug;
         $this->parent = empty($parent) ? $this : $parent;
-        $this->id = $id;        
+        $this->id = $id;
     }
-    
+
     public function parameters(array $parameters = [])
     {
         $this->parameters = array_merge($this->parameters, $parameters);
         return $this;
     }
-            
+
     private function isAssoc($array)
     {
         return !($array === array_values($array));
     }
-    
+
     public function condition($condition, callable $function)
     {
         if (!$condition) {
@@ -72,67 +76,76 @@ class Select
         $function($this);
         return $this;
     }
-    
+
     public function select(array $fields = null, array $parameters = [])
     {
         if (empty($fields)) {
             return;
-        }        
+        }
         if (!is_array($fields)) {
             $fields = array($fields);
         } elseif ($this->isAssoc($fields)) {
             $app = array();
             foreach($fields as $key => $value) {
                 $app[] = $value.' as "'.$key.'"';
-            }            
+            }
             $fields = $app;
         }
         $this->elements['SELECT'] = array_merge($this->elements['SELECT'], $fields);
         $this->parameters($parameters);
         return $this;
     }
-    
+
     public function from($table, $fields = null)
     {
         $this->select($fields);
         $this->elements['FROM'] = $table;
         return $this;
     }
-    
+
     public function join($table)
     {
         $this->elements['JOIN'][] = 'INNER JOIN '.$table;
         return $this;
     }
-    
+
     public function joinLeft($table)
     {
         $this->elements['JOIN'][] = 'LEFT JOIN '.$table;
         return $this;
     }
-    
+
     public function on(array $conditions)
     {
         $this->elements['JOIN'][] = 'ON ('.implode(' AND ', $conditions).')';
         return $this;
     }
-    
+
     public function and_()
-    {        
+    {
     }
-    
+
     public function where($rawCondition, array $parameters = [], $operator = 'AND')
     {
-        $condition = is_array($rawCondition) ? '('.implode(' OR ', $rawCondition).')' 
-                                             : $rawCondition;        
+        $condition = is_array($rawCondition) ? '('.implode(' OR ', $rawCondition).')'
+                                             : $rawCondition;
         if (!empty($this->elements['WHERE'])) {
             $condition = $operator . ' ' . $condition;
-        } 
+        }
         $this->elements['WHERE'][] = $condition;
         $this->parameters($parameters);
         return $this;
     }
-    
+
+    public function groupBy(array $fields)
+    {
+        if (empty($fields)) {
+            return;
+        }
+        $this->elements['GROUP BY'] = array_merge($this->elements['GROUP BY'], $fields);
+        return $this;
+    }
+
     public function orderBy(array $fields)
     {
         if (empty($fields)) {
@@ -141,7 +154,7 @@ class Select
         $this->elements['ORDER BY'] = array_merge($this->elements['ORDER BY'], $fields);
         return $this;
     }
-    
+
     public function __toString()
     {
         $string = '';
@@ -150,58 +163,58 @@ class Select
                 continue;
             }
             $string .= $word == 'JOIN' ? '' : $word.' ';
-            $string .= $this->prefix($word);            
-            $string .= is_array($items) ? implode($this->getSeparator($word), $items) : ' '.$items;            
-            $string .= $this->postfix($word);            
+            $string .= $this->prefix($word);
+            $string .= is_array($items) ? implode($this->getSeparator($word), $items) : ' '.$items;
+            $string .= $this->postfix($word);
             $string .= PHP_EOL;
         }
         return $string;
     }
-    
+
     public function getParameters()
     {
         return $this->parameters;
     }
-                
+
     private function getSeparator($word)
     {
         return array_key_exists($word, $this->part) ? $this->part[$word]['separator'] : ' ';
     }
-            
+
     private function prefix($word)
     {
         //return array_key_exists($word, $this->part) ? $this->part[$word][0] : ' ';
         return isset($this->part[$word]) && isset($this->part[$word]['prefix']) ? $this->part[$word]['prefix'] : ' ';
     }
-    
+
     private function postfix($word)
     {
         return isset($this->part[$word]) && isset($this->part[$word]['postfix']) ? $this->part[$word]['postfix'] : ' ';
     }
-    
+
     public function __if__($condition)
-    {                
-        return $condition ? $this->getMaster() : $this->getDummy(); 
+    {
+        return $condition ? $this->getMaster() : $this->getDummy();
     }
-    
+
     public function __elseif__($condition)
     {
         return $condition ? $this->getMaster() : $this->getDummy();
     }
-    
+
     public function __else__()
-    {        
-        //If parent is not set then prev if condition is verificated 
+    {
+        //If parent is not set then prev if condition is verificated
         //else don't find
         //If parent is set if condition is false then else case is verificated
         return $this->getId() === 'main' ? $this->getDummy() : $this->getMaster();
     }
-    
+
     public function __endif__()
     {
         return $this->getMaster();
-    }       
-    
+    }
+
     private function getDummy()
     {
         if (empty($this->dummy)) {
@@ -209,14 +222,14 @@ class Select
         }
         return $this->dummy;
     }
-    
+
     public function getId()
     {
         return $this->id;
     }
-    
+
     private function getMaster()
     {
         return $this->parent;
-    }       
+    }
 }
