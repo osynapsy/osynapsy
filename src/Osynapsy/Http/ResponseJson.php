@@ -15,10 +15,10 @@ use Osynapsy\Html\Helper\JQuery;
 
 /**
  * Implements Json response
- * 
+ *
  * @author Pietro Celeste <p.celeste@spinit.it>
  */
-class ResponseJson extends Response 
+class ResponseJson extends Response
 {
     public function __construct()
     {
@@ -26,7 +26,7 @@ class ResponseJson extends Response
     }
     /**
      * Implements abstract method for build response
-     * 
+     *
      * @return json string
      */
     public function __toString()
@@ -34,13 +34,13 @@ class ResponseJson extends Response
         $this->sendHeader();
         return json_encode($this->repo['content']);
     }
-    
+
     public function debug($msg)
     {
         $this->message('errors','alert',$msg);
         $this->dispatch();
     }
-    
+
     /**
      * Dispatch immediatly response
      */
@@ -50,14 +50,14 @@ class ResponseJson extends Response
         $this->sendHeader();
         die(json_encode($this->repo['content']));
     }
-    
+
     /**
      * Store a error message
-     * 
+     *
      * If recall without parameter return if errors exists.
      * If recall with only $oid parameter return if error $oid exists
      * If recall it with $oid e $err parameter set error $err on key $oid.
-     * 
+     *
      * @param string $objectId
      * @param string $errorMessage
      * @return type
@@ -69,33 +69,33 @@ class ResponseJson extends Response
         }
         if (!is_null($objectId) && is_null($errorMessage)){
             return array_key_exists('errors', $this->repo['content']) && array_key_exists($objectId, $this->repo['content']['errors']);
-        }         
-        if (function_exists('mb_detect_encoding') && !mb_detect_encoding($errorMessage, 'UTF-8', true)) {        
+        }
+        if (function_exists('mb_detect_encoding') && !mb_detect_encoding($errorMessage, 'UTF-8', true)) {
             $errorMessage = \utf8_encode($errorMessage);
         }
         $this->message('errors', $objectId, $errorMessage);
     }
-    
+
     /**
-     * Store a list of errors     
-     * 
-     * @param array $errorList     
+     * Store a list of errors
+     *
+     * @param array $errorList
      * @return void
-     */    
+     */
     public function errors(array $errorList)
     {
         foreach ($errorList as $error) {
             $this->error($error[0], $error[1]);
         }
     }
-    
+
     /**
      * Store a error message alias
-     * 
+     *
      * If recall without parameter return if errors exists.
      * If recall with only $oid parameter return if error $oid exists
      * If recall it with $oid e $err parameter set error $err on key $oid.
-     * 
+     *
      * @param string $errorMessage
      * @return type
      */
@@ -106,26 +106,26 @@ class ResponseJson extends Response
         }
         return $this;
     }
-    
+
     /**
      * Prepare a goto message for FormController.js
-     * 
-     * If $immediate = true dispatch of the response is immediate     
-     * 
+     *
+     * If $immediate = true dispatch of the response is immediate
+     *
      * @param string $url
      * @param bool $immediate
      */
     public function go($url, $immediate = true)
     {
         $this->message('command', 'goto', $url);
-        if ($immediate) { 
-            $this->dispatch(); 
+        if ($immediate) {
+            $this->dispatch();
         }
     }
 
     /**
      * Append a generic messagge to the response
-     * 
+     *
      * @param string $typ
      * @param string $act
      * @param string $val
@@ -137,27 +137,41 @@ class ResponseJson extends Response
         }
         $this->repo['content'][$typ][] = array($act,$val);
     }
-    
+
     public function js($cmd)
     {
         $this->message('command','execCode', str_replace(PHP_EOL,'\n',$cmd));
     }
-    
+
     public function jquery($selector)
     {
         return new JQuery($selector, $this);
     }
-    
+
+    public function jsRefreshComponentOnView(array $components)
+    {
+        if (empty($components)) {
+            return;
+        }
+        $strComponents = implode("','", $components);
+        $this->getResponse()->js(sprintf("parent.Osynapsy.refreshComponents(['%s'])", $strComponents));
+    }
+
+    public function jsCloseModal()
+    {
+        $this->js("parent.$('#amodal').modal('hide');");
+    }
+
     public function pageBack()
     {
         $this->go('back');
     }
-    
+
     public function pageRefresh()
-    {        
+    {
         $this->go('refresh');
     }
-    
+
     public function historyPushState($parameterToUrlAppend)
     {
         if (empty($parameterToUrlAppend)) {
