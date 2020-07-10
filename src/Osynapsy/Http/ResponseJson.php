@@ -154,7 +154,7 @@ class ResponseJson extends Response
             return;
         }
         $strComponents = implode("','", $components);
-        $this->getResponse()->js(sprintf("parent.Osynapsy.refreshComponents(['%s'])", $strComponents));
+        $this->js(sprintf("parent.Osynapsy.refreshComponents(['%s'])", $strComponents));
     }
 
     public function jsCloseModal()
