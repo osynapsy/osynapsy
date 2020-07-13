@@ -18,14 +18,15 @@ class Container extends Tag
 {
     //use Trait for make form command buttons
     use FormCommands;
-    
+
     private $alert;
     private $alertCount = 0;
     private $currentRow;
     private $foot;
+    protected $footClass;
     private $footLeft;
     private $footRight;
-    
+
     public function __construct($id, $tag = 'div')
     {
         parent::__construct($tag, $id);
@@ -53,24 +54,25 @@ class Container extends Tag
         $this->alertCount++;
         return $this->alert;
     }
-    
+
     private function getFoot($right = false, $offset = 0)
     {
         if (empty($this->foot)) {
             $width = (12 - ($offset * 2)) / 2;
             $lgoffset = empty($offset) ? '' : ' col-lg-offset-'.$offset;
-            $this->foot = $this->addRow();
+            $this->foot = $this->addRow('p-2 '.$this->footClass);
+            $this->foot->style = 'background-color: rgba(255,255,255,0.8); border-top: 1px solid #ddd;';
             $this->footLeft = $this->foot->add(new Tag('div', null, 'col-lg-'.$width.$lgoffset));
             $this->footRight = $this->foot->add(new Tag('div', null, 'col-lg-'.$width.' text-right'));
         }
-        return empty($right) ? $this->footLeft : $this->footRight;        
+        return empty($right) ? $this->footLeft : $this->footRight;
     }
-    
-    public function AddRow()
+
+    public function AddRow($class = '')
     {
-        return $this->currentRow = $this->add(new Tag('div', null , 'row'));
+        return $this->currentRow = $this->add(new Tag('div', null , trim('row '.$class)));
     }
-    
+
     public function AddColumn($lg = 4, $sm = null, $xs = null)
     {
         $col = new Column($lg);
@@ -81,23 +83,28 @@ class Container extends Tag
         }
         return $this->currentRow->add($col);
     }
-    
+
     public function setTitle($title)
     {
         $this->AddRow();
         $this->AddColumn(12)->add('<h1>'.$title.'</h1>');
     }
-    
+
     public function setCommand($delete = false, $save = true, $back = true, $offset = 0)
     {
         if ($delete) {
-            $this->getFoot(true, $offset)->add($this->getCommandDelete());                 
+            $this->getFoot(true, $offset)->add($this->getCommandDelete());
         }
         if ($save) {
             $this->getFoot(true, $offset)->add($this->getCommandSave($save));
-        }        
-        if ($back) {
-            $this->getFoot()->add($this->getCommandBack());                 
         }
+        if ($back) {
+            $this->getFoot()->add($this->getCommandBack());
+        }
+    }
+
+    public function fixCommandBar($class = 'fixed-bottom  px-5 py-2 b-light')
+    {
+       $this->footClass = $class;
     }
 }
