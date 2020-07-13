@@ -23,9 +23,9 @@ use Osynapsy\Html\Bcl\Alert;
  * @author Pietro Celeste <p.celeste@osynapsy.org>
  */
 class Form extends Component
-{    
+{
     use FormCommands;
-    
+
     protected $head;
     protected $headCommandWidth = 12;
     public  $headClass = 'row';
@@ -39,30 +39,30 @@ class Form extends Component
     protected $repo;
     protected $headCommand;
     protected $appendFootToMain = false;
-    
+
     public function __construct($name, $mainComponent = 'Panel', $tag = 'form')
     {
         parent::__construct($tag, $name);
         $this->repo = new Dictionary([
            'foot' => [
-                'offset' => 1,            
+                'offset' => 1,
                 'width' => 10
             ]
         ]);
         //Form setting
-        $this->att(['name' => $name, 'method' => 'post', 'role' => 'form']);             
+        $this->att(['name' => $name, 'method' => 'post', 'role' => 'form']);
         //Body setting
-        $this->body = $this->buildMainComponent($mainComponent);                 
+        $this->body = $this->buildMainComponent($mainComponent);
     }
-    
+
     protected function __build_extra__()
     {
         if ($this->head) {
-            $this->add(new Tag('div', null, 'block-header m-b'))                 
-                 ->add(new Tag('div', null, $this->headClass))                 
+            $this->add(new Tag('div', null, 'block-header m-b'))
+                 ->add(new Tag('div', null, $this->headClass))
                  ->add($this->head);
         }
-        
+
         if ($this->alert) {
             $this->add($this->alert);
         }
@@ -75,9 +75,9 @@ class Form extends Component
         if ($this->appendFootToMain) {
             $this->body->put(
                 '',
-                $this->foot->get(), 
-                10000, 
-                10, 
+                $this->foot->get(),
+                10000,
+                10,
                 $this->repo->get('foot.width'),
                 $this->repo->get('foot.offset')
             );
@@ -85,7 +85,7 @@ class Form extends Component
         }
         $this->add($this->foot->get());
     }
-    
+
     protected function buildMainComponent($mainComponent)
     {
         $rawComponent = '\\Osynapsy\\Html\\Bcl\\'.$mainComponent;
@@ -95,16 +95,16 @@ class Form extends Component
         $component->tagdep =& $this->tagdep;
         return $component;
     }
-    
+
     public function addCard($title)
     {
         $this->body->addCard($title);
     }
-    
+
     public function addHeadCommand($object, $space = 1)
     {
-        if (empty($this->headCommand)) {            
-            $this->headCommand = $this->head($this->headCommandWidth); 
+        if (empty($this->headCommand)) {
+            $this->headCommand = $this->head($this->headCommandWidth);
             $this->headCommand->att('style','padding-top: 10px');
         }
         if ($space > 0) {
@@ -112,7 +112,7 @@ class Form extends Component
         }
         $this->headCommand->add($object);
     }
-    
+
     public function head($width = 12, $offset = 0)
     {
         //Head setting
@@ -122,13 +122,13 @@ class Form extends Component
         $column = $this->head->add(new Column($width, $offset));
         return $column;
     }
-    
+
     public function alert($label = null, $type = 'danger')
     {
         if (empty($this->alert)) {
             $this->alert = new Tag('div');
             $this->alert->att('class','transition animated fadeIn m-b-sm');
-        }        
+        }
         $alert = new Alert('alert_'.$this->alertCount, $label, $type);
         $alert->setDismissible(true);
         $alert->showIcon(true);
@@ -136,51 +136,52 @@ class Form extends Component
         $this->alertCount++;
         return $alert;
     }
-    
+
     public function fixCommandBar($class = 'fixed-bottom p-2 b-light')
     {
-       $this->footClass = $class; 
+       $this->footClass = $class;
     }
-    
+
     public function foot($obj, $right = false)
     {
         if (empty($this->foot)) {
-            $this->foot = new Tag('div', null, trim('row mt-2 '.$this->footClass));
+            $this->foot = new Tag('div', null, trim('row mt-2 pt-2 '.$this->footClass));
+            $this->foot->style = 'background-color: rgba(255,255,255,0.8); border-top: 1px solid #ddd;';
             $this->footLeft = $this->foot->add(new Tag('div', null, 'col-lg-6 col-xs-6 col-sm-4'));
-            $this->footRight = $this->foot->add(new Tag('div', null, 'col-lg-6 col-xs-6 col-sm-8 text-right'));           
+            $this->footRight = $this->foot->add(new Tag('div', null, 'col-lg-6 col-xs-6 col-sm-8 text-right'));
         }
         $column = $right ? $this->footRight : $this->footLeft;
         $column->add($obj);
         return is_object($obj) ? $obj : $column;
     }
-    
+
     public function getPanel()
     {
         return $this->body;
-    }       
-            
+    }
+
     public function put($lbl, $obj, $x = 0, $y = 0, $width = 1, $offset = null, $class = '')
     {
         $this->body->put($lbl, $obj, $x, $y, $width, $offset, $class);
         return $this->body;
     }
-    
+
     public function setCommand($delete = false, $save = true, $back = true, $closeModal = false)
     {
-        if ($back) {            
+        if ($back) {
             $this->foot($this->getCommandBack());
         }
-        if ($closeModal) {            
+        if ($closeModal) {
             $this->foot($this->getCommandClose());
         }
-        if ($delete) {            
+        if ($delete) {
             $this->foot($this->getCommandDelete(), true);
         }
-        if ($save) {            
+        if ($save) {
             $this->foot($this->getCommandSave($save), true);
-        }        
-    }        
-    
+        }
+    }
+
     public function setType($type)
     {
         if ($type == 'horizontal') {
@@ -188,7 +189,7 @@ class Form extends Component
         }
         $this->body->setType($type);
     }
-    
+
     public function setTitle($title, $subTitle = null, $size = 6, $hsize = 'h2')
     {
         $objTitle = new Tag($hsize);
@@ -201,7 +202,7 @@ class Form extends Component
         }
         return $objTitle;
     }
-    
+
     public function parameter($key, $value=null)
     {
         if (is_null($value)){
