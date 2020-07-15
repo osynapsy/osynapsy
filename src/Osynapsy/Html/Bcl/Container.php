@@ -55,7 +55,7 @@ class Container extends Tag
         return $this->alert;
     }
 
-    private function getFoot($right = false, $offset = 0)
+    public function getFoot($right = false, $offset = 0)
     {
         if (empty($this->foot)) {
             $width = (12 - ($offset * 2)) / 2;
