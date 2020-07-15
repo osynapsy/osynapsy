@@ -31,7 +31,7 @@ class Column extends Component
         $this->setSm($size, $offset);
         $this->setXs(0, 0);
     }
-    
+
     protected function __build_extra__()
     {
         foreach ($this->size as $size => $dimension) {
@@ -47,39 +47,39 @@ class Column extends Component
             $this->setClass($class);
         }
     }
-    
+
     public function setLg($size, $offset = 0)
     {
         $this->size['lg']['width'] = $size;
         $this->size['lg']['offset'] = $offset;
          return $this;
     }
-    
+
     public function setMd($size, $offset = 0)
     {
         $this->size['md']['width'] = $size;
         $this->size['md']['offset'] = $offset;
          return $this;
     }
-    
+
     public function setSm($size, $offset = 0)
     {
         $this->size['sm']['width'] = $size;
         $this->size['sm']['offset'] = $offset;
          return $this;
     }
-    
+
     public function setXs($size, $offset = 0)
     {
         $this->size['xs']['width'] = $size;
         $this->size['xs']['offset'] = $offset;
         return $this;
     }
-    
+
     public function push($label, $object, $grouped = true, $class = 'form-group')
     {
         if ($object instanceof Tag) {
-            $object->att('data-label', strip_tags($label));
+            $object->att('data-label', strip_tags(is_array($label) ? $label[0] : $label));
         }
         if ($grouped) {
             $this->add(new FormGroup($object, $label, $class));
@@ -87,5 +87,5 @@ class Column extends Component
             $this->add($object);
         }
         return $this;
-    }    
+    }
 }
