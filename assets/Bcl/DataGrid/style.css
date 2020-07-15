@@ -1,33 +1,26 @@
 .bcl-datagrid > div.row {
-    margin-bottom: -1px;   
+    margin-bottom: -1px;
 }
 .bcl-datagrid div.row {
     margin-left: 0px !important;
     margin-right: 0px !important;
 }
-
 .bcl-datagrid .bcl-datagrid-th,
 .bcl-datagrid .bcl-datagrid-head {
     font-weight: bold;
     cursor: pointer;
 }
-
 .bcl-datagrid .bcl-datagrid-th-order-by:hover {
     background-color: #eee !important;
 }
-
 .bcl-datagrid .bcl-datagrid-head {
     font-size: 1.2em;
     margin-left: -28px;
     margin-bottom: 5px !important;
 }
-.bcl-datagrid-border-on .bcl-datagrid-thead {
-    border: 1px solid #ddd;   
-}
 .bcl-datagrid-thead > .bcl-datagrid-th {
     padding-top: 5px;
     padding-bottom: 5px;
-    border-right: 1px solid #ddd;
     background-color: #fdfdfd;
     position: relative;
     white-space: nowrap;
@@ -35,30 +28,35 @@
     text-overflow: ellipsis;
 }
 .bcl-datagrid-thead > .bcl-datagrid-th:first-child {
-    border-left: 1px solid transparent;
+    border-left: 1px solid #ddd;
 }
-.bcl-datagrid-border-on .bcl-datagrid-body .row:first-child {
-    border-top: 1px solid #ddd;
-}
-
-.bcl-datagrid-border-on .bcl-datagrid-td {
-    border-right: 1px solid #eee;
-}
-
 .bcl-datagrid-body .bcl-datagrid-body-row:hover {
     background-color: #f8f8f8;
 }
 .bcl-datagrid-body .row {
     position: relative;
 }
-
 .bcl-datagrid-body .bcl-datagrid-td:nth-last-child(2) {
     padding-right: 25px !important;
 }
-
-.bcl-datagrid-border-on .bcl-datagrid-body .row,
-.bcl-datagrid-border-on .bcl-datagrid-head .row {
+.bcl-datagrid-border-on .bcl-datagrid-thead {
+    border-top: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+.bcl-datagrid-border-on .bcl-datagrid-thead > .bcl-datagrid-th {
     border-left: 1px solid #ddd;
+}
+.bcl-datagrid-border-on .bcl-datagrid-body .row:first-child {
+    border-top: 1px solid #ddd;
+}
+.bcl-datagrid-border-on .row > .bcl-datagrid-td:last-child {
+    border-right: 0px;
+}
+.bcl-datagrid-border-on .row .bcl-datagrid-td {
+    border-left: 1px solid #ddd;
+}
+.bcl-datagrid-border-on .bcl-datagrid-body .row,
+.bcl-datagrid-border-on .bcl-datagrid-head {
     border-bottom: 1px solid #ddd;
     border-right: 1px solid #ddd;
 }
@@ -69,11 +67,11 @@
     top: 0px;
     right: 5px;
     border: none !important;
-} 
+}
 
 .bcl-datagrid-body div.bcl-datagrid-body-row:hover .cmd-row
 {
-    display: block;    
+    display: block;
 }
 
 .bcl-datagrid-body .cmd-row:hover a
