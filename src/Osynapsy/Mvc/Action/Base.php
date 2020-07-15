@@ -25,6 +25,11 @@ abstract class Base implements InterfaceAction
         call_user_func($this->triggers[$eventId], $this);
     }
 
+    public function getApp()
+    {
+        return $this->controller->getApp();
+    }
+
     public function getController()
     {
         return $this->controller;
