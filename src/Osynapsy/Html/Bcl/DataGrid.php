@@ -196,11 +196,11 @@ class DataGrid extends Component
         if (empty($this->pagination)) {
             return $row;
         }
-        $row->add(new Tag('div', null, 'col-sm-3 col-lg-2'))
+        $row->add(new Tag('div', null, 'col-sm-4 d-none d-sm-block col-lg-2'))
             ->add($this->pagination->getPageDimensionsCombo());
-        $row->add(new Tag('div', null, 'col-sm-4 offset-sm-1 offset-lg-2 text-center'))
+        $row->add(new Tag('div', null, 'col-sm-4 d-none d-md-block offset-lg-2 text-center'))
              ->add('<label class="" style="margin-top: 30px;">'.$this->pagination->getInfo().'</label>');
-        $row->add(new Tag('div', null, 'col-sm-4 text-right'))
+        $row->add(new Tag('div', null, 'col-sm-8 col-md-4 text-right'))
             ->add($this->pagination)
             ->setClass('mt-4')->setPosition('end');
         return $row;
