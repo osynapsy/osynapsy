@@ -100,7 +100,7 @@ class DataGrid extends Component
     private function emptyMessageFactory()
     {
         $this->body->add(
-            '<div class="row"><div class="col-lg-12 text-center">'.$this->emptyMessage.'</div></div>'
+            '<div class="row"><div class="col-lg-12 text-center bcl-datagrid-td">'.$this->emptyMessage.'</div></div>'
         );
     }
 
