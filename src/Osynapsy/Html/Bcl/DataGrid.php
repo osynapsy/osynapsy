@@ -113,7 +113,7 @@ class DataGrid extends Component
     protected function bodyFactory()
     {
         $this->body = new Tag('div');
-        $this->body->att('class','bcl-datagrid-body');
+        $this->body->att('class','bcl-datagrid-body bg-white');
         if ($this->rowWidth === 12) {
             $this->normalBodyFactory($this->data);
         } else {
