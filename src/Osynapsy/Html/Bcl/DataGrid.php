@@ -23,6 +23,7 @@ class DataGrid extends Component
     private $title;
     private $body;
     private $rowWidth = 12;
+    private $rowMinimum = 0;
     private $totalFunction;
     protected $totals = [];
 
@@ -94,13 +95,13 @@ class DataGrid extends Component
     /**
      * Internal metod for build empty message.
      *
-     * @param type $body
-     * @return type
+     * @param string $message
+     * @return Void
      */
-    private function emptyMessageFactory()
+    protected function emptyRowFactory($message)
     {
         $this->body->add(
-            '<div class="row"><div class="col-lg-12 text-center bcl-datagrid-td">'.$this->emptyMessage.'</div></div>'
+            '<div class="row"><div class="col-lg-12 text-center bcl-datagrid-td">'.$message.'</div></div>'
         );
     }
 
@@ -109,26 +110,31 @@ class DataGrid extends Component
      *
      * @return Tag
      */
-    private function bodyFactory()
+    protected function bodyFactory()
     {
         $this->body = new Tag('div');
         $this->body->att('class','bcl-datagrid-body');
-        if (empty($this->data)) {
-            $this->emptyMessageFactory();
-            return;
-        }
         if ($this->rowWidth === 12) {
-            $this->normalBodyFactory();
-            return;
+            $this->normalBodyFactory($this->data);
+        } else {
+            $this->bodyWithRowOversizeFactory();
         }
-        $this->bodyWithRowOversizeFactory();
     }
 
-    protected function normalBodyFactory()
+    protected function normalBodyFactory($rows)
     {
-        foreach ($this->data as $rec) {
-            $this->body->add($this->bodyRowFactory($rec));
-            $this->execTotalFunction($rec);
+        $i = 0;
+        foreach ($rows as $row) {
+            $this->body->add($this->bodyRowFactory($row));
+            $this->execTotalFunction($row);
+            $i++;
+        }
+        if ($i === 0) {
+            $this->emptyRowFactory($this->emptyMessage);
+            $i++;
+        }
+        for ($i; $i < $this->rowMinimum; $i++) {
+            $this->emptyRowFactory('&nbsp;');
         }
         $this->execTotalFunction([false]);
     }
@@ -202,16 +208,10 @@ class DataGrid extends Component
         return $row;
     }
 
-    /**
-     * Build Datagrid title
-     *
-     * @return Tag
-     */
     private function buildTitle()
     {
         $tr = new Tag('div', null, 'row bcl-datagrid-title');
-        $tr->add(new Tag('div', null, 'col-lg-12'))
-           ->add($this->title);
+        $tr->add(new Tag('div', null, 'col-lg-12'))->add($this->title);
         return $tr;
     }
 
@@ -299,6 +299,11 @@ class DataGrid extends Component
     {
         $this->emptyMessage = $message;
         return $this;
+    }
+
+    public function setRowMinimum($min)
+    {
+        $this->rowMinimum = $min;
     }
 
     /**
