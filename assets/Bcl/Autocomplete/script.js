@@ -1,4 +1,4 @@
-/* 
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -17,7 +17,7 @@ BclAutocomplete = {
                 case 38 : // up
                     if ($('#search_content').length > 0) {
                         $('#search_content').trigger('arrow-up');
-                    } 
+                    }
                     break;
                 case 40 :
                     if ($('#search_content').length > 0) {
@@ -38,7 +38,7 @@ BclAutocomplete = {
                             'Osynapsy-Html-Components': fieldId,
                             'Accept': 'text/html'
                         },
-                        success : function(response) {                            
+                        success : function(response) {
                             var listRows = $('#' + fieldId + '_list div.row',response);
                             if (listRows.length === 0) {
                                 $('#search_content').remove();
@@ -51,10 +51,10 @@ BclAutocomplete = {
                     break;
             }
         }).attr('autocomplete','off');
-        $(window).on('click',function(){            
+        $(window).on('click',function(){
             if ($('#search_content').length === 0) {
                 return;
-            }                        
+            }
             var parentId = $('#search_content').data('parent');
             var parent = $('div#' + parentId);
             if ($('div#' + parentId +' input').hasClass('osy-autocomplete-unselected') && $(parent).attr('onunselected')) {
@@ -65,7 +65,7 @@ BclAutocomplete = {
         })
     },
     openSearchContainer : function(obj)
-    {        
+    {
         if ($('#search_content').length > 0) {
             return $('#search_content');
         }
@@ -78,12 +78,12 @@ BclAutocomplete = {
                 e.preventDefault();
                 e.stopPropagation();
             }
-            if ($('.row.selected',this).length === 0) {                
+            if ($('.row.selected',this).length === 0) {
                 $('.row:last',this).addClass('selected');
-            } else if($('.row.selected',this).is(':first-child')){                
+            } else if($('.row.selected',this).is(':first-child')){
                 $('.row.selected').removeClass('selected');
                 $('.row:last',this).addClass('selected');
-            } else {                
+            } else {
                 $('.row.selected').removeClass('selected').prev().addClass('selected');
             }
         }).on('arrow-down',function(e) {
@@ -91,9 +91,9 @@ BclAutocomplete = {
                 e.preventDefault();
                 e.stopPropagation();
             }
-            if ($('.row.selected',this).length === 0) {                
+            if ($('.row.selected',this).length === 0) {
                 $('.row:first',this).addClass('selected');
-            } else if($('.row.selected',this).is(':last-child')){                
+            } else if($('.row.selected',this).is(':last-child')){
                 $('.row.selected').removeClass('selected');
                 $('.row:first',this).addClass('selected');
             } else {
@@ -104,9 +104,9 @@ BclAutocomplete = {
                 return;
             }
             e.preventDefault();
-            var parentid = $(this).closest('#search_content').data('parent');            
+            var parentid = $(this).closest('#search_content').data('parent');
             $('input#'+parentid).removeClass('osy-autocomplete-unselected').val($(this).data('label'));
-            $('input#__'+parentid).val($(this).data('value'));            
+            $('input#__'+parentid).val($(this).data('value'));
             if (!Osynapsy.isEmpty($('div#'+parentid).attr('onselect'))) {
                 eval($('div#'+parentid).attr('onselect'));
             }
@@ -126,11 +126,11 @@ BclAutocomplete = {
         var parentPosition = $(par).offset();
         //console.log(parentPosition);
         var windowWidth = $(window).width();
-        var windowHeight = $(window).height();  
+        var windowHeight = $(window).height();
         parentPosition.right = parentPosition.left + $(par).width();
         parentPosition.bottom = parentPosition.top + $(par).outerHeight();
-        
-        divPosition.top = parentPosition.bottom;                                
+
+        divPosition.top = parentPosition.bottom;
         divPosition.height = Math.max(100,windowHeight - (parentPosition.bottom + 50));
         if (500 > (windowWidth - parentPosition.left)) {
             //console.log('angolo destro', parentWidth, parentPosition.left, windowWidth);
@@ -144,7 +144,7 @@ BclAutocomplete = {
             divPosition.width = parentWidth > 500 ? parentWidth : windowWidth - (parentPosition.left + 50);
         }
         divPosition.width = parentWidth;
-        divPosition.left = parentPosition.left; 
+        divPosition.left = parentPosition.left;
         return divPosition;
     },
     closeSearchContainer : function(parent)
@@ -154,8 +154,8 @@ BclAutocomplete = {
 };
 
 if (window.FormController) {
-    FormController.register('init','BclAutocomplete',function(){ 
-        BclAutocomplete.init(); 
+    FormController.register('init','BclAutocomplete',function(){
+        BclAutocomplete.init();
     });
 }
 
