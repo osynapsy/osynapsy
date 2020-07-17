@@ -45,6 +45,11 @@ abstract class Base implements InterfaceAction
         return $this->getController()->getModel();
     }
 
+    public function getParameter($index)
+    {
+        return $this->parameters[$index];
+    }
+
     public function getResponse()
     {
         return $this->getController()->getResponse();
