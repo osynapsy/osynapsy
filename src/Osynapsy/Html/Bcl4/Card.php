@@ -22,7 +22,7 @@ class Card extends Component
         'body' => null,
         'footer' => null
     );
-    
+
     private $classCss = [
         'main' => 'card',
         'header' => 'card-header',
@@ -30,27 +30,27 @@ class Card extends Component
         'foot' => 'card-footer',
         'title' => 'card-title',
         'row'   => 'row',
-        'cell'  => ''    
+        'cell'  => ''
     ];
-    
+
     private $currentRow = null;
     private $currentColumn = null;
     private $title;
     private $commands = [];
-    
+
     public function __construct($id, $class = 'card', $tag = 'div')
     {
         parent::__construct($tag, $id);
-        $this->classCss['main'] = $class;         
-        $this->sections['body'] = new Tag($tag);      
+        $this->classCss['main'] = $class;
+        $this->sections['body'] = new Tag($tag);
     }
-    
+
     public function addCommands(array $commands = [])
     {
-        $this->commands = array_merge($this->commands, $commands);        
+        $this->commands = array_merge($this->commands, $commands);
         return $this;
     }
-    
+
     protected function __build_extra__()
     {
         $this->buildTitle();
@@ -64,7 +64,7 @@ class Card extends Component
             $this->add($section);
         }
     }
-    
+
     protected function buildCommands()
     {
         if (empty($this->commands)) {
@@ -72,22 +72,22 @@ class Card extends Component
         }
         $container = $this->getHead()->add(
             new Tag('div', null, 'panel-commands pull-right')
-        );         
+        );
         foreach($this->commands as $command) {
             $container->add($command);
-        }        
+        }
     }
-    
+
     protected function buildTitle()
     {
         if (empty($this->title)) {
             return;
-        }               
+        }
         $this->getBody()->add(
             '<div class="'.$this->classCss['title'].'">'.$this->title.'</div>'
         );
     }
-    
+
     public function addRow()
     {
         $this->currentRow = $this->sections['body']->add(
@@ -95,7 +95,7 @@ class Card extends Component
         );
         return $this->currentRow;
     }
-    
+
     public function addColumn($colspan = 12, $offset = 0)
     {
         if (empty($this->currentRow)) {
@@ -103,15 +103,15 @@ class Card extends Component
         }
         $this->currentColumn = $this->currentRow->add(
             new Column($colspan, $offset)
-        )->setClass($this->classCss['cell']);                        
+        )->setClass($this->classCss['cell']);
         return $this->currentColumn;
     }
-    
+
     public function getBody()
     {
         return $this->sections['body'];
     }
-    
+
     public function getHead()
     {
         if (empty($this->sections['header'])) {
@@ -119,17 +119,17 @@ class Card extends Component
         }
         return $this->sections['header'];
     }
-    
+
     public function getRow()
     {
         return $this->currentRow;
     }
-        
+
     public function resetClass()
     {
         $this->setClass('','','','');
     }
-    
+
     public function setClass($body, $head = null, $foot = null, $main = null, $title = null)
     {
         $this->classCss['body'] = $body;
@@ -147,33 +147,33 @@ class Card extends Component
         }
         return $this;
     }
-    
+
     public function addClass($class)
     {
         $this->classCss['main'] .= ' '.$class;
         return $this;
     }
-    
+
     public function addClassRow($class)
     {
         $this->classCss['row'] .= ' '.$class;
     }
-    
+
     public function addClassCell($class)
     {
         $this->classCss['cell'] .= ' '.$class;
     }
-    
+
     public function noPadding()
     {
         $this->addClassRow('no-gutters');
     }
-    
+
     public function setHeight100()
     {
         $this->addClass('h-100 d-line-block');
     }
-    
+
     public function setText($text)
     {
         if (empty($text)) {
@@ -181,19 +181,24 @@ class Card extends Component
         }
         $this->getBody()->add('<p class="card-text">'.$text.'</p>');
     }
-    
+
     public function setTitle($title, $tag = 'h5', $class = '')
-    {        
-        $this->getBody()->add(new Tag($tag, null, trim('card-title '.$class)))->add($title);        
+    {
+        $this->getBody()->add(new Tag($tag, null, trim('card-title '.$class)))->add($title);
     }
-    
+
+    public function setTitleOnHead($title)
+    {
+        $this->getHead()->add(new Tag('div'))->add($title);
+    }
+
     public function setCommand($command)
     {
         $this->setClass('position-relative mr-3');
-        $container = $this->add(new Tag('div', null, 'card-command position-absolute'));        
-        $container->att('style', 'top: 5px; right: 5px;')->add($command);        
+        $container = $this->add(new Tag('div', null, 'card-command position-absolute'));
+        $container->att('style', 'top: 5px; right: 5px;')->add($command);
     }
-        
+
     public function simulateTable(bool $padding = true)
     {
         $this->classCss['body'] .= ' d-table';
@@ -203,12 +208,12 @@ class Card extends Component
             $this->noPadding();
         }
     }
-        
+
     public function setTopLeftIndex(int $top, int $left, int $width = 200)
-    {        
+    {
         $this->att('style', sprintf('position: fixed; z-index: 1030; top: %spx; left: %spx; width: %spx;', $top, $left, $width));
     }
-    
+
     public function setTopRightIndex(int $top, int $right, int $width = 200)
     {
         $this->att('style', sprintf('position: fixed; z-index: 1030; top: %spx; right: %spx; width: %spx;', $top, $right, $width));
