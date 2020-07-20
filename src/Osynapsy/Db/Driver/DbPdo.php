@@ -23,21 +23,21 @@ namespace Osynapsy\Db\Driver;
  * @link     http://docs.osynapsy.org/ref/DbPdo
  */
 class DbPdo extends \PDO implements InterfaceDbo
-{    
+{
     const FETCH_NUM = 'NUM';
     const FETCH_ASSOC = 'ASSOC';
     const FETCH_BOTH = 'BOTH';
-    
+
     private $cursor = null;
     private $connectionStringDecoder = [
         'sqlite' => ['type','db'],
         '*' => ['type','host','dbname','username','password','port']
     ];
     private $param = [
-        'queryParameterDummy' => '?', 
+        'queryParameterDummy' => '?',
         'backticks' => '"'
     ];
-    
+
     public function __construct($osyConnectionString)
     {
         $option = [];
@@ -49,26 +49,26 @@ class DbPdo extends \PDO implements InterfaceDbo
             case 'mysql' :
                 $option[\PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8mb4";
                 $this->backticks = '`';
-            default:                
+            default:
                 parent::__construct($pdoConnectionString, $this->username, $this->password, $option);
                 break;
         }
         $this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
-    
+
     private function buildPDOConnectionString($osyConnectionString)
     {
         $cnParameters = explode(':', $osyConnectionString);
         if (empty($cnParameters)) {
             throw new \Exception('connection parameters is empty');
-        }        
-        $decoder = array_key_exists($cnParameters[0], $this->connectionStringDecoder) ? 
-                   $this->connectionStringDecoder[$cnParameters[0]] : 
+        }
+        $decoder = array_key_exists($cnParameters[0], $this->connectionStringDecoder) ?
+                   $this->connectionStringDecoder[$cnParameters[0]] :
                    $this->connectionStringDecoder['*'];
-        foreach($decoder as $propertyIdx => $property) {            
+        foreach($decoder as $propertyIdx => $property) {
             if (!empty($cnParameters[$propertyIdx])) {
                 $this->{$property} = $cnParameters[$propertyIdx];
-            }            
+            }
         }
         $pdoConnectionString = "{$this->type}:host={$this->host};dbname={$this->dbname}";
         if ($this->port) {
@@ -76,16 +76,16 @@ class DbPdo extends \PDO implements InterfaceDbo
         }
         return $pdoConnectionString;
     }
-    
+
     public function begin()
     {
         $this->beginTransaction();
     }
-    
+
     public function countColumn()
     {
        return $this->cursor->columnCount();
-    }        
+    }
 
     public function getType()
     {
@@ -103,16 +103,16 @@ class DbPdo extends \PDO implements InterfaceDbo
     {
         return $this->lastInsertId();
     }
-    
+
     public function execCommand($command, $parameters = null)
     {
         if (empty($parameters)) {
             return $this->exec($command);
-        }    
+        }
         $s = $this->prepare($command);
         return $s->execute($parameters);
     }
-    
+
     public function execMulti($cmd, $par)
     {
         $this->beginTransaction();
@@ -128,14 +128,34 @@ class DbPdo extends \PDO implements InterfaceDbo
         $this->commit();
         return;
     }
-    
+
+    public function exec($sql, array $parameters = [])
+    {
+        return $this->execQuery($sql, $parameters, self::FETCH_NUM);
+    }
+
+    public function execAssoc($sql, array $parameters = [])
+    {
+        return $this->execQuery($sql, $parameters, self::FETCH_ASSOC);
+    }
+
+    public function execOne($sql, array $parameters = [])
+    {
+        return $this->execUnique($sql, $parameters, self::FETCH_NUM);
+    }
+
+    public function execOneAssoc($sql, array $parameters = [])
+    {
+        return $this->execUnique($sql, $parameters, self::FETCH_ASSOC);
+    }
+
     public function execQuery($sql, $parameters = null, $fetchMethod = null, $fetchColumnIdx = null)
     {
-        $this->cursor = $this->prepare($sql);        
-        $this->cursor->execute($parameters);        
+        $this->cursor = $this->prepare($sql);
+        $this->cursor->execute($parameters);
         if (!is_null($fetchColumnIdx)) {
             return $this->cursor->fetchAll(\PDO::FETCH_COLUMN, $fetchColumnIdx);
-        } 
+        }
         switch ($fetchMethod) {
             case self::FETCH_NUM:
                 $pdoFetchMethod = \PDO::FETCH_NUM;
@@ -150,24 +170,24 @@ class DbPdo extends \PDO implements InterfaceDbo
                 $pdoFetchMethod = \PDO::FETCH_BOTH;
                 break;
         }
-        return $this->cursor->fetchAll($pdoFetchMethod);        
+        return $this->cursor->fetchAll($pdoFetchMethod);
     }
 
     public function execUnique($sql, $parameters = null, $fetchMethod = self::FETCH_NUM)
-    {        
-        $raw = $this->execQuery($sql, $parameters, $fetchMethod);        
+    {
+        $raw = $this->execQuery($sql, $parameters, $fetchMethod);
         if (empty($raw)) {
             return null;
         }
         $one = array_shift($raw);
         return count($one) == 1 ? array_values($one)[0] : $one;
     }
-   
+
     public function fetch_all($rs)
     {
         return $rs->fetchAll(\PDO::FETCH_ASSOC);
     }
-   
+
     public function getColumns($stmt = null)
     {
         if (is_null($stmt)) {
@@ -237,7 +257,7 @@ class DbPdo extends \PDO implements InterfaceDbo
             $where[] = $field . ' IN (' .implode(',',array_fill(0, count($value), '?')) . ')';
             $values = array_merge($values, array_values($value));
         }
-        $command = 'UPDATE '.$table.' SET '.implode(', ', $fields).' WHERE '.implode(' AND ', $where);        
+        $command = 'UPDATE '.$table.' SET '.implode(', ', $fields).' WHERE '.implode(' AND ', $where);
         return $this->execCommand($command, $values);
     }
 
@@ -256,28 +276,28 @@ class DbPdo extends \PDO implements InterfaceDbo
         $command = 'DELETE FROM '.$table.' WHERE '.implode(' AND ',$where);
         $this->execCommand($command, $values);
     }
-    
+
     public function replace($table, $args, $conditions)
-    {                        
+    {
         if ($this->selectOne($table, $conditions, ['count(*)'], 'NUM')) {
             $this->update($table, $args, $conditions);
             return;
-        } 
+        }
         $this->insert($table, array_merge($args, $conditions));
     }
-    
+
     public function select($table, array $conditions, array $fields = ['*'], array $orderBy = [], $fetchMethod = 'ASSOC')
-    {        
+    {
         list($sql, $params) = $this->selectBuild($table, $fields, $conditions, $orderBy);
         return $this->execQuery($sql, $params, $fetchMethod);
     }
-    
+
     public function selectOne($table, array $conditions, array $fields = ['*'], $fetchMethod = 'ASSOC')
-    {        
+    {
         list($sql, $params) = $this->selectBuild($table, $fields, $conditions, []);
         return $this->execUnique($sql, $params, $fetchMethod);
     }
-    
+
     private function selectBuild($table, array $fields, array $conditions, array $orderBy)
     {
         $sql = ['SELECT '. implode(',', $fields), ' FROM ' . $table];
@@ -295,14 +315,14 @@ class DbPdo extends \PDO implements InterfaceDbo
             }
             $where[] = $field.' = :'.sha1($field);
             $params[sha1($field)] = $value;
-        }        
+        }
         $sql[] = 'WHERE '.implode(' AND ', $where);
         if (!empty($orderBy)) {
             $sql[] = 'ORDER BY '.implode(' ', $orderBy);
         }
         return [implode(PHP_EOL, $sql), $params];
     }
-    
+
     public function cast($field,$type)
     {
         $cast = $field;
@@ -312,13 +332,13 @@ class DbPdo extends \PDO implements InterfaceDbo
                 break;
         }
         return $cast;
-    }   
-    
+    }
+
     public function __get($key)
     {
         return array_key_exists($key, $this->param) ? $this->param[$key] : null;
     }
-    
+
     public function __set($key, $value)
     {
         return $this->param[$key] = $value;
