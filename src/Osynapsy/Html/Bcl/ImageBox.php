@@ -58,23 +58,20 @@ class ImageBox extends Component
             $this->setImageData();
             $this->setCropState();
             if ($this->cropActive) {
-                $this->att('class', 'text-center', true);
+                $this->addClass('crop text-center');
                 $this->add($this->imageWithCropActiveFactory());
                 $this->add($this->toolbarFactory());
             } else {
                 $this->add($this->placeholderImageFactory($this->imageFactory()));
                 $this->add($this->buttonDeleteImageFactory('osy-imagebox-bcl-image-delete'));
             }
-        } catch (\Exception $e) {
-            if ($e->getCode() === 404) {
-                $this->add($this->placeholderImageFactory($this->iconCameraFactory()));
-            }
+        } catch (\DomainException $e) {
+            $this->add($this->placeholderImageFactory($this->iconCameraFactory()));
         }
     }
 
     protected function toolbarFactory()
     {
-        $this->setClass('crop');
         $toolbar = new Tag('div', null, 'osy-imagebox-bcl-cmd text-center');
         $toolbar->add('<button type="button" class="crop-command btn btn-info btn-sm"><span class="fa fa-crop"></span></button> ');
         $toolbar->add('<button type="button" class="zoomin-command btn btn-info btn-sm"><span class="fa fa-search-plus"></span></button> ');
@@ -147,7 +144,7 @@ class ImageBox extends Component
     protected function loadImagePaths()
     {
         if (empty($_REQUEST[$this->rawId])) {
-            throw new \Exception('Field is empty', 404);
+            throw new \DomainException('Field is empty', 404);
         }
         $this->image['webPath'] = $_REQUEST[$this->rawId];
         $this->image['diskPath'] = filter_input(\INPUT_SERVER , 'DOCUMENT_ROOT') . $this->image['webPath'];
