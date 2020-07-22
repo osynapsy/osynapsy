@@ -11,7 +11,7 @@
 }
 
 .osy-imagebox-dummy:hover {
-    background-color: #efefef;
+    background-color: #fbfbfb;
 }
 
 .osy-imagebox-dummy span{
@@ -27,7 +27,7 @@
 
 .osy-imagebox-bcl .osy-imagebox-bcl-image-delete {
     position: absolute;
-    bottom: 20px;
+    bottom: 22px;
     right: 22px;
     visibility: hidden;
 }
