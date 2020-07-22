@@ -20,7 +20,7 @@ class ImageBox extends Component
 {
     const ACTION_CROP_IMAGE = 'cropImage';
     const ACTION_DELETE_IMAGE = 'deleteFile';
-    
+
     private $image = [
         'object' => null,
         'webPath' => null,
@@ -34,21 +34,21 @@ class ImageBox extends Component
     ];
     protected $rawId;
     protected $cropActive = false;
-    protected $dummy;    
-    protected $fileBox;    
-    
+    protected $dummy;
+    protected $fileBox;
+
     public function __construct($id)
     {
         $this->rawId = $id;
         $this->requireCss('Lib/rcrop/style.css');
         $this->requireJs('Lib/rcrop/script.js');
-        $this->requireCss('Bcl/ImageBox/style.css');        
+        $this->requireCss('Bcl/ImageBox/style.css');
         $this->requireJs('Bcl/ImageBox/script.js');
         parent::__construct('div', $id.'_box');
         $this->att('class','osy-imagebox-bcl text-center')->att('data-action', 'upload');
         $this->att('data-preserve-aspect-ratio', 0);
-        $this->add(new HiddenBox($id));        
-        $this->fileBoxFactory();     
+        $this->add(new HiddenBox($id));
+        $this->fileBoxFactory();
     }
 
     protected function __build_extra__()
@@ -56,54 +56,60 @@ class ImageBox extends Component
         try {
             $this->loadImagePaths();
             $this->setImageData();
-            $this->setCropState();            
-            $this->imageFactory();
-            $this->toolbarFactory();
+            $this->setCropState();
+            if ($this->cropActive) {
+                $this->att('class', 'text-center', true);
+                $this->add($this->imageWithCropActiveFactory());
+                $this->add($this->toolbarFactory());
+            } else {
+                $this->add($this->placeholderImageFactory($this->imageFactory()));
+                $this->add($this->buttonDeleteImageFactory('osy-imagebox-bcl-image-delete'));
+            }
         } catch (\Exception $e) {
             if ($e->getCode() === 404) {
-                $this->dummyWithIconCameraFactory();
+                $this->add($this->placeholderImageFactory($this->iconCameraFactory()));
             }
         }
     }
-    
+
     protected function toolbarFactory()
     {
-        $toolbar = $this->add(new Tag('div', null, 'osy-imagebox-bcl-cmd text-center'));        
-        if ($this->cropActive) {
-            $this->setClass('crop');
-            $toolbar->add('<button type="button" class="crop-command btn btn-info btn-sm"><span class="fa fa-crop"></span></button> ');
-            $toolbar->add('<button type="button" class="zoomin-command btn btn-info btn-sm"><span class="fa fa-search-plus"></span></button> ');
-            $toolbar->add('<button type="button" class="zoomout-command btn btn-info btn-sm mr-5"><span class="fa fa-search-minus"></span></button> ');
-        }        
+        $this->setClass('crop');
+        $toolbar = new Tag('div', null, 'osy-imagebox-bcl-cmd text-center');
+        $toolbar->add('<button type="button" class="crop-command btn btn-info btn-sm"><span class="fa fa-crop"></span></button> ');
+        $toolbar->add('<button type="button" class="zoomin-command btn btn-info btn-sm"><span class="fa fa-search-plus"></span></button> ');
+        $toolbar->add('<button type="button" class="zoomout-command btn btn-info btn-sm mr-5"><span class="fa fa-search-minus"></span></button>');
         $toolbar->add($this->buttonUploadImageFactory());
         if ($this->image['diskPath']) {
             $toolbar->add($this->buttonDeleteImageFactory());
         }
+        return $toolbar;
     }
-    
-    protected function buttonDeleteImageFactory()
+
+    protected function buttonDeleteImageFactory($class = '')
     {
-        $button = new Button($this->id.'_delete_image', 'button', 'btn-danger btn-sm', '<i class="fa fa-trash"></i>');
+        $button = new Button($this->id.'_delete_image', 'button', trim('btn-danger btn-sm '.$class), '<i class="fa fa-trash"></i>');
         $button->setAction(self::ACTION_DELETE_IMAGE, $this->image['webPath'].','.$this->rawId, 'click-execute', 'Sei sicuro di voler eliminare l\'immagine?');
         return $button;
-    }     
-    
+    }
+
     protected function buttonUploadImageFactory()
     {
         $button = new Tag('label', null,'btn btn-warning btn-sm mt-2');
-        $button->att('for', $this->rawId)->add('<i class="fa fa-upload"></i>');        
+        $button->att('for', $this->rawId)->add('<i class="fa fa-upload"></i>');
         return $button;
     }
-    
-    protected function dummyWithIconCameraFactory()
+
+    protected function placeholderImageFactory($content)
     {
-        $this->dummy = $this->add(new Tag('label', null, 'osy-imagebox-dummy'))->att('for', $this->rawId);
-        $this->dummy->add($this->iconCameraFactory());
+        $dummy = (new Tag('label', null, 'osy-imagebox-dummy'))->att('for', $this->rawId);
+        $dummy->add($content);
         if ($this->image['maxwidth']) {
-            $this->dummy->att('style', sprintf('width : %spx; height : %spx;', $this->image['maxwidth'], $this->image['maxheight']));
+            $dummy->att('style', sprintf('width : %spx; height : %spx;', $this->image['maxwidth'], $this->image['maxheight']));
         }
+        return $dummy;
     }
-    
+
     protected function fileBoxFactory()
     {
         $this->fileBox = $this->add(new Tag('input', $this->rawId));
@@ -113,35 +119,40 @@ class ImageBox extends Component
             'capture' => 'camera',
             'name' => $this->rawId,
             'style' => 'display: none;'
-        ]);        
+        ]);
     }
-    
+
     protected function iconCameraFactory()
     {
         return new Tag('span', null, 'fa fa-camera glyphicon glyphicon-camera');
     }
-            
-    private function imageFactory()
-    {        
-        if ($this->cropActive) {
-            $this->image['object'] = $this->att('class', 'text-center', true)->add(new Tag('img', null, 'imagebox-main'))->att([
-                'src' => $this->image['domain'].$this->image['webPath'],
-                'data-action' => self::ACTION_CROP_IMAGE
-            ]);                                          
-        } else {
-            $this->image['object'] = $this->add(new Tag('img'))->att('src', $this->image['domain'].$this->image['webPath']);
-        }
+
+    protected function imageWithCropActiveFactory()
+    {
+        $img = new Tag('img', null, 'imagebox-main');
+        $img->att([
+            'src' => $this->image['domain'].$this->image['webPath'],
+            'data-action' => self::ACTION_CROP_IMAGE
+        ]);
+        return $img;
     }
-    
+
+    private function imageFactory()
+    {
+        $img = new Tag('img');
+        $img->att('src', $this->image['domain'].$this->image['webPath']);
+        return $img;
+    }
+
     protected function loadImagePaths()
-    {        
+    {
         if (empty($_REQUEST[$this->rawId])) {
             throw new \Exception('Field is empty', 404);
         }
         $this->image['webPath'] = $_REQUEST[$this->rawId];
         $this->image['diskPath'] = filter_input(\INPUT_SERVER , 'DOCUMENT_ROOT') . $this->image['webPath'];
     }
-    
+
     protected function setImageData()
     {
         if (file_exists($this->image['diskPath'])) {
@@ -154,13 +165,13 @@ class ImageBox extends Component
         $this->image['height'] = $this->image['dimension'][1];
         $this->image['formFactor'] = $this->image['width'] / $this->image['height'];
     }
-    
+
     protected function setCropState()
-    {    
+    {
         if (empty($this->image['maxwidth'])){
             return;
         }
-        if ($this->image['width'] <= $this->image['maxwidth'] && $this->image['height'] <= $this->image['maxheight']) {                        
+        if ($this->image['width'] <= $this->image['maxwidth'] && $this->image['height'] <= $this->image['maxheight']) {
             return;
         }
         $this->cropActive = true;
@@ -170,12 +181,12 @@ class ImageBox extends Component
         $this->att('data-img-height', $this->image['height']);
         $this->att('data-zoom','1');
     }
-    
+
     public function setDomain($domain)
     {
         $this->image['domain'] = $domain;
     }
-    
+
     public function setMaxDimension($width, $height)
     {
         $this->image['maxwidth'] = $width;
@@ -183,7 +194,7 @@ class ImageBox extends Component
         $this->image['formFactorIdeal'] = $width / $height;
         return $this;
     }
-    
+
     public function setPreserveAspectRatio($value)
     {
         $this->att('data-preserve-aspect-ratio', empty($value) ? 0 : 1);
