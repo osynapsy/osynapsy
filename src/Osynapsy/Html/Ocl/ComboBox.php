@@ -17,7 +17,7 @@ use Osynapsy\Html\Component;
 class ComboBox extends Component
 {
     public $isTree = false;
-    public $placeholder = ['- Seleziona -', ''];
+    public $placeholder = ['', '- Seleziona -'];
     protected $defaultValue;
     protected $currentValue;
 
