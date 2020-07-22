@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of the Osynapsy package.
  *
@@ -18,6 +17,7 @@ namespace Osynapsy\Html\Ocl;
  */
 class ComboBoxTree extends ComboBox
 {
+    public $placeholder = ['','Seleziona .....', null];
     private $dataGroup = [];
     private $dataRequest;
 
@@ -25,6 +25,9 @@ class ComboBoxTree extends ComboBox
     {
         $this->addClass('form-control');
         $this->getRequestValue();
+        if (!$this->getParameter('option-select-disable')){
+            array_unshift($this->data, $this->placeholder);
+        }
         $this->treeFactory();
     }
 
