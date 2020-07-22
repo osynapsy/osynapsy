@@ -11,11 +11,8 @@
 
 namespace Osynapsy\Html\Ocl;
 
-use Osynapsy\Html\Tag as Tag;
-use Osynapsy\Html\Component;
-
 /**
- * Description of ComboBox2
+ * Description of ComboBoxTree
  *
  * @author Pietro Celeste
  */
@@ -24,16 +21,9 @@ class ComboBoxTree extends ComboBox
     private $dataGroup = [];
     private $dataRequest;
 
-    //put your code here
-    public function __construct($name)
-    {
-        parent::__construct('select', $name);
-        $this->addClass('form-control');
-        $this->name = $name;
-    }
-
     public function __build_extra__()
     {
+        $this->addClass('form-control');
         $this->getRequestValue();
         $this->treeFactory();
     }
@@ -63,7 +53,7 @@ class ComboBoxTree extends ComboBox
         }
         foreach ($data as $rec) {
             list($value, $label, $disabled) = array_slice($rec, 0, 3);
-            $label = str_repeat('&nbsp;',$level*5) . $this->nvl($label, $value);
+            $label = str_repeat('&nbsp;', $level * 5) . $this->nvl($label, $value);
             $this->optionFactory($value, $label, 0);
             if (array_key_exists($value, $this->dataGroup)) {
                 $this->branchFactory($this->dataGroup[$value], $level+1);
