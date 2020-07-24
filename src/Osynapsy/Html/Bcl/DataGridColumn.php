@@ -12,6 +12,7 @@ class DataGridColumn
 {
     const FIELD_TYPE_DATE_EU = 'date';
     const FIELD_TYPE_MONEY = 'money';
+    const FIELD_TYPE_EMPTY  = 'empty';
     const FIELD_TYPE_EURO  = 'euro';
     const FIELD_TYPE_INTEGER = 'integer';
     const FIELD_TYPE_DOLLAR  = 'dollar';
@@ -147,6 +148,9 @@ class DataGridColumn
                 break;
             case self::FIELD_TYPE_INTEGER:
                 $properties['classTd'][] = 'text-right';
+                break;
+            case self::FIELD_TYPE_EMPTY:
+                $value = '&nbsp;';
                 break;
             case self::FIELD_TYPE_EURO:
             case self::FIELD_TYPE_MONEY:
