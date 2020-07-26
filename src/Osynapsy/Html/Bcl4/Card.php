@@ -189,7 +189,7 @@ class Card extends Component
 
     public function setTitleOnHead($title)
     {
-        $this->getHead()->add(new Tag('div'))->add($title);
+        $this->getHead()->add(new Tag('div', null, 'float-left'))->add($title);
     }
 
     public function setCommand($command)
