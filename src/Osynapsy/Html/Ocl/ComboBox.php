@@ -33,7 +33,7 @@ class ComboBox extends Component
         if (empty($this->currentValue) && $this->currentValue != '0') {
             $this->currentValue = $this->defaultValue;
         }
-        if (!$this->getParameter('option-select-disable')){
+        if (!empty($this->placeholder) && !$this->getParameter('option-select-disable')){
             array_unshift($this->data, $this->placeholder);
         }
         foreach ($this->data as $item) {
@@ -77,7 +77,7 @@ class ComboBox extends Component
 
     public function setPlaceholder($label, $value = '')
     {
-        $this->placeholder = [$value, $label];
+        $this->placeholder = $label === false ? [] : [$value, $label];
         return $this;
     }
 
