@@ -93,17 +93,19 @@ class Card extends Component
         $this->currentRow = $this->sections['body']->add(
             new Tag('div', null, $this->classCss['row'])
         );
+        $this->currentRow->length = 0;
         return $this->currentRow;
     }
 
     public function addColumn($colspan = 12, $offset = 0)
     {
-        if (empty($this->currentRow)) {
+        if (empty($this->currentRow) || ($this->currentRow->length + $colspan + $offset > 12)) {
             $this->addRow();
         }
         $this->currentColumn = $this->currentRow->add(
             new Column($colspan, $offset)
         )->setClass($this->classCss['cell']);
+        $this->currentRow->length += $colspan;
         return $this->currentColumn;
     }
 
