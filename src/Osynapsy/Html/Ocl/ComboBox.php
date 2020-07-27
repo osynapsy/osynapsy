@@ -45,7 +45,7 @@ class ComboBox extends Component
         }
     }
 
-    public function optionFactory($value, $label, $disabled = 0)
+    protected function optionFactory($value, $label, $disabled = 0)
     {
         $option = $this->add(new Tag('option'))->att('value', $value);
         $option->add($this->nvl($label, $value));
@@ -56,6 +56,11 @@ class ComboBox extends Component
             $option->att('selected', 'selected');
         }
         return $option;
+    }
+
+    public function countOption()
+    {
+        return count($this->data);
     }
 
     public function setAction($action, $parameters = null, $class = 'change-execute', $confirmMessage = null)
@@ -79,10 +84,5 @@ class ComboBox extends Component
     {
         $this->placeholder = $label === false ? [] : [$value, $label];
         return $this;
-    }
-
-    public function countOption()
-    {
-        return count($this->data);
     }
 }
