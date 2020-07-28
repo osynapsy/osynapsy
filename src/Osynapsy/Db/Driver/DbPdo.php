@@ -107,7 +107,7 @@ class DbPdo extends \PDO implements InterfaceDbo
     public function execCommand($command, $parameters = null)
     {
         if (empty($parameters)) {
-            return $this->exec($command);
+            return parent::exec($command);
         }
         $s = $this->prepare($command);
         return $s->execute($parameters);
