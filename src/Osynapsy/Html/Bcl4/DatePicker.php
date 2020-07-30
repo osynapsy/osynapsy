@@ -115,4 +115,9 @@ class DatePicker extends Component
     {
         $this->dateComponent->setDisabled($condition);
     }
+
+    public function setReadOnly($condition)
+    {
+        $this->dateComponent->setReadOnly($condition);
+    }
 }
