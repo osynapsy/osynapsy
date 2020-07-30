@@ -47,13 +47,16 @@ class ComboBox extends Component
 
     protected function optionFactory($value, $label, $disabled = 0)
     {
-        $option = $this->add(new Tag('option'))->att('value', $value);
+        $option = (new Tag('option'))->att('value', $value);
         $option->add($this->nvl($label, $value));
         if ($disabled) {
             $this->att('disabled','disabled');
         }
         if ($this->currentValue == $value) {
             $option->att('selected', 'selected');
+        }
+        if (empty($this->getAttribute('readonly')) || !empty($option->getAttribute('selected'))) {
+            $this->add($option);
         }
         return $option;
     }
