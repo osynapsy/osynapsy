@@ -17,8 +17,8 @@ use Osynapsy\Kernel\KernelException;
 /**
  * Description of ErrorDispatcher
  *
- * Class responsible for dispatching and rendering html of Osynapsy Kernel exception.  
- * 
+ * Class responsible for dispatching and rendering html of Osynapsy Kernel exception.
+ *
  * @author Pietro Celeste <p.celeste@spinit.it>
  */
 class Dispatcher
@@ -104,14 +104,14 @@ class Dispatcher
     ];
     private $request;
     private $response;
-        
+
     public function __construct($request)
     {
-        $this->request = $request;                
+        $this->request = $request;
     }
-    
+
     public function dispatchException(\Exception $e)
-    {        
+    {
         switch($e->getCode()) {
             case '403':
             case '404':
@@ -126,44 +126,44 @@ class Dispatcher
         }
         return $this->get();
     }
-    
+
     public function dispatchError(\Error $e)
-    {        
-        $this->pageTraceError($e->getMessage(), $e->getTrace());
+    {
+        $this->pageTraceError($this->formatMessage($e), $e->getTrace());
         return $this->get();
     }
-    
-    private function formatMessage(\Exception $e)
+
+    private function formatMessage(\Throwable $e)
     {
         $message = [$e->getCode() .' - '.$e->getMessage()];
         $message[] = 'Line ' . $e->getLine() . ' of file ' . $e->getFile();
         return implode(PHP_EOL, $message);
     }
-    
+
     public function httpErrorFactory(\Exception $e)
     {
         ob_clean();
         http_response_code($e->getCode());
-        $pageError = $this->htmlPageFactory(); 
-        $pageError->setMessage($e->getMessage() . ' | '.$e->getCode(), method_exists($e, 'getInfoMessage') ? $e->getInfoMessage() : '');        
+        $pageError = $this->htmlPageFactory();
+        $pageError->setMessage($e->getMessage() . ' | '.$e->getCode(), method_exists($e, 'getInfoMessage') ? $e->getInfoMessage() : '');
         $this->response = $pageError->get();
     }
-    
+
     public function pageTraceError($message, $trace = [])
     {
         ob_clean();
         $comments = [];
-        if (empty($this->request->get('env.instance.debug'))) {            
+        if (empty($this->request->get('env.instance.debug'))) {
             $comments[] = trim($message).PHP_EOL;
             foreach ($trace as $step) {
                 $comment = '';
                 $comment .= (!empty($step['file']) ?  str_pad($step['file'], 80, ' ', STR_PAD_RIGHT) : '');
-                $comment .= (!empty($step['line']) ? str_pad("line {$step['line']}", 20, ' ', STR_PAD_RIGHT) : ''); 
+                $comment .= (!empty($step['line']) ? str_pad("line {$step['line']}", 20, ' ', STR_PAD_RIGHT) : '');
                 $comment .= (!empty($step['class']) ? "{$step['class']}" : '');
                 $comment .= (!empty($step['function']) ? "->{$step['function']}" : '');
                 $comment .= (!empty($step['args']) ? "(".print_r($step['args'], true).")" : '');
                 $comments[] = $comment;
-            }            
+            }
             $message = "<div>Internal server error</div>";
             $trace = [];
         }
@@ -175,14 +175,14 @@ class Dispatcher
         $pageError->setMessage($message);
         $pageError->setTrace($trace);
         $pageError->setComment($comments);
-        $this->response = $pageError->get();       
+        $this->response = $pageError->get();
     }
-    
+
     private function htmlPageFactory()
     {
-        return new PageHtml();        
+        return new PageHtml();
     }
-    
+
     private function pageTraceErrorText($message, $trace = [])
     {
         $message .= PHP_EOL;
@@ -195,12 +195,12 @@ class Dispatcher
         }
         $this->response = $message;
     }
-    
+
     public function get()
     {
         return $this->response;
     }
-    
+
     public function __toString()
     {
         return $this->get();
