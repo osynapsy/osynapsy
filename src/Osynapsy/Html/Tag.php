@@ -16,14 +16,14 @@ class Tag
     private $attributes = [];
     //Content repo
     private $childs = [];
-    
-    public $ref = array(); 
+
+    public $ref = array();
     public $tagdep = 0;
     public $parent = null;
-    
+
     /**
      * Constructor of tag
-     * 
+     *
      * @param type $tag to build
      * @param type $id identity of tag
      * @param type $class css class
@@ -38,10 +38,10 @@ class Tag
             $this->att('class', $class);
         }
     }
-    
+
     /**
      * Check if inaccessible property is in attribute
-     *  
+     *
      * @param type $attribute
      * @return type
      */
@@ -52,9 +52,9 @@ class Tag
         }
         return array_key_exists($attribute, $this->attributes) ? $this->attributes[$attribute] : null;
     }
-    
+
     /**
-     * 
+     *
      * @param type $attribute
      * @param type $value
      */
@@ -65,10 +65,10 @@ class Tag
         }
         $this->attributes[$attribute] = $value;
     }
-    
+
     /**
      * Add child content to childs repo
-     * 
+     *
      * @param $child
      * @return \Osynapsy\Html\tag|$this
      */
@@ -76,7 +76,7 @@ class Tag
     {
         if ($child instanceof tag) {
             if ($child->id && array_key_exists($child->id,$this->ref)) {
-                return $this->ref[$child->id];                
+                return $this->ref[$child->id];
             }
             $child->tagdep = abs($this->tagdep) + 1;
             $this->tagdep = abs($this->tagdep) * -1;
@@ -93,15 +93,15 @@ class Tag
         $child->parent =& $this;
         return $child;
     }
-    
+
     public function addClass($class)
     {
         return empty($class) ? $this : $this->att('class', $class, true);
     }
-    
+
     /**
      * Add childs from array
-     * 
+     *
      * @param array $array
      * @return $this
      */
@@ -112,10 +112,10 @@ class Tag
         }
         return $this;
     }
-    
+
     /**
      * Set attribute value of tag
-     * 
+     *
      * @param type $attribute
      * @param type $value
      * @param type $concat
@@ -126,18 +126,18 @@ class Tag
         if (is_array($attribute)) {
             foreach ($attribute as $key => $value) {
                 $this->attributes[$key] = $value;
-            }            
-        } elseif ($concat && !empty($this->attributes[$attribute])) {            
+            }
+        } elseif ($concat && !empty($this->attributes[$attribute])) {
             $this->attributes[$attribute] .= ($concat === true ? ' ' : $concat) . $value;
         } else {
             $this->attributes[$attribute] = $value;
         }
         return $this;
     }
-    
+
     /**
      * Build html tag e return string
-     * 
+     *
      * @return string
      */
     protected function build()
@@ -160,16 +160,16 @@ class Tag
             /*$strTag .= ' '.$key.'="'.$val.'"';*/
         }
         $strTag .= '>';
-        
+
         if (!in_array($tag, ['input', 'img', 'link', 'meta'])) {
             $strTag .= $content . ($this->tagdep < 0 ? $spaces : '') ."</{$tag}>";
         }
         return $strTag;
     }
-    
+
     /**
      * Static method for create a tag object
-     * 
+     *
      * @param string $tag
      * @param string $id
      * @return \Osynapsy\Html\tag
@@ -178,37 +178,42 @@ class Tag
     {
         return new Tag($tag, $id, $class);
     }
-    
+
     /**
      * Get html string of tag
-     * 
+     *
      * @return type
      */
     public function get()
     {
         return $this->build();
     }
-    
+
+    public function getAttribute($attributeId)
+    {
+        return array_key_exists($attributeId, $this->attributes) ? $this->attributes[$attributeId] : null;
+    }
+
     /**
      * Get $index child from repo
-     * 
+     *
      * @param int $index
      * @return boolean
      */
     public function child($index = 0)
     {
         if (is_null($index)) {
-            return $this->childs;   
+            return $this->childs;
         }
         if (array_key_exists($index, $this->childs)) {
             return $this->childs[$index];
         }
         return false;
     }
-    
+
     /**
      * Check if tag content is empty
-     * 
+     *
      * @return boolean
      */
     public function isEmpty()
@@ -218,7 +223,7 @@ class Tag
 
     /**
      * Magic method for rendering tag in html
-     * 
+     *
      * @return type
      */
     public function __toString()
