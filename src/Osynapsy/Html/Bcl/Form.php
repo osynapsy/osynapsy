@@ -169,16 +169,16 @@ class Form extends Component
     public function setCommand($delete = false, $save = true, $back = true, $closeModal = false)
     {
         if ($back) {
-            $this->foot($this->getCommandBack());
+            $this->foot($this->buttonBackFactory());
         }
         if ($closeModal) {
-            $this->foot($this->getCommandClose());
+            $this->foot($this->buttonCloseFactory());
         }
         if ($delete) {
-            $this->foot($this->getCommandDelete(), true);
+            $this->foot($this->buttonDeleteFactory(), true);
         }
         if ($save) {
-            $this->foot($this->getCommandSave($save), true);
+            $this->foot($this->buttonSaveFactory($save), true);
         }
     }
 

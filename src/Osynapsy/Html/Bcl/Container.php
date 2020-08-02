@@ -93,13 +93,13 @@ class Container extends Tag
     public function setCommand($delete = false, $save = true, $back = true, $offset = 0)
     {
         if ($delete) {
-            $this->getFoot(true, $offset)->add($this->getCommandDelete());
+            $this->getFoot(true, $offset)->add($this->buttonDeleteFactory());
         }
         if ($save) {
-            $this->getFoot(true, $offset)->add($this->getCommandSave($save));
+            $this->getFoot(true, $offset)->add($this->buttonSaveFactory($save));
         }
         if ($back) {
-            $this->getFoot()->add($this->getCommandBack());
+            $this->getFoot()->add($this->buttonBackFactory());
         }
     }
 
