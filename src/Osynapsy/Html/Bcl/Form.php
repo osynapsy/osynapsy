@@ -172,7 +172,7 @@ class Form extends Component
             $this->foot($this->buttonBackFactory());
         }
         if ($closeModal) {
-            $this->foot($this->buttonCloseFactory());
+            $this->foot($this->buttonCloseModalFactory());
         }
         if ($delete) {
             $this->foot($this->buttonDeleteFactory(), true);
