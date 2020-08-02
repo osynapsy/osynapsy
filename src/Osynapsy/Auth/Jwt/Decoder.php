@@ -65,4 +65,9 @@ class Decoder
             throw new AuthenticationException('Token is invalid. It is not composed of three parts.', 401);
         }
     }
+
+    public function __invoke($secretKey, $token)
+    {
+        return $this->decodeToken($secretKey, $token);
+    }
 }
