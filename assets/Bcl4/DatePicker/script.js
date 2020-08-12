@@ -4,7 +4,7 @@ BclDatePicker =
     {
         $('.date-picker').each(function(){
             var self = this;
-            var opt = {
+            var opt = {                
                 format: $(this).data('date-format'),
                 //Serve ad evitare l'autocompilazione con la data odierna se il campo è vuoto.
                 useCurrent: false
@@ -28,14 +28,16 @@ BclDatePicker =
                 } else {
                     opt['maxDate'] = new Date(maxDate);
                 }
-            }
+            }            
             $(this).datetimepicker(opt);
         });
-        $('body').on('dp.change', '.datepicker-change', function(){
+        $('body').on('change.datetimepicker', function() {                        
+            if ($(this).attr('onchange')) {
+                eval($(this).attr('onchange')); 
+            }
             if ($(this).hasClass('change-execute')) {
                 Osynapsy.action.execute(this);
-            }
-            $(this).trigger('change');
+            }            
         });
     }
 };
