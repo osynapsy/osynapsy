@@ -178,7 +178,7 @@ class Form extends Component
             $this->foot($this->buttonDeleteFactory(), true);
         }
         if ($save) {
-            $this->foot($this->buttonSaveFactory($save), true);
+            $this->foot(is_object($save) ? $save : $this->buttonSaveFactory($save), true);
         }
     }
 
