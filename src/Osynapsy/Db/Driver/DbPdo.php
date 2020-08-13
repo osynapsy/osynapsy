@@ -87,6 +87,15 @@ class DbPdo extends \PDO implements InterfaceDbo
        return $this->cursor->columnCount();
     }
 
+    public function createTemporaryTable($table, array $columns, array $dataset = [])
+    {
+        $fields = implode(',', array_map(function($value){return "$value VARCHAR(255)";}, $columns));
+        $this->execCommand(sprintf("CREATE TEMPORARY TABLE %s (%s)", $table, $fields));
+        if (!empty($dataset)) {
+            $this->multiInsert($table, array_values($dataset));
+        }
+    }
+
     public function getType()
     {
         return $this->param['type'];
