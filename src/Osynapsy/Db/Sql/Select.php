@@ -55,6 +55,9 @@ class Select
         $this->debug = $debug;
         $this->parent = empty($parent) ? $this : $parent;
         $this->id = $id;
+        if (!empty($fields)) {
+            $this->select($fields);
+        }
     }
 
     public function parameters(array $parameters = [])
