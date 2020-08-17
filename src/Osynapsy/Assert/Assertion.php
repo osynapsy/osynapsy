@@ -53,6 +53,22 @@ class Assertion
         return true;
     }
 
+    public static function isFalse($value, $message)
+    {
+        if ($value !== false) {
+            self::raiseException($message);
+        }
+        return true;
+    }
+
+    public static function isTrue($value, $message)
+    {
+        if ($value !== true) {
+            self::raiseException($message);
+        }
+        return true;
+    }
+
     public static function greaterThan($value, $limit, $message)
     {
         if ($value <= $limit) {
