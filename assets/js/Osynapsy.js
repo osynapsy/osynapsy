@@ -6,44 +6,7 @@ var Osynapsy = new (function(){
         plugin : {}
     };
     
-    pub.event = 
-    {
-        dispatch : function(source, event)
-        {
-            if (Osynapsy.isEmpty($(source).attr('id'))) {
-                return;
-            }
-            this.dispatchRemote($(source), event);
-        },
-        dispatchRemote : function(object, event)
-        {
-            var actionUrl = window.location.href;
-            if (Osynapsy.isEmpty($(object).closest('form').attr('action'))) {
-                actionUrl =  $(object).closest('form').attr('action');
-            } 
-            $.ajax({
-                data : $(object).closest('form').serialize()+'&actionParameters[]=' + $(object).attr('id') + event,
-                url  : actionUrl,
-                headers: {
-                    'Osynapsy-Action': 'dispatchLocalEvent',                    
-                    'Accept': 'application/json'
-                },
-                type : 'post',
-                dataType : 'json',
-                success : function(response){            
-                    Osynapsy.waitMask.remove();
-                    Osynapsy.kernel.message.dispatch(response);
-                },
-                error: function(xhr, status, error) {                
-                    Osynapsy.waitMask.remove();
-                    console.log(status);
-                    console.log(error);
-                    console.log(xhr);
-                    alert(xhr.responseText);
-                }
-            });
-        }
-    };
+    
     
     pub.action = 
     {
@@ -170,6 +133,44 @@ var Osynapsy = new (function(){
             }
         }
         return null;
+    };
+    
+    pub.event = 
+    {
+        dispatch : function(source, event)
+        {
+            if (Osynapsy.isEmpty($(source).attr('id'))) {
+                return;
+            }
+            this.dispatchRemote($(source), event);
+        },
+        dispatchRemote : function(object, event)
+        {
+            var actionUrl = window.location.href;
+            var form = object.closest('form');            
+            if (!Osynapsy.isEmpty(form[0].getAttribute('action'))) {
+                actionUrl =  form[0].getAttribute('action');
+            }
+            let response = fetch(actionUrl, {
+                method: 'post',
+                headers: {
+                    "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+                    'Osynapsy-Action': 'dispatchLocalEvent',                    
+                    'Accept': 'application/json'
+                },
+                body: new FormData(form[0]) + '&actionParameters[]=' + object[0].getAttribute('id') + event
+            });            
+            response.then(response => response.json())
+            .then(function (data) {
+                Osynapsy.waitMask.remove();
+                Osynapsy.kernel.message.dispatch(data);                
+            })
+            .catch(function (error) {
+                    Osynapsy.waitMask.remove();                   
+                    console.log(error);
+                    alert(error);
+            });            
+        }
     };
     
     pub.hashCode = function(string)
