@@ -166,9 +166,9 @@ var Osynapsy = new (function(){
                 Osynapsy.kernel.message.dispatch(data);                
             })
             .catch(function (error) {
-                    Osynapsy.waitMask.remove();                   
-                    console.log(error);
-                    alert(error);
+                Osynapsy.waitMask.remove();                   
+                console.log(error);
+                alert(error);
             });            
         }
     };
@@ -363,6 +363,8 @@ var Osynapsy = new (function(){
             $.each(response.command, function(idx, val){            
                 if (val[0] in FormController) {
                     FormController[val[0]](val[1]);
+                } else if (val[0] in Osynapsy) {
+                    Osynapsy[val[0]](val[1]);
                 }
             });
         },
@@ -389,6 +391,22 @@ var Osynapsy = new (function(){
         }
     };
     
+    pub.goto = function(url)
+    {
+        switch(url) {
+            case 'refresh':
+            case 'reload' :
+                location.reload(true);
+                break;
+            case 'back'   :
+                Osynapsy.history.back();
+                break;
+            default :
+                window.location = url;
+                break;
+        }
+    };
+
     pub.modal = 
     {
         build : function(id, title, body, actionConfirm, actionCancel)
@@ -499,50 +517,37 @@ var Osynapsy = new (function(){
     
     pub.refreshComponents = function(components)
     {        
-        var cmps = Array.isArray(components) ? components : [components];       
-        var data  = $('form').serialize();
-            data += (arguments.length > 1 && arguments[1]) ? '&'+arguments[1] : '';
-        var fncOnSuccess = arguments.length > 2 ? arguments[2] : null;
-        if (cmps.length === 1) {            
-            Osynapsy.waitMask.show($('#' + cmps[0]));            
-        } else if ($(components).is(':visible')) {           
-            Osynapsy.waitMask.show();
+        var componentsIDs = Array.isArray(components) ? components : [components];               
+        var execOnSuccess = arguments.length > 1 ? arguments[1] : null;
+        if (componentsIDs.length === 1) {            
+            Osynapsy.waitMask.show(document.getElementById(componentsIDs[0]));    
         }
-        for (var i in cmps) {
-            data += '&ajax[]=' + cmps[i];
-        }
-        $.ajax({
-            url  : window.location.href,
-            type : 'post',
-            data : data,
-            dataType : 'html',
-            headers: {
-                'Osynapsy-Html-Components': cmps.join(';'),
+        let form = document.querySelector('form');                
+        let response = fetch(window.location.href, {
+            body: new FormData(form),
+            method: 'post',
+            headers: {                
+                'Osynapsy-Html-Components': componentsIDs.join(';'),
                 'Accept': 'text/html'
-            },
-            success : function(response)
-            {
-                Osynapsy.waitMask.remove();
-                var successRefresh = false;
-                for (var i in cmps) {
-                    var componentID = '#'+ cmps[i];
-                    var componentRemote = $(response).find(componentID);                    
-                    if (componentRemote) {                        
-                        $(componentID).replaceWith(componentRemote);
-                        successRefresh = true;
-                    }                    
+            }            
+        });
+        response.then(response => response.text()).then(function(strHtmlPage) {
+            Osynapsy.waitMask.remove();
+            let parser = new DOMParser();
+            let remoteDoc = parser.parseFromString(strHtmlPage, 'text/html');                        
+            for (var i in componentsIDs) {
+                let componentId = componentsIDs[i];
+                let remoteComponent = remoteDoc.getElementById(componentId);                
+                if (remoteComponent) {                    
+                    document.getElementById(componentId).replaceWith(remoteComponent);
                 }
-                if (!successRefresh){
-                    console.log(response);
-                } else if (typeof fncOnSuccess === 'function') {                    
-                    fncOnSuccess();
-                }
-            },
-            error : function(response)
-            {
-                Osynapsy.waitMask.remove();
-                console.log(response);
             }
+            if (typeof execOnSuccess === 'function') {
+                execOnSuccess();
+            }
+        }).catch(function(error){
+            Osynapsy.waitMask.remove();
+            console.log(error);
         });
     };
     
@@ -551,8 +556,7 @@ var Osynapsy = new (function(){
         build : function(message, parent, position)
         {                        
             var mask = $('<div id="waitMask" class="wait"><div class="message">'+message+'</div></div>');
-            mask.width($(parent).width())
-                .height($(parent).height());
+            mask.width($(parent).width()).height($(parent).height());
             if (position) {
                 mask.css('top', position.top+'px').css('left',position.left+'px');
             }
@@ -580,10 +584,8 @@ var Osynapsy = new (function(){
         {        
             $('#waitMask').remove();     
         },
-        uploadProgress : function(a){
-            console.log(a);
-            if ($('#progress_idx').length > 0){
-                //if (console) console.log(a);
+        uploadProgress : function(a) {            
+            if ($('#progress_idx').length > 0){                
                 var pos = a.loaded ? a.loaded : a.position;
                 var t = Math.round((pos / a.total) * 100);
                 $('#progress_bar').css('width',t +'%');
@@ -629,21 +631,6 @@ var FormController =
                 }
             }
         }
-    },
-    goto : function(url, par)
-    {
-        switch(url) {
-            case 'refresh':
-            case 'reload' :
-                location.reload(true);
-                break;
-            case 'back'   :
-                Osynapsy.history.back();
-                break;
-            default :
-                window.location = url;
-                break;
-        }
     },    
     execute  : function(object)
     {
@@ -664,33 +651,6 @@ var FormController =
         for (i in target ) {
             observer.observe(target[i], {attributes: true});
         }
-    },
-    refreshComponent : function(component)
-    {        
-        var cmps = Array.isArray(component) ? component : [component];
-        var data  = $('form').serialize();
-            data += (arguments.length > 1 && arguments[1]) ? '&'+arguments[1] : '';
-        if (!(typeof component === 'object')) {            
-            Osynapsy.waitMask.show(component);            
-        } else if ($(component).is(':visible')) {           
-            Osynapsy.waitMask.show();
-        }
-        for (var i in cmps) {
-            data += '&ajax[]=' + $(cmps[i]).attr('id');        
-        }
-        $.ajax({
-            url  : window.location.href,
-            type : 'post',
-            data : data,
-            success : function(rsp) {                      
-                Osynapsy.waitMask.remove();
-                for (var i in cmps) {
-                   var cid = '#'+ $(cmps[i]).attr('id');
-                   var cmp = $(rsp).find(cid);                
-                   $(cid).replaceWith(cmp);                
-                }
-            }
-        });
     },
     register : function(evt,lbl,fnc)
     {
@@ -804,6 +764,6 @@ var FormController =
     }
 };
 
-$(document).ready(function(){
+document.addEventListener("DOMContentLoaded", function() {
     FormController.init();
 });
