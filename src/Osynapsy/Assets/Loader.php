@@ -20,24 +20,24 @@ class Loader extends Controller
 
     public function init()
     {
-        $this->path = $this->getParameter(0);        
+        $this->path = $this->getParameter(0);
         $this->basePath = __DIR__ . '/../../../assets/';
     }
-    
+
     public function indexAction()
-    {            
+    {
         return $this->getFile($this->basePath . $this->path);
-    }   
-            
+    }
+
     private function getFile($filename)
     {
         if (!is_file($filename)) {
             throw new \Osynapsy\Kernel\KernelException('Page not found', 404);
         }
-        $this->copyFileToCache($this->getRequest()->get('page.url'), $filename);        
+        $this->copyFileToCache($this->getRequest()->get('page.url'), $filename);
         return $this->sendFile($filename);
     }
-    
+
     private function copyFileToCache($webPath, $assetsPath)
     {
         if (file_exists($webPath)) {
@@ -54,16 +54,16 @@ class Loader extends Controller
             if (!is_writeable($currentPath)) {
                 return false;
             }
-            $currentPath .= $dir.'/';            
+            $currentPath .= $dir.'/';
             //If first directory (__assets) not exists or isn't writable abort copy
-            if ($isFirst === true && !is_writable($currentPath)) {                
+            if ($isFirst === true && !is_writable($currentPath)) {
                 return false;
             }
             $isFirst = false;
             if (file_exists($currentPath)) {
                 continue;
             }
-            
+
             mkdir($currentPath);
         }
         $currentPath .= $file;
@@ -79,8 +79,15 @@ class Loader extends Controller
         // calc the string in GMT not localtime and add the offset
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
         //output the HTTP header
-        $this->getResponse()->setHeader('Expires', gmdate("D, d M Y H:i:s", time() + $offset) . " GMT");        
-        $this->getResponse()->setContentType('text/'.$ext);
+        $this->getResponse()->setHeader('Expires', gmdate("D, d M Y H:i:s", time() + $offset) . " GMT");
+        switch($ext) {
+            case 'js':
+                $this->getResponse()->setContentType('application/javascript');
+                break;
+            default:
+                $this->getResponse()->setContentType('text/'.$ext);
+                break;
+        }
         return file_get_contents($filename);
     }
 }
