@@ -16,7 +16,7 @@ use Osynapsy\Html\Component;
 
 /**
  * Build a special Html Response fro View with Ocl and Bcl view
- * 
+ *
  */
 class ResponseHtmlOcl extends ResponseHtml
 {
@@ -26,29 +26,24 @@ class ResponseHtmlOcl extends ResponseHtml
         if (!empty($_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS'])) {
             $componentIds = explode(';', filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_HTML_COMPONENTS'));
         }
-        //$componentIds = [];
-        //TODO Eliminare codice commentato;
-        /*if (!empty($_REQUEST['ajax2'])) {
-            $componentIds = is_array($_REQUEST['ajax']) ? $_REQUEST['ajax'] : array($_REQUEST['ajax']);
-        }*/
         if (!empty($componentIds)) {
-            $this->buildComponents($componentIds);      
+            $this->buildComponents($componentIds);
             return;
-        }        
+        }
         $this->processComponentRequirements(Component::getRequire());
     }
-    
+
     private function buildComponents($componentIds)
     {
         $this->resetTemplate();
         $this->resetContent();
         $response = new Tag('div','response');
         foreach($componentIds as $id) {
-            $response->add(Component::getById($id));                    
+            $response->add(Component::getById($id));
         }
-        $this->addContent($response); 
+        $this->addContent($response);
     }
-    
+
     private function processComponentRequirements($requires)
     {
         if (empty($requires)) {
@@ -58,7 +53,7 @@ class ResponseHtmlOcl extends ResponseHtml
             $this->appendRequirement($type, $urls);
         }
     }
-    
+
     private function appendRequirement($type, $urls)
     {
         foreach ($urls as $url){
