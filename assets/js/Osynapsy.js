@@ -5,9 +5,7 @@ var Osynapsy = new (function(){
         history : {},
         plugin : {}
     };
-    
-    
-    
+            
     pub.action = 
     {
         parametersFactory : function(object)
@@ -151,14 +149,15 @@ var Osynapsy = new (function(){
             if (!Osynapsy.isEmpty(form[0].getAttribute('action'))) {
                 actionUrl =  form[0].getAttribute('action');
             }
+            var formData = new FormData(form[0]);
+            formData.append('actionParameters[]', object[0].getAttribute('id') + event);
             let response = fetch(actionUrl, {
                 method: 'post',
-                headers: {
-                    "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+                headers: {                    
                     'Osynapsy-Action': 'dispatchLocalEvent',                    
                     'Accept': 'application/json'
                 },
-                body: new FormData(form[0]) + '&actionParameters[]=' + object[0].getAttribute('id') + event
+                body: formData
             });            
             response.then(response => response.json())
             .then(function (data) {
@@ -505,13 +504,19 @@ var Osynapsy = new (function(){
     
     pub.post = function(url, vars)
     {
-        var form = $('<form method="post" action="'+url+'"></form>');
+        var form = document.createElement('form');
+        form.action = url;
+        form.method = 'post';
         if (!Osynapsy.isEmpty(vars)) {
             for (var i in vars) {
-                $('<input type="hidden" name="'+vars[i][0]+'" value="'+vars[i][1]+'">').appendTo(form);
+                let input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = vars[i][0];
+                input.value = vars[i][1];
+                form.appendChild(input);
             }
         }
-        $('body').append(form);
+        document.body.appendChild(form);
         form.submit();
     };
     
