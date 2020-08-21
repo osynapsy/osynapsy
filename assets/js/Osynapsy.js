@@ -1,19 +1,68 @@
 var Osynapsy = new (function(){
-    
+
     var pub = {
         kernel : {},
         history : {},
         plugin : {}
     };
-            
-    pub.action = 
+
+    pub.createElement = function (tag, attributes)
+    {
+        let element = document.createElement(tag);
+        for (let id in attributes) {
+            element[id] = attributes[id];
+        }
+        return element;
+    };
+
+    pub.ajax = {
+        execute : function(options)
+        {
+            let request = new XMLHttpRequest();
+            if ('progress' in options) {
+                request.addEventListener("progress", options.progress);
+            }
+            if ('success' in options) {
+                request.addEventListener("load",  options.success);
+            }
+            if ('error' in options) {
+                request.addEventListener("error", options.error);
+            }
+            if ('abort' in options) {
+                request.addEventListener("abort", options.abort);
+            }
+            request.open(
+                'method' in options ? options.method : 'get',
+                'url' in options ? options.url : window.location
+            );
+            if ('headers' in options) {
+                for (let header in options.headers) {
+                    request.setRequestHeader(header, options.headers[header]);
+                }
+            }
+            if ('beforeSend' in options) {
+                options.beforeSend();
+            }
+            request.send('data' in options ? options.data : null);
+        },
+        get : function(url, options)
+        {
+            this.exec('get', url, options);
+        },
+        post : function(url, options)
+        {
+            this.exec('post', url, options);
+        }
+    };
+
+    pub.action =
     {
         parametersFactory : function(object)
         {
             if (Osynapsy.isEmpty($(object).data('action-parameters'))) {
                 return false;
             }
-            var values = [];        
+            var values = [];
             var params = String($(object).data('action-parameters')).split(',');
             for (var i in params) {
                 var value = params[i];
@@ -21,7 +70,7 @@ var Osynapsy = new (function(){
                     value = $(object).val();
                 } else if (value.charAt(0) === '#' && $(value).length > 0) {
                     value = $(value).val();
-                } 
+                }
                 values.push('actionParameters[]=' + encodeURIComponent(value));
             }
             return values.join('&');
@@ -37,44 +86,44 @@ var Osynapsy = new (function(){
             if (!Osynapsy.isEmpty($(object).data('confirm'))) {
                 if (!confirm($(object).data('confirm'))) {
                     return;
-                }   
+                }
             }
             this.source = object;
             this.remoteExecute(action, form, this.parametersFactory(object));
-        },        
+        },
         remoteExecute : function(action, form, actionParameters)
         {
             var extraData = Osynapsy.isEmpty(actionParameters) ? '' : actionParameters;
             var actionUrl = Osynapsy.isEmpty($(form).attr('action')) ? window.location.href : $(form).attr('action');
             $('.field-in-error').removeClass('field-in-error');
             var callParameters = {
-                url  : actionUrl,                
+                url  : actionUrl,
                 headers: {
                     'Osynapsy-Action': action,
                     'Accept': 'application/json'
                 },
                 type : 'post',
                 dataType : 'json',
-                success : function(response) {            
+                success : function(response) {
                     Osynapsy.waitMask.remove();
                     Osynapsy.kernel.message.dispatch(response, this);
                 },
-                error: function(xhr, status, error) {                
+                error: function(xhr, status, error) {
                     Osynapsy.waitMask.remove();
                     console.log(status);
                     console.log(error);
                     console.log(xhr);
                     alert(xhr.responseText);
                 }
-            };            
-            if (!this.checkForUpload()) {               
+            };
+            if (!this.checkForUpload()) {
                 var options = {
                     beforeSend : function() {
                         Osynapsy.waitMask.show();
                     },
                     data : $(form).serialize()+'&'+extraData
                 };
-            } else {                
+            } else {
                 var options  = {
                     beforeSend : function() {
                         Osynapsy.waitMask.showProgress();
@@ -86,40 +135,41 @@ var Osynapsy = new (function(){
                         }
                         return xhr;
                     },
+                    progress : Osynapsy.waitMask.uploadProgress,
                     //Se devo effettuare un upload personalizzo il metodo jquery $.ajax per fargli spedire il FormData
                     data :  new FormData($(form)[0]),
                     mimeType : "multipart/form-data",
                     contentType : false,
                     cache : false,
                     processData :false
-                };        
+                };
             }
             $.extend(callParameters, options);
             $.ajax(callParameters);
         },
         checkForUpload : function()
         {
-            if (!window.FormData){            
+            if (!window.FormData){
                 return false; //No file to upload or IE9,IE8,etc browser
             }
             var upload = false;
             $('input[type=file]').each(function(){
                 //Carico il metodo per effettuare l'upload solo se c'è almeno un campo file pieno
                 if (!Osynapsy.isEmpty($(this).val())) {
-                    upload = true; 
+                    upload = true;
                     return false ;
                 }
             });
-            return upload;        
+            return upload;
         },
         source : null
     };
-    
+
     pub.appendToUrl = function(value)
     {
         window.history.pushState(null, null, value);
     };
-    
+
     pub.coalesce = function()
     {
         if (arguments.length === 0) {
@@ -132,8 +182,8 @@ var Osynapsy = new (function(){
         }
         return null;
     };
-    
-    pub.event = 
+
+    pub.event =
     {
         dispatch : function(source, event)
         {
@@ -145,7 +195,7 @@ var Osynapsy = new (function(){
         dispatchRemote : function(object, event)
         {
             var actionUrl = window.location.href;
-            var form = object.closest('form');            
+            var form = object.closest('form');
             if (!Osynapsy.isEmpty(form[0].getAttribute('action'))) {
                 actionUrl =  form[0].getAttribute('action');
             }
@@ -153,25 +203,25 @@ var Osynapsy = new (function(){
             formData.append('actionParameters[]', object[0].getAttribute('id') + event);
             let response = fetch(actionUrl, {
                 method: 'post',
-                headers: {                    
-                    'Osynapsy-Action': 'dispatchLocalEvent',                    
+                headers: {
+                    'Osynapsy-Action': 'dispatchLocalEvent',
                     'Accept': 'application/json'
                 },
                 body: formData
-            });            
+            });
             response.then(response => response.json())
             .then(function (data) {
                 Osynapsy.waitMask.remove();
-                Osynapsy.kernel.message.dispatch(data);                
+                Osynapsy.kernel.message.dispatch(data);
             })
             .catch(function (error) {
-                Osynapsy.waitMask.remove();                   
+                Osynapsy.waitMask.remove();
                 console.log(error);
                 alert(error);
-            });            
+            });
         }
     };
-    
+
     pub.hashCode = function(string)
     {
         var hash = 0, i, chr;
@@ -185,8 +235,8 @@ var Osynapsy = new (function(){
         }
         return hash;
     };
-    
-    pub.history = 
+
+    pub.history =
     {
         save : function()
         {
@@ -211,8 +261,8 @@ var Osynapsy = new (function(){
                     arr.push([$(this).attr('name'), $(this).val()]);
                 }
             });
-            hst.push({url : window.location.href, parameters : arr});        
-            sessionStorage.history = JSON.stringify(hst);        
+            hst.push({url : window.location.href, parameters : arr});
+            sessionStorage.history = JSON.stringify(hst);
         },
         back : function()
         {
@@ -229,29 +279,29 @@ var Osynapsy = new (function(){
             Osynapsy.post(stp.url, stp.parameters);
         }
     };
-    
+
     pub.isEmpty = function (value)
     {
         if (typeof value === 'undefined') {
             return true;
         }
         switch(value) {
-            case []:                
-            case {}:                
-            case null:                
-            case '':            
+            case []:
+            case {}:
+            case null:
+            case '':
             case false:
                 return true;
             default:
                 return false;
         }
     };
-    
+
     pub.isObject = function(v)
     {
         return v instanceof Object;
     };
-    
+
     pub.notification = function(message)
     {
         // Controlliamo se il browser supporta le notifiche
@@ -274,41 +324,41 @@ var Osynapsy = new (function(){
                     }
                 });
                 break;
-        }       
+        }
     };
-    
+
     pub.addWorker = function(name, url)
     {
         if (!window.Worker) {
             console.log('questo browser non supporta i worker');
         }
         var myWorker = new SharedWorker(url);
-                
+
         // Get the proxy worker port for communication
         var myWorkerPort = myWorker.port;
         // Send a "hello" message to the worker
-        myWorkerPort.postMessage( {type: 'hello', says: 'Hello worker !'} );        
+        myWorkerPort.postMessage( {type: 'hello', says: 'Hello worker !'} );
         myWorkerPort.onmessage = function( event )
         {
             var message = event.data;
             Osynapsy.notification(message.says);
         };
     };
-    
+
     pub.typingEvent = function(obj)
     {
         if (pub.typingTimeout !== undefined) {
             clearTimeout(pub.typingTimeout);
         }
-        pub.typingTimeout = setTimeout(function(){ 
+        pub.typingTimeout = setTimeout(function(){
             var code = $(obj).attr('ontyping');
             if (code) {
                 eval(code);
             }
-        }, 500);  
+        }, 500);
     };
-    
-    pub.kernel.message = 
+
+    pub.kernel.message =
     {
         response : null,
         dispatch : function (response)
@@ -317,7 +367,7 @@ var Osynapsy = new (function(){
             if (!Osynapsy.isObject(this.response)){
                 console.log('Resp is not an object : ', this.response);
                 return;
-            }       
+            }
             this.dispatchErrors(this.response);
             this.dispatchCommands(this.response);
         },
@@ -335,23 +385,23 @@ var Osynapsy = new (function(){
                 }
                 var cmp = $('#'+val[0]);
                 if ($(cmp).hasClass('field-in-error')){
-                    return true;                
+                    return true;
                 }
                 if ($(cmp).length > 0) {
-                    $(cmp).addClass('field-in-error').on('change', function() { $(this).removeClass('field-in-error'); });                    
+                    $(cmp).addClass('field-in-error').on('change', function() { $(this).removeClass('field-in-error'); });
                 }
                 errors.push(cmp.length > 0 ? self.showErrorOnLabel(cmp, val[1]) : val[1]);
             });
             if (errors.length === 0) {
                 return;
             }
-            if (typeof $().modal === 'function') {				
-		pub.modal.show(
+            if (typeof $().modal === 'function') {
+		pub.modal.alert(
                     'Si sono verificati i seguenti errori',
                     '<ul><li>' + errors.join('</li><li>') +'</li></ul>'
 		);
 		return;
-            } 
+            }
             alert('Si sono verificati i seguenti errori : \n' + errors.join("\n").replace(/(<([^>]+)>)/ig,""));
         },
         dispatchCommands : function(response)
@@ -359,7 +409,7 @@ var Osynapsy = new (function(){
             if (!('command' in response)) {
                 return;
             }
-            $.each(response.command, function(idx, val){            
+            $.each(response.command, function(idx, val){
                 if (val[0] in FormController) {
                     FormController[val[0]](val[1]);
                 } else if (val[0] in Osynapsy) {
@@ -389,7 +439,7 @@ var Osynapsy = new (function(){
             });
         }
     };
-    
+
     pub.goto = function(url)
     {
         switch(url) {
@@ -406,58 +456,32 @@ var Osynapsy = new (function(){
         }
     };
 
-    pub.modal = 
-    {
-        build : function(id, title, body, actionConfirm, actionCancel)
-        {
-            this.remove();
-            var btnCloseClass = '';
-            var win  = '<div id="' + id + '" class="modal fade" role="dialog">\n';
-                win += '    <div class="modal-dialog modal-xs">\n';
-                win += '        <div class="modal-content">\n';
-                win += '            <div class="modal-header bg-light">\n';
-                win += '                <h5 class="modal-title">' + title + '</h5>';   
-                win += '                <button type="button" class="close" data-dismiss="modal">&times;</button>';               
-                win += '            </div>';
-                win += '            <div class="modal-body" style="padding: 20px">';
-                win += body;
-                win += '            </div>';
-                win += '            <div class="modal-footer">';
-                if (!Osynapsy.isEmpty(actionConfirm)) {
-                    var action = actionConfirm.replace(')','').split('(');
-                    btnCloseClass = ' pull-left';
-                    win += '<button type="button" class="btn btn-default click-execute pull-right" data-dismiss="modal" data-action="'+ action[0] +'" data-action-parameters="' + (action[1] === 'undefined' ? '' : action[1]) +'">Conferma</button>';
-                }
-                if (!Osynapsy.isEmpty(actionCancel)) {
-                    win += '<button type="button" class="btn btn-secondary btn-default'+btnCloseClass+' click-execute" data-action="'+ actionCancel +'" data-dismiss="modal">Annulla</button>';
-                } else {
-                    win += '<button type="button" class="btn btn-secondary btn-default'+btnCloseClass+'" data-dismiss="modal">Annulla</button>';
-                }
-                win += '            </div>';
-                win += '        </div>';
-                win += '    </div>';
-                win += '</div>';
-            $('body').append($(win));            
-            $('#'+id).modal({
-                keyboard : true
-            });
-            return $(win);
-        },
+    pub.modal =
+    {        
         remove : function()
         {
             $('.modal').remove();
         },
-        show : function(title, message, actionConfirm, actionCancel){
-            if (!title) { title = 'Alert'; }
-            var modalId = actionConfirm !== null ? 'alert' : 'confirm';
-            return this.build(modalId, title, message, actionConfirm, actionCancel);
+        alert : function(title, message, actionConfirm, actionCancel){
+            Osynapsy.modal.remove();
+            Osynapsy.include('Modal.js', function() {
+                modalAlert(title, message, actionConfirm, actionCancel);
+            });
         },
         confirm : function(object)
+        {            
+            Osynapsy.modal.remove();
+            Osynapsy.include('Modal.js', function() {
+                modalAlert('Conferma', object.data('confirm'), object.data('action'));
+            });
+        },
+        window : function(title, url, width, height)
         {
-            return this.build('confirm','Confirm',object.data('confirm'), object.data('action'));
+            Osynapsy.modal.remove(); 
+            Osynapsy.include('Modal.js', function() { modalWindow(title, url, width, height); });
         }
     };
-    
+
     pub.page = {
         init : function()
         {
@@ -468,82 +492,78 @@ var Osynapsy = new (function(){
                 //event.stopPropagation();
                 Osynapsy.action.execute(this);
             }).on('keydown','.onenter-execute',function(event){
-                event.stopPropagation();                
+                event.stopPropagation();
                 switch (event.keyCode) {
                     case 13 : //Enter
-                    case 9:                                
-                        FormController.execute(this);
+                    case 9:
+                        Osynapsy.action.execute(this);
                         return false;
-                    break;                             
+                    break;
                 }
-            }).on('click','.cmd-back',function(){        
+            }).on('click','.cmd-back',function(){
                 Osynapsy.history.back();
             }).on('click','.save-history',function(){
                 Osynapsy.history.save();
             }).on('click','a.open-modal',function(e){
-                e.preventDefault();            
-                FormController.modalWindow(
-                    'amodal', 
-                    $(this).attr('title'), 
-                    $(this).is('.postdata') ? [$(this).attr('href'), $(this).closest('form')] : $(this).attr('href'), 
-                    $(this).attr('modal-width') ? $(this).attr('modal-width') : '75%',
-                    $(this).attr('modal-height') ? $(this).attr('modal-height') : ($(window).innerHeight() - 250) + 'px',
-                    $(this).attr('modal-dimension')
-                );
-            }).on('keyup', '.typing-execute', function(){                
+                e.preventDefault();
+                Osynapsy.modal.window(
+                    this.getAttribute('title'), 
+                    this.classList.contains('.postdata') ? [this.getAttribute('href'), this.closest('form')] : this.getAttribute('href'),
+                    this.getAttribute('modal-width'),
+                    this.getAttribute('modal-height')                        
+                );                
+            }).on('keyup', '.typing-execute', function(){
                Osynapsy.typingEvent(this);
             }).on('click change', '.dispatch-event', function(ev){
                 var eventClass = 'dispatch-event-' + ev.type;
                 if ($(this).hasClass(eventClass)) {
                     Osynapsy.event.dispatch(this, event.type.charAt(0).toUpperCase() + event.type.slice(1));
-                }                
+                }
             });
             FormController.fire('init');
         }
     };
-    
-    pub.post = function(url, vars)
+
+    pub.post = function(url, values)
     {
-        var form = document.createElement('form');
-        form.action = url;
-        form.method = 'post';
-        if (!Osynapsy.isEmpty(vars)) {
-            for (var i in vars) {
-                let input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = vars[i][0];
-                input.value = vars[i][1];
-                form.appendChild(input);
+        var form = Osynapsy.createElement('form', {'action' : url, 'method' : 'post'});
+        if (!Osynapsy.isEmpty(values)) {
+            for (var idx in values) {
+                form.appendChild(Osynapsy.createElement('input', {
+                    'type' : 'hidden',
+                    'name' : values[idx][0],
+                    'value' : values[idx][1]
+                }));
             }
         }
         document.body.appendChild(form);
         form.submit();
     };
-    
+
     pub.refreshComponents = function(components)
-    {        
-        var componentsIDs = Array.isArray(components) ? components : [components];               
+    {
+        var componentsIDs = Array.isArray(components) ? components : [components];
         var execOnSuccess = arguments.length > 1 ? arguments[1] : null;
-        if (componentsIDs.length === 1) {            
-            Osynapsy.waitMask.show(document.getElementById(componentsIDs[0]));    
+        if (componentsIDs.length === 1) {
+            Osynapsy.waitMask.show(document.getElementById(componentsIDs[0]));
         }
-        let form = document.querySelector('form');                
+        let form = document.querySelector('form');
         let response = fetch(window.location.href, {
             body: new FormData(form),
             method: 'post',
-            headers: {                
+            headers: {
                 'Osynapsy-Html-Components': componentsIDs.join(';'),
                 'Accept': 'text/html'
-            }            
+            }
         });
         response.then(response => response.text()).then(function(strHtmlPage) {
             Osynapsy.waitMask.remove();
             let parser = new DOMParser();
-            let remoteDoc = parser.parseFromString(strHtmlPage, 'text/html');                        
+            let remoteDoc = parser.parseFromString(strHtmlPage, 'text/html');
             for (var i in componentsIDs) {
                 let componentId = componentsIDs[i];
-                let remoteComponent = remoteDoc.getElementById(componentId);                
-                if (remoteComponent) {                    
+                let remoteComponent = remoteDoc.getElementById(componentId);
+                if (remoteComponent) {
                     document.getElementById(componentId).replaceWith(remoteComponent);
                 }
             }
@@ -555,11 +575,11 @@ var Osynapsy = new (function(){
             console.log(error);
         });
     };
-    
-    pub.waitMask = 
-    {    
+
+    pub.waitMask =
+    {
         build : function(message, parent, position)
-        {                        
+        {
             var mask = $('<div id="waitMask" class="wait"><div class="message">'+message+'</div></div>');
             mask.width($(parent).width()).height($(parent).height());
             if (position) {
@@ -568,14 +588,14 @@ var Osynapsy = new (function(){
             $('body').append(mask);
         },
         show : function()
-        {        
+        {
             var message = 'PLEASE WAIT <span class="fa fa-refresh fa-spin"></span>';
             var position = {top : '0px', left : '0px'};
             var parent = document;
             if (arguments.length > 0) {
                 parent = arguments[0];
-                position = $(parent).offset();                
-            }            
+                position = $(parent).offset();
+            }
             this.build(message, parent, position);
         },
         showProgress : function()
@@ -586,11 +606,11 @@ var Osynapsy = new (function(){
             this.build(message, document, {top : '0px', left : '0px'})
         },
         remove : function()
-        {        
-            $('#waitMask').remove();     
+        {
+            $('#waitMask').remove();
         },
-        uploadProgress : function(a) {            
-            if ($('#progress_idx').length > 0){                
+        uploadProgress : function(a) {
+            if ($('#progress_idx').length > 0){
                 var pos = a.loaded ? a.loaded : a.position;
                 var t = Math.round((pos / a.total) * 100);
                 $('#progress_bar').css('width',t +'%');
@@ -598,7 +618,7 @@ var Osynapsy = new (function(){
             }
         }
     };
-    
+
     pub.setParentModalTitle = function()
     {
         if (!window.frameElement) {
@@ -606,37 +626,49 @@ var Osynapsy = new (function(){
         }
         parent.$('.modal-title', parent.$('#amodal')).html(document.title);
     };
+
+    pub.include = function(uri, onload)
+    {        
+        if (document.getElementById(uri)) {
+            console.log('Non caricato');
+            return onload();
+        }
+        console.log('Caricato');
+        let rootOsynapsyJs = document.getElementById('osynapsyjs').src.split('/');
+        rootOsynapsyJs[rootOsynapsyJs.length - 1] = uri;        
+        document.body.appendChild(this.createElement('script', {
+            'id' : uri,
+            'src' : rootOsynapsyJs.join('/'), 
+            'onload' : onload
+        }));
+    };
     
     return pub;
 });
 
-var FormController = 
+var FormController =
 {
     repo :
     {
         event : { init : {} },
         componentInit : {}
-    },
-    init : function()
-    {
-        Osynapsy.page.init();
-    },
+    },    
     back : function()
     {
         Osynapsy.history.back();
-    },    
+    },
     fire : function(evt)
     {
         if (evt in this.repo['event']){
             for (var i in this.repo['event'][evt] ){
-                try{                    
+                try{
                     this.repo['event'][evt][i]();
-                } catch(err) {                    
+                } catch(err) {
                     console.log(err);
                 }
             }
         }
-    },    
+    },
     execute  : function(object)
     {
         Osynapsy.action.execute(object);
@@ -653,122 +685,22 @@ var FormController =
         if (!(target instanceof Array)) {
             target = [target];
         }
-        for (i in target ) {
+        for (var i in target) {
             observer.observe(target[i], {attributes: true});
         }
     },
     register : function(evt,lbl,fnc)
     {
         this.repo['event'][evt][lbl] = fnc;
-    },    
+    },
     setValue : function(k,v)
     {
         if ($('#'+k).length > 0){
             $('#'+k).val(v);
         }
-    },
-    modal : function(id, title, body, actionConfirm, actionCancel)
-    {
-        $('.modal').remove();
-        var btnCloseClass = '';
-        var win  = '<div id="' + id + '" class="modal fade" role="dialog">\n';
-            win += '    <div class="modal-dialog modal-xs">\n';
-            win += '        <div class="modal-content">\n';
-            win += '            <div class="modal-header">\n';
-            win += '                <button type="button" class="close" data-dismiss="modal">&times;</button>';
-            win += '                <h4 class="modal-title">' + title + '</h4>';
-            win += '            </div>';
-            win += '            <div class="modal-body" style="padding: 20px">';
-            win += body;
-            win += '            </div>';
-            win += '            <div class="modal-footer">';
-            if (actionConfirm) {
-                var action = actionConfirm.replace(')','').split('(');
-                btnCloseClass = ' pull-left';
-                win += '<button type="button" class="btn btn-default click-execute pull-right" data-dismiss="modal" data-action="'+ action[0] +'" data-action-parameters="' + (action[1] === 'undefined' ? '' : action[1]) +'">Conferma</button>';
-            }
-            if (actionCancel) {
-                win += '<button type="button" class="btn btn-light btn-default'+btnCloseClass+' click-execute" data-action="'+ actionCancel +'" data-dismiss="modal">Annulla</button>';
-            } else {
-                win += '<button type="button" class="btn btn-light btn-default'+btnCloseClass+'" data-dismiss="modal">Annulla</button>';
-            }
-            win += '            </div>';
-            win += '        </div>';
-            win += '    </div>';
-            win += '</div>';
-        $('body').append($(win));
-        $('#'+id).modal({
-            keyboard : true
-        });
-        return $(win);
-    },
-    modalAlert : function(title, message)
-    {
-        if (!title) {
-            title = 'Alert';
-        }
-        var win = this.modal('alert', title, message, null, null);        
-        return $(win);
-    },
-    modalConfirm : function(title, message, actionConfirm, actionCancel)
-    {
-        if (!title) {
-            title = 'Conferm';
-        }
-        return this.modal('confirm', title, message, actionConfirm, actionCancel);
-    },
-    modalWindow : function(id, title, url)
-    {               
-        $('.modal').remove();
-        var modalHeight = Osynapsy.isEmpty(arguments[4]) ? ($(window).innerHeight() - 250) + 'px' : arguments[4];
-        var modalWidth  = Osynapsy.isEmpty(arguments[3]) ? null : arguments[3];        
-        if ($.isArray(url)) {
-            var form = url[1];
-            url = url[0];
-        }        
-        var modalHtml  = '<div id="' + id + '" class="modal fade" role="dialog">\n';
-            modalHtml += '    <div class="modal-dialog modal-lg">\n';
-            modalHtml += '        <div class="modal-content">\n';
-            modalHtml += '            <div class="modal-header bg-light">\n';            
-            modalHtml += '                <h5 class="modal-title">' + title + '</h5>';
-            modalHtml += '                <button type="button" class="close" data-dismiss="modal">&times;</button>';
-            modalHtml += '            </div>';
-            modalHtml += '            <div class="modal-body">';
-            modalHtml += '                <i class="fa fa-spinner fa-spin" style="font-size:24px; position:absolute; margin-top:20px; margin-left: 20px; color:silver;"></i>';
-            modalHtml += '                <iframe onload="$(this).css(\'visibility\',\'\');" name="'+id+'" style="visibility:hidden; width: 100%; height:'+ modalHeight +'; border: 0px; border-radius: 3px;" border="0"></iframe>';
-            modalHtml += '            </div>';            
-            modalHtml += '        </div>';
-            modalHtml += '    </div>';
-            modalHtml += '</div>';
-        var modalWindow = $(modalHtml);        
-        if (!Osynapsy.isEmpty(modalWidth) && window.screen.availWidth > 1000) {            
-            $('.modal-dialog', modalWindow).css('max-width', modalWidth);                            
-        }
-        $('body').append(modalWindow);
-        //$('iframe', '#'+id).on('load', function(){});
-        if (Osynapsy.isEmpty(form)) {
-            $('iframe', '#'+id).attr('src',url);            
-        } else {
-            var action = form.attr('action');
-            var target = form.attr('target');
-            var method = form.attr('method');
-            form.attr('action', url);
-            form.attr('target', id);
-            form.attr('method', 'POST');
-            form.submit();
-            console.log(action, target, method);
-            form.attr('action', action?action:'');
-            form.attr('target', target?target:'');
-            form.attr('method', method?method:'');
-        }
-        $('iframe', '#'+id).on('load', function(){
-            $(this).prev().hide();
-        });
-        $('#'+id).modal({keyboard : true});        
-        return modalWindow;
     }
 };
 
 document.addEventListener("DOMContentLoaded", function() {
-    FormController.init();
+    Osynapsy.page.init();
 });
