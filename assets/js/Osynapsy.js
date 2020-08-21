@@ -629,11 +629,9 @@ var Osynapsy = new (function(){
 
     pub.include = function(uri, onload)
     {        
-        if (document.getElementById(uri)) {
-            console.log('Non caricato');
+        if (document.getElementById(uri)) {            
             return onload();
-        }
-        console.log('Caricato');
+        }        
         let rootOsynapsyJs = document.getElementById('osynapsyjs').src.split('/');
         rootOsynapsyJs[rootOsynapsyJs.length - 1] = uri;        
         document.body.appendChild(this.createElement('script', {
