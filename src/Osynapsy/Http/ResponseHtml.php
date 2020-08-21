@@ -17,25 +17,25 @@ use Osynapsy\Http\Response;
 class ResponseHtml extends Response
 {
     public $template = null;
-    
+
     public function __construct()
     {
         parent::__construct('text/html');
         $this->repo['content'] = [
             'main' => []
-        ];        
+        ];
     }
-    
+
     public function addBufferToContent($path = null, $part = 'main')
-    {                
+    {
         $this->addContent(
             $this->replaceContent(
                 self::getBuffer($path)
-            ), 
+            ),
             $part
         );
     }
-    
+
     private function replaceContent($buffer)
     {
         $dummy = array_map(
@@ -56,14 +56,14 @@ class ResponseHtml extends Response
         );
         return str_replace($dummy, $parts, $buffer);
     }
-    
+
     public function __toString()
     {
         $this->sendHeader();
         $this->buildResponse();
         if (!empty($this->template)) {
             return $this->replaceContent($this->template);
-        } 
+        }
         $response = '';
         foreach ($this->repo['content'] as $content) {
             $response .= is_array($content) ? implode('',$content) : $content;
@@ -76,32 +76,32 @@ class ResponseHtml extends Response
     {
         //overwrite this method for extra content manipulation
     }
-    
-    public function addJs($path)
+
+    public function addJs($path, $id = false)
     {
-        $this->addContent('<script src="'.$path.'"></script>', 'js', true);
+        $this->addContent(sprintf('<script src="%s"%s></script>', $path, $id ? ' id="'.$id.'"': ''), 'js', true);
     }
-    
+
     public function addJsCode($code)
     {
         $this->addContent('<script>'.PHP_EOL.$code.PHP_EOL.'</script>', 'js', true);
     }
-    
+
     public function addCss($path)
     {
         $this->addContent('<link href="'.$path.'" rel="stylesheet" />', 'css', true);
     }
-    
+
     public function addStyle($style)
     {
         $this->addContent('<style>'.PHP_EOL.$style.PHP_EOL.'</style>', 'css', true);
     }
-    
+
     public function resetTemplate()
     {
         $this->template = '';
     }
-    
+
     public function appendLibrary(array $optionalLibrary = [], $appendFormController = true)
     {
         foreach ($optionalLibrary as $pathLibrary) {
@@ -114,10 +114,10 @@ class ResponseHtml extends Response
         if (!$appendFormController) {
             return;
         }
-        $this->addJs('/assets/osynapsy/'.Kernel::VERSION.'/js/Osynapsy.js');
+        $this->addJs('/assets/osynapsy/'.Kernel::VERSION.'/js/Osynapsy.js', 'osynapsyjs');
         $this->addCss('/assets/osynapsy/'.Kernel::VERSION.'/css/style.css');
     }
-    
+
     public function loadTemplate($filename, $object = [])
     {
         if (empty($filename)) {
