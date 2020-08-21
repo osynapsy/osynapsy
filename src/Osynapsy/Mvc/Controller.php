@@ -13,7 +13,6 @@ namespace Osynapsy\Mvc;
 
 use Osynapsy\Event\Dispatcher as EventDispatcher;
 use Osynapsy\Event\Event;
-use Osynapsy\Html\Component as ComponentHtml;
 use Osynapsy\Mvc\Application;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response;
@@ -23,29 +22,29 @@ use Osynapsy\Mvc\Action\InterfaceAction;
 abstract class Controller implements InterfaceController, InterfaceSubject
 {
     use \Osynapsy\Observer\Subject;
-    
+
     private $parameters;
-    private $dispatcher;    
+    private $dispatcher;
     private $application;
     private $externalActions = [];
     public $model;
-    
+
     /**
      * Contructor of controller,
-     * 
+     *
      * @param Request $request
      * @param Application $application
      */
     public function __construct(Request $request = null, Application $application = null)
-    {        
+    {
         $this->application = $application;
-        $this->parameters = $request->get('page.route')->parameters;                
+        $this->parameters = $request->get('page.route')->parameters;
         $this->loadObserver();
         $this->setState('beforeInit');
         $this->init();
         $this->setState('afterInit');
-    }        
-    
+    }
+
     /**
      * Default deleteAction recall delete method of model if exists
      */
@@ -55,10 +54,10 @@ abstract class Controller implements InterfaceController, InterfaceSubject
             $this->model->delete();
         }
     }
-    
+
     /**
      * Recall and execute an external action class
-     * 
+     *
      * @param string $action
      * @param array $parameters
      * @return \Osynapsy\Http\Response
@@ -66,31 +65,31 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     private function execExternalAction(string $action, array $parameters = []) : Response
     {
         $this->setState('beforeAction'.ucfirst($action));
-        $actionInstance = $this->externalActions[$action];        
+        $actionInstance = $this->externalActions[$action];
         $actionInstance->setController($this);
         $actionInstance->setParameters($parameters);
         $actionInstance->execute();
         $this->setState('afterAction'.ucfirst($action));
         return $this->getResponse();
     }
-    
+
     public function dispatchLocalEventAction($eventId)
-    {        
+    {
         if ($this->model) {
             $this->model->find();
         }
         //Call indexAction for load component html and theirs listeners
-        $this->indexAction();        
+        $this->indexAction();
         $this->getDispatcher()->dispatch(new Event($eventId, $this));
     }
-    
+
     /**
      * Recall index action (default action)
-     * 
+     *
      * @return \Osynapsy\Http\Response
      */
     private function execIndexAction() : Response
-    {        
+    {
         $this->loadTemplate(
             $this->getRequest()->get('page.route')->template
         );
@@ -103,10 +102,10 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         }
         return $this->getResponse();
     }
-    
+
     /**
      * Recall internal method action of controller
-     * 
+     *
      * @param string $action
      * @param array $parameters
      * @return \Osynapsy\Http\Response
@@ -114,8 +113,8 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     private function execInternalAction(string $action, array $parameters) : Response
     {
         $this->setState('beforeAction'.ucfirst($action));
-        $response = !empty($parameters) 
-                  ? call_user_func_array( [$this, $action.'Action'], $parameters) 
+        $response = !empty($parameters)
+                  ? call_user_func_array( [$this, $action.'Action'], $parameters)
                   : $this->{$action.'Action'}();
         $this->setState('afterAction'.ucfirst($action));
         if (!empty($response) && is_string($response)) {
@@ -123,20 +122,20 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         }
         return $this->getResponse();
     }
-    
+
     /**
      * Return application instance
-     * 
+     *
      * @return \Osynapsy\Mvc\Application
      */
     final public function getApp() : \Osynapsy\Mvc\Application
     {
         return $this->application;
     }
-    
+
     /**
      * Get $key db connection
-     * 
+     *
      * @param int $key
      * @return Db
      */
@@ -144,20 +143,20 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     {
         return $this->getApp()->getDb($key);
     }
-    
+
     /**
      * Return DbFactory instance
-     * 
+     *
      * @return \Osynapsy\Mvc\Application
      */
     final public function getDbFactory()
     {
         return $this->getApp()->getDbFactory();
     }
-    
+
     /**
      * Return dispatcher instance
-     * 
+     *
      * @return \Osynapsy\Mvc\Application
      */
     public function getDispatcher() : EventDispatcher
@@ -167,10 +166,10 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         }
         return $this->dispatcher;
     }
-    
+
     /**
      * Return external action
-     * 
+     *
      * @return \Osynapsy\Mvc\Application
      */
     final public function getExternalAction($actionId)
@@ -180,20 +179,20 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         }
         return $this->externalActions[$actionId];
     }
-    
+
      /**
      * Return model instance
-     * 
+     *
      * @return \Osynapsy\Mvc\Application
      */
     final public function getModel()
     {
         return $this->model;
     }
-    
+
     /**
      * Return request $key url parameter
-     * 
+     *
      * @param int $key
      * @return string
      */
@@ -210,54 +209,54 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         }
         return $this->parameters[$key];
     }
-    
+
     /**
      * Return current controller response
-     * 
+     *
      * @return \Osynapsy\Http\Response
      */
     public function getResponse() : Response
     {
         return $this->getApp()->getResponse();
     }
-    
+
     /**
      * Return current request
-     * 
+     *
      * @return \Osynapsy\Kernel\Request
      */
     public function getRequest($key = null)
     {
         return $this->getApp()->getRequest($key);
-    }    
-    
+    }
+
     /**
      * Child class must implement default Action indexAction.
      */
     abstract public function indexAction();
-    
+
     /**
-     * Child class must implement init method 
+     * Child class must implement init method
      */
     abstract public function init();
-    
+
     /**
      * Load html file template
-     * 
-     * @param string $path of template     
+     *
+     * @param string $path of template
      * @return void
      */
     public function loadTemplate(string $path)
     {
         if (empty($path) || !method_exists($this->getResponse(), 'loadTemplate')) {
             return;
-        }        
+        }
         $this->getResponse()->loadTemplate($path, $this);
     }
-    
+
     /**
      * Load html file view in current response
-     * 
+     *
      * @param string $path
      * @param array $params
      * @param bool $return
@@ -271,10 +270,10 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         }
         $this->getResponse()->addContent($view);
     }
-    
+
     /**
      * Run controller and execute request action
-     * 
+     *
      * @param string $action
      * @param array $parameters
      * @return \Osynapsy\Http\Response
@@ -283,7 +282,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     {
         if (empty($action)) {
             return $this->execIndexAction();
-        }        
+        }
         if (array_key_exists($action, $this->externalActions)) {
             return $this->execExternalAction($action, $parameters);
         }
@@ -292,7 +291,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         }
         return $this->getResponse()->alertJs('No action '.$action.' exist in '.get_class($this));
     }
-    
+
     /**
      * Execute default saveAction (recall save class of model if exists)
      */
@@ -302,27 +301,27 @@ abstract class Controller implements InterfaceController, InterfaceSubject
             $this->model->save();
         }
     }
-    
+
     public function uploadAction()
     {
         $this->saveAction();
     }
-    
+
     /**
      * Set external class action for manage action
-     * 
+     *
      * @param string $actionName
      * @param string $actionClass
      * @return void
      */
     public function setExternalAction($actionName, InterfaceAction $actionClass)
-    {        
-        $this->externalActions[$actionName] = $actionClass;        
+    {
+        $this->externalActions[$actionName] = $actionClass;
     }
-    
+
     /**
      * Set response for current controller
-     * 
+     *
      * @param Response $response
      * @return Response
      */
