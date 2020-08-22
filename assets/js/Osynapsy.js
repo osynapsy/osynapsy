@@ -370,17 +370,14 @@ var Osynapsy = new (function(){
             });
         },
         showErrorOnLabel : function(elm, err)
-        {
-            /*if ($(elm).data('label')) {
-                return err.replace('<!--'+$(elm).attr('id')+'-->',$(elm).data('label')) + '\n';
-            }*/
+        {            
             if ($(elm).closest('[data-label]').length > 0) {
                 return err.replace('<!--'+$(elm).attr('id')+'-->', '<strong>' + $(elm).closest('[data-label]').data('label') + '</strong>');
             }
             return err.replace('<!--'+$(elm).attr('id')+'-->', '<i>'+ $(elm).attr('id') +'</i>');
             var par = elm.closest('.form-group');
             if (par.hasClass('has-error')) {
-                return;
+                return false;
             }
             par.addClass('has-error');
             $('label',par).append(' <span class="error">'+ err +'</span>');
