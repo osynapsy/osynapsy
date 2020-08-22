@@ -9,57 +9,57 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\Http;
+namespace Osynapsy\Http\Response;
 
 /**
  * Abstract Response
  */
-abstract class Response 
+abstract class Base
 {
     protected $repo = [
         'content' => [],
         'header' => []
     ];
-    
+
     /**
      * Init response with the content type
-     * 
+     *
      * @param type $contentType
      */
     public function __construct($contentType = 'text/html')
     {
         $this->setContentType($contentType);
     }
-    
+
     public function addBufferToContent($path = null, $part = 'main')
     {
         $this->addContent($this->getBuffer($path) , $part);
     }
-    
+
     /**
      * Method that add content to the response
-     * 
+     *
      * @param mixed $content
      * @param mixed $part
      * @param bool $checkUnique
      * @return mixed
      */
     public function addContent($content, $part = 'main', $checkUnique = false)
-    {        
+    {
         if ($checkUnique && !empty($this->repo['content'][$part]) && in_array($content, $this->repo['content'][$part])) {
             return;
-        }        
+        }
         if (!array_key_exists($part, $this->repo['content'])) {
-            $this->repo['content'][$part] = [];             
-        }        
+            $this->repo['content'][$part] = [];
+        }
         $this->repo['content'][$part][] = $content;
     }
-    
+
     public function addValue($key, $value)
     {
         $this->repo['content'][$key] = $value;
     }
-    
+
     public function clearCache()
     {
         $this->setHeader("Expires","Tue, 01 Jan 2000 00:00:00 GMT");
@@ -68,21 +68,21 @@ abstract class Response
         $this->setHeader("Cache-Control", "post-check=0, pre-check=0", false);
         $this->setHeader("Pragma","no-cache");
     }
-    
+
     public function send($content, $part =  'main', $checkUnique = false)
     {
         $this->addContent($content, $part, $checkUnique);
     }
-    
+
     public function exec()
     {
         $this->sendHeader();
         echo implode('',$this->repo['content']);
     }
-    
+
     /**
      * Include a php page e return content string
-     * 
+     *
      * @param string $path
      * @param array $params
      * @return string
@@ -93,7 +93,7 @@ abstract class Response
         $buffer = 1;
         if (!empty($path)) {
             if (!is_file($path)) {
-                throw new \Exception('File '.$path.' not exists');                
+                throw new \Exception('File '.$path.' not exists');
             }
             $buffer = include $path;
         }
@@ -103,50 +103,50 @@ abstract class Response
         }
         return $buffer;
     }
-    
+
     /**
      * Send header location to browser
-     * 
+     *
      * @param string $url
      */
     public function go($url)
     {
         header('Location: '.$url);
     }
-    
+
     /**
      * Reset content part.
-     * 
+     *
      * @param mixed $part
      */
     public function resetContent($part = 'main')
     {
         $this->repo['content'][$part] = [];
     }
-    
+
     /**
      * Set content of the response
-     * 
+     *
      * @param string $value
      */
     public function setContent($value)
     {
         $this->repo['content'] = $value;
     }
-    
+
     /**
      * Set content type of the response
-     * 
+     *
      * @param string $type
      */
     public function setContentType($type)
     {
         $this->repo['header']['Content-Type'] = $type;
     }
-    
+
     /**
      * Buffering of header
-     * 
+     *
      * @param string $key
      * @param string $value
      */
@@ -154,40 +154,40 @@ abstract class Response
     {
         $this->repo['header'][$key] = $value;
     }
-    
+
     /**
      * Set cookie
-     * 
+     *
      * @param string $valueId
      * @param string $value
      * @param unixdatetime $expiry
      */
     public static function cookie($valueId, $value, $expiry = null, $excludeThirdLevel = false)
-    {        
+    {
         if (headers_sent()) {
-           return false; 
+           return false;
         }
-        $domain = $excludeThirdLevel ? self::getDomain() : self::getServerName();        
+        $domain = $excludeThirdLevel ? self::getDomain() : self::getServerName();
         if (empty($expiry)) {
             $expiry = time() + (86400 * 365);
         }
-        return setcookie($valueId, $value, $expiry, "/", $domain);        
+        return setcookie($valueId, $value, $expiry, "/", $domain);
     }
-    
+
     private static function getDomain()
     {
         $domainPart = explode('.', self::getServerName());
-        if (count($domainPart) > 2){ 
+        if (count($domainPart) > 2){
            unset($domainPart[0]);
-        }        
+        }
         return '.'.implode('.', $domainPart);
     }
-    
+
     private static function getServerName()
     {
         return filter_input(\INPUT_SERVER, 'SERVER_NAME');
     }
-    
+
     /**
      * Send header buffer
      */
@@ -200,7 +200,7 @@ abstract class Response
             header($key.': '.$value);
         }
     }
-    
+
     /**
      * Method for build response string
      * @abstract

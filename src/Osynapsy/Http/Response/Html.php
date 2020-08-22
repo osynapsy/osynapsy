@@ -9,12 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\Http;
+namespace Osynapsy\Http\Response;
 
 use Osynapsy\Kernel;
-use Osynapsy\Http\Response;
 
-class ResponseHtml extends Response
+class Html extends Base
 {
     public $template = null;
 

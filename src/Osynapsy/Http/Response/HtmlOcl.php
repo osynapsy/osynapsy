@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\Http;
+namespace Osynapsy\Http\Response;
 
 use Osynapsy\Html\Tag;
 use Osynapsy\Html\Component;
@@ -18,7 +18,7 @@ use Osynapsy\Html\Component;
  * Build a special Html Response fro View with Ocl and Bcl view
  *
  */
-class ResponseHtmlOcl extends ResponseHtml
+class HtmlOcl extends Html
 {
     protected function buildResponse()
     {

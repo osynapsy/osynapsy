@@ -15,7 +15,7 @@ use Osynapsy\Event\Dispatcher as EventDispatcher;
 use Osynapsy\Event\Event;
 use Osynapsy\Mvc\Application;
 use Osynapsy\Http\Request;
-use Osynapsy\Http\Response;
+use Osynapsy\Http\Response\Base as Response;
 use Osynapsy\Observer\InterfaceSubject;
 use Osynapsy\Mvc\Action\InterfaceAction;
 

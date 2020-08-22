@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\Http;
+namespace Osynapsy\Http\Response;
 
 use Osynapsy\Html\Helper\JQuery;
 
@@ -18,7 +18,7 @@ use Osynapsy\Html\Helper\JQuery;
  *
  * @author Pietro Celeste <p.celeste@spinit.it>
  */
-class ResponseJson extends Response
+class Json extends Base
 {
     public function __construct()
     {
