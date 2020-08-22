@@ -158,5 +158,3 @@ if (window.Osynapsy) {
         BclAutocomplete.init();
     });
 }
-
-
