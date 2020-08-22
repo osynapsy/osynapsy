@@ -138,14 +138,29 @@ class ResponseJson extends Response
         $this->repo['content'][$typ][] = array($act,$val);
     }
 
+    public function jquery($selector)
+    {
+        return new JQuery($selector, $this);
+    }
+
     public function js($cmd)
     {
         $this->message('command','execCode', str_replace(PHP_EOL,'\n',$cmd));
     }
 
-    public function jquery($selector)
+    public function showModalAlertOnView($message, $title = 'Alert')
     {
-        return new JQuery($selector, $this);
+        $this->js(sprintf("Osynapsy.modal.alert('%s','%s')", $title, $message));
+    }
+
+    public function showModalConfirmOnView($message, $actionOnConfirm, $title = 'Confirm')
+    {
+        $this->js(sprintf("Osynapsy.modal.confirm('%s','%s','%s')", $title, $message, $actionOnConfirm));
+    }
+
+    public function showModalWindowOnView($title, $url, $width = '640px', $height = '480px')
+    {
+        $this->js(sprintf("Osynapsy.modal.window('%s','%s','%s','%s')", $title, $url, $width, $height));
     }
 
     public function jsRefreshComponentOnView(array $components)
