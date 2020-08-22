@@ -153,8 +153,8 @@ BclAutocomplete = {
     }
 };
 
-if (window.FormController) {
-    FormController.register('init','BclAutocomplete',function(){
+if (window.Osynapsy) {
+    Osynapsy.plugin.register('BclAutocomplete',function(){
         BclAutocomplete.init();
     });
 }

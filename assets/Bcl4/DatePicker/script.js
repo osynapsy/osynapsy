@@ -1,4 +1,4 @@
-BclDatePicker =
+Bcl4DatePicker =
 {
     init : function()
     {
@@ -42,9 +42,9 @@ BclDatePicker =
     }
 };
 
-if (window.FormController){
-    FormController.register('init','BclDatePicker_init',function(){
-        BclDatePicker.init();
+if (window.Osynapsy){
+    Osynapsy.plugin.register('Bcl4DatePicker',function(){
+        Bcl4DatePicker.init();
     });
 }
 

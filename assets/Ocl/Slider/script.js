@@ -62,10 +62,10 @@ OclSlider = {
     {
         this.repo[evt][id] = fnc;
     }
-}
+};
 
-if (window.FormController) {
-    FormController.register('init','OclSlider',function(){
+if (window.Osynapsy) {
+    Osynapsy.plugin.register('OclSlider',function(){
         OclSlider.init();
     });
 }

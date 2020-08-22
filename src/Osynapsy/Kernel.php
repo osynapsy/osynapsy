@@ -19,29 +19,29 @@ use Osynapsy\Kernel\Error\Dispatcher as ErrorDispatcher;
 
 /**
  * The Kernel is the core of Osynapsy
- * 
+ *
  * It init Http request e translate it in response
  *
  * @author Pietro Celeste <p.celeste@osynapsy.org>
  */
 class Kernel
 {
-    const VERSION = '0.6.1-DEV';
+    const VERSION = '0.7.0-DEV';
     const DEFAULT_APP_CONTROLLER = '\\Osynapsy\\Mvc\\Application';
     const DEFAULT_ASSET_CONTROLLER = 'Osynapsy\\Assets\\Loader';
-    
-    public $route;    
-    public $router;    
+
+    public $route;
+    public $router;
     public $request;
     public $requestUri;
     public $controller;
     public $appController;
-    private $loader;    
+    private $loader;
     private $composer;
-        
+
     /**
      * Kernel costructor
-     * 
+     *
      * @param string $instanceConfigurationFile path of the instance configuration file
      * @param object $composer Instance of composer loader
      */
@@ -51,22 +51,22 @@ class Kernel
         $this->loader = new Loader($instanceConfigurationFile);
         $this->request = new Request($_GET, $_POST, [], $_COOKIE, $_FILES, $_SERVER);
         $this->request->set('app.parameters', $this->loadConfig('parameter', 'name', 'value'));
-        $this->request->set('env', $this->loader->get());        
+        $this->request->set('env', $this->loader->get());
         $this->request->set('app.layouts', $this->loadConfig('layout', 'name', 'path'));
         $this->request->set('observers', $this->loadConfig('observer', '@value', 'subject'));
         $this->request->set('listeners', $this->loadConfig('listener', '@value', 'event'));
     }
-        
+
     public function getRequest()
     {
         return $this->request;
     }
-    
+
     public function getVersion()
     {
         return self::VERSION;
     }
-    
+
     private function loadConfig($key, $name, $value)
     {
         $array = $this->loader->search($key);
@@ -76,20 +76,20 @@ class Kernel
         }
         return $result;
     }
-    
+
     protected function loadRequestUri()
     {
         $this->requestUri = strtok(filter_input(INPUT_SERVER, 'REQUEST_URI'), '?');
     }
-    
+
     /**
      * Load in router object all route of application present in config file
      */
     private function loadRoutes()
-    {        
+    {
         $this->router = new Router($this->request);
         $this->router->addRoute('OsynapsyAssetsManager', '/assets/osynapsy/'.self::VERSION.'/{*}', self::DEFAULT_ASSET_CONTROLLER, '', 'Osynapsy');
-        $applications = $this->loader->get('app');       
+        $applications = $this->loader->get('app');
         if (empty($applications)) {
             throw $this->raiseException(1001, 'No app configuration found');
         }
@@ -102,26 +102,26 @@ class Kernel
                 $id = isset($route['id']) ? $route['id'] : uniqid();
                 $uri = $route['path'];
                 $controller = $route['@value'];
-                $template = !empty($route['template']) ? $this->request->get('app.layouts.'.$route['template']) : '';                
+                $template = !empty($route['template']) ? $this->request->get('app.layouts.'.$route['template']) : '';
                 $this->router->addRoute($id, $uri, $controller, $template, $applicationId, $route);
             }
-        }        
+        }
     }
-    
+
     protected function findActiveRoute()
     {
         $this->route = $this->router->dispatchRoute($this->requestUri);
         $this->getRequest()->set('page.route', $this->route);
     }
-    
+
     /**
      * Run process to get response starting to request uri
-     * 
-     * @param string $requestUri is Uri requested from 
-     * @return string 
+     *
+     * @param string $requestUri is Uri requested from
+     * @return string
      */
     public function run()
-    {                    
+    {
         try {
             $this->loadRequestUri();
             $this->loadRoutes();
@@ -131,12 +131,12 @@ class Kernel
         } catch (\Exception $exception) {
             $errorDispatcher = new ErrorDispatcher($this->getRequest());
             return $errorDispatcher->dispatchException($exception);
-        } catch (\Error $error) {            
+        } catch (\Error $error) {
             $errorDispatcher = new ErrorDispatcher($this->getRequest());
             return $errorDispatcher->dispatchError($error);
         }
     }
-        
+
     protected function raiseException($code, $message, $submessage = '')
     {
         $exception = new KernelException($message, $code);
@@ -145,21 +145,21 @@ class Kernel
         }
         return $exception;
     }
-    
+
     protected function runApplication()
-    {        
+    {
         $reqApp = $this->request->get(sprintf("env.app.%s.controller", $this->route->application));
         //If isn't configured an app controller for current instance load default App controller
-        $applicationClass = empty($reqApp) ? self::DEFAULT_APP_CONTROLLER : str_replace(':', '\\', $reqApp);        
+        $applicationClass = empty($reqApp) ? self::DEFAULT_APP_CONTROLLER : str_replace(':', '\\', $reqApp);
         $application = new $applicationClass($this->route, $this->request);
         $application->run();
         return (string) $application->runAction();
     }
-    
-    
+
+
     protected function validateRouteController()
     {
-        if (!empty($this->route) && $this->route->controller) {            
+        if (!empty($this->route) && $this->route->controller) {
             return;
         }
         throw $this->raiseException(404, "Page not found", sprintf(

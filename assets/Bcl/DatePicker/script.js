@@ -40,8 +40,8 @@ BclDatePicker =
     }
 };
 
-if (window.FormController){
-    FormController.register('init','BclDatePicker_init',function(){
+if (window.Osynapsy){
+    Osynapsy.register('BclDatePicker',function(){
         BclDatePicker.init();
     });
 }

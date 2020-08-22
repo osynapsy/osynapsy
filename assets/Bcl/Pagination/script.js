@@ -84,8 +84,8 @@ BclPager = {
     }
 }
 
-if (window.FormController) {
-    FormController.register('init','BclPager.init',function(){
+if (window.Osynapsy) {
+    Osynapsy.plugin.register('BclPager',function(){
         BclPager.init();        
     });
 }

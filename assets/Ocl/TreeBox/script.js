@@ -58,8 +58,8 @@ OclTreeBox =
     }
 };
 
-if (window.FormController) {
-    FormController.register('init','OclTreeBox',function(){
+if (window.Osynapsy) {
+    Osynapsy.plugin.register('OclTreeBox',function(){
         OclTreeBox.init();
     });
 }

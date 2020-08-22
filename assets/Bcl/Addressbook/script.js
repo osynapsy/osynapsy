@@ -14,10 +14,8 @@ BclAddressbook =
     }
 }
 
-if (window.FormController){    
-    FormController.register('init','BclAdressbook_Init',function(){
+if (window.Osynapsy){    
+    Osynapsy.plugin.register('BclAdressbook',function() {
         BclAddressbook.init();
     });
 }
-
-

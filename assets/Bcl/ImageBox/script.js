@@ -64,7 +64,7 @@ BclImageBox2 =
             resizeHeight
         ];
         $('img.imagebox-main', parent).data('action-parameters', Array.from(data).join(','));
-        FormController.execute($('img.imagebox-main', parent));
+        Osynapsy.action.execute($('img.imagebox-main', parent));
     },
     upload : function (input)
     {
@@ -72,12 +72,12 @@ BclImageBox2 =
         var m = filepath.match(/([^\/\\]+)$/);
         var filename = m[1];
         $('.osy-imagebox-filename').text(filename);        
-        FormController.execute($(input).closest('.osy-imagebox-bcl'));
+        Osynapsy.action.execute($(input).closest('.osy-imagebox-bcl'));
     }
 };
 
-if (window.FormController) {
-    FormController.register('init','BclImageBox2',function() {
+if (window.Osynapsy) {
+    Osynapsy.plugin.register('BclImageBox2',function() {
         BclImageBox2.init();
     });
 }

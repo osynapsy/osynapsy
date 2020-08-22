@@ -12,8 +12,8 @@ BclTab = {
     }
 }
 
-if (window.FormController){    
-    FormController.register('init','BclTab_Init',function(){
+if (window.Osynapsy){    
+    Osynapsy.plugin.register('BclTab_Init', function(){
         BclTab.init();
     });
 }

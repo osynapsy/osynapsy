@@ -1,3 +1,5 @@
+var Osynapsy = Osynapsy || {};
+
 class Modal
 {
     buttonCloseFactory()
@@ -6,28 +8,28 @@ class Modal
         button.innerHTML = '&times;';
         return button;
     }
-    
+
     buttonFactory(label, remoteAction, extraClass)
-    {        
+    {
         let button = this.createElement('button', {'type' : 'button', 'class' : 'btn '+extraClass, 'data-dismiss' : 'modal'});
         button.innerHTML = label;
         if (remoteAction) {
             let action = remoteAction.replace(')','').split('(');
             button.dataAction = action[0];
             button.dataActionParameters = action[1] ? action[1] : null;
-        }        
+        }
         return button;
     }
-    
+
     createElement(tag, attributes = {})
     {
-        let element = document.createElement(tag);        
+        let element = document.createElement(tag);
         for (let attributeId in attributes) {
             element.setAttribute(attributeId, attributes[attributeId]);
         }
         return element;
     }
-    
+
     create(id, title, body, actionConfirm, actionCancel)
     {
         this.modal = this.createElement('div', {'id' : id, 'class' : 'modal', 'role' : 'dialog'});
@@ -38,29 +40,29 @@ class Modal
         this.modal.content.appendChild(this.footFactory(actionConfirm, actionCancel));
         return this.modal;
     }
-    
+
     headerFactory(title)
     {
         let header = this.createElement('div', {'class' : 'modal-header bg-light'});
         header.appendChild(this.titleFactory(title));
-        header.appendChild(this.buttonCloseFactory());        
+        header.appendChild(this.buttonCloseFactory());
         return header;
     }
-    
+
     titleFactory(title)
     {
         let titleContainer = this.createElement('h5', {'class' : 'modal-title'});
         titleContainer.innerHTML = title;
         return titleContainer;
     }
-    
+
     bodyFactory(body)
     {
         this.modal.bodyContainer = this.createElement('div', {'class' : 'modal-body'});
         this.modal.bodyContainer.innerHTML = body;
         return this.modal.bodyContainer;
     }
-    
+
     footFactory(actionConfirm, actionCancel)
     {
         let footContainer = this.createElement('div', {'class' : 'modal-footer'});
@@ -74,26 +76,26 @@ class Modal
     }
 }
 
-function modalConfirm(title, message, actionConfirm)
-{    
+Osynapsy.modalConfirm = function(title, message, actionConfirm)
+{
     let modalFactory = new Modal();
-    let modal = modalFactory.create('amodal', title ? title : 'Conferma', message, actionConfirm);        
+    let modal = modalFactory.create('amodal', title ? title : 'Conferma', message, actionConfirm);
     document.body.appendChild(modal);
     $('#amodal').modal({'keyboard' : true});
-}
+};
 
-function modalAlert(title, message)
+Osynapsy.modalAlert = function(title, message)
 {
     let modalFactory = new Modal();
     let modal =  modalFactory.create('amodal', title ? title : 'Alert', message);
     document.body.appendChild(modal);
     $('#amodal').modal({'keyboard' : true});
-}
+};
 
-function modalWindow(title, url, width = '640px', height = '480px')
+Osynapsy.modalWindow = function(title, url, width = '640px', height = '480px')
 {
     let modalHeight = Osynapsy.isEmpty(height) ? ($(window).innerHeight() - 250) + 'px' : height;
-    let modalWidth  = Osynapsy.isEmpty(width) ? null : width;     
+    let modalWidth  = Osynapsy.isEmpty(width) ? null : width;
     let modalFactory = new Modal();
     let modal = modalFactory.create('amodal', title ? title : 'No title', '', false, false);
     let spinner = modalFactory.createElement('i', {'class' : 'fa fa-spinner fa-spin', 'style' : 'font-size: 24px; position: absolute; top: 48%; left: 50%; color:silver;'});
@@ -105,10 +107,10 @@ function modalWindow(title, url, width = '640px', height = '480px')
         modal.dialog.style = 'max-width : ' + modalWidth;
     }
     modal.bodyContainer.appendChild(spinner);
-    modal.bodyContainer.appendChild(iframe);    
+    modal.bodyContainer.appendChild(iframe);
     modal.dialog.querySelector('.modal-footer').remove();
     document.body.appendChild(modal);
-    if (Array.isArray(url)) {    
+    if (Array.isArray(url)) {
         let form = url[1];
         let action = form.attr('action');
         let target = form.attr('target');
@@ -120,6 +122,6 @@ function modalWindow(title, url, width = '640px', height = '480px')
         form.attr('action', action ? action : '');
         form.attr('target', target ? target : '');
         form.attr('method', method ? method : '');
-    }        
+    }
     $('#amodal').modal({'keyboard' : true});
-}
+};

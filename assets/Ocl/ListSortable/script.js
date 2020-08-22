@@ -14,8 +14,8 @@ OclListSortable = {
     }
 };
 
-if (window.FormController) {    
-    FormController.register('init','OclListSortable.init',function(){     
+if (window.Osynapsy) {    
+    Osynapsy.plugin.register('OclListSortable',function(){     
         OclListSortable.init();        
     });
 }

@@ -531,8 +531,8 @@ OclGmapBox = {
     }
 };
 
-if (window.FormController) {    
-    FormController.register('init','OclGmapBox',function(){
+if (window.Osynapsy) {    
+    Osynapsy.plugin.register('OclGmapBox',function(){
         OclGmapBox.init();
     });
 }

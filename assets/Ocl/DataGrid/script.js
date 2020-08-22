@@ -171,8 +171,8 @@ var ODataGrid =
     }
 }
 
-if (window.FormController){    
-    FormController.register('init','ODataGrid',function(){
+if (window.Osynapsy){    
+    Osynapsy.plugin.register('ODataGrid',function(){
         ODataGrid.init();
     });
 }

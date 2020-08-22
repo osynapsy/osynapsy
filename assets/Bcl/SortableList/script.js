@@ -48,8 +48,8 @@ SortableList = {
     }
 }
 
-if (window.FormController) {
-    FormController.register('init','SortableList',function(){
+if (window.Osynapsy) {
+    Osynapsy.plugin.register('SortableList',function(){
         SortableList.init();
     });
 }

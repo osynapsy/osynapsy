@@ -140,8 +140,8 @@ otextsearchinline = {
     }
 };
 
-if (window.FormController) {
-    FormController.register('init','otextsearchinline',function(){ 
+if (window.Osynapsy) {
+    Osynapsy.plugin.register('otextsearchinline',function(){ 
         otextsearchinline.init(); 
     });
 }

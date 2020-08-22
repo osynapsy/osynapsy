@@ -409,8 +409,8 @@ OclMapTomtomBox = {
     }
 }
 
-if (window.FormController){    
-    FormController.register('init','OclMapTomtomBox',function(){
+if (window.Osynapsy){    
+    Osynapsy.plugin.register('OclMapTomtomBox',function(){
         OclMapTomtomBox.init();
     });
 }

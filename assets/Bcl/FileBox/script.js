@@ -16,8 +16,8 @@ BclFileBox =
     }
 }
 
-if (window.FormController){    
-    FormController.register('init','BclFileBox_Init',function(){
+if (window.Osynapsy){    
+    Osynapsy.register('BclFileBox',function(){
         BclFileBox.init();
     });
 }

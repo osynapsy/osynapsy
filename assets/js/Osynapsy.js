@@ -1,9 +1,7 @@
 var Osynapsy = new (function(){
 
     var pub = {
-        kernel : {},
-        history : {},
-        plugin : {}
+        kernel : {}        
     };
 
     pub.createElement = function (tag, attributes)
@@ -236,50 +234,6 @@ var Osynapsy = new (function(){
         return hash;
     };
 
-    pub.history =
-    {
-        save : function()
-        {
-            var hst = [];
-            var arr = [];
-            if (sessionStorage.history){
-                hst = JSON.parse(sessionStorage.history);
-            }
-            $('input,select,textarea').not('.history-skip').each(function(){
-                switch ($(this).attr('type')) {
-                    case 'submit':
-                    case 'button':
-                    case 'file':
-                        return true;
-                    case 'checkbox':
-                        if (!$(this).is(':checked')) {
-                            return true;
-                        }
-                        break;
-                }
-                if ($(this).attr('name')) {
-                    arr.push([$(this).attr('name'), $(this).val()]);
-                }
-            });
-            hst.push({url : window.location.href, parameters : arr});
-            sessionStorage.history = JSON.stringify(hst);
-        },
-        back : function()
-        {
-            if (!sessionStorage.history) {
-                history.back();
-            }
-            var hst = JSON.parse(sessionStorage.history);
-            var stp = hst.pop();
-            if (Osynapsy.isEmpty(stp)) {
-                history.back();
-                return;
-            }
-            sessionStorage.history = JSON.stringify(hst);
-            Osynapsy.post(stp.url, stp.parameters);
-        }
-    };
-
     pub.isEmpty = function (value)
     {
         if (typeof value === 'undefined') {
@@ -396,12 +350,12 @@ var Osynapsy = new (function(){
                 return;
             }
             if (typeof $().modal === 'function') {
-		pub.modal.alert(
+            pub.modal.alert(
                     'Si sono verificati i seguenti errori',
                     '<ul><li>' + errors.join('</li><li>') +'</li></ul>'
-		);
-		return;
-            }
+            );
+            return;
+         }
             alert('Si sono verificati i seguenti errori : \n' + errors.join("\n").replace(/(<([^>]+)>)/ig,""));
         },
         dispatchCommands : function(response)
@@ -410,9 +364,7 @@ var Osynapsy = new (function(){
                 return;
             }
             $.each(response.command, function(idx, val){
-                if (val[0] in FormController) {
-                    FormController[val[0]](val[1]);
-                } else if (val[0] in Osynapsy) {
+                if (val[0] in Osynapsy) {
                     Osynapsy[val[0]](val[1]);
                 }
             });
@@ -447,8 +399,10 @@ var Osynapsy = new (function(){
             case 'reload' :
                 location.reload(true);
                 break;
-            case 'back'   :
-                Osynapsy.history.back();
+            case 'back' :
+                Osynapsy.include('History.js', function(){
+                    Osynapsy.History.back();
+                });
                 break;
             default :
                 window.location = url;
@@ -457,7 +411,7 @@ var Osynapsy = new (function(){
     };
 
     pub.modal =
-    {        
+    {
         remove : function()
         {
             $('.modal').remove();
@@ -465,63 +419,63 @@ var Osynapsy = new (function(){
         alert : function(title, message, actionConfirm, actionCancel){
             Osynapsy.modal.remove();
             Osynapsy.include('Modal.js', function() {
-                modalAlert(title, message, actionConfirm, actionCancel);
+                Osynapsy.modalAlert(title, message, actionConfirm, actionCancel);
             });
         },
         confirm : function(object)
-        {            
+        {
             Osynapsy.modal.remove();
             Osynapsy.include('Modal.js', function() {
-                modalAlert('Conferma', object.data('confirm'), object.data('action'));
+                Osynapsy.modalAlert('Conferma', object.data('confirm'), object.data('action'));
             });
         },
         window : function(title, url, width, height)
         {
-            Osynapsy.modal.remove(); 
-            Osynapsy.include('Modal.js', function() { modalWindow(title, url, width, height); });
+            Osynapsy.modal.remove();
+            Osynapsy.include('Modal.js', function() {
+                Osynapsy.modalWindow(title, url, width, height);
+            });
         }
     };
 
-    pub.page = {
-        init : function()
-        {
-            Osynapsy.setParentModalTitle();
-            $('body').on('change','.change-execute, .onchange-execute', function(){
-                Osynapsy.action.execute(this);
-            }).on('click','.cmd-execute, .click-execute, .onclick-execute',function(event) {
-                //event.stopPropagation();
-                Osynapsy.action.execute(this);
-            }).on('keydown','.onenter-execute',function(event){
-                event.stopPropagation();
-                switch (event.keyCode) {
-                    case 13 : //Enter
-                    case 9:
-                        Osynapsy.action.execute(this);
-                        return false;
-                    break;
-                }
-            }).on('click','.cmd-back',function(){
-                Osynapsy.history.back();
-            }).on('click','.save-history',function(){
-                Osynapsy.history.save();
-            }).on('click','a.open-modal',function(e){
-                e.preventDefault();
-                Osynapsy.modal.window(
-                    this.getAttribute('title'), 
-                    this.classList.contains('.postdata') ? [this.getAttribute('href'), this.closest('form')] : this.getAttribute('href'),
-                    this.getAttribute('modal-width'),
-                    this.getAttribute('modal-height')                        
-                );                
-            }).on('keyup', '.typing-execute', function(){
-               Osynapsy.typingEvent(this);
-            }).on('click change', '.dispatch-event', function(ev){
-                var eventClass = 'dispatch-event-' + ev.type;
-                if ($(this).hasClass(eventClass)) {
-                    Osynapsy.event.dispatch(this, event.type.charAt(0).toUpperCase() + event.type.slice(1));
-                }
-            });
-            FormController.fire('init');
-        }
+    pub.init = function()
+    {
+        Osynapsy.setParentModalTitle();
+        $('body').on('change','.change-execute, .onchange-execute', function(){
+            Osynapsy.action.execute(this);
+        }).on('click','.cmd-execute, .click-execute, .onclick-execute',function(event) {
+            //event.stopPropagation();
+            Osynapsy.action.execute(this);
+        }).on('keydown','.onenter-execute',function(event){
+            event.stopPropagation();
+            switch (event.keyCode) {
+                case 13 : //Enter
+                case 9:
+                    Osynapsy.action.execute(this);
+                    return false;
+                break;
+            }
+        }).on('click','.cmd-back',function(){
+            Osynapsy.include('History.js', function() { Osynapsy.History.back(); });
+        }).on('click','.save-history', function(){
+            Osynapsy.include('History.js', function() { Osynapsy.History.save(); });
+        }).on('click','a.open-modal',function(e){
+            e.preventDefault();
+            Osynapsy.modal.window(
+                this.getAttribute('title'),
+                this.classList.contains('.postdata') ? [this.getAttribute('href'), this.closest('form')] : this.getAttribute('href'),
+                this.getAttribute('modal-width'),
+                this.getAttribute('modal-height')
+            );
+        }).on('keyup', '.typing-execute', function(){
+           Osynapsy.typingEvent(this);
+        }).on('click change', '.dispatch-event', function(ev){
+            var eventClass = 'dispatch-event-' + ev.type;
+            if ($(this).hasClass(eventClass)) {
+                Osynapsy.event.dispatch(this, event.type.charAt(0).toUpperCase() + event.type.slice(1));
+            }
+        });
+        Osynapsy.plugin.init();        
     };
 
     pub.post = function(url, values)
@@ -628,57 +582,21 @@ var Osynapsy = new (function(){
     };
 
     pub.include = function(uri, onload)
-    {        
-        if (document.getElementById(uri)) {            
+    {
+        if (document.getElementById(uri)) {
             return onload();
-        }        
+        }
         let rootOsynapsyJs = document.getElementById('osynapsyjs').src.split('/');
-        rootOsynapsyJs[rootOsynapsyJs.length - 1] = uri;        
+        rootOsynapsyJs[rootOsynapsyJs.length - 1] = uri;
         document.body.appendChild(this.createElement('script', {
             'id' : uri,
-            'src' : rootOsynapsyJs.join('/'), 
+            'src' : rootOsynapsyJs.join('/'),
             'onload' : onload
         }));
     };
-    
-    return pub;
-});
 
-var FormController =
-{
-    repo :
+    pub.observe = function(target, fnc)
     {
-        event : { init : {} },
-        componentInit : {}
-    },    
-    back : function()
-    {
-        Osynapsy.history.back();
-    },
-    fire : function(evt)
-    {
-        if (evt in this.repo['event']){
-            for (var i in this.repo['event'][evt] ){
-                try{
-                    this.repo['event'][evt][i]();
-                } catch(err) {
-                    console.log(err);
-                }
-            }
-        }
-    },
-    execute  : function(object)
-    {
-        Osynapsy.action.execute(object);
-    },
-    execCode : function(code)
-    {
-        if (Osynapsy.action.source) {
-            var self = Osynapsy.action.source;
-        }
-        eval(code.replace(/(\r\n|\n|\r)/gm,""));
-    },
-    observe : function(target, fnc){
         var observer = new MutationObserver(fnc);
         if (!(target instanceof Array)) {
             target = [target];
@@ -686,19 +604,42 @@ var FormController =
         for (var i in target) {
             observer.observe(target[i], {attributes: true});
         }
-    },
-    register : function(evt,lbl,fnc)
-    {
-        this.repo['event'][evt][lbl] = fnc;
-    },
-    setValue : function(k,v)
-    {
-        if ($('#'+k).length > 0){
-            $('#'+k).val(v);
-        }
-    }
-};
+    };
 
-document.addEventListener("DOMContentLoaded", function() {
-    Osynapsy.page.init();
+    pub.execCode = function(code)
+    {
+        if (Osynapsy.action.source) {
+            var self = Osynapsy.action.source;
+        }
+        eval(code.replace(/(\r\n|\n|\r)/gm,""));
+    };
+
+    pub.plugin = {
+        repo : {},
+        register : function(name, oninit)
+        {
+            this.repo[name] = oninit;
+        },
+        init : function()
+        {
+            for (let pluginId in this.repo) {
+                try {
+                    this.repo[pluginId]();
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        }
+    };
+    
+    pub.on = function(eventId, listener)
+    {
+        document.addEventListener(eventId, listener);
+    };
+    
+    return pub;
+});
+
+Osynapsy.on("DOMContentLoaded", function() {
+    Osynapsy.init();
 });

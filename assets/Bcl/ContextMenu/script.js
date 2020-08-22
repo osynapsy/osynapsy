@@ -19,7 +19,7 @@ BclContextMenu =
         
         $('.BclContextMenu').each(function(){
             $(this).on("click", "a", function() {
-                FormController.exec(
+                Osynapsy.action.exec(
                     $(this).data('action'), 
                     'actionParameter=' + $(this).closest('.BclContextMenu').data('action-param')
                 );
@@ -29,8 +29,8 @@ BclContextMenu =
     }
 }
 
-if (window.FormController){    
-    FormController.register('init','BclContextMenu_Init',function(){
+if (window.Osynapsy){    
+    Osynapsy.plugin.register('init','BclContextMenu_Init',function(){
         BclContextMenu.init();
     });
 }

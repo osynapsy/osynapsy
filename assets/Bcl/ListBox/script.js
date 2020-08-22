@@ -54,8 +54,8 @@ olistbox = {
     observer : null
 }
 
-if (window.FormController) {
-    FormController.register('init','olistbox.init',function(){
+if (window.Osynapsy) {
+    Osynapsy.plugin.register('olistbox',function(){
         olistbox.init(); 
     });
 }

@@ -26,8 +26,8 @@ Bcl4NavBar =
     }
 };
 
-if (window.FormController) {
-    FormController.register('init','osy-bcl4-navbar',function(){
+if (window.Osynapsy) {
+    Osynapsy.plugin.register('Bcl4NavBar',function(){
         Bcl4NavBar.init();
     });
 }

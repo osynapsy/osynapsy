@@ -65,8 +65,8 @@ BclTags = {
     }
 }
 
-if (window.FormController){    
-    FormController.register('init','BclTags',function(){
+if (window.Osynapsy){    
+    Osynapsy.plugin.register('BclTags',function(){
         BclTags.init();
     });
 }

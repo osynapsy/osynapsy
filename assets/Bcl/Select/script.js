@@ -1,11 +1,5 @@
-OclSelect = {
-    init : function() {
+if (window.Osynapsy) {
+    Osynapsy.plugin.register('BclSelect', function(){
         $('.osy-select').selectpicker();
-    }
-}
-
-if (window.FormController) {
-    FormController.register('init','select-init',function(){
-        OclSelect.init();
     });
 }

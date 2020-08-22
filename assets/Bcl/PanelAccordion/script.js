@@ -19,8 +19,8 @@ BclPanelAccordion =
     }
 };
 
-if (window.FormController) {
-    FormController.register('init','osy-accordion-init',function(){
+if (window.Osynapsy) {
+    Osynapsy.plugin.register('BclPanelAccordion',function(){
         BclPanelAccordion.init();
     });
 }

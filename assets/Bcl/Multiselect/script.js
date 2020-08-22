@@ -1,11 +1,5 @@
-OclMultiselect = {
-    init : function() {
+if (window.Osynapsy) {
+    Osynapsy.plugin.register('BclMultiselect', function(){
         $('.osy-multiselect').multiselect();
-    }
-}
-
-if (window.FormController) {
-    FormController.register('init','multiselect-init',function(){
-        OclMultiselect.init();
     });
 }

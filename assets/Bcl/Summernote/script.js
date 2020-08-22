@@ -18,7 +18,7 @@ BclSummernote =
                     onInit : function(e) {
                         var code = $(self).text().replace(/<\?/g,'&lt;?').replace(/\?>/g,'?&gt;');
                         $(self).summernote('reset');
-                        $(self).summernote('code', code);                        
+                        $(self).summernote('code', code);
                     },
                     onImageUpload: function(files, editor, welEditable){
                         BclSummernote.upload(files[0], editor, welEditable);
@@ -48,7 +48,7 @@ BclSummernote =
                     },
                     500
                 );
-                
+
             }
         });
     },
@@ -58,5 +58,3 @@ BclSummernote =
 $(document).ready(function() {
     BclSummernote.init();
 });
-
-

@@ -6,7 +6,7 @@ BclDataGrid =
             if (!$(this).data('url-detail')) {
                 return;
             }
-            FormController.saveHistory();
+            Osynapsy.Histroy.save();
             window.location = $(this).data('url-detail');            
         }).on('click','.bcl-datagrid-th-order-by',function(){
             if (!$(this).data('idx')) {
@@ -33,8 +33,8 @@ BclDataGrid =
     }
 };
 
-if (window.FormController){    
-    FormController.register('init','BclDataGrid_Init',function(){
+if (window.Osynapsy){    
+    Osynapsy.plugin.register('BclDataGrid',function(){
         BclDataGrid.init();
     });
 }

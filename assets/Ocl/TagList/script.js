@@ -84,8 +84,8 @@ OclTagList = {
     }
 }
 
-if (window.FormController) {
-    FormController.register('init','OclTagList',function(){
+if (window.Osynapsy) {
+    Osynapsy.plugin.register('OclTagList',function(){
         OclTagList.init();
     });
 }

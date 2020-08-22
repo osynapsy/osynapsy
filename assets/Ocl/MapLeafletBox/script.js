@@ -377,8 +377,8 @@ OclMapLeafletBox =
     }
 }
 
-if (window.FormController){    
-    FormController.register('init','OclMapLeafletBox',function(){
+if (window.Osynapsy){    
+    Osynapsy.plugin.register('OclMapLeafletBox',function(){
         OclMapLeafletBox.init();
     });
 }
