@@ -1,4 +1,4 @@
-var Osynapsy = Osynapsy || {};
+var Osynapsy = Osynapsy || {'modal' : {}};
 
 class Modal
 {
@@ -76,24 +76,32 @@ class Modal
     }
 }
 
-Osynapsy.modalConfirm = function(title, message, actionConfirm)
+Osynapsy.modal.remove = function()
 {
+    $('.modal').remove();
+};
+
+Osynapsy.modal.confirm = function(title, message, actionConfirm)
+{
+    this.remove();
     let modalFactory = new Modal();
     let modal = modalFactory.create('amodal', title ? title : 'Conferma', message, actionConfirm);
     document.body.appendChild(modal);
     $('#amodal').modal({'keyboard' : true});
 };
 
-Osynapsy.modalAlert = function(title, message)
+Osynapsy.modal.alert = function(title, message)
 {
+    this.remove();
     let modalFactory = new Modal();
     let modal =  modalFactory.create('amodal', title ? title : 'Alert', message);
     document.body.appendChild(modal);
     $('#amodal').modal({'keyboard' : true});
 };
 
-Osynapsy.modalWindow = function(title, url, width = '640px', height = '480px')
+Osynapsy.modal.window = function(title, url, width = '640px', height = '480px')
 {
+    this.remove();
     let modalHeight = Osynapsy.isEmpty(height) ? ($(window).innerHeight() - 250) + 'px' : height;
     let modalWidth  = Osynapsy.isEmpty(width) ? null : width;
     let modalFactory = new Modal();
