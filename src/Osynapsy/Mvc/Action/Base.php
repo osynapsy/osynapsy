@@ -47,7 +47,7 @@ abstract class Base implements InterfaceAction
 
     public function getParameter($index)
     {
-        return $this->parameters[$index];
+        return array_key_exists($index, $this->parameters) ? $this->parameters[$index] : null;
     }
 
     public function getResponse()
