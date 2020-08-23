@@ -11,8 +11,8 @@ use Osynapsy\Db\Driver\InterfaceDbo;
  */
 abstract class Base implements InterfaceAction
 {
-    protected $controller;
-    protected $parameters;
+    private $controller;
+    private $parameters;
     protected $triggers = [];
 
     abstract public function execute();
@@ -25,12 +25,12 @@ abstract class Base implements InterfaceAction
         call_user_func($this->triggers[$eventId], $this);
     }
 
-    public function getApp()
+    public final function getApp()
     {
         return $this->controller->getApp();
     }
 
-    public function getController()
+    public final function getController()
     {
         return $this->controller;
     }
@@ -45,7 +45,7 @@ abstract class Base implements InterfaceAction
         return $this->getController()->getModel();
     }
 
-    public function getParameter($index)
+    public final function getParameter($index)
     {
         return array_key_exists($index, $this->parameters) ? $this->parameters[$index] : null;
     }
