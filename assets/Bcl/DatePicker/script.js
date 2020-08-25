@@ -41,7 +41,7 @@ BclDatePicker =
 };
 
 if (window.Osynapsy){
-    Osynapsy.register('BclDatePicker',function(){
+    Osynapsy.plugin.register('BclDatePicker',function(){
         BclDatePicker.init();
     });
 }
