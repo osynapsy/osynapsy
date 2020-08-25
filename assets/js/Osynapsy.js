@@ -11,43 +11,62 @@ var Osynapsy = new (function(){
         return element;
     };
 
-    pub.ajax = {
+    pub.ajax = 
+    {
         execute : function(options)
         {
             let request = new XMLHttpRequest();
-            if ('progress' in options) {
-                request.addEventListener("progress", options.progress);
+            if (!('headers' in options)) {
+                options['headers'] = {};
+            }            
+            if (!('type' in options)) {
+                options['type'] = 'get';
+            }
+            if (!('url' in options)) {
+                options['url'] = window.location;
+            }
+            if (!('data' in options)) {
+                options['data'] = null;
+            }
+            if ('uploadProgress' in options) {
+                if (request.upload) {
+                    request.upload.addEventListener("progress", options.uploadProgress, false);                    
+                } else {
+                    if (console.log) console.log('Borwser not support upload progress');
+                }
             }
             if ('success' in options) {
-                request.addEventListener("load",  options.success);
+                request.addEventListener("load",  function(event) {                    
+                    try {
+                        let data = event.target.responseText;
+                        switch(options.dataType) {
+                            case 'json':
+                                data = JSON.parse(event.target.responseText);
+                                break;                                                            
+                        }                        
+                        options.success(data);
+                    } catch (err) {
+                        options.error(event.target, 'error', event.target.responseText);
+                    }
+                });
+            }
+            if ('progress' in options) {
+                request.addEventListener("progress", options.progress);
             }
             if ('error' in options) {
                 request.addEventListener("error", options.error);
             }
             if ('abort' in options) {
                 request.addEventListener("abort", options.abort);
-            }
-            request.open(
-                'method' in options ? options.method : 'get',
-                'url' in options ? options.url : window.location
-            );
-            if ('headers' in options) {
-                for (let header in options.headers) {
-                    request.setRequestHeader(header, options.headers[header]);
-                }
-            }
+            }            
+            request.open(options.type, options.url);                        
+            for (let header in options.headers) {
+                request.setRequestHeader(header, options.headers[header]);
+            }            
             if ('beforeSend' in options) {
                 options.beforeSend();
-            }
-            request.send('data' in options ? options.data : null);
-        },
-        get : function(url, options)
-        {
-            this.exec('get', url, options);
-        },
-        post : function(url, options)
-        {
-            this.exec('post', url, options);
+            }            
+            request.send(options['data']);
         }
     };
 
@@ -222,7 +241,7 @@ var Osynapsy = new (function(){
     {
         Osynapsy.setParentModalTitle();
         Osynapsy.include('Modal.js', function() { if(console) console.log('Modal module is loaded'); });
-        Osynapsy.include('Action.js', function() { if(console) console.log('Action module is loaded'); });
+        Osynapsy.include('ActionNew.js', function() { if(console) console.log('ActionNew module is loaded'); });
         $('body').on('change','.change-execute, .onchange-execute', function(){
             Osynapsy.action.execute(this);
         }).on('click','.cmd-execute, .click-execute, .onclick-execute',function(event) {
