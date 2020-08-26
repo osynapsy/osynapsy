@@ -6,19 +6,32 @@ var Osynapsy = new (function(){
     {
         let element = document.createElement(tag);
         for (let id in attributes) {
-            element[id] = attributes[id];
+            if (id === 'class') {
+                element.classList.add(attributes[id]);
+            } else {
+                element[id] = attributes[id];
+            }
         }
         return element;
     };
 
-    pub.ajax = 
+    pub.offset = function(element)
+    {
+        if (element === document) {
+            return {top : 0, left : 0, width: document.documentElement.scrollWidth, height : document.documentElement.scrollHeight};
+        }
+        let rect = element.getBoundingClientRect();
+        return {top: rect.top + window.scrollY, left: rect.left + window.scrollX, width : rect.width, height : rect.height};
+    };
+
+    pub.ajax =
     {
         execute : function(options)
         {
             let request = new XMLHttpRequest();
             if (!('headers' in options)) {
                 options['headers'] = {};
-            }            
+            }
             if (!('type' in options)) {
                 options['type'] = 'get';
             }
@@ -29,21 +42,17 @@ var Osynapsy = new (function(){
                 options['data'] = null;
             }
             if ('uploadProgress' in options) {
-                if (request.upload) {
-                    request.upload.addEventListener("progress", options.uploadProgress, false);                    
-                } else {
-                    if (console.log) console.log('Borwser not support upload progress');
-                }
+                request.upload.addEventListener("progress", options.uploadProgress, false);
             }
             if ('success' in options) {
-                request.addEventListener("load",  function(event) {                    
+                request.addEventListener("load",  function(event) {
                     try {
                         let data = event.target.responseText;
                         switch(options.dataType) {
                             case 'json':
                                 data = JSON.parse(event.target.responseText);
-                                break;                                                            
-                        }                        
+                                break;
+                        }
                         options.success(data);
                     } catch (err) {
                         options.error(event.target, 'error', event.target.responseText);
@@ -58,14 +67,14 @@ var Osynapsy = new (function(){
             }
             if ('abort' in options) {
                 request.addEventListener("abort", options.abort);
-            }            
-            request.open(options.type, options.url);                        
-            for (let header in options.headers) {
-                request.setRequestHeader(header, options.headers[header]);
-            }            
+            }
+            request.open(options.type, options.url);
+            Object.entries(options.headers).forEach(function(header) {
+                request.setRequestHeader(header[0], header[1]);
+            });
             if ('beforeSend' in options) {
                 options.beforeSend();
-            }            
+            }
             request.send(options['data']);
         }
     };
@@ -333,44 +342,46 @@ var Osynapsy = new (function(){
 
     pub.waitMask =
     {
-        build : function(message, parent, position)
+        build : function(message, parent)
         {
-            var mask = $('<div id="waitMask" class="wait"><div class="message">'+message+'</div></div>');
-            mask.width($(parent).width()).height($(parent).height());
-            if (position) {
-                mask.css('top', position.top+'px').css('left',position.left+'px');
-            }
-            $('body').append(mask);
+            let mask = Osynapsy.createElement('div', {'id' : 'waitMask', 'class' : 'wait'});
+            let position = Osynapsy.offset(parent);
+            mask.appendChild(Osynapsy.createElement('div', {'class' : 'message'})).innerHTML = message;
+            mask.style.width = position.width + 'px';
+            mask.style.height = position.height + 'px';
+            mask.style.top = position.top + 'px';
+            mask.style.left = position.left + 'px';
+            document.body.appendChild(mask);
         },
         show : function()
         {
-            var message = 'PLEASE WAIT <span class="fa fa-refresh fa-spin"></span>';
-            var position = {top : '0px', left : '0px'};
-            var parent = document;
-            if (arguments.length > 0) {
-                parent = arguments[0];
-                position = $(parent).offset();
-            }
-            this.build(message, parent, position);
+            let message = 'PLEASE WAIT <span class="fa fa-refresh fa-spin"></span>';
+            var parent = arguments.length > 0 ? arguments[0] : document;
+            this.build(message, parent);
         },
         showProgress : function()
         {
             var message = '';
             message += '<div class="progress_msg">Upload in progress .... <span id="progress_idx">0%</span> completed</div>';
             message += '<div class="progress"><div id="progress_bar" style="background-color: #ceddef; width: 0%;">&nbsp;</div></div>';
-            this.build(message, document, {top : '0px', left : '0px'})
+            this.build(message, document);
         },
         remove : function()
         {
-            $('#waitMask').remove();
-        },
-        uploadProgress : function(a) {
-            if ($('#progress_idx').length > 0){
-                var pos = a.loaded ? a.loaded : a.position;
-                var t = Math.round((pos / a.total) * 100);
-                $('#progress_bar').css('width',t +'%');
-                $('#progress_idx').text(t +'%');
+            let waitMaskElement = document.getElementById('waitMask');
+            if (waitMaskElement) {
+                waitMaskElement.parentElement.removeChild(waitMaskElement);
             }
+        },
+        uploadProgress : function(progress)
+        {
+            if (Osynapsy.isEmpty(document.getElementById('progress_idx'))) {
+                return;
+            }
+            let pos = progress.loaded ? progress.loaded : progress.position;
+            let tot = Math.round((pos / progress.total) * 100);
+            document.getElementById('progress_bar').style.width =  tot + '%';
+            document.getElementById('progress_idx').innerText = tot + '%';
         }
     };
 
@@ -409,9 +420,7 @@ var Osynapsy = new (function(){
 
     pub.execCode = function(code)
     {
-        if (Osynapsy.action.source) {
-            var self = Osynapsy.action.source;
-        }
+        let self = Osynapsy.action.source;
         eval(code.replace(/(\r\n|\n|\r)/gm,""));
     };
 
