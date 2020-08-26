@@ -15,8 +15,9 @@ class Modal
         button.innerHTML = label;
         if (remoteAction) {
             let action = remoteAction.replace(')','').split('(');
-            button.dataAction = action[0];
-            button.dataActionParameters = action[1] ? action[1] : null;
+            button.classList.add('click-execute');
+            button.dataset.action = action[0];
+            button.dataset.actionParameters = action[1] ? action[1] : null;
         }
         return button;
     }
