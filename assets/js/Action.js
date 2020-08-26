@@ -2,53 +2,60 @@ var Osynapsy = Osynapsy || {'action' : {}};
 
 Osynapsy.action =
 {
-    parametersFactory : function(object)
-    {
-        if (Osynapsy.isEmpty($(object).data('action-parameters'))) {
-            return false;
-        }
-        var values = [];
-        var params = String($(object).data('action-parameters')).split(',');
-        for (var i in params) {
-            var value = params[i];
-            if (value === 'this.value'){
-                value = $(object).val();
-            } else if (value.charAt(0) === '#' && $(value).length > 0) {
-                value = $(value).val();
-            }
-            values.push('actionParameters[]=' + encodeURIComponent(value));
-        }
-        return values.join('&');
-    },
     execute : function(object)
     {
-        var form = $(object).closest('form');
-        var action = $(object).data('action');
+        let form = object.closest('form');
+        let action = object.dataset.action;
         if (Osynapsy.isEmpty(action)) {
             alert('Attribute data-action don\'t set.');
             return;
         }
-        if (!Osynapsy.isEmpty($(object).data('confirm'))) {
-            if (!confirm($(object).data('confirm'))) {
+        if (!Osynapsy.isEmpty(object.dataset.confirm)) {
+            if (!confirm(object.dataset.confirm)) {
                 return;
             }
         }
-        this.source = object;
-        this.remoteExecute(action, form, this.parametersFactory(object));
+        this.remoteExecute(action, form, object);
     },
-    remoteExecute : function(action, form, actionParameters)
+    remoteCallParametersFactory : function(object)
     {
-        var extraData = Osynapsy.isEmpty(actionParameters) ? '' : actionParameters;
-        var actionUrl = Osynapsy.isEmpty($(form).attr('action')) ? window.location.href : $(form).attr('action');
-        $('.field-in-error').removeClass('field-in-error');
-        var callParameters = {
+        if (!Osynapsy.isObject(object) || Osynapsy.isEmpty(object.dataset) || Osynapsy.isEmpty(object.dataset.actionParameters)) {
+            return [];
+        }
+        var values = [];
+        var params = String(object.dataset.actionParameters).split(',');
+        for (var i in params) {
+            let valueId = params[i];
+            let value = '';
+            if (valueId === 'this.value'){
+                value = object.value;
+            } else if (valueId.charAt(0) === '#' && document.getElementById(valueId.substring(1))) {
+                value = document.getElementById(valueId.substring(1)).value;
+            }
+            values.push(['actionParameters[]', value]);
+        }
+        return values;
+    },
+    remoteExecute : function(action, form, object)
+    {
+        this.source = object;
+        let actionUrl = this.getActionUrl(form);
+        let actionParameters = this.remoteCallParametersFactory(object);        
+        let formData = (Osynapsy.isEmpty(form) ? new FormData() : new FormData(form));
+        let fileInForm = this.isUpload(form);
+        actionParameters.forEach(function(value) {
+            formData.append(value[0], value[1]);
+        });
+        var requestParameters = {
             url  : actionUrl,
-            headers: {
-                'Osynapsy-Action': action,
-                'Accept': 'application/json'
-            },
+            data : formData,
+            headers: {'Osynapsy-Action': action, 'Accept': 'application/json'},
             type : 'post',
             dataType : 'json',
+            beforeSend : function() {
+                $('.field-in-error').removeClass('field-in-error');
+                fileInForm ? Osynapsy.waitMask.showProgress() : Osynapsy.waitMask.show();
+            },
             success : function(response) {
                 Osynapsy.waitMask.remove();
                 Osynapsy.action.dispatchServerResponse(response, this);
@@ -61,44 +68,20 @@ Osynapsy.action =
                 alert(xhr.responseText);
             }
         };
-        if (!this.checkForUpload()) {
-            var options = {
-                beforeSend : function() { Osynapsy.waitMask.show(); },
-                data : $(form).serialize()+'&'+extraData
-            };
-        } else {
-            var options  = {
-                beforeSend : function() { Osynapsy.waitMask.showProgress(); },
-                xhr : function(){  // Custom XMLHttpRequest
-                    var xhr = $.ajaxSettings.xhr();
-                    if(xhr.upload) { // Check if upload property exists
-                        xhr.upload.addEventListener('progress',Osynapsy.waitMask.uploadProgress, false); // For handling the progress of the upload
-                    }
-                    return xhr;
-                },
-                progress : Osynapsy.waitMask.uploadProgress,
-                //Se devo effettuare un upload personalizzo il metodo jquery $.ajax per fargli spedire il FormData
-                data :  new FormData($(form)[0]),
-                mimeType : "multipart/form-data",
-                contentType : false,
-                cache : false,
-                processData :false
-            };
+        if (fileInForm) {
+            requestParameters['uploadProgress'] = Osynapsy.waitMask.uploadProgress;
         }
-        $.extend(callParameters, options);
-        $.ajax(callParameters);
+        Osynapsy.ajax.execute(requestParameters);
     },
-    checkForUpload : function()
+    getActionUrl : function(form) {
+        if (Osynapsy.isEmpty(form) || Osynapsy.isEmpty(form.getAttribute('action'))){ 
+            return window.location.href;
+        } 
+        return form.getAttribute('action');
+    },
+    isUpload : function(form)
     {
-        var upload = false;
-        $('input[type=file]').each(function(){
-            //Carico il metodo per effettuare l'upload solo se c'è almeno un campo file pieno
-            if (!Osynapsy.isEmpty($(this).val())) {
-                upload = true;
-                return false ;
-            }
-        });
-        return upload;
+        return Osynapsy.isEmpty(form) ? false : (form.querySelectorAll("input[type='file']").length > 0);
     },
     dispatchServerResponse : function (response)
     {
@@ -143,7 +126,6 @@ Osynapsy.action =
     executeCommands : function(response)
     {
         $.each(response.command, function(idx, val){
-            console.log(val);
             if (val[0] in Osynapsy) {
                 Osynapsy[val[0]](val[1]);
             }
@@ -155,17 +137,6 @@ Osynapsy.action =
             return err.replace('<!--'+$(elm).attr('id')+'-->', '<strong>' + $(elm).closest('[data-label]').data('label') + '</strong>');
         }
         return err.replace('<!--'+$(elm).attr('id')+'-->', '<i>'+ $(elm).attr('id') +'</i>');
-        var par = elm.closest('.form-group');
-        if (par.hasClass('has-error')) {
-            return false;
-        }
-        par.addClass('has-error');
-        $('label',par).append(' <span class="error">'+ err +'</span>');
-        elm.change(function(){
-            var par = $(this).closest('.form-group');
-            $('span.error',par).remove();
-            par.removeClass('has-error');
-        });
     },
     source : null
 };

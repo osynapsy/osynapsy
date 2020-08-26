@@ -250,7 +250,7 @@ var Osynapsy = new (function(){
     {
         Osynapsy.setParentModalTitle();
         Osynapsy.include('Modal.js', function() { if(console) console.log('Modal module is loaded'); });
-        Osynapsy.include('ActionNew.js', function() { if(console) console.log('ActionNew module is loaded'); });
+        Osynapsy.include('Action.js', function() { if(console) console.log('Action module is loaded'); });
         $('body').on('change','.change-execute, .onchange-execute', function(){
             Osynapsy.action.execute(this);
         }).on('click','.cmd-execute, .click-execute, .onclick-execute',function(event) {
