@@ -17,7 +17,7 @@ var Osynapsy = new (function(){
 
     pub.offset = function(element)
     {
-        if (element === document) {
+        if (Osynapsy.isEmpty(element) || element === document) {
             return {top : 0, left : 0, width: document.documentElement.scrollWidth, height : document.documentElement.scrollHeight};
         }
         let rect = element.getBoundingClientRect();
@@ -55,7 +55,8 @@ var Osynapsy = new (function(){
                         }
                         options.success(data);
                     } catch (err) {
-                        options.error(event.target, 'error', event.target.responseText);
+
+                        options.error(event.target, 'error', err);
                     }
                 });
             }
