@@ -29,30 +29,38 @@ define('Osynapsy\Core\Driver\DBPDO_BOTH', 3);
 interface InterfaceDbo
 {
     public function __construct($connectionString);
-    
+
     public function begin();
-    
+
     public function commit();
-    
+
     public function delete($table, array $conditions);
-    
+
     public function execCommand($command, $parameters);
-    
+
     public function execMulti($command, $parameterList);
-    
+
     public function execQuery($query, $parameters = null, $fetchMethod = null);
-    
+
     public function execUnique($query, $parameters = null, $fetchMethod = 'NUM');
-    
+
+    public function exec($query, array $parameters = []);
+
+    public function execAssoc($query, array $parameters = []);
+
+    public function execOne($query, array $parameters = []);
+
+    public function execOneAssoc($query, array $parameters = []);
+
     public function getColumns();
-    
+
     public function getType();
-    
+
     public function insert($table, array $values);
-    
+
     public function replace($table, array $values, array $conditions);
-    
+
     public function rollback();
-    
+
     public function update($table, array $values, array $conditions);
 }
