@@ -20,10 +20,10 @@ use Osynapsy\Db\Driver\DbPdo;
  * @author Pietro Celeste <p.celeste@spinit.it>
  */
 class DbFactory
-{    
+{
     private $connectionPool = [];
     private $connectionIndex = [];
-    
+
     /**
      * get a db connection and return
      *
@@ -35,7 +35,7 @@ class DbFactory
     {
         return array_key_exists($key, $this->connectionPool) ? $this->connectionPool[$key] : false;
     }
-    
+
     /**
      * Exec a db connection and return
      *
@@ -57,14 +57,9 @@ class DbFactory
                 $databaseConnection = new DbPdo($connectionString);
                 break;
         }
-        
-        //Exec connection
-        //$res = $databaseConnection->connect();
-        
         $currentIndex = count($this->connectionPool);
         $this->connectionIndex[$connectionString] = $currentIndex;
         $this->connectionPool[$currentIndex] = $databaseConnection;
-        
         return $databaseConnection;
     }
 }
