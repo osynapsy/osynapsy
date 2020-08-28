@@ -62,10 +62,12 @@ Osynapsy.action =
             },
             error: function(xhr, status, error) {
                 Osynapsy.waitMask.remove();
-                console.log(status);
-                console.log(error);
-                console.log(xhr);
-                alert(xhr.responseText);
+                if (console) {
+                    console.log(status);
+                    console.log(error);
+                    console.log(xhr.responseText);
+                }
+                alert(error);
             }
         };
         if (fileInForm) {
