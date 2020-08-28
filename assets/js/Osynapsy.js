@@ -45,7 +45,7 @@ var Osynapsy = new (function(){
                 request.upload.addEventListener("progress", options.uploadProgress, false);
             }
             if ('success' in options) {
-                request.addEventListener("load",  function(event) {
+                request.addEventListener("load",  function(event) {                    
                     try {
                         let data = event.target.responseText;
                         switch(options.dataType) {
@@ -54,10 +54,9 @@ var Osynapsy = new (function(){
                                 break;
                         }
                         options.success(data);
-                    } catch (err) {
-
-                        options.error(event.target, 'error', err);
-                    }
+                    } catch (err) {                        
+                        options.error(event.target, 'error', err.message);
+                    }                    
                 });
             }
             if ('progress' in options) {
