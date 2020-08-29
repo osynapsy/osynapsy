@@ -6,7 +6,7 @@ BclDataGrid =
             if (!$(this).data('url-detail')) {
                 return;
             }
-            Osynapsy.Histroy.save();
+            Osynapsy.History.save();
             window.location = $(this).data('url-detail');            
         }).on('click','.bcl-datagrid-th-order-by',function(){
             if (!$(this).data('idx')) {
