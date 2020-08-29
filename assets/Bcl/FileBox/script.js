@@ -2,7 +2,7 @@ BclFileBox =
 {    
     init : function()
     {                
-        Osynapsy.element('body').on('change', "input[type='file']", function(event) {
+        Osynapsy.element('body').on('change', ".btn-file input[type='file']", function(event) {
             self = event.target;
             self.closest('.input-group').querySelector("input[type='text']").value = self.files[0].name;            
         });
