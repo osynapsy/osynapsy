@@ -6,11 +6,7 @@
 Bcl4NavBar = 
 {
     init : function()
-    {
-        /*$('.osy-bcl4-navbar').on('click','.dropdown-item-submenu',function(){
-            $(this).offset();
-            $(this).next().toggleClass('.d-none').style;
-        });*/
+    {        
         $('.dropdown-menu a.dropdown-toggle').on('click', function(e) {
             if (!$(this).next().hasClass('show')) {
                 $(this).parents('.dropdown-menu').first().find('.show').removeClass("show");
