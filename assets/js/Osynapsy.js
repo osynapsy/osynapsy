@@ -45,7 +45,7 @@ var Osynapsy = new (function(){
                 request.upload.addEventListener("progress", options.uploadProgress, false);
             }
             if ('success' in options) {
-                request.addEventListener("load",  function(event) {                    
+                request.addEventListener("load",  function(event) {
                     try {
                         let data = event.target.responseText;
                         switch(options.dataType) {
@@ -54,9 +54,9 @@ var Osynapsy = new (function(){
                                 break;
                         }
                         options.success(data);
-                    } catch (err) {                        
+                    } catch (err) {
                         options.error(event.target, 'error', err.message);
-                    }                    
+                    }
                 });
             }
             if ('progress' in options) {
@@ -134,6 +134,32 @@ var Osynapsy = new (function(){
                 alert(error);
             });
         }
+    };
+
+    pub.element = function(selector)
+    {
+        let elements = Osynapsy.isObject(selector) ? [selector] : document.querySelectorAll(selector);
+        elements.offset = function()
+        {
+            let self = this;
+            let rect = self[0].getBoundingClientRect();
+            return {top: rect.top + window.scrollY, left: rect.left + window.scrollX, width : rect.width, height : rect.height};
+        };
+        elements.on = function(event, filter, rawcallback)
+        {
+            elements.forEach(function(element) {
+                let callback = Osynapsy.isEmpty(filter) ? rawcallback : function(event) {
+                    if (Array.from(element.querySelectorAll(filter)).includes(event.target)) {
+                        rawcallback.apply(event.target, [event]);
+                    }
+                };
+                event.trim().split(' ').forEach(function (evt) {
+                    element.addEventListener(evt, callback);
+                });
+            });
+            return elements;
+        };
+        return elements;
     };
 
     pub.hashCode = function(string)
@@ -253,8 +279,7 @@ var Osynapsy = new (function(){
         Osynapsy.include('Action.js', function() { if(console) console.log('Action module is loaded'); });
         $('body').on('change','.change-execute, .onchange-execute', function(){
             Osynapsy.action.execute(this);
-        }).on('click','.cmd-execute, .click-execute, .onclick-execute',function(event) {
-            //event.stopPropagation();
+        }).on('click','.cmd-execute, .click-execute, .onclick-execute',function() {
             Osynapsy.action.execute(this);
         }).on('keydown','.onenter-execute',function(event){
             event.stopPropagation();
@@ -265,8 +290,6 @@ var Osynapsy = new (function(){
                     return false;
                 break;
             }
-        }).on('click','.cmd-back',function(){
-            Osynapsy.include('History.js', function() { Osynapsy.History.back(); });
         }).on('click','.save-history', function(){
             Osynapsy.include('History.js', function() { Osynapsy.History.save(); });
         }).on('click','a.open-modal',function(e){
@@ -277,15 +300,18 @@ var Osynapsy = new (function(){
                 this.getAttribute('modal-width'),
                 this.getAttribute('modal-height')
             );
+        });
+        Osynapsy.plugin.init();
+        Osynapsy.element('body').on('click', '.cmd-back', function() {
+            Osynapsy.include('History.js', function() { Osynapsy.History.back(); });
         }).on('keyup', '.typing-execute', function(){
            Osynapsy.typingEvent(this);
         }).on('click change', '.dispatch-event', function(ev){
-            var eventClass = 'dispatch-event-' + ev.type;
-            if ($(this).hasClass(eventClass)) {
+            let eventClass = 'dispatch-event-' + ev.type;
+            if (this.classList.contains(eventClass)) {
                 Osynapsy.event.dispatch(this, event.type.charAt(0).toUpperCase() + event.type.slice(1));
             }
         });
-        Osynapsy.plugin.init();
     };
 
     pub.post = function(url, values)
