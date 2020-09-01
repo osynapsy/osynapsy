@@ -101,20 +101,20 @@ var Osynapsy = new (function(){
     {
         dispatch : function(source, event)
         {
-            if (Osynapsy.isEmpty($(source).attr('id'))) {
+            if (Osynapsy.isEmpty(source.getAttribute('id'))) {
                 return;
             }
-            this.dispatchRemote($(source), event);
+            this.dispatchRemote(source, event);
         },
         dispatchRemote : function(object, event)
         {
             var actionUrl = window.location.href;
             var form = object.closest('form');
-            if (!Osynapsy.isEmpty(form[0].getAttribute('action'))) {
-                actionUrl =  form[0].getAttribute('action');
+            if (!Osynapsy.isEmpty(form.getAttribute('action'))) {
+                actionUrl = form.getAttribute('action');
             }
-            var formData = new FormData(form[0]);
-            formData.append('actionParameters[]', object[0].getAttribute('id') + event);
+            var formData = new FormData(form);
+            formData.append('actionParameters[]', object.getAttribute('id') + event);
             let response = fetch(actionUrl, {
                 method: 'post',
                 headers: {
@@ -250,7 +250,7 @@ var Osynapsy = new (function(){
             clearTimeout(pub.typingTimeout);
         }
         pub.typingTimeout = setTimeout(function(){
-            var code = $(obj).attr('ontyping');
+            var code = obj.getAttribute('ontyping');
             if (code) {
                 eval(code);
             }
@@ -279,11 +279,17 @@ var Osynapsy = new (function(){
     {
         Osynapsy.setParentModalTitle();
         Osynapsy.include('Modal.js', function() { if(console) console.log('Modal module is loaded'); });
-        Osynapsy.include('Action.js', function() { if(console) console.log('Action module is loaded'); });
-        $('body').on('change','.change-execute, .onchange-execute', function(){
-            Osynapsy.action.execute(this);
+        Osynapsy.include('Action.js', function() { if(console) console.log('Action module is loaded'); });        
+        Osynapsy.element('body').on('click','.save-history', function(){
+            Osynapsy.include('History.js', function() { Osynapsy.History.save(); });
         }).on('click','.cmd-execute, .click-execute, .onclick-execute',function() {
             Osynapsy.action.execute(this);
+        }).on('click', '.cmd-back', function() {
+            Osynapsy.include('History.js', function() { Osynapsy.History.back(); });
+        }).on('change','.change-execute, .onchange-execute', function(){
+            Osynapsy.action.execute(this);
+        }).on('keyup', '.typing-execute', function(){
+           Osynapsy.typingEvent(this);
         }).on('keydown','.onenter-execute',function(event){
             event.stopPropagation();
             switch (event.keyCode) {
@@ -293,22 +299,12 @@ var Osynapsy = new (function(){
                     return false;
                 break;
             }
-        }).on('click','.save-history', function(){
-            Osynapsy.include('History.js', function() { Osynapsy.History.save(); });
-        });
-        Osynapsy.plugin.init();
-        Osynapsy.element('body').on('click', '.cmd-back', function() {
-            Osynapsy.include('History.js', function() { Osynapsy.History.back(); });
-        }).on('keyup', '.typing-execute', function(){
-           Osynapsy.typingEvent(this);
         }).on('click change', '.dispatch-event', function(ev){
             let eventClass = 'dispatch-event-' + ev.type;
             if (this.classList.contains(eventClass)) {
                 Osynapsy.event.dispatch(this, event.type.charAt(0).toUpperCase() + event.type.slice(1));
             }
-        });
-        Osynapsy.element('body').on('click', '.open-modal', function(e) {
-            console.log(this, e);
+        }).on('click', '.open-modal', function(e) {
             e.preventDefault();
             Osynapsy.modal.window(
                 this.getAttribute('title'),
@@ -317,6 +313,7 @@ var Osynapsy = new (function(){
                 this.getAttribute('modal-height')
             );
         });
+        Osynapsy.plugin.init();
     };
 
     pub.post = function(url, values)
@@ -418,10 +415,9 @@ var Osynapsy = new (function(){
 
     pub.setParentModalTitle = function()
     {
-        if (!window.frameElement) {
-            return;
-        }
-        parent.$('.modal-title', parent.$('#amodal')).html(document.title);
+        if (window.frameElement) {
+            parent.document.getElementById('amodal').querySelector('.modal-title').innerHTML = document.title;            
+        }        
     };
 
     pub.include = function(uri, onload)
