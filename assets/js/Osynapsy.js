@@ -146,15 +146,18 @@ var Osynapsy = new (function(){
             return {top: rect.top + window.scrollY, left: rect.left + window.scrollX, width : rect.width, height : rect.height};
         };
         elements.on = function(event, filter, rawcallback)
-        {
-            elements.forEach(function(element) {
+        {            
+            elements.forEach(function(element) {                
                 let callback = Osynapsy.isEmpty(filter) ? rawcallback : function(event) {
-                    if (Array.from(element.querySelectorAll(filter)).includes(event.target)) {
-                        rawcallback.apply(event.target, [event]);
-                    }
-                };
+                    let filteredElements = Array.from(element.querySelectorAll(filter));
+                    let elementIncluded = filteredElements.includes(event.target);
+                    let parentElementIncluded = filteredElements.includes(event.target.closest(filter));
+                    if (elementIncluded || parentElementIncluded) {       
+                        rawcallback.apply(event.target.closest(filter), [event]);
+                    }                    
+                };         
                 event.trim().split(' ').forEach(function (evt) {
-                    element.addEventListener(evt, callback);
+                    element.addEventListener(evt, callback);              
                 });
             });
             return elements;
@@ -292,14 +295,6 @@ var Osynapsy = new (function(){
             }
         }).on('click','.save-history', function(){
             Osynapsy.include('History.js', function() { Osynapsy.History.save(); });
-        }).on('click','a.open-modal',function(e){
-            e.preventDefault();
-            Osynapsy.modal.window(
-                this.getAttribute('title'),
-                this.classList.contains('.postdata') ? [this.getAttribute('href'), this.closest('form')] : this.getAttribute('href'),
-                this.getAttribute('modal-width'),
-                this.getAttribute('modal-height')
-            );
         });
         Osynapsy.plugin.init();
         Osynapsy.element('body').on('click', '.cmd-back', function() {
@@ -311,6 +306,16 @@ var Osynapsy = new (function(){
             if (this.classList.contains(eventClass)) {
                 Osynapsy.event.dispatch(this, event.type.charAt(0).toUpperCase() + event.type.slice(1));
             }
+        });
+        Osynapsy.element('body').on('click', '.open-modal', function(e) {
+            console.log(this, e);
+            e.preventDefault();
+            Osynapsy.modal.window(
+                this.getAttribute('title'),
+                this.classList.contains('.postdata') ? [this.getAttribute('href'), this.closest('form')] : this.getAttribute('href'),
+                this.getAttribute('modal-width'),
+                this.getAttribute('modal-height')
+            );
         });
     };
 
