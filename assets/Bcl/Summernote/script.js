@@ -29,7 +29,7 @@ BclSummernote =
             });
         });
         $(".summernote").on("summernote.enter", function(we, e) {
-            $(this).summernote("pasteHTML", "<br><br>");
+            $(this).summernote("pasteHTML", "<br>");
             e.preventDefault();
         });
     },
