@@ -1,6 +1,6 @@
 var Osynapsy = new (function(){
 
-    var pub = {modal : {}, action : {}};
+    var pub = {modal : {}, action : {}, worker : {}, notification : {}};
 
     pub.createElement = function (tag, attributes)
     {
@@ -200,50 +200,7 @@ var Osynapsy = new (function(){
     {
         return v instanceof Object;
     };
-
-    pub.notification = function(message)
-    {
-        // Controlliamo se il browser supporta le notifiche
-        if (!("Notification" in window)) {
-            console.log("Notification API isn't supported from this browser");
-            return;
-        }
-        switch(Notification.permission) {
-            case 'denied':
-                return;
-            case 'granted':
-                var notification = new Notification(message);
-                return;
-            default:
-                // Se l'utente non ha accettato le notifiche, chiediamo il permesso
-                Notification.requestPermission(function (permission) {
-                    // Se è tutto a posto, creiamo una notifica
-                    if (permission === "granted") {
-                        Osynapsy.notification(message);
-                    }
-                });
-                break;
-        }
-    };
-
-    pub.addWorker = function(name, url)
-    {
-        if (!window.Worker) {
-            console.log('questo browser non supporta i worker');
-        }
-        var myWorker = new SharedWorker(url);
-
-        // Get the proxy worker port for communication
-        var myWorkerPort = myWorker.port;
-        // Send a "hello" message to the worker
-        myWorkerPort.postMessage( {type: 'hello', says: 'Hello worker !'} );
-        myWorkerPort.onmessage = function( event )
-        {
-            var message = event.data;
-            Osynapsy.notification(message.says);
-        };
-    };
-
+    
     pub.typingEvent = function(obj)
     {
         if (pub.typingTimeout !== undefined) {
@@ -467,24 +424,11 @@ var Osynapsy = new (function(){
                 }
             }
         }
-    };
-
-    pub.on = function (event, elem, callback, capture)
-    {
-        if (typeof (elem) === 'function') {
-            capture = callback;
-            callback = elem;
-            elem = window;
-        }
-        capture = capture ? true : false;
-        elem = typeof elem === 'string' ? document.querySelector(elem) : elem;
-        if (!elem) return;
-        elem.addEventListener(event, callback, capture);
-    };
+    };   
 
     return pub;
 });
 
-Osynapsy.on("DOMContentLoaded", function() {
+Osynapsy.element(document).on("DOMContentLoaded", null, function() {    
     Osynapsy.init();
 });

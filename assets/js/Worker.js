@@ -1,3 +1,23 @@
+var Osynapsy = Osynapsy || {'worker' : {}};
+
+Osynapsy.worker.add = function(name, url)
+{
+    if (!window.Worker) {
+        console.log('questo browser non supporta i worker');
+    }
+    var myWorker = new SharedWorker(url);
+
+    // Get the proxy worker port for communication
+    var myWorkerPort = myWorker.port;
+    // Send a "hello" message to the worker
+    myWorkerPort.postMessage( {type: 'hello', says: 'Hello worker !'} );
+    myWorkerPort.onmessage = function( event )
+    {
+        var message = event.data;
+        Osynapsy.notification(message.says);
+    };
+};
+
 onconnect = function(event)
 {
     var workerPort = event.ports[0];
@@ -34,5 +54,5 @@ onconnect = function(event)
             default:
                 break;
         }
-    }
-}
+    };
+};

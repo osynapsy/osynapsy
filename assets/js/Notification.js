@@ -1,3 +1,30 @@
+var Osynapsy = Osynapsy || {'notification' : {}};
+
+Osynapsy.notification = function(message)
+{
+    // Controlliamo se il browser supporta le notifiche
+    if (!("Notification" in window)) {
+        console.log("Notification API isn't supported from this browser");
+        return;
+    }
+    switch(Notification.permission) {
+        case 'denied':
+            return;
+        case 'granted':
+            var notification = new Notification(message);
+            return;
+        default:
+            // Se l'utente non ha accettato le notifiche, chiediamo il permesso
+            Notification.requestPermission(function (permission) {
+                // Se è tutto a posto, creiamo una notifica
+                if (permission === "granted") {
+                    Osynapsy.notification(message);
+                }
+            });
+            break;
+    }
+};
+
 ONotification = {
     init : function()
     {
