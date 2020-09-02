@@ -15,15 +15,6 @@ var Osynapsy = new (function(){
         return element;
     };
 
-    pub.offset = function(element)
-    {
-        if (Osynapsy.isEmpty(element) || element === document) {
-            return {top : 0, left : 0, width: document.documentElement.scrollWidth, height : document.documentElement.scrollHeight};
-        }
-        let rect = element.getBoundingClientRect();
-        return {top: rect.top + window.scrollY, left: rect.left + window.scrollX, width : rect.width, height : rect.height};
-    };
-
     pub.ajax =
     {
         execute : function(options)
@@ -139,12 +130,17 @@ var Osynapsy = new (function(){
     pub.element = function(selector)
     {
         let elements = Osynapsy.isObject(selector) ? [selector] : document.querySelectorAll(selector);
+        
         elements.offset = function()
-        {
+        {            
             let self = this;
+            if (self[0] === document) {
+                return {top : 0, left : 0, width: document.documentElement.scrollWidth, height : document.documentElement.scrollHeight};
+            }
             let rect = self[0].getBoundingClientRect();
             return {top: rect.top + window.scrollY, left: rect.left + window.scrollX, width : rect.width, height : rect.height};
         };
+        
         elements.on = function(event, filter, rawcallback)
         {            
             elements.forEach(function(element) {                
@@ -330,7 +326,7 @@ var Osynapsy = new (function(){
         build : function(message, parent)
         {
             let mask = Osynapsy.createElement('div', {'id' : 'waitMask', 'class' : 'wait'});
-            let position = Osynapsy.offset(parent);
+            let position = Osynapsy.element(parent).offset();
             mask.appendChild(Osynapsy.createElement('div', {'class' : 'message'})).innerHTML = message;
             mask.style.width = position.width + 'px';
             mask.style.height = position.height + 'px';
