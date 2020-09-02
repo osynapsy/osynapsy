@@ -24,22 +24,22 @@ Osynapsy.action =
         }
         var values = [];
         var params = String(object.dataset.actionParameters).split(',');
-        for (var i in params) {            
+        for (var i in params) {
             let value = params[i];
             if (value === 'this.value'){
                 value = object.value;
             } else if (value.charAt(0) === '#' && document.getElementById(value.substring(1))) {
-                value = document.getElementById(valueId.substring(1)).value;
+                value = document.getElementById(value.substring(1)).value;
             }
             values.push(['actionParameters[]', value]);
-        }        
+        }
         return values;
     },
     remoteExecute : function(action, form, object)
     {
         this.source = object;
         let actionUrl = this.getActionUrl(form);
-        let actionParameters = this.remoteCallParametersFactory(object);        
+        let actionParameters = this.remoteCallParametersFactory(object);
         let formData = (Osynapsy.isEmpty(form) ? new FormData() : new FormData(form));
         let fileInForm = this.isUpload(form);
         actionParameters.forEach(function(value) {
@@ -75,9 +75,9 @@ Osynapsy.action =
         Osynapsy.ajax.execute(requestParameters);
     },
     getActionUrl : function(form) {
-        if (Osynapsy.isEmpty(form) || Osynapsy.isEmpty(form.getAttribute('action'))){ 
+        if (Osynapsy.isEmpty(form) || Osynapsy.isEmpty(form.getAttribute('action'))){
             return window.location.href;
-        } 
+        }
         return form.getAttribute('action');
     },
     isUpload : function(form)
