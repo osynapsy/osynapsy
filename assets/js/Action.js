@@ -24,16 +24,15 @@ Osynapsy.action =
         }
         var values = [];
         var params = String(object.dataset.actionParameters).split(',');
-        for (var i in params) {
-            let valueId = params[i];
-            let value = '';
-            if (valueId === 'this.value'){
+        for (var i in params) {            
+            let value = params[i];
+            if (value === 'this.value'){
                 value = object.value;
-            } else if (valueId.charAt(0) === '#' && document.getElementById(valueId.substring(1))) {
+            } else if (value.charAt(0) === '#' && document.getElementById(value.substring(1))) {
                 value = document.getElementById(valueId.substring(1)).value;
             }
             values.push(['actionParameters[]', value]);
-        }
+        }        
         return values;
     },
     remoteExecute : function(action, form, object)
