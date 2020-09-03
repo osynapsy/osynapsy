@@ -22,18 +22,17 @@ Osynapsy.action =
         if (!Osynapsy.isObject(object) || Osynapsy.isEmpty(object.dataset) || Osynapsy.isEmpty(object.dataset.actionParameters)) {
             return [];
         }
-        var values = [];
-        var params = String(object.dataset.actionParameters).split(',');
-        for (var i in params) {
-            let value = params[i];
-            if (value === 'this.value'){
-                value = object.value;
-            } else if (value.charAt(0) === '#' && document.getElementById(value.substring(1))) {
-                value = document.getElementById(value.substring(1)).value;
+        let parameters = String(object.dataset.actionParameters).split(',');
+        let result = parameters.map(function(parameter) {
+            let firstCharOfParameter = parameter.charAt(0);
+            if (parameter === 'this.value') {
+                return object.value;
+            } else if (firstCharOfParameter === '#' && document.getElementById(parameter.substring(1))) {
+                return document.getElementById(parameter.substring(1)).value;
             }
-            values.push(['actionParameters[]', value]);
-        }
-        return values;
+            return parameter;
+        });
+        return result;
     },
     remoteExecute : function(action, form, object)
     {
@@ -42,9 +41,7 @@ Osynapsy.action =
         let actionParameters = this.remoteCallParametersFactory(object);
         let formData = (Osynapsy.isEmpty(form) ? new FormData() : new FormData(form));
         let fileInForm = this.isUpload(form);
-        actionParameters.forEach(function(value) {
-            formData.append(value[0], value[1]);
-        });
+        actionParameters.forEach(function(value) { formData.append('actionParameters[]', value); });
         var requestParameters = {
             url  : actionUrl,
             data : formData,
