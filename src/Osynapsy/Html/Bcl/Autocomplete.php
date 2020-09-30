@@ -24,7 +24,7 @@ class Autocomplete extends Component
         'decode' => ['sql' => null, 'parameters' => []],
         'search' => ['sql' => null, 'parameters' => []]
     ];
-    
+
     public function __construct($id, $db = null)
     {
         $this->requireJs('Bcl/Autocomplete/script.js');
@@ -32,10 +32,10 @@ class Autocomplete extends Component
         $this->db = $db;
         parent::__construct('div', $id);
     }
-    
+
     public function __build_extra__()
     {
-        if (filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_HTML_COMPONENTS') != $this->id) {            
+        if (filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_HTML_COMPONENTS') != $this->id) {
             $this->addInput();
             return;
         }
@@ -50,22 +50,22 @@ class Autocomplete extends Component
         }
         $this->addValueList();
     }
-    
+
     private function addInput()
     {
-        if (!empty($this->query['decode']['sql'])) {            
+        if (!empty($this->query['decode']['sql'])) {
             $_REQUEST[$this->id] = $this->db->execUnique(
                 $this->query['decode']['sql'],
                 $this->query['decode']['parameters'],
                 'NUM'
-            );            
+            );
         }
-        $this->add($this->buildAutocomplete())             
+        $this->add($this->buildAutocomplete())
              ->add(new HiddenBox('__'.$this->id));
     }
-    
+
     private function addValueList()
-    {        
+    {
         $valueList = $this->add(new Tag('div'));
         $valueList->att('id',$this->id.'_list');
         if (!empty($this->emptyMessage) && (empty($this->data) || !is_array($this->data))) {
@@ -77,8 +77,8 @@ class Autocomplete extends Component
             if (empty($val) || empty($val[0])) {
                 continue;
             }
-            switch (count($val)) {               
-                case 1:                
+            switch (count($val)) {
+                case 1:
                     $val[1] = $val[2] = $val[0];
                     break;
                 case 2:
@@ -90,10 +90,11 @@ class Autocomplete extends Component
             $valueList->add('<div class="row" data-value="'.$val[0].'" data-label="'.$val[1].'">'.$val[2].'</div>'.PHP_EOL);
         }
     }
-    
+
     protected function buildAutocomplete()
     {
         $autocomplete = new InputGroup($this->id, '', $this->ico);
+        $autocomplete->getTextBox()->onselect = 'event.stopPropagation();';
         return $autocomplete->setClass('osy-autocomplete');
     }
 
@@ -102,37 +103,37 @@ class Autocomplete extends Component
         $_REQUEST[$this->id] = $label;
         return $this;
     }
-    
+
     public function setEmptyMessage($msg)
     {
         $this->emptyMessage = $msg;
         return $this;
     }
-    
+
     public function setSelected($function)
     {
-        $this->onselected = $function;        
+        $this->onselected = $function;
         return $this;
     }
-    
+
     public function setUnSelected($function)
     {
-        $this->onunselected = $function;   
+        $this->onunselected = $function;
         return $this;
     }
-    
+
     public function setIco($ico)
     {
         $this->ico = $ico;
     }
-    
+
     public function setQuerySearch($query, $parameters)
     {
         $this->query['search']['sql'] = $query;
         $this->query['search']['parameters'] = $parameters;
         return $this;
     }
-    
+
     public function setQueryDecodeId($query, $parameters)
     {
         $this->query['decode']['sql'] = $query;
