@@ -8,7 +8,7 @@ BclSummernote =
                 BclSummernote.uploadPath = upath;
             }
             var self = this;
-            var vheight = Osynapsy.isEmpty($(this).data('height')) ? 300 : $(this).data('height');            
+            var vheight = Osynapsy.isEmpty($(this).data('height')) ? 300 : $(this).data('height');
             $(this).summernote({
                 callbacks: {
                     onkeyup: function(e) {
@@ -28,10 +28,15 @@ BclSummernote =
                 emptyPara: '<div><br /></div>'
             });
         });
+        /*
+         // Inserisce un br invece di un <p> quando si preme enter
+         // però non permette di inserire le liste ordinate
         $(".summernote").on("summernote.enter", function(we, e) {
             $(this).summernote("pasteHTML", "<br><br>");
             e.preventDefault();
         });
+
+         */
     },
     upload : function(file, editor, welEditable)
     {
@@ -57,7 +62,7 @@ BclSummernote =
         });
     },
     uploadPath : ''
-}
+};
 
 $(document).ready(function() {
     BclSummernote.init();
