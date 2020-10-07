@@ -130,9 +130,9 @@ var Osynapsy = new (function(){
     pub.element = function(selector)
     {
         let elements = Osynapsy.isObject(selector) ? [selector] : document.querySelectorAll(selector);
-        
+
         elements.offset = function()
-        {            
+        {
             let self = this;
             if (self[0] === document) {
                 return {top : 0, left : 0, width: document.documentElement.scrollWidth, height : document.documentElement.scrollHeight};
@@ -140,20 +140,20 @@ var Osynapsy = new (function(){
             let rect = self[0].getBoundingClientRect();
             return {top: rect.top + window.scrollY, left: rect.left + window.scrollX, width : rect.width, height : rect.height};
         };
-        
+
         elements.on = function(event, filter, rawcallback)
-        {            
-            elements.forEach(function(element) {                
+        {
+            elements.forEach(function(element) {
                 let callback = Osynapsy.isEmpty(filter) ? rawcallback : function(event) {
                     let filteredElements = Array.from(element.querySelectorAll(filter));
                     let elementIncluded = filteredElements.includes(event.target);
                     let parentElementIncluded = filteredElements.includes(event.target.closest(filter));
-                    if (elementIncluded || parentElementIncluded) {       
+                    if (elementIncluded || parentElementIncluded) {
                         rawcallback.apply(event.target.closest(filter), [event]);
-                    }                    
-                };         
+                    }
+                };
                 event.trim().split(' ').forEach(function (evt) {
-                    element.addEventListener(evt, callback);              
+                    element.addEventListener(evt, callback);
                 });
             });
             return elements;
@@ -196,7 +196,7 @@ var Osynapsy = new (function(){
     {
         return v instanceof Object;
     };
-    
+
     pub.typingEvent = function(obj)
     {
         if (pub.typingTimeout !== undefined) {
@@ -232,14 +232,16 @@ var Osynapsy = new (function(){
     {
         Osynapsy.setParentModalTitle();
         Osynapsy.include('Modal.js', function() { if(console) console.log('Modal module is loaded'); });
-        Osynapsy.include('Action.js', function() { if(console) console.log('Action module is loaded'); });        
+        Osynapsy.include('Action.js', function() { if(console) console.log('Action module is loaded'); });
         Osynapsy.element('body').on('click','.save-history', function(){
             Osynapsy.include('History.js', function() { Osynapsy.History.save(); });
         }).on('click','.cmd-execute, .click-execute, .onclick-execute',function() {
             Osynapsy.action.execute(this);
         }).on('click', '.cmd-back', function() {
             Osynapsy.include('History.js', function() { Osynapsy.History.back(); });
-        }).on('change','.change-execute, .onchange-execute', function(){
+        }).on('blur','.blur-execute', function(){
+            Osynapsy.action.execute(this);
+        }).on('change','.change-execute', function(){
             Osynapsy.action.execute(this);
         }).on('keyup', '.typing-execute', function(){
            Osynapsy.typingEvent(this);
@@ -369,8 +371,8 @@ var Osynapsy = new (function(){
     pub.setParentModalTitle = function()
     {
         if (window.frameElement) {
-            parent.document.getElementById('amodal').querySelector('.modal-title').innerHTML = document.title;            
-        }        
+            parent.document.getElementById('amodal').querySelector('.modal-title').innerHTML = document.title;
+        }
     };
 
     pub.include = function(uri, onload)
@@ -420,11 +422,11 @@ var Osynapsy = new (function(){
                 }
             }
         }
-    };   
+    };
 
     return pub;
 });
 
-Osynapsy.element(document).on("DOMContentLoaded", null, function() {    
+Osynapsy.element(document).on("DOMContentLoaded", null, function() {
     Osynapsy.init();
 });
