@@ -59,6 +59,7 @@ Osynapsy.action =
             error: function(xhr, status, error) {
                 Osynapsy.waitMask.remove();
                 if (console) {
+                    console.trace();
                     console.log(status);
                     console.log(error);
                     console.log(xhr.responseText);
