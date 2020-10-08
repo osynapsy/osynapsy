@@ -62,7 +62,7 @@ BclAutocomplete = {
             }
             $('#search_content').remove();
             //$('div.osy-textsearch-inline input[type=text]').val('');
-        })
+        });
     },
     openSearchContainer : function(obj)
     {
