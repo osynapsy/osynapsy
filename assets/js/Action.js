@@ -64,7 +64,7 @@ Osynapsy.action =
                     console.log(error);
                     console.log(xhr.responseText);
                 }
-                alert(error);
+                alert(xhr.responseText);
             }
         };
         if (fileInForm) {
@@ -124,11 +124,15 @@ Osynapsy.action =
     },
     executeCommands : function(response)
     {
-        $.each(response.command, function(idx, val){
-            if (val[0] in Osynapsy) {
-                Osynapsy[val[0]](val[1]);
-            }
-        });
+        try {
+            $.each(response.command, function(idx, val){
+                if (val[0] in Osynapsy) {
+                    Osynapsy[val[0]](val[1]);
+                }
+            });
+        } catch (error) {
+            alert(error);
+        }
     },
     showErrorOnLabel : function(elm, err)
     {
