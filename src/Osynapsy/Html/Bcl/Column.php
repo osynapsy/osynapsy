@@ -39,7 +39,7 @@ class Column extends Component
                 $this->setClass('col');
                 continue;
             }
-            $class = 'col-'.$size.'-'.$dimension['width'];
+            $class = $size === 'xs' ? 'col-'.$dimension['width'] : 'col-'.$size.'-'.$dimension['width'];
             if (!empty($dimension['offset'])) {
                 $class .= ' col-'.$size.'-offset-'.$dimension['offset'];
                 $class .= ' offset-'.$size.'-'.$dimension['offset'];
