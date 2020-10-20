@@ -18,7 +18,8 @@ class FormGroup extends Component
 {
     public $label;
     public $object;
-    private $labelClass;
+    protected $info;
+    protected $labelClass;
 
     public function __construct($object, $label = '&nbsp;', $class = 'form-group', $labelClass = 'font-weight-500 text-nowrap')
     {
@@ -35,6 +36,9 @@ class FormGroup extends Component
             $this->add($this->labelFactory());
         }
         $this->add($this->object);
+        if (!empty($this->info)) {
+            $this->add(sprintf('<div>%s</div>', $this->info));
+        }
     }
 
     protected function labelFactory()
@@ -53,5 +57,10 @@ class FormGroup extends Component
             $div->add($this->label[1]);
         }
         return $div;
+    }
+
+    public function setInfo($info)
+    {
+        $this->info = $info;
     }
 }
