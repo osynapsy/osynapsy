@@ -24,6 +24,8 @@ class DataGrid extends Component
     private $body;
     private $rowWidth = 12;
     private $rowMinimum = 0;
+    private $showPaginationPageDimension = true;
+    private $showPaginationPageInfo = true;
     private $totalFunction;
     protected $totals = [];
 
@@ -196,11 +198,18 @@ class DataGrid extends Component
         if (empty($this->pagination)) {
             return $row;
         }
-        $row->add(new Tag('div', null, 'col-sm-4 d-none d-sm-block col-lg-2'))
-            ->add($this->pagination->getPageDimensionsCombo());
-        $row->add(new Tag('div', null, 'col-sm-4 d-none d-md-block offset-lg-2 text-center'))
-             ->add('<label class="" style="margin-top: 30px;">'.$this->pagination->getInfo().'</label>');
-        $row->add(new Tag('div', null, 'col-sm-8 col-md-4 text-right'))
+        $paginationWidth = 12;
+        if ($this->showPaginationPageDimension) {
+            $row->add(new Tag('div', null, 'col-sm-4 d-none d-sm-block col-lg-2'))
+                ->add($this->pagination->getPageDimensionsCombo());
+            $paginationWidth -= 4;
+        }
+        if ($this->showPaginationPageInfo) {
+            $row->add(new Tag('div', null, 'col-sm-4 d-none d-md-block offset-lg-2 text-center'))
+                ->add('<label class="" style="margin-top: 30px;">'.$this->pagination->getInfo().'</label>');
+            $paginationWidth -= 4;
+        }
+        $row->add(new Tag('div', null, sprintf('col-sm-8 col-md-%s text-right', $paginationWidth)))
             ->add($this->pagination)
             ->setClass('mt-4')->setPosition('end');
         return $row;
@@ -323,7 +332,7 @@ class DataGrid extends Component
      * @param array $sqlParameters Parameters of sql query
      * @param integer $pageDimension Page dimension (in row)
      */
-    public function setPagination($db, $sqlQuery, $sqlParameters, $pageDimension = 10)
+    public function setPagination($db, $sqlQuery, $sqlParameters, $pageDimension = 10, $showPageDimension = true, $showPageInfo = true)
     {
         $this->pagination = new Pagination(
             $this->id.(strpos($this->id, '_') ? '_pagination' : 'Pagination'),
@@ -331,6 +340,8 @@ class DataGrid extends Component
         );
         $this->pagination->setSql($db, $sqlQuery, $sqlParameters);
         $this->pagination->setParentComponent($this->id);
+        $this->showPaginationPageDimension = $showPageDimension;
+        $this->showPaginationPageInfo = $showPageInfo;
         return $this->pagination;
     }
 
