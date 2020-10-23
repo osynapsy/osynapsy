@@ -68,7 +68,10 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         $actionInstance = $this->externalActions[$action];
         $actionInstance->setController($this);
         $actionInstance->setParameters($parameters);
-        $actionInstance->execute();
+        $message = $actionInstance->execute();
+        if (!empty($message)) {
+            $this->getResponse()->alertJs($message);
+        }
         $this->setState('afterAction'.ucfirst($action));
         return $this->getResponse();
     }
