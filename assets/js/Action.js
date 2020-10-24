@@ -80,7 +80,15 @@ Osynapsy.action =
     },
     isUpload : function(form)
     {
-        return Osynapsy.isEmpty(form) ? false : (form.querySelectorAll("input[type='file']").length > 0);
+        var uploadIsRequired = false;
+        if (!Osynapsy.isEmpty(form)) {
+            form.querySelectorAll('input[type=file]').forEach(function(inputFileElement){
+                if (!Osynapsy.isEmpty(inputFileElement.value)) {
+                    uploadIsRequired = true;
+                }
+            });
+        }
+        return uploadIsRequired;
     },
     dispatchServerResponse : function (response)
     {
