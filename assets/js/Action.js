@@ -40,7 +40,7 @@ Osynapsy.action =
         let actionUrl = this.getActionUrl(form);
         let actionParameters = this.remoteCallParametersFactory(object);
         let formData = (Osynapsy.isEmpty(form) ? new FormData() : new FormData(form));
-        let fileInForm = this.isUpload(form);
+        let fileUploadIsRequired = this.isUpload(form);
         actionParameters.forEach(function(value) { formData.append('actionParameters[]', value); });
         var requestParameters = {
             url  : actionUrl,
@@ -50,7 +50,13 @@ Osynapsy.action =
             dataType : 'json',
             beforeSend : function() {
                 $('.field-in-error').removeClass('field-in-error');
-                fileInForm ? Osynapsy.waitMask.showProgress() : Osynapsy.waitMask.show();
+                if (fileUploadIsRequired) {
+                    Osynapsy.waitMask.showProgress();
+                    return;
+                }
+                if (!object.classList.contains('no-mask')) {
+                    Osynapsy.waitMask.show();
+                }
             },
             success : function(response) {
                 Osynapsy.waitMask.remove();
@@ -67,7 +73,7 @@ Osynapsy.action =
                 alert(xhr.responseText);
             }
         };
-        if (fileInForm) {
+        if (fileUploadIsRequired) {
             requestParameters['uploadProgress'] = Osynapsy.waitMask.uploadProgress;
         }
         Osynapsy.ajax.execute(requestParameters);
