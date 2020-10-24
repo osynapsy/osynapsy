@@ -12,11 +12,8 @@ namespace Osynapsy\Html;
 
 class Tag
 {
-    //Attribute repo
     private $attributes = [];
-    //Content repo
     private $childs = [];
-
     public $ref = array();
     public $tagdep = 0;
     public $parent = null;
@@ -32,7 +29,7 @@ class Tag
     {
         $this->att(0, $tag);
         if (!empty($id)) {
-            $this->att('id', $id);
+            $this->att('id', str_replace(['[',']'], ['-',''], $id));
         }
         if (!empty($class)) {
             $this->att('class', $class);
