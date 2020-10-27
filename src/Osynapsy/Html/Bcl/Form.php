@@ -34,6 +34,7 @@ class Form extends Component
     protected $body;
     protected $foot;
     protected $footClass;
+    protected $footStyle;
     protected $footLeft;
     protected $footRight;
     protected $repo;
@@ -140,13 +141,14 @@ class Form extends Component
     public function fixCommandBar($class = 'fixed-bottom p-2 b-light')
     {
        $this->footClass = $class;
+       $this->footStyle = 'background-color: rgba(255,255,255,0.8); border-top: 1px solid #ddd;';
     }
 
     public function foot($obj, $right = false)
     {
         if (empty($this->foot)) {
             $this->foot = new Tag('div', null, trim('row mt-2 pt-2 '.$this->footClass));
-            $this->foot->style = 'background-color: rgba(255,255,255,0.8); border-top: 1px solid #ddd;';
+            $this->foot->style = $this->footStyle;
             $this->footLeft = $this->foot->add(new Tag('div', null, 'col-lg-6 col-xs-6 col-sm-4'));
             $this->footRight = $this->foot->add(new Tag('div', null, 'col-lg-6 col-xs-6 col-sm-8 text-right'));
         }
