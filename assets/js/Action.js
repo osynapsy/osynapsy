@@ -138,13 +138,16 @@ Osynapsy.action =
     },
     executeCommands : function(response)
     {
+        let command;
         try {
             $.each(response.command, function(idx, val){
-                if (val[0] in Osynapsy) {
-                    Osynapsy[val[0]](val[1]);
+                command = val;
+                if (command[0] in Osynapsy) {
+                    Osynapsy[command[0]](command[1]);
                 }
             });
         } catch (error) {
+            console.log(command);
             alert(error);
         }
     },
