@@ -291,7 +291,7 @@ var Osynapsy = new (function(){
     {
         var componentsIDs = Array.isArray(components) ? components : [components];
         var execOnSuccess = arguments.length > 1 ? arguments[1] : null;
-        if (componentsIDs.length === 1) {
+        if (componentsIDs.length === 1 && document.getElementById(componentsIDs[0])) {
             Osynapsy.waitMask.show(document.getElementById(componentsIDs[0]));
         }
         let form = document.querySelector('form');
@@ -310,7 +310,7 @@ var Osynapsy = new (function(){
             for (var i in componentsIDs) {
                 let componentId = componentsIDs[i];
                 let remoteComponent = remoteDoc.getElementById(componentId);
-                if (remoteComponent) {
+                if (remoteComponent && document.getElementById(componentId)) {
                     document.getElementById(componentId).replaceWith(remoteComponent);
                 }
             }
