@@ -49,7 +49,7 @@ abstract class BaseView
 
     public function addMeta($property ,$content)
     {
-        $meta = new \Osynapsy\Html\Tag\Tag('meta');
+        $meta = new \Osynapsy\Html\Tag('meta');
         $meta->att(['property' => $property, 'content' => $content]);
         $this->getController()->getResponse()->addContent($meta, 'meta');
     }
