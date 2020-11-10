@@ -69,6 +69,14 @@ class Assertion
         return true;
     }
 
+    public static function isValidEmailAddress($value, $message)
+    {
+        if (!filter_var($value, \FILTER_VALIDATE_EMAIL)) {
+            self::raiseException($message);
+        }
+        return true;
+    }
+
     public static function greaterThan($value, $limit, $message)
     {
         if ($value <= $limit) {
