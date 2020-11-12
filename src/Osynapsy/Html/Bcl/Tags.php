@@ -44,10 +44,8 @@ class Tags extends Component
             $this->add($this->autocomplete);
         }
         if (!empty($this->modal)) {
-            $buttonAdd = $this->add(new Button('btn'.$this->id, 'button', 'btn-info btn-xs'));
-            $buttonAdd->att('data-toggle','modal')
-                      ->att('data-target','#modal'.$this->id)
-                      ->add('<span class="fa fa-plus"></span>');
+            $buttonAdd = $this->add(new Button('btn'.$this->id, 'button', 'btn-info btn-xs', '<span class="fa fa-plus"></span>'));
+            $buttonAdd->att('data-toggle','modal')->att('data-target','#modal'.$this->id);
         }
         if (!empty($this->dropdown)) {
             $this->add($this->dropdown);
