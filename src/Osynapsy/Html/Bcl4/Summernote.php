@@ -19,13 +19,18 @@ class Summernote extends TextArea
     {
         parent::__construct($name);
         $this->att('class','summernote');
-        $this->requireCss('Lib/summernote-0.8.18/summernote-bs4.css');
-        $this->requireJs('Lib/summernote-0.8.18/summernote-bs4.js');
-        $this->requireJs('Bcl/Summernote/script.js');
+        self::appendRequiredFileToPage();
     }
 
     public function setHeight(int $heightInPixel)
     {
         $this->att('data-height', $heightInPixel);
+    }
+
+    public static function appendRequiredFileToPage()
+    {
+        self::requireCss('Lib/summernote-0.8.18/summernote-bs4.css');
+        self::requireJs('Lib/summernote-0.8.18/summernote-bs4.js');
+        self::requireJs('Bcl/Summernote/script.js');
     }
 }
