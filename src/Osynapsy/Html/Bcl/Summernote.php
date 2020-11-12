@@ -31,4 +31,9 @@ class Summernote extends TextArea
         self::requireJs('Lib/summernote-0.8.18/summernote.js');
         self::requireJs('Bcl/Summernote/script.js');
     }
+
+    public function setAction($action, $parameters = null, $class = 'upload-execute', $confirmMessage = null): \this
+    {
+        parent::setAction($action, $parameters, $class, $confirmMessage);
+    }
 }
