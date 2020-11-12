@@ -1,5 +1,6 @@
 BclTags = {
-    init : function() {        
+    init : function()
+    {
         $('.bclTags').on('click','.bclTags-add',function(){
             if ($(this).hasClass('cmd-execute')){
                 return;
@@ -8,10 +9,10 @@ BclTags = {
                 alert('Attributo data-fields non presente');
                 return;
             }
-            var fld = $(obj).data('fields').split(',');
+            var fld = $(this).data('fields').split(',');
             var lst = [];
             for (var i in fld) {
-                if ($(fld[i]).val() == '') {
+                if (Osynapsy.isEmpty($(fld[i]).val())) {
                     alert('Non hai inserito nessun valore impossibile proseguire');
                     return;
                 }
@@ -34,9 +35,9 @@ BclTags = {
             alert('Tag <' + tagValue + '> is present');
             return;
         }
-        var tagItem = ' <span class="label label-default">' + tagValue + ' <span class="fa fa-close bclTags-delete"></span></span> ';
-        $('.bclTags-container', $('div'+tagContainerId)).append(tagItem);        
-        tagInput.val('');        
+        var tagItem = ' <span class="badge badge-info">' + tagValue + ' <span class="fa fa-close bclTags-delete"></span></span> ';
+        $('.bclTags-container', $('div'+tagContainerId)).append(tagItem);
+        tagInput.val('');
         this.updateHiddenField(tagContainerId);
     },
     checkTagExists : function(tagValue, tagContainerId)
@@ -49,23 +50,25 @@ BclTags = {
         });
         return exists;
     },
-    deleteTag : function(tagItem) {
+    deleteTag : function(tagItem)
+    {
         if (confirm('Are you sure to delete tag')) {
             var parentId = '#' + $(tagItem).closest('.bclTags').attr('id');
             $(tagItem).parent().remove();
             this.updateHiddenField(parentId);
         }
     },
-    updateHiddenField : function(tagContainerId) {
+    updateHiddenField : function(tagContainerId)
+    {
         var values = '';
-        $('.label', $('div'+tagContainerId)).each(function(){
+        $('.badge', $('div'+tagContainerId)).each(function(){
             values += '[' + $(this).text().trim() + ']';
         });
         $('input'+tagContainerId).val(values);
     }
-}
+};
 
-if (window.Osynapsy){    
+if (window.Osynapsy){
     Osynapsy.plugin.register('BclTags',function(){
         BclTags.init();
     });
