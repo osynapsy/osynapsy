@@ -11,7 +11,6 @@
 
 namespace Osynapsy\Data;
 
-use PHPExcel;
 
 class XlsToArray
 {
@@ -20,31 +19,31 @@ class XlsToArray
     private $delimiter = null;
     private $lineending = null;
     public $max = [
-        'row' => 0, 
+        'row' => 0,
         'col' => 0
     ];
-    
+
     public function __construct($db)
     {
-        $this->db = $db;        
+        $this->db = $db;
     }
-    
+
     public function loadExcel($fileName, $grabNumRow = null)
     {
         try {
-            $fileType = \PHPExcel_IOFactory::identify($fileName);           
-            $reader = \PHPExcel_IOFactory::createReader($fileType);
+            $fileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($fileName);
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($fileType);
             switch($fileType) {
                 case 'CSV':
                     if (!is_null($this->delimiter)) {
                         $reader->setDelimiter($this->delimiter);
                     }
                     break;
-            }            
+            }
             $excel = $reader->load($fileName);
             //  Get worksheet dimensions
-            $sheet = $excel->getSheet(0); 
-            $this->max['row'] = $sheet->getHighestRow(); 
+            $sheet = $excel->getSheet(0);
+            $this->max['row'] = $sheet->getHighestRow();
             $this->max['col'] = $sheet->getHighestDataColumn();
             $data = array();
             for ($row = 1; $row <= $this->max['row']; $row++) {
@@ -58,21 +57,21 @@ class XlsToArray
             return 'Errore nell\'apertura del file "'.pathinfo($fileName,PATHINFO_BASENAME).'": '.$e->getMessage();
         }
     }
-    
-    public function isValidFile($fileName) 
+
+    public function isValidFile($fileName)
     {
         try {
-            $fileType = \PHPExcel_IOFactory::identify($fileName);
-            $reader = \PHPExcel_IOFactory::createReader($fileType);
+            $fileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($fileName);
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($fileType);
             $excel = $reader->load($fileName);
             return $excel;
         } catch(\Exception $e) {
             return $e->getMessage();
         }
     }
-    
+
     public function import($table, $fields, $data, $constant=array())
-    {        
+    {
         if (empty($table)) {
             $this->error[] = 'Table is empty';
         }
@@ -85,7 +84,7 @@ class XlsToArray
         //  Loop through each row of the worksheet in turn
         $insert = 0;
         //die(print_r($data,true));
-        foreach ($data as $k => $rec) { 
+        foreach ($data as $k => $rec) {
             if (empty($rec)) {
                 continue;
             }
@@ -96,11 +95,11 @@ class XlsToArray
                 }
                 $sqlParams[$field] = !empty($rec[0][$column]) ? $rec[0][$column] : null ;
             }
-            
+
             foreach($constant as $field => $value) {
                 $sqlParams[$field] = $value;
             }
-            
+
             if (!empty($sqlParams)){
                 try {
                     $this->db->insert($table, $sqlParams);
@@ -110,26 +109,24 @@ class XlsToArray
                 }
             }
         }
-        
+
         return $insert;
     }
-    
+
     private function buildXls($title)
     {
-        $xls = new \PHPExcel();
-        
+        $xls = new PHPExcel();
         $xls->getProperties()->setCreator("Osynapsy");
         $xls->getProperties()->setLastModifiedBy("Osynapsy");
         $xls->getProperties()->setTitle($title);
         $xls->getProperties()->setSubject("Data Export");
         $xls->getProperties()->setDescription("Data export from Osynapsy");
-        
         return $xls;
     }
-    
+
     public function export($data, $title = 'Data export', $basePath = '/upload/export/')
     {
-        $xls = $this->buildXls($title);                        
+        $xls = $this->buildXls($title);
         function getColumnId($n) {
             $l = range('A','Z');
             if ($n <= 26) {
@@ -139,7 +136,7 @@ class XlsToArray
             $i = (($n - $r) / 26) - (empty($r) ? 1 : 0);
             return getColumnId($i).(!empty($r) ? getColumnId($r) : 'Z');
         }
-        
+
         for ($i = 0; $i < count($data); $i++) {
             $j = 0;
             foreach ($data[$i] as $k => $v) {
@@ -156,7 +153,7 @@ class XlsToArray
                 $j++;
             }
         }
-        
+
         $xls->getActiveSheet()->setTitle($title);
         //Generate filename
         $filename  = $basePath;
@@ -170,17 +167,17 @@ class XlsToArray
         //return filename
         return $filename;
     }
-    
+
     public function getError()
     {
         return implode("\n",$this->error);
     }
-    
+
     public function setDelimiter($delimiter)
     {
         $this->delimiter = $delimiter;
     }
-    
+
     public function setLineEnding($linending)
     {
         $this->lineending = $linending;
