@@ -49,12 +49,13 @@ BclImageBox2 =
     },
     crop : function(button)
     {
-        var parent = $(button).closest('.osy-imagebox-bcl');
-        var fieldId = $('input[type=file]', parent).attr('id');
-        var cropObj = $('img.imagebox-main', parent).rcrop('getValues');
-        var resizeWidth = $(parent).data('maxWidth');
-        var resizeHeight = $(parent).data('maxHeight');
-        var data = [
+        let wrapper = button.closest('.osy-imagebox-bcl');
+        let image = wrapper.querySelector('img.imagebox-main');
+        let fieldId = wrapper.querySelector('input[type=file]').getAttribute('id');
+        let cropObj = $(image).rcrop('getValues');
+        let resizeWidth = wrapper.dataset.maxWidth;
+        let resizeHeight = wrapper.dataset.maxHeight;
+        let data = [
             cropObj.width,
             cropObj.height,
             cropObj.x,
@@ -63,8 +64,8 @@ BclImageBox2 =
             resizeWidth,
             resizeHeight
         ];
-        $('img.imagebox-main', parent).data('action-parameters', Array.from(data).join(','));
-        Osynapsy.action.execute($('img.imagebox-main', parent)[0]);
+        image.dataset.actionParameters = Array.from(data).join(',');
+        Osynapsy.action.execute(image);
     },
     upload : function (input)
     {
