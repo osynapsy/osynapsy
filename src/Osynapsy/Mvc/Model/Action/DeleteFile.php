@@ -12,23 +12,23 @@ class DeleteFile extends Base
 {
     private $documentRoot;
     private $fieldModel;
-    private $fieldDbName;    
+    private $fieldDbName;
     private $fileWebPath;
-    
+
     public function execute()
-    {                            
+    {
         try {
             $this->loadDocumentRootPath();
             $this->loadFieldModel();
             $this->loadFileWebPath();
             $this->deleteFileFromDisk();
-            $this->deleteFileReferenceFromDb();            
+            $this->deleteFileReferenceFromDb();
             $this->refreshPage();
         } catch (\Exception $e) {
             $this->getResponse()->alertJs($e->getMessage());
         }
     }
-    
+
     protected function loadDocumentRootPath()
     {
         $this->documentRoot = filter_input(\INPUT_SERVER, 'DOCUMENT_ROOT');
@@ -36,18 +36,18 @@ class DeleteFile extends Base
             $this->documentRoot .= '/';
         }
     }
-    
+
     private function loadFieldModel()
     {
-         $this->fieldModel = $this->getModel()->getField($this->parameters[1]);
+         $this->fieldModel = $this->getModel()->getField($this->getParameter(1));
          $this->fieldDbName = $this->fieldModel->name;
     }
-    
+
     protected function loadFileWebPath()
     {
         $this->fileWebPath = $this->getModel()->getRecord()->get($this->fieldDbName);
     }
-    
+
     public function deleteFileFromDisk()
     {
         $filePath = $this->documentRoot.$this->fileWebPath;
@@ -56,12 +56,12 @@ class DeleteFile extends Base
         }
         @unlink($filePath);
     }
-    
+
     public function deleteFileReferenceFromDb()
-    {        
-        $this->getModel()->getRecord()->save([$this->fieldDbName => null]);        
+    {
+        $this->getModel()->getRecord()->save([$this->fieldDbName => null]);
     }
-    
+
     public function refreshPage()
     {
         $this->getResponse()->go('refresh');
