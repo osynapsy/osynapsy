@@ -41,18 +41,18 @@ class Addressbook extends PanelNew
         $this->itemSelected = empty($_REQUEST[$this->id.'_chk']) ? [] : $_REQUEST[$this->id.'_chk'];
         if (empty($this->data)) {
             $this->addColumn(12)->add($this->emptyMessageFactory($this->emptyMessage));
-            return;
-        }
-        $this->bodyFactory();
-        if ($this->foot) {
-            $this->addColumn(12)->add($this->foot);
+        } else {
+            $this->bodyFactory();
+            if ($this->foot) {
+                $this->addColumn(12)->add($this->foot);
+            }
         }
         parent::__build_extra__();
     }
 
     protected function emptyMessageFactory($emptyMessage)
     {
-        return sprintf('<div class="osy-addressbook-empty"><span>%s</span></div>', $emptyMessage);
+        return sprintf('<div class="osy-addressbook-empty mt-5 mb-5"><span>%s</span></div>', $emptyMessage);
     }
 
     protected function bodyFactory()
