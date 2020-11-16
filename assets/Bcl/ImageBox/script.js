@@ -73,7 +73,7 @@ BclImageBox2 =
         var m = filepath.match(/([^\/\\]+)$/);
         var filename = m[1];
         $('.osy-imagebox-filename').text(filename);
-        Osynapsy.action.execute($(input).closest('.osy-imagebox-bcl')[0]);
+        Osynapsy.action.execute(input.closest('.osy-imagebox-bcl'));
     }
 };
 
