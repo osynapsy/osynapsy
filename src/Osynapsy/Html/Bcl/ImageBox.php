@@ -85,7 +85,7 @@ class ImageBox extends Component
 
     protected function buttonDeleteImageFactory($class = '')
     {
-        $button = new Button($this->id.'_delete_image', 'button', trim('btn-danger btn-sm '.$class), '<i class="fa fa-trash"></i>');
+        $button = new Button($this->id.'DeleteImage', 'button', trim('btn-danger btn-sm '.$class), '<i class="fa fa-trash"></i>');
         $button->setAction(self::ACTION_DELETE_IMAGE, $this->image['webPath'].','.$this->rawId, 'click-execute', 'Sei sicuro di voler eliminare l\'immagine?');
         return $button;
     }
