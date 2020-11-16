@@ -1,4 +1,4 @@
-BclAddressbook = 
+BclAddressbook =
 {
     init : function()
     {
@@ -7,14 +7,16 @@ BclAddressbook =
             $('input[type=checkbox]', this).prop('checked',!selected);
             $(this).toggleClass('osy-addressbook-item-selected');
         });
-        $('.osy-addressbook').parent().on('click','a.osy-addressbook-link',function(evt){
+        /*
+         $('.osy-addressbook').parent().on('click','a.osy-addressbook-link',function(evt){
             Osynapsy.history.save();
             evt.stopPropagation();
         });
+         */
     }
 }
 
-if (window.Osynapsy){    
+if (window.Osynapsy){
     Osynapsy.plugin.register('BclAdressbook',function() {
         BclAddressbook.init();
     });
