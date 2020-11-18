@@ -78,7 +78,7 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
         $ksearch = explode('.', $key);
         $target =& $this->repo;
         foreach ($ksearch as $k) {
-            if (!array_key_exists($k, $target)) {
+            if (!is_array($target) || !array_key_exists($k, $target)) {
                 $app = null;
                 return $app;
             }
@@ -237,5 +237,6 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
         libxml_use_internal_errors(true);
         $objectXml = simplexml_load_string($stringXml);
         $this->repo = json_decode(json_encode($objectXml), true);
+        return libxml_get_errors();
     }
 }
