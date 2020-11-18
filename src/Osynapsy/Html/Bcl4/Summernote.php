@@ -33,4 +33,29 @@ class Summernote extends TextArea
         self::requireJs('Lib/summernote-0.8.18/summernote-bs4.js');
         self::requireJs('Bcl/Summernote/script.js');
     }
+
+    public function showFontButtons($superscript = false, $subscript = false, $strikethrough = false)
+    {
+        $buttons = [];
+        if ($strikethrough === true) {
+            $buttons[] = 'font-strikethrough';
+        }
+        if ($superscript === true) {
+            $buttons[] = 'font-superscript';
+        }
+        if ($subscript === true) {
+            $buttons[] = 'font-subscript';
+        }
+        $this->addButtonsToToolbar($buttons);
+    }
+
+    public function addButtonsToToolbar(array $newbuttons)
+    {
+        if (empty($newbuttons)) {
+            return;
+        }
+        $oldbuttons = $this->getAttribute('data-toolbar-buttons') ? explode(',',  $this->getAttribute('data-toolbar-buttons')) : [];
+        $buttons = array_merge($oldbuttons, $newbuttons);
+        $this->att('data-toolbar-buttons', implode(',', $buttons));
+    }
 }
