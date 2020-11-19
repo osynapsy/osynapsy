@@ -199,17 +199,17 @@ class DataGrid extends Component
             return $row;
         }
         $paginationWidth = 12;
-        if ($this->showPaginationPageDimension && $this->pagination->getStatistics('pageTotal') > 1) {
+        if ($this->showPaginationPageDimension && $this->pagination->getStatistic('pageTotal') > 1) {
             $row->add(new Tag('div', null, 'col-sm-4 d-none d-sm-block col-lg-2'))
                 ->add($this->pagination->getPageDimensionsCombo());
             $paginationWidth -= 4;
         }
-        if ($this->showPaginationPageInfo && $this->pagination->getStatistics('pageTotal') > 1) {
+        if ($this->showPaginationPageInfo && $this->pagination->getStatistic('pageTotal') > 1) {
             $row->add(new Tag('div', null, 'col-sm-4 d-none d-md-block offset-lg-2 text-center'))
                 ->add('<label class="" style="margin-top: 30px;">'.$this->pagination->getInfo().'</label>');
             $paginationWidth -= 4;
         }
-        if ($this->pagination->getStatistics('pageTotal') > 1) {
+        if ($this->pagination->getStatistic('pageTotal') > 1) {
             $row->add(new Tag('div', null, sprintf('col-sm-8 col-md-%s text-right', $paginationWidth)))
                 ->add($this->pagination)->setClass('mt-4')->setPosition('end');
         }
