@@ -13,13 +13,11 @@ namespace Osynapsy\Mvc;
 
 interface InterfaceModel
 {
-    public function init($controller);
-    
+    public function init();
+
     public function find();
-    
+
+    public function save();
+
     public function delete();
-    
-    public function insert();
-    
-    public function update();
 }
