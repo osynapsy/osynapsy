@@ -37,6 +37,7 @@ class Card extends Component
     private $currentColumn = null;
     private $title;
     private $commands = [];
+    public $monoRow = false;
 
     public function __construct($id, $class = 'card', $tag = 'div')
     {
@@ -99,7 +100,7 @@ class Card extends Component
 
     public function addColumn($colspan = 12, $offset = 0)
     {
-        if (empty($this->currentRow) || ($this->currentRow->length + $colspan + $offset > 12)) {
+        if (empty($this->currentRow) || ($this->currentRow->length + $colspan + $offset > 12 && empty($this->monoRow))) {
             $this->addRow();
         }
         $this->currentColumn = $this->currentRow->add(
@@ -164,6 +165,11 @@ class Card extends Component
     public function addClassCell($class)
     {
         $this->classCss['cell'] .= ' '.$class;
+    }
+
+    public function enableMonoRow()
+    {
+        $this->monoRow = true;
     }
 
     public function noPadding()
