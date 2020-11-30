@@ -11,40 +11,41 @@
 
 namespace Osynapsy\Mvc\Model;
 
-class Field 
-{            
+class Field
+{
     const TYPE_DATE = 'date';
+    const TYPE_DATETIME = 'datetime';
     const TYPE_EMAIL = 'email';
     const TYPE_FILE = 'file';
     const TYPE_IMAGE = 'image';
     const TYPE_INTEGER = 'integer';
     const TYPE_NUMBER = 'numeric';
     const TYPE_STRING = 'string';
-    
+
     private $repo = array(
         'existInForm' => true,
-        'fixlength' => null,        
+        'fixlength' => null,
         'is_pk' => false,
         'maxlength' => null,
         'minlength' => null,
-        'nullable' => true, 
+        'nullable' => true,
         'readonly' => false,
         'rawvalue' => null,
         'unique' => false,
         'value' => null,
-        'defaultValue' => null,        
+        'defaultValue' => null,
         'uploadDir' => '/upload'
     );
     public $value;
-    private $model;    
+    private $model;
     public $type;
-    
+
     public function __construct($model, $nameOnDb, $nameOnView, $type = 'string', $existInForm = true)
     {
         $this->model = $model;
         $this->name = $nameOnDb;
         $this->html = $nameOnView;
-        $this->setType($type, $existInForm);        
+        $this->setType($type, $existInForm);
     }
 
     public function __get($key)
@@ -61,7 +62,7 @@ class Field
     {
         return implode(',', $this->repo);
     }
-    
+
     public function existInForm()
     {
         return $this->existInForm;
@@ -69,17 +70,17 @@ class Field
 
     public function isRequired($required = null)
     {
-        if (is_null($required)) { 
-            return !$this->repo['nullable']; 
+        if (is_null($required)) {
+            return !$this->repo['nullable'];
         }
         $this->repo['nullable'] = !$required;
         return $this;
     }
-    
+
     public function isNullable($v = null)
     {
-        if (is_null($v)) { 
-            return $this->repo['nullable']; 
+        if (is_null($v)) {
+            return $this->repo['nullable'];
         }
         $this->repo['nullable'] = $v;
         return $this;
@@ -88,27 +89,27 @@ class Field
     public function isPkey($b = null)
     {
         if (is_null($b)) {
-            return $this->is_pk; 
-        } 
+            return $this->is_pk;
+        }
         $this->is_pk = $b;
         if ($this->value) {
             $html = $this->html;
-            if (empty($_REQUEST[$html])) { 
-                $_REQUEST[$html] = $this->value; 
+            if (empty($_REQUEST[$html])) {
+                $_REQUEST[$html] = $this->value;
             }
         }
         return $this;
     }
-    
+
     public function isUnique($v = null)
     {
-        if (is_null($v)) { 
-            return $this->repo['unique']; 
+        if (is_null($v)) {
+            return $this->repo['unique'];
         }
         $this->repo['unique'] = $v;
         return $this;
     }
-    
+
     public function setFixLength($length)
     {
         if (!is_array($length)) {
@@ -117,19 +118,19 @@ class Field
         $this->fixlength = $length;
         return $this;
     }
-    
+
     public function setMaxLength($length)
     {
         $this->maxlength = $length;
         return $this;
     }
-    
+
     public function setMinLenght($length)
     {
         $this->minlength = $length;
         return $this;
     }
-    
+
     public function setType($type, $existInForm = true)
     {
         $this->type = $type;
@@ -138,7 +139,7 @@ class Field
             $this->readonly = true;
         }
     }
-    
+
     public function setValue($value, $default = null)
     {
         if ($value !== '0' && $value !== 0 && empty($value)) {
@@ -149,9 +150,12 @@ class Field
         if ($this->type === self::TYPE_DATE) {
             $this->adjustDateValue();
         }
+        if ($this->type === self::TYPE_DATETIME) {
+            $this->adjustDatetimeValue();
+        }
         return $this;
     }
-    
+
     private function adjustDateValue()
     {
         if (empty($this->value) || strpos($this->value, '/') === false) {
@@ -160,17 +164,27 @@ class Field
         list($day, $month, $year) = explode('/', $this->value);
         $this->value = sprintf("%s-%s-%s", $year, $month, $day);
     }
-    
-    public function getValue()
-    {        
-        return $this->value;                
+
+    private function adjustDatetimeValue()
+    {
+        if (empty($this->value) || strpos($this->value, '/') === false) {
+            return;
+        }
+        list($date, $time) = explode(' ', $this->value);
+        list($day, $month, $year) = explode('/', $date);
+        $this->value = sprintf("%s-%s-%s %s:00", $year, $month, $day, $time);
     }
-    
+
+    public function getValue()
+    {
+        return $this->value;
+    }
+
     public function getDefaultValue()
     {
         return $this->defaultValue;
     }
-    
+
     public function setUploadPath($path)
     {
         $this->uploadDir = $path;
