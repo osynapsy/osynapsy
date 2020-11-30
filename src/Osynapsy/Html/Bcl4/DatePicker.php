@@ -16,6 +16,9 @@ use Osynapsy\Html\Bcl\TextBox;
 
 class DatePicker extends Component
 {
+    const FORMAT_DATE_IT = 'DD/MM/YYYY';
+    const FORMAT_DATETIME_IT = 'DD/MM/YYYY HH:mm';
+
     private $datePickerId;
     private $dateComponent;
     protected $format = 'DD/MM/YYYY';
@@ -40,7 +43,7 @@ class DatePicker extends Component
         $this->dateComponent = $this->add(new TextBox($this->datePickerId));
 
         $this->dateComponent->att([
-            'class' => 'form-control datetimepicker-input',
+            'class' => 'form-control datetimepicker-input text-center',
             'data-toggle' => 'datetimepicker',
             'data-target' => sprintf('#%s',$this->id)
         ]);
@@ -58,9 +61,10 @@ class DatePicker extends Component
     {
         $this->att('data-date-format', $this->format);
         if (!empty($_REQUEST[$this->datePickerId])) {
-            $data = explode('-', $_REQUEST[$this->datePickerId]);
+            $dateArray = explode(' ', $_REQUEST[$this->datePickerId]);
+            $data = explode('-', $dateArray[0]);
             if (count($data) >= 3 && strlen($data[0]) == 4) {
-                $_REQUEST[$this->datePickerId] = $data[2].'/'.$data[1].'/'.$data[0];
+                $_REQUEST[$this->datePickerId] = $data[2].'/'.$data[1].'/'.$data[0].(empty($dateArray[1]) ? '' : " {$dateArray[1]}");
             }
         }
     }
