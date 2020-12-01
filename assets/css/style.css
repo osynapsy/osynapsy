@@ -33,10 +33,10 @@
 }
 
 .has-error span.error {
-    font-weight: normal; 
-    border-color: transparent !important; 
-    color: #e74c3c; 
-    font-size: 0.85em; 
+    font-weight: normal;
+    border-color: transparent !important;
+    color: #e74c3c;
+    font-size: 0.85em;
     margin-left: 10px;
 }
 
@@ -48,15 +48,15 @@
 
 /*osy-datagrid-2*/
 .osy-datagrid-2-foot {
-    text-align: center; 
-    margin-top: 5px; 
+    text-align: center;
+    margin-top: 5px;
     margin-bottom: 5px;
 }
 
 .gly-spin {
-    -webkit-animation: spin 2s infinite linear; 
-    -moz-animation: spin 2s infinite linear; 
-    -o-animation: spin 2s infinite linear; 
+    -webkit-animation: spin 2s infinite linear;
+    -moz-animation: spin 2s infinite linear;
+    -o-animation: spin 2s infinite linear;
     animation: spin 2s infinite linear;
 }
 
@@ -65,8 +65,8 @@ div#waitMask {
     position: absolute;
     background-color: #f8f8f8;
     opacity: 0.70;
-    z-index: 1000; 
-    top: 0px; 
+    z-index: 1000;
+    top: 0px;
     left: 0px;
     vertical-align: middle;
     border-radius: 5px;
@@ -74,7 +74,7 @@ div#waitMask {
 }
 div#waitMask > div.message {
     position: relative;
-    font-size: 14px; 
+    font-size: 14px;
     font-weight: bold;
     text-align: center;
     top: 40%;
@@ -127,9 +127,9 @@ div#waitMask > div.message > div.progress {
 
 .osy-hr {
     color: #888;
-    font-size: 14px;    
+    font-size: 14px;
     position: relative;
-    display: block;    
+    display: block;
     margin-top: 0.25rem;
     margin-bottom: 0.5rem;
     height: 20px;
@@ -142,7 +142,7 @@ div#waitMask > div.message > div.progress {
     border-radius: 0px 0px 5px;
     background-color: #f8f8f8;
     z-index: 10;
-    position: absolute;    
+    position: absolute;
     min-width: 100px;
     top: 9px;
     right: 0px;
@@ -161,15 +161,15 @@ div#waitMask > div.message > div.progress {
 }
 
 .osy-input-underline {
-    border: 0px; 
-    border-bottom: 2px solid transparent; 
-    margin-left: 15px; 
+    border: 0px;
+    border-bottom: 2px solid transparent;
+    margin-left: 15px;
     width: 95%;
 }
 
-.osy-input-underline:focus, 
+.osy-input-underline:focus,
 .osy-input-underline:hover {
-    outline: 0; 
+    outline: 0;
     border-bottom: 2px solid #ddd !important
 };
 
@@ -200,4 +200,8 @@ input[type="text"].field-in-error, textarea.field-in-error {
     background-repeat: repeat-x;
     background-position: bottom;
     border-color: #cc3300;
+}
+
+.text-responsive {
+    font-size: calc(100% + 1vw + 1vh);
 }
