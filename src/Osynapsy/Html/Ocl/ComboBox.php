@@ -33,9 +33,14 @@ class ComboBox extends Component
         if (empty($this->currentValue) && $this->currentValue != '0') {
             $this->currentValue = $this->defaultValue;
         }
-        if (!empty($this->placeholder) && !$this->getParameter('option-select-disable')){
+        if (!empty($this->placeholder) && !$this->getParameter('option-select-disable') && is_array($this->data)){
             array_unshift($this->data, $this->placeholder);
         }
+        $this->optionsFactory();
+    }
+
+    protected function optionsFactory()
+    {
         foreach ($this->data as $item) {
             $item = array_values(!is_array($item) ? [trim($item)] : $item);
             $value = $item[0];
