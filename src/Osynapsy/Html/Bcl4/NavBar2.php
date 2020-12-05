@@ -50,8 +50,9 @@ class NavBar2 extends Component
                         ->att('class','mr-auto', true));
         }
         if (!empty($this->data['secondary'])) {
-            $collapsable->add($this->buildUlMenu($this->data['secondary'])
-                        ->att('class', 'dropdown-menu-lg-right float-right', true));
+            $ul = $this->buildUlMenu($this->data['secondary'], 0 ,'dropdown-menu dropdown-menu-lg-right');
+            $ul->att('class', 'justify-content-end', true);
+            $collapsable->add($ul);
         }
     }
 
@@ -88,10 +89,10 @@ class NavBar2 extends Component
      * @param int $level
      * @return type
      */
-    private function buildUlMenu(array $data, $level = 0)
+    private function buildUlMenu(array $data, $level = 0, $dropdownMenuClass = 'dropdown-menu')
     {
         //Add ul menù container;
-        $ul = new Tag('ul', null, empty($level) ? 'navbar-nav' : 'dropdown-menu');
+        $ul = new Tag('ul', null, empty($level) ? 'navbar-nav' : $dropdownMenuClass);
         if (empty($data) || !is_array($data)) {
             return $ul;
         }
@@ -107,7 +108,7 @@ class NavBar2 extends Component
             }
             $li->add($this->getNavDropdownLink($label, $level));
             $li->att('class',empty($level) ? 'dropdown' : 'dropdown-submenu', true)->add(
-                $this->buildUlMenu($menu, $level + 1)
+                $this->buildUlMenu($menu, $level + 1, $dropdownMenuClass)
             );
         }
         return $ul;
