@@ -83,9 +83,9 @@ class NavBar2 extends Component
     /**
      * Internal method for build a unordered list menù (recursive)
      *
-     * @param object $container of ul
      * @param array $data
      * @param int $level
+     * @param string $dropdownMenuClass class to apply drowdownMenu
      * @return type
      */
     private function buildUlMenu(array $data, $level = 0, $dropdownMenuClass = 'dropdown-menu')
