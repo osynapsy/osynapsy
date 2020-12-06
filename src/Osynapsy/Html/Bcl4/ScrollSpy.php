@@ -10,30 +10,35 @@ use Osynapsy\Html\Tag;
  * @author Pietro
  */
 class ScrollSpy extends Component
-{   
+{
     private $pages = [];
     private $currentPage = null;
     private $paragraphFormatFunction;
-    private $listIndex;    
-    private $spyElementId;
-    private $spyOffset;
-    
+    protected $listIndex;
+    protected $panelListIndex;
+
     public function __construct($id, $height = '100vh', $tag = 'div')
     {
         parent::__construct($tag, $id);
-        $this->setClass('scrollspy position-relative bg-light d-block border p-5');        
+        $this->setClass('scrollspy position-relative bg-light d-block border p-5');
         if (!empty($height)) {
             $this->style = 'overflow-y: scroll;height: '.$height;
         }
         $this->setFormatParagraphFunction(function($rec) {
             return implode('', $rec);
         });
-        $this->listIndex = new Tag('div', $this->id.'Index', 'list-group');
+        $this->initIndex();
         $this->setSpySourceId($this->id, 50);
     }
-   
+
+    protected function initIndex()
+    {
+        $this->panelListIndex = new Tag('div', null, 'panel-list-group');
+        $this->listIndex = $this->panelListIndex->add(new Tag('div', $this->id.'Index', 'list-group'));
+    }
+
     public function addPage($title = null, $pid = null, $command = null)
-    {        
+    {
         $pageId = $this->id . ($pid ?? count($this->pages));
         $this->currentPage = $this->add(new Grid($pageId));
         $this->currentPage->setCellClass('m-1');
@@ -51,52 +56,65 @@ class ScrollSpy extends Component
             $this->currentPage->addCellCommand($cell, $command);
         }
     }
-    
+
     public function addParagraph($title, $body, $id = null, $command = null)
     {
         if (empty($this->currentPage)) {
-            $this->addPage(null,null);            
+            $this->addPage(null,null);
         }
         $cell = $this->currentPage->addCell([$title, $body], $id ?? uniqid());
         if (!empty($command)) {
             $this->currentPage->addCellCommand($cell, $command);
         }
         return $cell;
-    }        
-    
+    }
+
     public function getCurrentPage()
     {
         return $this->currentPage;
     }
-    
+
     public function getIndex()
-    {        
-        return $this->listIndex;
+    {
+        return $this->panelListIndex;
     }
-    
+
     public function setFormatParagraphFunction(callable $function)
     {
         $this->paragraphFormatFunction = $function;
     }
-    
-    public function setTopLeftIndex(int $top, int $left, int $width = 200)
+
+    public function setTopLeftIndex(int $top, int $left, int $width = 0, $panelClass = '')
     {
-        $this->listIndex->att('class', ' fixed-top', true);
-        $this->listIndex->att('style', sprintf('top: %spx; left: %spx; width: %spx;', $top, $left, $width));
+        $this->setTopPosition($top, $width, $left, -1, $panelClass);
     }
-    
-    public function setTopRightIndex(int $top, int $right, int $width = 200)
+
+    public function setTopRightIndex(int $top, int $right, int $width = 0, $panelClass = '')
     {
-        $this->listIndex->att('class', ' fixed-top', true);
-        $this->listIndex->att('style', sprintf('top: %spx; right: %spx; width: %spx;', $top, $right, $width));
+        $this->setTopPosition($top, $width, -1, $right, $panelClass);
     }
-    
+
+    protected function setTopPosition(int $top, int $left, int $right, int $width = 0, $panelClass = '')
+    {
+        $this->panelListIndex->addClass(sprintf('fixed-top %s', $panelClass));
+        $this->panelListIndex->att('style', sprintf('top: %spx; ', $top));
+        if ($left > -1) {
+            $this->panelListIndex->att('style', sprintf(' left: %spx;', $left), true);
+        }
+        if ($right > -1) {
+            $this->panelListIndex->att('style', sprintf(' right: %spx;', $right), true);
+        }
+        if (!empty($width)) {
+            $this->panelListIndex->att('style', sprintf(' width: %spx;', $width), true);
+        }
+    }
+
     public function setSpySourceId($jquerySourceId, $offset = 50)
     {
         $jqueryDestinationId = sprintf('#%sIndex', $this->id);
         $this->setJavascript(
             sprintf(
-                "$(document).ready(function() { $('%s').scrollspy({target: '%s', offset: %s}); });", 
+                "$(document).ready(function() { $('%s').scrollspy({target: '%s', offset: %s}); });",
                 $jquerySourceId,
                 $jqueryDestinationId,
                 $offset
