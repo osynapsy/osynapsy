@@ -14,7 +14,7 @@ class Assertion
     public static function digit($value, $message)
 	{
 		if (!\ctype_digit($value)){
-			$this->raiseException($message);
+			self::raiseException($message);
 		}
 		return true;
 	}
