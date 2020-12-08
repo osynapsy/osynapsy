@@ -90,7 +90,6 @@ class Form extends Component
     protected function buildMainComponent($mainComponent)
     {
         $rawComponent = '\\Osynapsy\\Html\\Bcl\\'.$mainComponent;
-        //$this->appendFootToMain = ($mainComponent === 'Panel');
         $component = new $rawComponent($this->id.'_panel', 'div');
         $component->setParameter('label-position','inside');
         $component->tagdep =& $this->tagdep;
