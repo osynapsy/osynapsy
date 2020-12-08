@@ -17,7 +17,9 @@ use Osynapsy\Html\Component as Component;
 //Costruttore del pannello html
 class Panel extends Component
 {
-    private $cells = array();
+    const FORM_TYPE_HORIZONTAL = 'horizontal';
+
+    private $cells = [];
     private $currentRow = null;
     private $tag = ['div' , 'div'];
     private $formType = 'normal';
@@ -108,40 +110,39 @@ class Panel extends Component
         }
     }
 
-    private function buildRow(array $Row)
+    private function buildRow(array $row)
     {
-        ksort($Row);
         $this->appendRow();
-        foreach ($Row as $Column) {
-            $this->buildColumn($Column);
-        }
-    }
-
-    private function buildColumn(array $Column)
-    {
-        foreach ($Column as $Cell) {
-            $width = max($Cell['width'],1);
-            $this->buildLabel($Cell);
-            switch ($this->formType) {
-                case 'horizontal':
-                    $div = new Tag('div', null, 'col-sm-' . $width.' col-lg-'.$width);
-                    $div->add($Cell['obj']);
-                    $Cell['obj'] = $div;
-                    break;
+        ksort($row);
+        foreach ($row as $cells) {
+            ksort($cells);
+            foreach ($cells as $cellData) {
+                $this->currentRow->add($this->buildCell(
+                    $cellData,
+                    max($cellData['width'], 1)
+                ));
             }
-            $this->buildCell($Cell, $width);
-            break;
         }
     }
 
-    private function buildCell($cell = null, $width = null)
+    private function buildCell($cellData, $width)
     {
-        if (is_null($cell)) {
-            return;
-        }
-        $cel = $this->currentRow->add(new Tag('div'));
-        if ($this->formType === 'horizontal') {
-            $width += 4;
+        $label = $cellData['lbl'];
+        $content = $cellData['obj'];
+        $Cell = new Tag('div', null , $this->buildCellClass($cellData, $width));
+        $Cell->add(new Tag('div', null, 'form-group'))->addFromArray(
+            array_merge(
+                $label === false ? [] : [$this->buildLabel($label, $content)],
+                is_array($content) ? $content : [$content]
+            )
+        );
+        return $Cell;
+    }
+
+    protected function buildCellClass($cell, $width)
+    {
+        if ($this->formType === self::FORM_TYPE_HORIZONTAL) {
+            return 'cell-lg-8 cell-sm-8';
         }
         $class = ['col-sm-'.$width, 'col-lg-'.$width];
         if (!empty($cell['offset'])) {
@@ -151,41 +152,34 @@ class Panel extends Component
         if (!empty($cell['class'])) {
             $class[] =  $cell['class'];
         }
-        $formGroup = $cel->att('class', implode(' ',$class))
-                         ->add(new Tag('div', null, 'form-group'));
         if (!empty($this->classes['cell'])) {
-            $cel->att('class', $this->classes['cell'], true);
+            $class[] = $this->classes['cell'];
         }
-        unset($cell['width'], $cell['class'], $cell['offset']);
-        $formGroup->addFromArray($cell);
-        return $cel;
+        return implode(' ', $class);
     }
 
-    public function buildLabel(&$obj)
+    private function buildLabel($cellLabel, $cellContent)
     {
-        $style = '';
-        if ($obj['lbl'] === false) {
+        if (is_a($cellContent, 'Tag') && ($cellContent->tag == 'button')) {
+            $cellLabel = '&nbsp';
+        }
+        if (empty($cellLabel)) {
             return;
         }
-        if (is_object($obj['obj']) && ($obj['obj']->tag == 'button')) {
-            $obj['lbl'] = '&nbsp';
-            $style = 'display: block';
-        } elseif (is_object($obj['obj']) && strpos($obj['obj']->class, 'label-block') !== false) {
-            $style = 'display: block';
-        }
-        if (empty($obj['lbl'])) {
-            return;
-        }
-        $labelText = $obj['lbl'];
-        $label = new Tag('label', null, ($obj['obj'] instanceof panel ? 'osy-form-panel-label' : 'osy-component-label font-weight-500'));
-        $label->att('for',is_object($obj['obj']) ? $obj['obj']->id : '')->add(trim($labelText));
-        if (!empty($style)) {
-            $label->att('style',$style);
-        }
+        $label = new Tag('label', null, $this->buildLabelClass($cellContent));
+        $label->att('for', is_a($cellContent, 'Tag') ? $cellContent->id : '');
+        $label->att('style', 'display: block');
+        $label->add(trim($cellLabel));
+        return $label;
+    }
+
+    private function buildLabelClass($cellContent)
+    {
+        $labelClass = [$cellContent instanceof panel ? 'osy-form-panel-label' : 'osy-component-label font-weight-500'];
         if ($this->formType === 'horizontal') {
-            $label->att('class','control-label col-sm-2 col-lg-2',true);
+            $labelClass[] = 'control-label col-sm-2 col-lg-2';
         }
-        $obj['lbl'] = $label;
+        return implode(' ', $labelClass);
     }
 
     public function getClass($part = null)
@@ -201,13 +195,13 @@ class Panel extends Component
         if ($obj instanceof Tag) {
             $obj->att('data-label', strip_tags($lbl));
         }
-        $this->cells[$row][$col][] = array(
+        $this->cells[$row][$col][] = [
             'lbl' => $lbl,
             'obj' => $obj,
             'width' => $width,
             'class' => $class,
             'offset' => $offset
-        );
+        ];
     }
 
     public function setBodyClass($class)
