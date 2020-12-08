@@ -346,6 +346,11 @@ class DataGrid extends Component
         return $this->pagination;
     }
 
+    public function setPaginationNew($paginator)
+    {
+        $this->pagination = $paginator;
+    }
+
     /**
      * Method for set table and rows borders visible
      *
