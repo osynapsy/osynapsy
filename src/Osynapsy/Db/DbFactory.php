@@ -48,15 +48,7 @@ class DbFactory
         if (array_key_exists($connectionString, $this->connectionIndex)) {
             return $this->connectionPool[$this->connectionIndex[$connectionString]];
         }
-        $type = strtok($connectionString, ':');
-        switch ($type) {
-            case 'oracle':
-                $databaseConnection = new DbOci($connectionString);
-                break;
-            default:
-                $databaseConnection = new DbPdo($connectionString);
-                break;
-        }
+        $databaseConnection = strtok($connectionString, ':') === 'oracle' ? new DbOci($connectionString) : new DbPdo($connectionString);
         $currentIndex = count($this->connectionPool);
         $this->connectionIndex[$connectionString] = $currentIndex;
         $this->connectionPool[$currentIndex] = $databaseConnection;
