@@ -128,7 +128,7 @@ class DataGrid extends Component
         $i = 0;
         foreach ($rows as $row) {
             $this->body->add($this->bodyRowFactory($row));
-            $this->execTotalFunction($row);
+            $this->execTotalFunction($row ?? []);
             $i++;
         }
         if ($i === 0) {
@@ -179,7 +179,7 @@ class DataGrid extends Component
     {
         $tr = new Tag('div', null, $class);
         foreach ($this->columns as $column) {
-            $tr->add($column->buildTd($tr, $record));
+            $tr->add($column->buildTd($tr, $record ?? []));
         }
         if (!empty($record['_url_detail'])) {
             $tr->att('data-url-detail', $record['_url_detail']);
