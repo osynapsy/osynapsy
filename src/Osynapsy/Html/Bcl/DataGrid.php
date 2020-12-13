@@ -349,6 +349,7 @@ class DataGrid extends Component
     public function setPaginationNew($paginator)
     {
         $this->pagination = $paginator;
+        $this->pagination->setParentComponent($this->id);
     }
 
     /**
