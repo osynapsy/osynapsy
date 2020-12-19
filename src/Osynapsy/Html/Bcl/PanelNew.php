@@ -21,7 +21,7 @@ class PanelNew extends Component
         'body' => null,
         'foot' => null
     );
-    
+
     private $classCss = [
         'main' => 'panel',
         'head' => 'panel-heading clearfix',
@@ -29,26 +29,26 @@ class PanelNew extends Component
         'foot' => 'panel-footer',
         'title' => 'panel-title'
     ];
-    
+
     private $currentRow = null;
     private $currentColumn = null;
     private $title;
     private $commands = [];
-    
+
     public function __construct($id, $title='', $class = ' panel-default', $tag = 'div')
     {
         parent::__construct($tag, $id);
-        $this->classCss['main'] = 'panel'.$class;         
+        $this->classCss['main'] = 'panel'.$class;
         $this->sections['body'] = new Tag('div');
-        $this->title = $title;        
+        $this->title = $title;
     }
-    
+
     public function addCommands(array $commands = [])
     {
-        $this->commands = array_merge($this->commands, $commands);        
+        $this->commands = array_merge($this->commands, $commands);
         return $this;
     }
-    
+
     protected function __build_extra__()
     {
         $this->buildTitle();
@@ -62,7 +62,7 @@ class PanelNew extends Component
             $this->add($section);
         }
     }
-    
+
     protected function buildCommands()
     {
         if (empty($this->commands)) {
@@ -70,22 +70,22 @@ class PanelNew extends Component
         }
         $container = $this->getHead()->add(
             new Tag('div', null, 'panel-commands pull-right')
-        );         
+        );
         foreach($this->commands as $command) {
             $container->add($command);
-        }        
+        }
     }
-    
+
     protected function buildTitle()
     {
         if (empty($this->title)) {
             return;
-        }               
+        }
         $this->getHead()->add(
             '<div class="'.$this->classCss['title'].' pull-left">'.$this->title.'</div>'
         );
     }
-    
+
     public function addRow($class = 'row')
     {
         $this->currentRow = $this->sections['body']->add(
@@ -93,7 +93,7 @@ class PanelNew extends Component
         );
         return $this->currentRow;
     }
-    
+
     public function addColumn($colspan = 12, $offset = 0)
     {
         if (empty($this->currentRow)) {
@@ -104,12 +104,12 @@ class PanelNew extends Component
         );
         return $this->currentColumn;
     }
-    
+
     public function getBody()
     {
         return $this->sections['body'];
     }
-    
+
     public function getHead()
     {
         if (empty($this->sections['head'])) {
@@ -117,14 +117,14 @@ class PanelNew extends Component
         }
         return $this->sections['head'];
     }
-    
+
     public function resetClass()
     {
         $this->setClass('','','','');
     }
-    
+
     public function pushHorizontalField($label, $field, $info = '', $labelColumnWidth = 3)
-    {        
+    {
         $this->classCss['main'] = 'form-horizontal';
         $row = $this->addRow()->att('class', 'form-group');
         $offset = $labelColumnWidth;
@@ -133,15 +133,15 @@ class PanelNew extends Component
             $offset = 0;
         }
         if (!empty($label) && is_object($field)) {
-            $field->att('data-label', $label);            
-        }        
+            $field->att('data-label', $label);
+        }
         $fieldContainer = $row->add(new Tag('div', null, sprintf('col-sm-%s col-sm-offset-%s', 12 - $labelColumnWidth, $offset)));
         $fieldContainer->add($field);
         if (!empty($info)) {
-            $fieldContainer->add(new Tag('div'))->add($info);
-        }        
+            $fieldContainer->add(new Tag('div',null,'form-group-infobox'))->add($info);
+        }
     }
-    
+
     public function setClass($body, $head = null, $foot = null, $main = null, $title = null)
     {
         $this->classCss['body'] = $body;
@@ -158,5 +158,5 @@ class PanelNew extends Component
             $this->classCss['title'] = $title;
         }
         return $this;
-    }        
+    }
 }
