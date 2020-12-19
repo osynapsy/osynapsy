@@ -205,3 +205,7 @@ input[type="text"].field-in-error, textarea.field-in-error {
 .text-responsive {
     font-size: calc(100% + 1vw + 1vh);
 }
+
+.form-group-infobox {
+    line-height: 1;
+}
