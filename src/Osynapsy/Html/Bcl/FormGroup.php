@@ -37,7 +37,7 @@ class FormGroup extends Component
         }
         $this->add($this->object);
         if (!empty($this->info)) {
-            $this->add(sprintf('<div>%s</div>', $this->info));
+            $this->add(sprintf('<div class="form-group-infobox">%s</div>', $this->info));
         }
     }
 
