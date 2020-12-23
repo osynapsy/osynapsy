@@ -26,7 +26,7 @@ class Component extends Tag
     public function __construct($tag, $id = null)
     {
         parent::__construct($tag, $id);
-        $this->appendById($id, $this);
+        $this->appendToDom($id, $this);
     }
 
     protected function build()
@@ -44,11 +44,12 @@ class Component extends Tag
     {
     }
 
-    public static function appendById($id, $component)
+    public static function appendToDom($id, Tag $component)
     {
         if (!empty($id)) {
             self::$ids[$id] = $component;
         }
+        return $component;
     }
 
     /**
