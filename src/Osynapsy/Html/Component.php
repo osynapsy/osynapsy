@@ -17,7 +17,7 @@ use Osynapsy\Kernel;
  * Master class component
  */
 class Component extends Tag
-{    
+{
     protected static $ids = [];
     protected static $require = [];
     protected $data = [];
@@ -26,29 +26,34 @@ class Component extends Tag
     public function __construct($tag, $id = null)
     {
         parent::__construct($tag, $id);
-        if (!empty($id)) {
-            self::$ids[$id] = $this;
-        }
+        $this->appendById($id, $this);
     }
-      
+
     protected function build()
     {
         $this->__build_extra__();
         return parent::build(-1);
     }
-   
+
     /**
      * Overwrite this method if your component need of extra build operation
-     *      
+     *
      * @return void
-     */ 
+     */
     protected function __build_extra__()
     {
     }
-    
+
+    public static function appendById($id, $component)
+    {
+        if (!empty($id)) {
+            self::$ids[$id] = $component;
+        }
+    }
+
     /**
      * Return component through his id
-     * 
+     *
      * @param $id name of component to return;
      * @return object
      */
@@ -56,16 +61,16 @@ class Component extends Tag
     {
         return array_key_exists($id, self::$ids) ? self::$ids[$id] : null;
     }
-    
+
     /**
      * Return value of key from array
-     * 
+     *
      * @param $nam name of value to return
      * @param $array array where search the value
      * @return mixed
      */
     public function getGlobal($nam, $array)
-    {    
+    {
         if (strpos($nam,'[') === false){
             return array_key_exists($nam,$array) ? $array[$nam] : '';
         }
@@ -73,31 +78,31 @@ class Component extends Tag
         $res = false;
         foreach($names as $nam) {
             if (!array_key_exists($nam,$array)) {
-                continue;            
+                continue;
             }
-            if (is_array($array[$nam])){ 
-                $array = $array[$nam]; 
-            } else { 
+            if (is_array($array[$nam])){
+                $array = $array[$nam];
+            } else {
                 $res = $array[$nam];
-                break; 
+                break;
             }
         }
         return $res;
     }
-    
+
     /**
      * Return data array
-     *      
+     *
      * @return array
      */
     public function getData()
     {
         return $this->data;
     }
-    
+
     /**
      * Return value of parameter
-     * 
+     *
      * @param $key name of parameter to return;
      * @return mixed
      */
@@ -105,17 +110,17 @@ class Component extends Tag
     {
         return array_key_exists($key, $this->__par) ? $this->__par[$key] : null;
     }
-    
+
     /**
      * Return list of required file (css, js etc) for correct initialization of component
-     *      
+     *
      * @return array
      */
     public static function getRequire()
     {
         return self::$require;
     }
-    
+
     public function nvl($a, $b)
     {
         return ( $a !== 0 && $a !== '0' && empty($a)) ? $b : $a;
@@ -126,19 +131,19 @@ class Component extends Tag
         $this->setClass('dispatch-event dispatch-event-click');
         $this->addListener('Click', $listener);
     }
-    
+
     public function onChange(callable $listener)
-    {        
+    {
         $this->setClass('dispatch-event dispatch-event-change');
         $this->addListener('Change', $listener);
     }
-    
+
     protected function addListener($event, callable $listener)
     {
         $eventId = sprintf('%s%s', $this->id, $event);
         \Osynapsy\Event\Dispatcher::addListener($listener, [$eventId]);
     }
-    
+
     private static function requireFile($file, $type)
     {
         if (!array_key_exists($type, self::$require)) {
@@ -153,21 +158,21 @@ class Component extends Tag
         $fullPath = in_array($file[0], ['/','h']) ? $file : '/assets/osynapsy/'.Kernel::VERSION.'/'.$file;
         self::$require[$type][] = $fullPath;
     }
-    
+
     /**
      * Append required js file to list of required file
-     * 
+     *
      * @param $file web path of file;
      * @return void
-     */    
+     */
     public static function requireJs($file)
     {
         self::requireFile($file, 'js');
     }
-    
+
     /**
      * Append required js code to list of required initialization
-     * 
+     *
      * @param $code js code to append at html page;
      * @return void
      */
@@ -175,10 +180,10 @@ class Component extends Tag
     {
         self::requireFile($code, 'jscode');
     }
-    
+
     /**
      * Append required css to list of required File
-     * 
+     *
      * @param $file web path of css file;
      * @return void
      */
@@ -186,10 +191,10 @@ class Component extends Tag
     {
         self::requireFile($file, 'css');
     }
-                    
+
     /**
      * Set action to recall via ajax
-     * 
+     *
      * @param string $action name of the action without Action final
      * @param string $parameters parameters list (comma separated) to pass action
      * @return $this
@@ -206,10 +211,10 @@ class Component extends Tag
         }
         return $this;
     }
-    
+
     /**
      * Append css class to component class attribute
-     * 
+     *
      * @param $class name of css class to add;
      * @return $this
      */
@@ -217,11 +222,11 @@ class Component extends Tag
     {
         return empty($class) ? $this : $this->att('class', $class, $append);
     }
-    
+
     /**
      * Set data internal property of component
-     * 
-     * @param array $data set of data;     
+     *
+     * @param array $data set of data;
      * @return $this
      */
     public function setData($data)
@@ -229,10 +234,10 @@ class Component extends Tag
         $this->data = $data;
         return $this;
     }
-    
+
     /**
      * Set disabled property
-     * 
+     *
      * @param boolen $condition evalute condition for set disabled property
      * @return $this
      */
@@ -243,10 +248,10 @@ class Component extends Tag
         }
         return $this;
     }
-    
+
     /**
      * Set value for internal parameter of component
-     * 
+     *
      * @param string $key name of the parameter
      * @param string $value value to assign parameter
      * @return $this
@@ -256,22 +261,22 @@ class Component extends Tag
         $this->__par[$key] = $value;
         return $this;
     }
-    
+
     /**
      * Set placeholder attribute
-     * 
-     * @param string $placeholder placeholder value    
+     *
+     * @param string $placeholder placeholder value
      * @return $this
-     */    
+     */
     public function setPlaceholder($placeholder)
     {
         $this->att('placeholder', $placeholder);
         return $this;
     }
-            
+
     /**
      * Set readonly property
-     * 
+     *
      * @param boolen $condition evalute condition for set readonly property
      * @return $this
      */
@@ -282,7 +287,7 @@ class Component extends Tag
         }
         return $this;
     }
-    
+
     public function setJavascript($code)
     {
         self::$require['jscode'] = [$code];
