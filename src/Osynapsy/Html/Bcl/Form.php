@@ -148,8 +148,8 @@ class Form extends Component
         if (empty($this->foot)) {
             $this->foot = new Tag('div', null, trim('row mt-2 pt-2 '.$this->footClass));
             $this->foot->style = $this->footStyle;
-            $this->footLeft = $this->foot->add(new Tag('div', null, 'col-lg-6 col-xs-6 col-sm-4'));
-            $this->footRight = $this->foot->add(new Tag('div', null, 'col-lg-6 col-xs-6 col-sm-8 text-right'));
+            $this->footLeft = $this->foot->add(new Tag('div', null, 'col-lg-6 col-xs-6 col-6'));
+            $this->footRight = $this->foot->add(new Tag('div', null, 'col-lg-6 col-xs-6 col-6 text-right'));
         }
         $column = $right ? $this->footRight : $this->footLeft;
         $column->add($obj);
