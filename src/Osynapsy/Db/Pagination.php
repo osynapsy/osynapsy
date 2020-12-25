@@ -193,6 +193,11 @@ class Pagination
         return $this->data;
     }
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
     public function getDb()
     {
         return $this->db;
