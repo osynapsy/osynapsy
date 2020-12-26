@@ -13,6 +13,8 @@ namespace Osynapsy\Html\Bcl;
 
 use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
+use Osynapsy\Html\Bcl4\Pagination as PaginationBs4;
+use Osynapsy\Db\Pagination as PaginatorDb;
 
 class DataGrid extends Component
 {
@@ -346,10 +348,13 @@ class DataGrid extends Component
         return $this->pagination;
     }
 
-    public function setPaginationNew($paginator)
+    public function setPaginator(IPagination $paginator, $showPageDimension = true, $showPageInfo = true)
     {
         $this->pagination = $paginator;
         $this->pagination->setParentComponent($this->id);
+        $this->showPaginationPageDimension = $showPageDimension;
+        $this->showPaginationPageInfo = $showPageInfo;
+        return $this->pagination;
     }
 
     /**
