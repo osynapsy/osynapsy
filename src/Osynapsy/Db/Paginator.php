@@ -11,7 +11,7 @@ namespace Osynapsy\Db;
  *
  * @author Pietro Celeste
  */
-class Pagination
+class Paginator
 {
     const META_PAGE_MIN = 'pageMin';
     const META_PAGE_MAX = 'pageLast';
@@ -30,7 +30,8 @@ class Pagination
     private $filters = [];
     private $fields = [];
     private $par;
-    private $sort = null;
+    private $sort = '1 DESC';
+    private $sortDefault;
     private $sql;
     private $meta = [
         'pageSize' => 10,
@@ -62,7 +63,9 @@ class Pagination
         $this->request = $request;
         $this->setPageSize($defaultPageSize);
         $this->setFilters($this->getRequest('get'));
-        $this->setSort();
+        if (!empty($this->getRequest('get.sort'))) {
+            $this->setSort($this->getRequest('get.sort'));
+        }
     }
 
     public function addField($field)
@@ -308,15 +311,15 @@ class Pagination
         }
     }
 
-    public function setSort($default = null)
+    public function setSort($fields)
     {
-        $fields = $this->getRequest('get.sort');
-        $this->sort = str_replace(
-            ['_asc','_desc'],
-            [' ASC', ' DESC'],
-            empty($fields) ? $default: $fields
-        );
+        $this->sort = str_replace(['_asc','_desc'], [' ASC', ' DESC'], empty($fields) ? $this->sortDefault : $fields);
         return $this;
+    }
+
+    public function setSortDefault($fields)
+    {
+        $this->sortDefault = $fields;
     }
 
     public function setPageSize($defaultSize)
@@ -353,11 +356,6 @@ class Pagination
             }
             $this->addFilter($field, $value);
         }
-    }
-
-    public function setOrderBy($field)
-    {
-        $this->orderBy = $field;
     }
 
     private function setMeta($key, $value)
