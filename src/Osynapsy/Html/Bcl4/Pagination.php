@@ -17,13 +17,14 @@ use Osynapsy\Html\Tag;
 use Osynapsy\Html\Bcl\Link;
 use Osynapsy\Html\Bcl\ComboBox;
 use Osynapsy\Db\Pagination as Paginator;
+use Osynapsy\Html\Bcl\IPagination;
 
 /**
  * Description of Pagination
  *
  * @author Pietro Celeste
  */
-class Pagination extends Component
+class Pagination extends Component implements IPagination
 {
     private $entity = 'Record';
     protected $data = [];
@@ -31,6 +32,7 @@ class Pagination extends Component
     protected $pageDimensionPalceholder = '- Dimensione pagina -';
     private $fields = [];
     private $parentComponent;
+    private $paginator;
     private $position = 'center';
     private $pageDimensions = [
         1 => ['10', '10 righe'],
@@ -54,13 +56,10 @@ class Pagination extends Component
         parent::__construct($tag, $id);
         $this->setClass('BclPagination');
         $this->requireJs('Bcl/Pagination/script.js');
-        $this->paginator = $paginator;
+        $this->setPaginator($paginator);
         if ($tag == 'form') {
             $this->att('method','post');
         }
-        $this->getDataPaginator()->setSort(
-            str_replace(['][','[',']'],[',',''],filter_input(\INPUT_POST, $this->id.'OrderBy'))
-        );
     }
 
     public function __build_extra__()
@@ -138,7 +137,7 @@ class Pagination extends Component
         return $Combo;
     }
 
-    public function loadData()
+    public function loadData($requestPage, $pageOnError = false)
     {
         return $this->getDataPaginator()->get(filter_input(\INPUT_POST, $this->id), true);
     }
@@ -213,5 +212,14 @@ class Pagination extends Component
     public function getErrors()
     {
         return implode(PHP_EOL, $this->errors);
+    }
+
+    protected function setPaginator(Paginator $paginator)
+    {
+        $postOrderByField = str_replace(['][','[',']'],[',',''], filter_input(\INPUT_POST, $this->id.'OrderBy'));
+        $this->paginator = $paginator;
+        if (!empty($postOrderByField)) {
+            $this->paginator->setSort($postOrderByField);
+        }
     }
 }
