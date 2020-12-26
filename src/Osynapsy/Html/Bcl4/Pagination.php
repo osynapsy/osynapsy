@@ -16,7 +16,7 @@ use Osynapsy\Html\Ocl\HiddenBox;
 use Osynapsy\Html\Tag;
 use Osynapsy\Html\Bcl\Link;
 use Osynapsy\Html\Bcl\ComboBox;
-use Osynapsy\Db\Pagination as Paginator;
+use Osynapsy\Db\Paginator;
 use Osynapsy\Html\Bcl\IPagination;
 
 /**
