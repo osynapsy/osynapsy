@@ -102,7 +102,7 @@ class ImageBox extends Component
         $dummy = (new Tag('label', null, 'osy-imagebox-dummy'))->att('for', $this->rawId);
         $dummy->add($content);
         if ($this->image['maxwidth']) {
-            $dummy->att('style', sprintf('width : %spx; height : %spx;', $this->image['maxwidth'], $this->image['maxheight']));
+            $dummy->att('style', sprintf('max-width : %spx; max-height : %spx;', $this->image['maxwidth'], $this->image['maxheight']));
         }
         return $dummy;
     }
