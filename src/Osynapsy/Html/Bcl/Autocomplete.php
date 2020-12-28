@@ -18,6 +18,7 @@ use Osynapsy\Html\Tag;
 class Autocomplete extends Component
 {
     private $emptyMessage;
+    protected $autocompleteclass = ['osy-autocomplete'];
     protected $ico = '<span class="fa fa-search"></span>';
     protected $db;
     protected $query = [
@@ -95,7 +96,7 @@ class Autocomplete extends Component
     {
         $autocomplete = new InputGroup($this->id, '', $this->ico);
         $autocomplete->getTextBox()->onselect = 'event.stopPropagation();';
-        return $autocomplete->setClass('osy-autocomplete');
+        return $autocomplete->setClass(implode(' ', $this->autocompleteclass));
     }
 
     public function setLabel($label)
@@ -139,5 +140,10 @@ class Autocomplete extends Component
         $this->query['decode']['sql'] = $query;
         $this->query['decode']['parameters'] = $parameters;
         return $this;
+    }
+
+    public function addAutocompleteClass($class)
+    {
+        $this->autocompleteclass[] = $class;
     }
 }

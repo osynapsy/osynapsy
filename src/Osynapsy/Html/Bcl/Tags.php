@@ -36,7 +36,7 @@ class Tags extends Component
     public function __build_extra__()
     {
         $this->att('class','bclTags');
-        $wrapper = $this->add(new Tag('h5', null, 'bclTags-container'))->att('style', 'margin: 0px 0px 5px 0px');
+        $wrapper = $this->add(new Tag('div', null, 'bclTags-container d-inline'));
         if (!empty($_REQUEST[$this->id])) {
             $wrapper->add($this->tagsFactory($_REQUEST[$this->id]));
         }
@@ -101,9 +101,10 @@ class Tags extends Component
         $ajax = filter_input(\INPUT_POST, 'ajax');
         if (empty($ajax)) {
             $this->autocomplete = new Autocomplete($this->id.'_auto','div');
+            $this->autocomplete->addAutocompleteClass('input-group-sm');
             $this->autocomplete->att([
-                'style' =>'width: 250px; margin-top: 3px;',
-                'class' => 'pull-left'
+                'style' =>'width: 150px; margin-top: 3px;',
+                'class' => 'd-inline-block'
             ]);
             $this->autocomplete->setSelected("\$('#{$this->id} span.fa-plus').click()");
             $this->autocomplete->setIco('<span class="fa fa-plus tag-append" onclick="BclTags.addTag(\'#'.$this->id.'\');"></span>');
