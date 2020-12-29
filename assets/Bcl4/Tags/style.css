@@ -7,5 +7,6 @@ and open the template in the editor.
     Created on : 28-dic-2020, 15.59.42
     Author     : pietr
 */
+.bcl4-tags {height: auto !important;}
 .bcl4-tags-input {border: 0px;}
 .bcl4-tags-input:focus{outline: none;}

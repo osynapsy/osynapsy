@@ -7,7 +7,10 @@ Bcl4Tags = {
     },
     tagInputFocus : function(event)
     {
-        event.target.querySelector('input[type=text]').focus();
+        let input = event.target.querySelector('input[type="text"]');
+        if (input) {
+            input.focus();
+        }
     },
     tagInput : function(event)
     {
@@ -53,6 +56,7 @@ Bcl4Tags = {
             values += '[' + badge.innerText.trim() + ']';
         });
         tagWrapper.querySelector('input[type="hidden"]').value = values;
+        tagWrapper.dispatchEvent(new Event('change'));
     }
 };
 
