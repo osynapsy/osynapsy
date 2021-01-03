@@ -19,6 +19,9 @@ Osynapsy.action =
     },
     remoteCallParametersFactory : function(object)
     {
+        if (Osynapsy.isArray(object)) {
+            return object;
+        }
         if (!Osynapsy.isObject(object) || Osynapsy.isEmpty(object.dataset) || Osynapsy.isEmpty(object.dataset.actionParameters)) {
             return [];
         }
@@ -34,8 +37,9 @@ Osynapsy.action =
         });
         return result;
     },
-    remoteExecute : function(action, form, object)
+    remoteExecute : function(action, form, object, onSuccess)
     {
+        console.log(onSuccess);
         this.source = object;
         let actionUrl = this.getActionUrl(form);
         let actionParameters = this.remoteCallParametersFactory(object);
@@ -54,12 +58,16 @@ Osynapsy.action =
                     Osynapsy.waitMask.showProgress();
                     return;
                 }
-                if (!object.classList.contains('no-mask')) {
+                if (Osynapsy.isObject(object) && object.classList && !object.classList.contains('no-mask')) {
                     Osynapsy.waitMask.show();
                 }
             },
             success : function(response) {
                 Osynapsy.waitMask.remove();
+                if (!Osynapsy.isEmpty(onSuccess)) {
+                    onSuccess(response);
+                    return;
+                }
                 Osynapsy.action.dispatchServerResponse(response, this);
             },
             error: function(xhr, status, error) {

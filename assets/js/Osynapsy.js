@@ -175,6 +175,11 @@ var Osynapsy = new (function(){
         return hash;
     };
 
+    pub.isArray = function(value)
+    {
+        return Array.isArray(value);
+    };
+
     pub.isEmpty = function (value)
     {
         if (typeof value === 'undefined') {
