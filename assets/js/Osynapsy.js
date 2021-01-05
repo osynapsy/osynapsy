@@ -67,6 +67,7 @@ var Osynapsy = new (function(){
                 options.beforeSend();
             }
             request.send(options['data']);
+            return request;
         }
     };
 
