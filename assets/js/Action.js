@@ -39,7 +39,6 @@ Osynapsy.action =
     },
     remoteExecute : function(action, form, object, onSuccess)
     {
-        console.log(onSuccess);
         this.source = object;
         let actionUrl = this.getActionUrl(form);
         let actionParameters = this.remoteCallParametersFactory(object);
@@ -84,7 +83,7 @@ Osynapsy.action =
         if (fileUploadIsRequired) {
             requestParameters['uploadProgress'] = Osynapsy.waitMask.uploadProgress;
         }
-        Osynapsy.ajax.execute(requestParameters);
+        return Osynapsy.ajax.execute(requestParameters);
     },
     getActionUrl : function(form) {
         if (Osynapsy.isEmpty(form) || Osynapsy.isEmpty(form.getAttribute('action'))){
