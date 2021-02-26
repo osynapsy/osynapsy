@@ -150,6 +150,9 @@ class Tag
             if (is_object($value) && !method_exists($value, '__toString')) {
                 $strTag .= ' error="Attribute value is object ('.get_class($value).')"';
                 continue;
+            } elseif (is_array($value)) {
+                $strTag .= ' error="Attribute value is array"';
+                continue;
             }
             $strTag .= ' '.$key.'="'.htmlspecialchars($value, ENT_QUOTES).'"';
             // la conversione del contentuto degli attributi viene fornita da Tag in modo
