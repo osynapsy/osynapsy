@@ -14,7 +14,7 @@ class Switcher extends Component
 {
     private $checkBox;
     private $label;
-    
+
     public function __construct($id, $label)
     {
         parent::__construct('div', $id.'_container');
@@ -24,21 +24,21 @@ class Switcher extends Component
         $this->label = $this->add(new Tag('label', null, "custom-control-label"))->att('for', $id);
         $this->label->add($label);
     }
-    
+
     public function getCheckBox()
     {
         return $this->checkBox;
     }
-    
+
     public function setAction($action, $parameters = null, $class = 'click-execute', $confirmMessage = null)
     {
         $this->checkBox->att([
-            'data-action' => $action, 
+            'data-action' => $action,
             'data-action-parameters' => $parameters
         ]);
-        $this->att('class', $class, true);
+        $this->checkBox->att('class', $class, true);
         if (!empty($confirmMessage)) {
-            $this->att('data-action-confirm', $confirmMessage);
+            $this->checkBox->att('data-action-confirm', $confirmMessage);
         }
         return $this;
     }
