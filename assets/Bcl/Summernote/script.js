@@ -32,8 +32,9 @@ BclSummernote =
     {
         let result = [
             ['style', ['style']],
-            ['font', ['bold', 'underline', 'clear']],
             ['fontname', ['fontname']],
+            ['fontsize', ['fontsize']],
+            ['font', ['bold', 'underline', 'clear']],
             ['color', ['color']],
             ['para', ['ul', 'ol', 'paragraph']],
             ['table', ['table']],
