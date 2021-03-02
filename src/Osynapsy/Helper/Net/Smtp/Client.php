@@ -126,7 +126,7 @@ class Client
     private $response = [];
     private $contextOptions = [];
     private $currentResponse;
-    
+
     public function __construct($server, $port, $username = null, $password = null, $secure = null)
     {
         $this->server = $server;
@@ -155,11 +155,11 @@ class Client
             $this->timeout,
             STREAM_CLIENT_CONNECT,
             $streamContext
-        );        
+        );
         if (!$this->conn) {
             $this->raiseException(sprintf('ERROR : %s %s', $errno, $errstr));
         }
-        if (substr($this->getServerResponse(),0,3) != '220') {             
+        if (substr($this->getServerResponse(),0,3) != '220') {
             $this->raiseException($this->currentResponse);
         }
     }
@@ -169,24 +169,24 @@ class Client
         if (!array_key_exists('ssl', $this->contextOptions)) {
             $this->contextOptions['ssl'] = [];
         }
-        $this->contextOptions['ssl']['verify_peer'] = $verify; 
-        $this->contextOptions['ssl']['verify_peer_name'] = $verify; 
+        $this->contextOptions['ssl']['verify_peer'] = $verify;
+        $this->contextOptions['ssl']['verify_peer_name'] = $verify;
         $this->contextOptions['ssl']['allow_self_signed'] = !$verify;
         return $this;
     }
-    
+
     /* sign in / authenicate */
     private function auth()
-    {        
-        $this->putRow('HELO ' . $this->localhost);        
+    {
+        $this->putRow('HELO ' . $this->localhost);
         if ($this->secure == 'tls') {
             $this->authTls();
         }
         if ($this->server == 'localhost') {
             $this->isLogin = true;
             return;
-        }        
-        if ($this->putRow('AUTH LOGIN') != '334') { 
+        }
+        if ($this->putRow('AUTH LOGIN') != '334') {
             $this->raiseException($this->currentResponse);
         }
         if ($this->putRow(base64_encode($this->username)) != '334') {
@@ -194,28 +194,28 @@ class Client
         }
         if ($this->putRow(base64_encode($this->password)) != '235') {
             $this->raiseException($this->currentResponse);
-        }        
+        }
         $this->isLogin = true;
     }
-        
+
     private function authTls()
     {
         if ($this->putRow('STARTTLS') != '220') {
             $this->raiseException($this->currentResponse);
-        }        
+        }
         stream_socket_enable_crypto($this->conn, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
         if ($this->putRow('HELO ' . $this->localhost) != '250') {
             $this->raiseException($this->currentResponse);
         }
     }
-    
+
     private function putRow($command)
     {
         fputs($this->conn, $command . $this->newline);
-        $this->currentResponse = $this->getServerResponse();        
+        $this->currentResponse = $this->getServerResponse();
         return substr($this->currentResponse, 0, 3);
     }
-    
+
     /* send the email message */
     public function send($from, $to, $subject, $message, $headers=null, $utf8=false)
     {
@@ -263,10 +263,10 @@ class Client
     }
 
     private function setRecipients($to) /* assumes there is at least one recipient */
-    { 
+    {
         $r = 'To: ';
-        if (!($to == '')) { 
-            $r .= $to . ',';            
+        if (!($to == '')) {
+            $r .= $to . ',';
         }
         if (count($this->recipients) > 0) {
             for($i=0;$i<count($this->recipients);$i++) {
@@ -287,7 +287,7 @@ class Client
     private function sendRecipients(array $recipients)
     {
         if (empty($recipients)) {
-            return; 
+            return;
         }
         foreach($recipients as $recipient) {
             $this->putRow('RCPT TO: <'. $this->getMailAddr($recipient) .'>');
@@ -326,9 +326,30 @@ class Client
         $this->bcc = array();
     }
 
-    public function addAttachment($filePath)
+    public function addAttachmentFromFile($filePath)
     {
-        $this->attachments[] = $filePath;
+        if (!is_file($filePath)) {
+            throw new \Exception(sprintf('Attachment file %s do not exists', $filePath));
+        }
+        $content = file_get_contents($filePath);
+        $this->attachments[] = [
+            'filename' => $filePath,
+            'content' => $content
+        ];
+    }
+
+    public function addAttachmentFromString($filename, $filecontent)
+    {
+        if (empty($filecontent)) {
+            throw new \Exception('Attachment filename is empty');
+        }
+        if (empty($filecontent)) {
+            throw new \Exception('Attachment content is empty');
+        }
+        $this->attachments[] = [
+            'filename' => $filename,
+            'content' => $filecontent
+        ];
     }
 
     public function clearAttachments()
@@ -338,7 +359,7 @@ class Client
     }
 
     /* Quit and disconnect */
-    function __destruct() 
+    function __destruct()
     {
         fputs($this->conn, 'QUIT' . $this->newline);
         $this->getServerResponse();
@@ -351,8 +372,8 @@ class Client
         $data = "";
         while($str = fgets($this->conn,4096)) {
             $data .= $str;
-            if(substr($str,3,1) == " ") { 
-                break;              
+            if(substr($str,3,1) == " ") {
+                break;
             }
         }
         if($this->debug) {
@@ -373,12 +394,12 @@ class Client
         }
         return $addr;
     }
-    
+
     public function getResponse()
     {
         return implode(PHP_EOL,$this->response);
     }
-    
+
     private function randID($len)
     {
         $index = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -399,10 +420,10 @@ class Client
         return $boundary;
     }
 
-    private function multipartMessage($htmlpart,$boundary)
+    private function multipartMessage($htmlpart, $boundary)
     {
-        if($this->altBody == "") { 
-            $this->altBody = strip_html_tags($htmlpart); 
+        if($this->altBody == "") {
+            $this->altBody = strip_tags($htmlpart);
         }
         $altBoundary = $this->generateBoundary();
         //ob_start(); //Turn on output buffering
@@ -420,23 +441,28 @@ class Client
         $parts .= $htmlpart . $this->newline . $this->newline;
         $parts .= "--" . $altBoundary . "--" . $this->newline . $this->newline;
         if (count($this->attachments) > 0) {
-            for ($i=0; $i<count($this->attachments); $i++) {
-                $attachment = chunk_split(base64_encode(file_get_contents($this->attachments[$i])));
-                $filename = basename($this->attachments[$i]);
-                $ext = pathinfo($filename, PATHINFO_EXTENSION);
-                $parts .= "--" . $boundary . $this->newline;
-                $parts .= "Content-Type: application/$ext; name=\"$filename\"" . $this->newline;
-                $parts .= "Content-Transfer-Encoding: base64" . $this->newline;
-                $parts .= "Content-Disposition: attachment; filename=\"$filename\"" . $this->newline . $this->newline;
-                $parts .= $attachment . $this->newline;
+            foreach ($this->attachments as $attachment) {
+                $parts .= $this->multipartMessageAttach($boundary, $attachment);
             }
         }
-
-        $parts .= "--" . $boundary . "--";        
+        $parts .= "--" . $boundary . "--";
         //$message = ob_get_clean(); //Turn off output buffering
         return $parts;
     }
-    
+
+    protected function multipartMessageAttach($boundary, $attachment)
+    {
+        $filename = basename($attachment['filename']);
+        $attachmentBody = chunk_split(base64_encode($attachment['content']));
+        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+        $parts = "--" . $boundary . $this->newline;
+        $parts .= "Content-Type: application/$ext; name=\"$filename\"" . $this->newline;
+        $parts .= "Content-Transfer-Encoding: base64" . $this->newline;
+        $parts .= "Content-Disposition: attachment; filename=\"$filename\"" . $this->newline . $this->newline;
+        $parts .= $attachmentBody . $this->newline;
+        return $parts;
+    }
+
     protected function raiseException($message)
     {
         throw new \Exception($message);
