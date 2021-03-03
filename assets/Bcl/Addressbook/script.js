@@ -7,12 +7,9 @@ BclAddressbook =
             $('input[type=checkbox]', this).prop('checked',!selected);
             $(this).toggleClass('osy-addressbook-item-selected');
         });
-        /*
-         $('.osy-addressbook').parent().on('click','a.osy-addressbook-link',function(evt){
-            Osynapsy.history.save();
+        $('.osy-addressbook').parent().on('click','a.osy-addressbook-link',function(evt){
             evt.stopPropagation();
         });
-         */
     }
 }
 
