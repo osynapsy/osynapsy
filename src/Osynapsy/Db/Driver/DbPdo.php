@@ -122,16 +122,16 @@ class DbPdo extends \PDO implements InterfaceDbo
         return $s->execute($parameters);
     }
 
-    public function execMulti($cmd, $par)
+    public function execMulti($cmd, $rows)
     {
         $this->beginTransaction();
         $s = $this->prepare($cmd);
-        foreach ($par as $rec) {
+        foreach ($rows as $rec) {
             try {
                 $s->execute($rec);
             } catch (Exception $e){
                 $this->rollBack();
-                return $cmd.' '.$e->getMessage().print_r($rec, true);
+                return sprintf('%s %s %s', $cmd, $e->getMessage(), print_r($rec, true));
             }
         }
         $this->commit();
