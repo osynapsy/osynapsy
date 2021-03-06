@@ -42,4 +42,9 @@ class Switcher extends Component
         }
         return $this;
     }
+
+    public function disable()
+    {
+        $this->checkBox->att('disabled');
+    }
 }
