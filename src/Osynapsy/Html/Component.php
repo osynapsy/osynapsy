@@ -237,7 +237,7 @@ class Component extends Tag
         return $this;
     }
 
-    protected function setDefaultValue($value)
+    public function setDefaultValue($value)
     {
         $this->defaultValue = $value;
         return $this;
