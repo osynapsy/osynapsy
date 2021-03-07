@@ -29,4 +29,9 @@ class TextArea extends Component
             $this->add($this->defaultValue);
         }
     }
+
+    public function setAction($action, $parameters = null, $class = 'change-execute', $confirmMessage = null): \this
+    {
+        return parent::setAction($action, $parameters, $class, $confirmMessage);
+    }
 }
