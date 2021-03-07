@@ -22,6 +22,7 @@ class Component extends Tag
     protected static $require = [];
     protected $data = [];
     protected $__par = [];
+    protected $defaultValue;
 
     public function __construct($tag, $id = null)
     {
@@ -233,6 +234,12 @@ class Component extends Tag
     public function setData($data)
     {
         $this->data = $data;
+        return $this;
+    }
+
+    protected function setDefaultValue($value)
+    {
+        $this->defaultValue = $value;
         return $this;
     }
 
