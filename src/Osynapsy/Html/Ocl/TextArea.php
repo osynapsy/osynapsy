@@ -30,7 +30,7 @@ class TextArea extends Component
         }
     }
 
-    public function setAction($action, $parameters = null, $class = 'change-execute', $confirmMessage = null): \this
+    public function setAction($action, $parameters = null, $class = 'change-execute', $confirmMessage = null)
     {
         return parent::setAction($action, $parameters, $class, $confirmMessage);
     }
