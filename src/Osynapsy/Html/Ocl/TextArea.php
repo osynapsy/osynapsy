@@ -20,11 +20,13 @@ class TextArea extends Component
         parent::__construct('textarea',$name);
         $this->name = $name;
     }
-    
+
     public function __build_extra__()
     {
         if (!empty($_REQUEST[$this->id])) {
             $this->add($_REQUEST[$this->id]);
+        } elseif (!empty($this->defaultValue) || $this->defaultValue == '0') {
+            $this->add($this->defaultValue);
         }
     }
 }
