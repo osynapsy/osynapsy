@@ -103,6 +103,13 @@ class Message
         return $this->attachments;
     }
 
+    public function getFilteredAttachments($filenameSearched)
+    {
+        return array_filter($this->attachments, function($attachmentFilename) use ($filenameSearched) {
+           return (strpos($attachmentFilename, $filenameSearched) !== false);
+        }, \ARRAY_FILTER_USE_KEY);
+    }
+
     public function getFlattenStructure()
     {
         return $this->flattenStructure;
@@ -117,5 +124,10 @@ class Message
     {
         $header = imap_header($this->connection, $this->messageIdx);
         return $header->{$key};
+    }
+
+    public function getSubject()
+    {
+        return $this->getMessageInfo('subject');
     }
 }
