@@ -295,6 +295,16 @@ class DbPdo extends \PDO implements InterfaceDbo
         $this->insert($table, array_merge($args, $conditions));
     }
 
+    public function replaceRet($table, $args, $conditions, $fieldToReturn = null)
+    {
+        $result = $this->selectOne($table, $conditions, [$fieldToReturn ?? 'count(*)'], 'NUM');
+        if (!empty($result)) {
+            $this->update($table, $args, $conditions);
+            return $result;
+        }
+        return $this->insert($table, array_merge($args, $conditions));
+    }
+
     public function select($table, array $conditions, array $fields = ['*'], array $orderBy = [], $fetchMethod = 'ASSOC')
     {
         list($sql, $params) = $this->selectBuild($table, $fields, $conditions, $orderBy);
