@@ -115,6 +115,24 @@ class Message
         return $this->flattenStructure;
     }
 
+    public function getDate()
+    {
+        $date = $this->getMessageInfo('date');
+        if (empty($date)) {
+            return null;
+        }
+        return (new \DateTime($date))->format('Y-m-d H:i:s');
+    }
+
+    public function getFrom()
+    {
+        $from = $this->getMessageInfo('from');
+        if (empty($from)) {
+            return null;
+        }
+        return sprintf('%s <%s@%s>', $from[0]->personal, $from[0]->mailbox, $from[0]->host);
+    }
+
     public function getId()
     {
         return $this->messageIdx;
@@ -129,5 +147,10 @@ class Message
     public function getSubject()
     {
         return $this->getMessageInfo('subject');
+    }
+
+    public function getUid()
+    {
+        return imap_uid($this->connection, $this->getId());
     }
 }
