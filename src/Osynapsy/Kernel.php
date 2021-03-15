@@ -26,7 +26,7 @@ use Osynapsy\Kernel\Error\Dispatcher as ErrorDispatcher;
  */
 class Kernel
 {
-    const VERSION = '0.7.2-DEV';
+    const VERSION = '0.7.3-DEV';
     const DEFAULT_APP_CONTROLLER = '\\Osynapsy\\Mvc\\Application';
     const DEFAULT_ASSET_CONTROLLER = 'Osynapsy\\Assets\\Loader';
 
