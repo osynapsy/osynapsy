@@ -12,7 +12,7 @@ use Osynapsy\Db\Driver\InterfaceDbo;
 abstract class Base implements InterfaceAction
 {
     private $controller;
-    private $parameters;
+    private $parameters = [];
     protected $triggers = [];
 
     abstract public function execute();
