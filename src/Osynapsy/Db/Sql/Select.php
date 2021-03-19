@@ -118,9 +118,12 @@ class Select
         return $this;
     }
 
-    public function on(array $conditions)
+    public function on(array $conditions, array $parameters = [])
     {
         $this->elements['JOIN'][] = 'ON ('.implode(' AND ', $conditions).')';
+        if (!empty($parameters)) {
+            $this->parameters($parameters);
+        }
         return $this;
     }
 
