@@ -16,7 +16,7 @@ class Validator
     const ERROR_NOT_INTEGER = 'Il campo <fieldname> accetta solo numeri interi.';
     const ERROR_NOT_UNIQUE = '<value> è già presente in archivio.';
     const ERROR_LENGTH_EXCEEDS = 'Il campo <fieldname> accetta massimo ';
-    const ERROR_LENGTH_MIN = 'Il campo <fieldname> accetta minimo';
+    const ERROR_LENGTH_MIN = 'Il campo <fieldname> accetta  minimo ';
     const ERROR_LENGTH_FIX = 'Il campo <fieldname> solo valori con lunghezza pari a ';
 
     private $model;
