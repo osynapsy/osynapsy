@@ -55,15 +55,14 @@ class Container extends Tag
         return $this->alert;
     }
 
-    public function getFoot($right = false, $offset = 0)
+    public function getFoot($right = false)
     {
         if (empty($this->foot)) {
-            $width = (12 - ($offset * 2)) / 2;
-            $lgoffset = empty($offset) ? '' : ' col-lg-offset-'.$offset;
-            $this->foot = $this->addRow('p-2 '.$this->footClass);
+            $this->foot = $this->add(new Tag('div', null, 'px-1 '.$this->footClass));
             $this->foot->style = 'background-color: rgba(255,255,255,0.8); border-top: 1px solid #ddd;';
-            $this->footLeft = $this->foot->add(new Tag('div', null, 'col-lg-'.$width.$lgoffset));
-            $this->footRight = $this->foot->add(new Tag('div', null, 'col-lg-'.$width.' text-right'));
+            $this->footLeft = $this->foot->add(new Tag('div', null, 'float-left'));
+            $this->footRight = $this->foot->add(new Tag('div', null, 'float-right'));
+            $this->foot->add('<div class="clearfix"></div>');
         }
         return empty($right) ? $this->footLeft : $this->footRight;
     }
@@ -103,7 +102,7 @@ class Container extends Tag
         }
     }
 
-    public function fixCommandBar($class = 'fixed-bottom  px-5 py-2 b-light')
+    public function fixCommandBar($class = 'fixed-bottom py-2 b-light')
     {
        $this->footClass = $class;
     }
