@@ -21,7 +21,7 @@ trait FormCommands
             'btn_back',
             'button',
             'cmd-back btn btn-default btn-secondary',
-            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fa fa-arrow-left"></span> Indietro&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
+            '<span class="fa fa-arrow-left"></span> Indietro'
         );
     }
 
@@ -31,7 +31,7 @@ trait FormCommands
             'btn_close',
             'button',
             'cmd-close btn btn-default btn-secondary',
-            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fa fa-times"></span> Chiudi&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
+            '<span class="fa fa-times"></span> Chiudi'
         );
         return $button->att('onclick', "parent.$('#amodal').modal('hide');");
     }
@@ -42,7 +42,7 @@ trait FormCommands
             'btn_delete',
             'button',
             'btn-danger',
-            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fa fa-trash-o"></span> Elimina&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
+            '<span class="fa fa-trash-o"></span> Elimina'
         );
         $btnDelete->setAction('delete', null ,'click-execute', 'Sei sicuro di voler procedere con l\'eliminazione ?');
         return $btnDelete;
@@ -51,7 +51,7 @@ trait FormCommands
     public function buttonSaveFactory($label = true)
     {
         if ($label === true) {
-            $label = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fa fa-floppy-o"></span> Salva&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+            $label = '<span class="fa fa-floppy-o"></span> Salva';
         }
         $btnSave = new Button('btn_save', 'button', 'btn-primary', $label);
         $btnSave->setAction('save');
