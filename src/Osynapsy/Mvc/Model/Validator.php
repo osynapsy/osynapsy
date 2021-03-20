@@ -14,10 +14,10 @@ class Validator
     const ERROR_NOT_NULL = 'Il campo <fieldname> è obbligatorio.';
     const ERROR_NOT_NUMERIC = 'Il campo <fieldname> accetta solo valori numerici.';
     const ERROR_NOT_INTEGER = 'Il campo <fieldname> accetta solo numeri interi.';
-    const ERROR_NOT_UNIQUE = '<value> è già presente in archivio.';
-    const ERROR_LENGTH_EXCEEDS = 'Il campo <fieldname> accetta massimo ';
-    const ERROR_LENGTH_MIN = 'Il campo <fieldname> accetta  minimo ';
-    const ERROR_LENGTH_FIX = 'Il campo <fieldname> solo valori con lunghezza pari a ';
+    const ERROR_NOT_UNIQUE = '<value> è già  presente in archivio.';
+    const ERROR_LENGTH_EXCEEDS = 'Il campo <fieldname> deve avere una lunghezza massima di %s caratteri';
+    const ERROR_LENGTH_MIN = 'Il campo <fieldname> deve avere una lunghezza minima di %s caratteri';
+    const ERROR_LENGTH_FIX = 'Il campo <fieldname> accetta solo valori con una lunghezza pari a %s caratteri';
 
     private $model;
 
@@ -80,13 +80,13 @@ class Validator
     {
         //Controllo la lunghezza massima della stringa. Se impostata.
         if ($field->maxlength && (strlen($field->value) > $field->maxlength)) {
-            throw new \Exception(self::ERROR_LENGTH_EXCEEDS . $field->maxlength . ' caratteri');
+            throw new \Exception(sprintf(self::ERROR_LENGTH_EXCEEDS, $field->maxlength));
         }
         if ($field->minlength && (strlen($field->value) < $field->minlength)) {
-            throw new \Exception(self::ERROR_LENGTH_MIN . $field->minlength . ' caratteri');
+            throw new \Exception(sprintf(self::ERROR_LENGTH_MIN, $field->minlength));
         }
         if ($field->fixlength && !in_array(strlen($field->value), $field->fixlength)) {
-            throw new \Exception(self::ERROR_LENGTH_FIX . implode(' o ',$field->fixlength).' caratteri');
+            throw new \Exception(sprintf(self::ERROR_LENGTH_FIX, implode(' o ',$field->fixlength)));
         }
     }
 
