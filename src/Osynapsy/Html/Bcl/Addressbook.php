@@ -59,7 +59,7 @@ class Addressbook extends PanelNew
     {
         $columnLength = floor(12 / $this->columns);
         foreach($this->data as $i => $rec) {
-            $column = $this->addColumn($columnLength);
+            $column = $this->addColumn($columnLength)->setXs(6);
             $a = $column->add(new Tag('div', null, 'osy-addressbook-item'));
             $p0 = $a->add(new Tag('div', null, 'p0'));
             $p1 = $a->add(new Tag('div', null, 'p1'));
