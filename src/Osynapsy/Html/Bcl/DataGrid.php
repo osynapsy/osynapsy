@@ -201,6 +201,7 @@ class DataGrid extends Component
             return $row;
         }
         $paginationWidth = 12;
+        $hidden = $this->pagination->getStatistic('pageTotal') > 1 ? '' : 'd-none';
         if ($this->showPaginationPageDimension && $this->pagination->getStatistic('pageTotal') > 1) {
             $row->add(new Tag('div', null, 'col-sm-4 d-none d-sm-block col-lg-2'))
                 ->add($this->pagination->getPageDimensionsCombo());
@@ -211,10 +212,8 @@ class DataGrid extends Component
                 ->add('<label class="" style="margin-top: 30px;">'.$this->pagination->getInfo().'</label>');
             $paginationWidth -= 4;
         }
-        if ($this->pagination->getStatistic('pageTotal') > 1) {
-            $row->add(new Tag('div', null, sprintf('col-sm-8 col-md-%s text-right', $paginationWidth)))
-                ->add($this->pagination)->setClass('mt-4')->setPosition('end');
-        }
+        $row->add(new Tag('div', null, sprintf('col-sm-8 col-md-%s text-right %s', $paginationWidth, $hidden)))
+            ->add($this->pagination)->setClass('mt-4')->setPosition('end');
         return $row;
     }
 
