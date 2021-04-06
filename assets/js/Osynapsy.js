@@ -376,7 +376,7 @@ var Osynapsy = new (function(){
 
     pub.setParentModalTitle = function()
     {
-        if (window.frameElement) {
+        if (window.frameElement && parent.document.getElementById('amodal')) {
             parent.document.getElementById('amodal').querySelector('.modal-title').innerHTML = document.title;
         }
     };
