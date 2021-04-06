@@ -269,7 +269,7 @@ var Osynapsy = new (function(){
             e.preventDefault();
             Osynapsy.modal.window(
                 this.getAttribute('title'),
-                this.classList.contains('.postdata') ? [this.getAttribute('href'), this.closest('form')] : this.getAttribute('href'),
+                this.classList.contains('postdata') ? [this.getAttribute('href'), this.closest('form')] : this.getAttribute('href'),
                 this.getAttribute('modal-width'),
                 this.getAttribute('modal-height')
             );

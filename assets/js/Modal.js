@@ -120,7 +120,7 @@ Osynapsy.modal.window = function(title, url, width = '640px', height = '480px')
     modal.dialog.querySelector('.modal-footer').remove();
     document.body.appendChild(modal);
     if (Array.isArray(url)) {
-        let form = url[1];
+        let form = $(url[1]);
         let action = form.attr('action');
         let target = form.attr('target');
         let method = form.attr('method');
