@@ -30,7 +30,7 @@ class ComboBox extends Component
     protected function __build_extra__()
     {
         $this->currentValue = $this->getGlobal($this->name, $_REQUEST);
-        if (empty($this->currentValue) && $this->currentValue != '0') {
+        if (empty($this->currentValue) && $this->currentValue !== '0') {
             $this->currentValue = $this->defaultValue;
         }
         if (!empty($this->placeholder) && !$this->getParameter('option-select-disable') && is_array($this->data)){
