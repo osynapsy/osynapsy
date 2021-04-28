@@ -20,7 +20,6 @@ class Modal extends Component
     public function __construct($id, $title = '', $type = '')
     {
         parent::__construct('div',$id);
-
         $this->att('class','modal fade')->att('tabindex','-1')->att('role','dialog');
         $this->content = $this->add(new Tag('div', null, trim('modal-dialog '.$type)))
                               ->add(new Tag('div', null, 'modal-content'));
