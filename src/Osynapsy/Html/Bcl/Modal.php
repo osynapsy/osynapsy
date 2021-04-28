@@ -15,39 +15,35 @@ class Modal extends Component
     public $panelFoot;
     private $columnCommandLeft;
     private $columnCommandRight;
-    public $footer;    
-    
+    public $footer;
+
     public function __construct($id, $title = '', $type = '')
     {
         parent::__construct('div',$id);
-        
+
         $this->att('class','modal fade')->att('tabindex','-1')->att('role','dialog');
-        
-        $this->content = $this->add(new Tag('div'))->att('class',trim('modal-dialog '.$type))
-                              ->add(new Tag('div'))->att('class','modal-content');
-        $this->header = $this->content->add(new Tag('div'))->att('class','modal-header');
+        $this->content = $this->add(new Tag('div', null, trim('modal-dialog '.$type)))
+                              ->add(new Tag('div', null, 'modal-content'));
+        $this->header = $this->content->add(new Tag('div', null, 'modal-header'));
+        $this->title = $this->header->add(new Tag('h5'))->att('class','modal-title');
         $this->header->add('<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
-        
-        $this->title = $this->header->add(new Tag('h4'))->att('class','modal-title');
         $this->title->add($title);
-        
-        $this->body = $this->content->add(new Tag('div'))->att('class','modal-body');
-        
-        $this->footer = $this->content->add(new Tag('div'))->att('class','modal-footer');
+        $this->body = $this->content->add(new Tag('div', null, 'modal-body'));
+        $this->footer = $this->content->add(new Tag('div', null, 'modal-footer'));
     }
-    
+
     public function addFooter($content)
     {
         $this->footer->add($content);
         return $content;
     }
-    
+
     public function addBody($content)
     {
         $this->body->add($content);
         return $content;
     }
-    
+
     public function getPanelBody()
     {
         if (empty($this->panelBody)){
@@ -56,7 +52,7 @@ class Modal extends Component
         }
         return $this->panelBody;
     }
-    
+
     public function getPanelFoot()
     {
         if (empty($this->panelFoot)){
@@ -65,7 +61,7 @@ class Modal extends Component
         }
         return $this->panelFoot;
     }
-    
+
     public function addCommand(array $left = [],array $right = [], $addCloseCommand = true)
     {
         if (empty($this->columnCommandLeft)) {
