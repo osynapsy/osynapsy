@@ -70,7 +70,7 @@ class Gallery extends Component
 
     protected function buttonOpenModalFactory()
     {
-        $Button = new Button($this->id.'Add', 'button', 'btn btn-danger btn-block', 'Aggiungi foto');
+        $Button = new Button($this->id.'Add', 'button', 'btn btn-primary btn-block', 'Aggiungi foto');
         $Button->att(['data-toggle' => 'modal', 'data-target' => '#'.$this->id.'ModalUpload']);
         return $Button;
     }
