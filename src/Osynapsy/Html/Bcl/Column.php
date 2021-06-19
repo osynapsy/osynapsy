@@ -26,6 +26,9 @@ class Column extends Component
     public function __construct($size = 2, $offset = 0)
     {
         parent::__construct('div');
+        if (empty($size)) {
+            return;
+        }
         $this->setLg($size, $offset);
         $this->setMd($size, $offset);
         $this->setSm($size, $offset);
