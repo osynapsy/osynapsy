@@ -25,12 +25,15 @@ class NavBar2 extends Component
      *
      * @param string $id
      */
-    public function __construct($id)
+    public function __construct($id, $class = null)
     {
         parent::__construct('nav', $id);
         $this->setData([],[]);
         $this->requireCss('Bcl4/NavBar/style.css');
         $this->requireJs('Bcl4/NavBar/script.js');
+        if (!empty($class)) {
+            $this->setClass($class);
+        }
     }
 
     /**
