@@ -2,7 +2,10 @@ BclAddressbook =
 {
     init : function()
     {
-        $('.osy-addressbook').parent().on('click','.osy-addressbook-item',function(){
+        $('.osy-addressbook').parent().on('click','.osy-addressbook-item',function(evt){
+            if ($(evt.target).hasClass('osy-addressbook-link')) {
+                return;
+            }
             var selected = $(this).hasClass('osy-addressbook-item-selected');
             $('input[type=checkbox]', this).prop('checked',!selected);
             $(this).toggleClass('osy-addressbook-item-selected');
