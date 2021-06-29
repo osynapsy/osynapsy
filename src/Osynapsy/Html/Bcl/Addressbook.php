@@ -94,7 +94,7 @@ class Addressbook extends PanelNew
                   ->att('href',$v);
                 break;
             case 'hrefModal':
-                $a->add(new Tag('a', null, 'osy-addressbook-link fa fa-pencil open-modal'))
+                $a->add(new Tag('a', null, 'osy-addressbook-link fa fa-pencil fa-pencil-alt open-modal'))
                   ->att(['href' => $v, 'modal-width' => '640px', 'modal-height' => '480px']);
                 break;
             case 'class':
@@ -104,7 +104,7 @@ class Addressbook extends PanelNew
                 if (!empty($v)) {
                     $v = '<img src="'.$v.'" class="osy-addressbook-img">';
                 } else {
-                    $v = '<span class="fa fa-user-o fa-2x osy-addressbook-img text-center" style="padding-top: 3px"></span>';
+                    $v = '<span class="fa fa-user fa-2x osy-addressbook-img text-center" style="padding-top: 3px"></span>';
                 }
                 $p0->add($v);
                 break;
