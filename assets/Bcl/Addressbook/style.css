@@ -110,6 +110,7 @@ div.osy-addressbook .osy-addressbook-item div.p1 {
 div.osy-addressbook .osy-addressbook-item {
     color: #888;
     margin-bottom: 25px;
+    background-color: white;
 }
 div.osy-addressbook .osy-addressbook-item div.p1 {
     padding-left: 45px;
