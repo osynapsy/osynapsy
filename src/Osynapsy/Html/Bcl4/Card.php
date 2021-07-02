@@ -195,9 +195,13 @@ class Card extends Component
         $this->getBody()->add(new Tag($tag, null, trim('card-title '.$class)))->add($title);
     }
 
-    public function setTitleOnHead($title)
+    public function setTitleOnHead($title, array $commands = [])
     {
         $this->getHead()->add(new Tag('div', null, 'float-left'))->add($title);
+        if (empty($commands)) {
+            return;
+        }
+        $this->getHead()->add(new Tag('div', null, 'float-right'))->addFromArray($commands);
     }
 
     public function setCommand($command)
