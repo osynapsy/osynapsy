@@ -62,7 +62,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * @param array $parameters
      * @return \Osynapsy\Http\Response
      */
-    private function execExternalAction(string $action, array $parameters = []) : Response
+    public function execExternalAction(string $action, array $parameters = []) : Response
     {
         $this->setState('beforeAction'.ucfirst($action));
         $actionInstance = $this->externalActions[$action];
