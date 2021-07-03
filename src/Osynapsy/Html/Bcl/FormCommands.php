@@ -36,13 +36,13 @@ trait FormCommands
         return $button->att('onclick', "parent.$('#amodal').modal('hide');");
     }
 
-    public function buttonDeleteFactory()
+    public function buttonDeleteFactory($label = true)
     {
         $btnDelete = new Button(
             'btn_delete',
             'button',
             'btn-danger',
-            '<span class="fa fa-trash-o"></span> Elimina'
+            $label === true ? '<span class="fa fa-trash-o"></span> Elimina' : $label
         );
         $btnDelete->setAction('delete', null ,'click-execute', 'Sei sicuro di voler procedere con l\'eliminazione ?');
         return $btnDelete;
