@@ -20,7 +20,7 @@ class ScrollSpy extends Component
     public function __construct($id, $height = '100vh', $tag = 'div')
     {
         parent::__construct($tag, $id);
-        $this->setClass('scrollspy position-relative bg-light d-block border p-5');
+        $this->setClass('scrollspy position-relative bg-light d-block border p-lg-5 p-3');
         if (!empty($height)) {
             $this->style = 'overflow-y: scroll;height: '.$height;
         }
