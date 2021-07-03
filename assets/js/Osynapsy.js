@@ -344,7 +344,7 @@ var Osynapsy = new (function(){
         },
         show : function()
         {
-            let message = 'PLEASE WAIT <span class="fa fa-refresh fa-spin"></span>';
+            let message = 'PLEASE WAIT <span class="fa fa-refresh fa-sync fa-spin"></span>';
             var parent = arguments.length > 0 ? arguments[0] : document;
             this.build(message, parent);
         },
