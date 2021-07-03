@@ -1,41 +1,8 @@
-/*image dummy*/
-.osy-imagebox-dummy {
-    display: block;
-    border: 1px dashed #ccc;
-    background-color: white;
-    border-radius: 3px;
-    margin: auto !important;
-    text-align: center !important;
-    padding: 3px;
-    position: relative;
-}
-
-.osy-imagebox-dummy:hover {
-    background-color: #fbfbfb;
-}
-
-.osy-imagebox-dummy span{
-    position: relative;
-    top: 50%;
-    color: #888;
-    font-size: 1.5em;
-}
-
-.osy-imagebox-bcl img.imagebox-main {
-    max-width: 100%
-}
-
-.osy-imagebox-bcl .osy-imagebox-bcl-image-delete {
-    position: absolute;
-    bottom: 22px;
-    right: 22px;
-    visibility: hidden;
-}
-
-.osy-imagebox-bcl:hover .osy-imagebox-bcl-image-delete {
-    visibility: visible;
-}
-
-.osy-imagebox-dummy > img{
-    max-width: 100%;
-}
+.osy-imagebox-dummy {display: block; border: 1px dashed #ccc; background-color: white; border-radius: 3px; margin: auto !important; text-align: center !important; padding: 3px; position: relative;}
+.osy-imagebox-dummy:hover {background-color: #fbfbfb;}
+.osy-imagebox-dummy span{position: relative; top: 50%; color: #888; font-size: 1.5em;}
+.osy-imagebox-bcl {position: relative;}
+.osy-imagebox-bcl img.imagebox-main {max-width: 100%}
+.osy-imagebox-bcl .osy-imagebox-bcl-image-delete {position: absolute; bottom: 22px; right: 22px; visibility: hidden;}
+.osy-imagebox-bcl:hover .osy-imagebox-bcl-image-delete {visibility: visible;}
+.osy-imagebox-dummy > img{max-width: 100%;}
