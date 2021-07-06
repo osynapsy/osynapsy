@@ -100,6 +100,7 @@ class NavBar2 extends Component
         }
         foreach($data as $label => $menu){
             $li = $ul->add(new Tag('li', null, 'nav-item'));
+            $li->att('role', 'navigation');
             if ($menu === 'hr'){
                 $li->add($this->getNavDivider());
                 continue;
