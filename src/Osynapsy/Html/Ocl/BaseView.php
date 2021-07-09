@@ -12,6 +12,7 @@
 namespace Osynapsy\Html\Ocl;
 
 use Osynapsy\Mvc\Controller;
+use Osynapsy\Kernel;
 
 abstract class BaseView
 {
@@ -37,6 +38,11 @@ abstract class BaseView
         $this->getController()->getResponse()->addCss($path);
     }
 
+    public function addCssLibrary($path)
+    {
+        $this->addCss(sprintf('/assets/osynapsy/%s/%s', Kernel::VERSION, $path));
+    }
+
     public function addJs($path)
     {
         $this->getController()->getResponse()->addJs($path);
@@ -45,6 +51,11 @@ abstract class BaseView
     public function addJsCode($code)
     {
         $this->getController()->getResponse()->addJsCode($code);
+    }
+
+    public function addJsLibrary($path)
+    {
+        $this->addJs(sprintf('/assets/osynapsy/%s/%s', Kernel::VERSION, $path));
     }
 
     public function addMeta($property ,$content)
