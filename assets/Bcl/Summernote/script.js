@@ -38,7 +38,7 @@ BclSummernote =
             ['color', ['color']],
             ['para', ['ul', 'ol', 'paragraph']],
             ['table', ['table']],
-            ['insert', ['link', 'picture', 'video']],
+            ['insert', ['link', 'picture', 'math', 'video']],
             ['view', ['fullscreen', 'codeview', 'help']],
         ];
         if (Osynapsy.isEmpty(toolbarButtonsString)) {
