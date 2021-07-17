@@ -31,6 +31,9 @@ class Summernote extends TextArea
     {
         self::requireCss('Lib/summernote-0.8.18/summernote-bs4.css');
         self::requireJs('Lib/summernote-0.8.18/summernote-bs4.js');
+        self::requireCss('Lib/katex-0.9.0/style.min.css');
+        self::requireJs('Lib/katex-0.9.0/script.min.js');
+        self::requireJs('Lib/summernote-0.8.18/plugin/math/script.js');
         self::requireJs('Bcl/Summernote/script.js');
     }
 
