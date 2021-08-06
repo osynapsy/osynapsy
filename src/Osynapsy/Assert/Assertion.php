@@ -27,6 +27,14 @@ class Assertion
         return true;
     }
 
+    public static function inArray($value, array $values, $message)
+    {
+        if (!in_array($value, $values)) {
+            self::raiseException($message);
+        }
+        return true;
+    }
+
     public static function integer($value, $message)
     {
         if (!is_int($value)) {
