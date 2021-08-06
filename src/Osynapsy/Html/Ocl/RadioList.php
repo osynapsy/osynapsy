@@ -16,9 +16,9 @@ use Osynapsy\Html\Component;
 
 class RadioList extends Component
 {
-    protected $tagItem;
+    protected $tagItem = 'div';
     protected $prefix;
-    
+
     public function __construct($name, $prefix = null)
     {
         parent::__construct('div', $name);
@@ -28,22 +28,33 @@ class RadioList extends Component
 
     protected function __build_extra__()
     {
-        $table = $this->add(new Tag('div', null, ''));
+        $list = $this->add(new Tag('div', null, ''));
         //$dir = $this->getParameter('direction');
         if (!empty($this->prefix)) {
-            $table->add('<span>'.$this->prefix.'</span>');
+            $list->add('<span>'.$this->prefix.'</span>');
         }
         foreach ($this->data as $rec) {
-            $this->buildRadio($rec);
             //Workaround for associative array
             $rec = array_values($rec);
-            $tr = $table->add(new Tag($this->tagItem));
-            $radio = $tr->add(new RadioBox($this->id));
-            $radio->att('value',$rec[0]);
-            $tr->add('&nbsp;'.$rec[1]);
+            $list->add($this->itemFactory($rec));
             if ($this->tagItem == 'span') {
-                $tr->add('&nbsp;&nbsp;&nbsp;&nbsp;');
+                $list->add('&nbsp;&nbsp;&nbsp;&nbsp;');
             }
         }
+    }
+
+    protected function itemFactory($rec)
+    {
+        $item = new Tag($this->tagItem);
+        $item->add($this->buildRadio($rec));
+        $item->add('&nbsp;'.$rec[1]);
+        return $item;
+    }
+
+    protected function buildRadio($rec)
+    {
+        $radio = new RadioBox($this->id, $rec[1] ?? '');
+        $radio->att('value',$rec[0]);
+        return $radio;
     }
 }
