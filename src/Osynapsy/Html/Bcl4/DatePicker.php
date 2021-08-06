@@ -51,9 +51,9 @@ class DatePicker extends Component
 
     public static function pushRequirement()
     {
-        self::requireCss('Lib/tempusdominus-5.0.1/style.css');
+        self::requireCss('Lib/tempusdominus-5.38.0/style.css');
         self::requireJs('Lib/momentjs-2.17.1/moment.js');
-        self::requireJs('Lib/tempusdominus-5.0.1/script.js');
+        self::requireJs('Lib/tempusdominus-5.38.0/script.js');
         self::requireJs('Bcl4/DatePicker/script.js');
     }
 
