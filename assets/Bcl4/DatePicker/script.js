@@ -6,6 +6,12 @@ Bcl4DatePicker =
             var self = this;
             var opt = {                
                 format: $(this).data('date-format'),
+                toolbarPlacement : 'top',
+                buttons : {
+                    showToday: true,
+                    showClear: true,
+                    showClose: true
+                },
                 //Serve ad evitare l'autocompilazione con la data odierna se il campo è vuoto.
                 useCurrent: false
             };
