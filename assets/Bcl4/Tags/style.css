@@ -10,3 +10,6 @@ and open the template in the editor.
 .bcl4-tags {height: auto !important;}
 .bcl4-tags-input {border: 0px;}
 .bcl4-tags-input:focus{outline: none;}
+input::-webkit-datalist-picker-indicator {
+  display: none;
+}

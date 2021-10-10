@@ -3,6 +3,7 @@ Bcl4Tags = {
     {
         Osynapsy.element('body').on('click','.bcl4-tags', this.tagInputFocus);
         Osynapsy.element('body').on('keypress','.bcl4-tags-input', this.tagInput);
+        Osynapsy.element('body').on('input','.bcl4-tags-input', this.tagInputResize);
         Osynapsy.element('body').on('click','.bcl4-tags-delete', this.tagDelete);
     },
     tagInputFocus : function(event)
@@ -15,7 +16,7 @@ Bcl4Tags = {
     tagInput : function(event)
     {
         if (event.keyCode !== 13) {
-            this.size = this.value.length + 1;
+            //this.size = this.value.length + 1;
             return;
         }
         event.preventDefault();
@@ -25,6 +26,9 @@ Bcl4Tags = {
         this.value = '';
         this.size = 1;
         Bcl4Tags.updateHiddenField(this.closest('.bcl4-tags'));
+    },
+    tagInputResize : function() {
+       this.size = this.value.length + 1;
     },
     tagDelete : function()
     {

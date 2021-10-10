@@ -30,7 +30,11 @@ class Tags extends Component
         if (!empty($_REQUEST[$this->hiddenId])) {
             $this->add($this->tagsFactory($_REQUEST[$this->hiddenId]));
         }
-        $this->add('<input type="text" class="bcl4-tags-input" size="1">');
+        $textbox = $this->add(new Tag('input', null, 'bcl4-tags-input'))->att(['type' => 'text', 'size' => '1']);
+        if (!empty($this->data)) {
+            $textbox->att('list', $this->hiddenId.'Datalist');
+            $this->add($this->datalistFactory($this->data));
+        }
     }
 
     protected function tagsFactory($strTags)
@@ -50,5 +54,15 @@ class Tags extends Component
         $badge->add(str_replace(['[',']'], '', $tag));
         $badge->add(new Tag('span', null, 'fa fa-close bcl4-tags-delete'));
         return $wrapper;
+    }
+
+    protected function datalistFactory($rawOptions)
+    {
+        $datalist = new Tag('datalist', $this->hiddenId.'Datalist', 'bcl4-tags-datalist');
+        foreach ($rawOptions as $rawOption) {
+            $option = array_values($rawOption);
+            $datalist->add(new Tag('option'))->add($option[0]);
+        }
+        return $datalist;
     }
 }
