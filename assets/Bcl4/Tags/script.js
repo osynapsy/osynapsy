@@ -21,7 +21,7 @@ Bcl4Tags = {
         }
         event.preventDefault();
         event.stopPropagation();
-        let badge = Bcl4Tags.badgeFactory(this.value);
+        let badge = Bcl4Tags.badgeFactory(this);
         this.parentElement.insertBefore(badge, this);
         this.value = '';
         this.size = 1;
@@ -38,14 +38,25 @@ Bcl4Tags = {
         Bcl4Tags.updateHiddenField(wrapper);
         wrapper.click();
     },
-    badgeFactory : function(label)
+    badgeFactory : function(obj)
     {
+        let label = obj.value;
+        let objectId = obj.closest('.bcl4-tags').getAttribute('id').replace('Box', '');
         let wrapper = document.createElement('h5');
         wrapper.classList.add('d-inline');
+        wrapper.append(Bcl4Tags.badgeHiddenBoxFactory(objectId, label));
         let badge = wrapper.appendChild(document.createElement('span'));
         badge.classList.add('badge', 'badge-primary', 'badge-xl' ,'mr-1');
         badge.append(label, ' ', this.badgeDeleteFactory());
         return wrapper;
+    },
+    badgeHiddenBoxFactory : function(id, label)
+    {
+        let hiddenBox = document.createElement('input');
+        hiddenBox.setAttribute('type', 'hidden');
+        hiddenBox.setAttribute('id', '__' + id + '[]');
+        hiddenBox.setAttribute('value', label);
+        return hiddenBox;
     },
     badgeDeleteFactory : function()
     {

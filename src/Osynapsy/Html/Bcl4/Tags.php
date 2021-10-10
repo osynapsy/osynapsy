@@ -49,9 +49,11 @@ class Tags extends Component
 
     protected function tagFactory($tag)
     {
+        $value = str_replace(['[',']'], '', $tag);
         $wrapper = new Tag('h5', null, 'd-inline mr-1');
+        $wrapper->add(sprintf('<input type="hidden" name="__%s[]" value="%s">', $this->hiddenId, $value));
         $badge = $wrapper->add(new Tag('span', null, $this->labelClass));
-        $badge->add(str_replace(['[',']'], '', $tag));
+        $badge->add($value);
         $badge->add(new Tag('span', null, 'fa fa-close bcl4-tags-delete'));
         return $wrapper;
     }
