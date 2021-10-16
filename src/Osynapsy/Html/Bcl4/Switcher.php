@@ -19,7 +19,7 @@ class Switcher extends Component
     {
         parent::__construct('div', $id.'_container');
         $this->setClass('custom-control custom-switch');
-        $this->checkBox = $this->add(new CheckBox($id, null, 'dummy'))->getCheckBox();
+        $this->checkBox = $this->add(new CheckBox($id, 'dummy'))->getCheckBox();
         $this->checkBox->att('class', 'custom-control-input');
         $this->label = $this->add(new Tag('label', null, "custom-control-label"))->att('for', $id);
         $this->label->add($label);
