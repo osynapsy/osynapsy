@@ -12,10 +12,11 @@ namespace Osynapsy\Html;
 
 class Tag
 {
+    const TAG_WITHOUT_CLOSURE = ['input','img','link'];
+
     private $attributes = [];
     private $childs = [];
-    public $ref = array();
-    public $tagdep = 0;
+    public $ref = [];
     public $parent = null;
 
     /**
@@ -75,8 +76,6 @@ class Tag
             if ($child->id && array_key_exists($child->id,$this->ref)) {
                 return $this->ref[$child->id];
             }
-            $child->tagdep = abs($this->tagdep) + 1;
-            $this->tagdep = abs($this->tagdep) * -1;
         }
         //Append child to childs repo
         $this->childs[] = $child;
@@ -137,34 +136,63 @@ class Tag
      *
      * @return string
      */
-    protected function build()
+    protected function build($depth = 0)
     {
         $tag = array_shift($this->attributes);
-        $content = implode('', $this->childs);
-        if (empty($tag) || $tag == 'dummy') {
-            return $content;
+        if ($tag === 'dummy') {
+            return $this->buildContentTag($depth - 1, '');
         }
-        $spaces = $this->tagdep != 0 ? PHP_EOL.str_repeat(" ",abs($this->tagdep)) : '';
-        $strTag = $spaces.'<'.$tag;
-        foreach ($this->attributes as $key => $value) {
+        $indentation = $this->buildIndedation($depth);
+        $result = $indentation . $this->buildOpeningTag($tag);
+        if (!in_array($tag, self::TAG_WITHOUT_CLOSURE)) {
+            $result .= $this->buildContentTag($depth);
+            $result .= $this->indendationBeforeClosingTag($indentation);
+            $result .= $this->buildClosingTag($tag);
+        }
+        return $result.PHP_EOL;
+    }
+
+    protected function buildIndedation($depth)
+    {
+        return $depth > 0 ? str_repeat("\t", $depth) : '';
+    }
+
+    protected function buildOpeningTag($tag)
+    {
+        $attributes = '';
+        foreach ($this->attributes as $attribute => $value) {
             if (is_object($value) && !method_exists($value, '__toString')) {
-                $strTag .= ' error="Attribute value is object ('.get_class($value).')"';
+                $attributes .= ' error="Attribute value is object ('.get_class($value).')"';
                 continue;
             } elseif (is_array($value)) {
-                $strTag .= ' error="Attribute value is array"';
+                $attributes .= ' error="Attribute value is array"';
                 continue;
             }
-            $strTag .= ' '.$key.'="'.htmlspecialchars($value, ENT_QUOTES).'"';
-            // la conversione del contentuto degli attributi viene fornita da Tag in modo
-            // tale che non debba essere gestito dai suoi figli
-            /*$strTag .= ' '.$key.'="'.$val.'"';*/
+            $attributes .= sprintf(' %s="%s"', $attribute, htmlspecialchars($value, ENT_QUOTES));
         }
-        $strTag .= '>';
+        return sprintf('<%s%s>' , $tag, $attributes);
+    }
 
-        if (!in_array($tag, ['input', 'img', 'link', 'meta'])) {
-            $strTag .= $content . ($this->tagdep < 0 ? $spaces : '') ."</{$tag}>";
+    protected function buildContentTag($depth, $carriageReturn = PHP_EOL)
+    {
+        $result = '';
+        foreach ($this->childs as $i => $content) {
+            if ($i === 0 && $content instanceof tag) {
+                $result .= $carriageReturn;
+            }
+            $result .= $content instanceof tag ? $content->build($depth + 1) : $content;
         }
-        return $strTag;
+        return empty($result) ? '' : $result;
+    }
+
+    protected function indendationBeforeClosingTag($indentation)
+    {
+        return (!empty($this->childs) && $this->childs[0] instanceof tag) ? $indentation : '';
+    }
+
+    protected function buildClosingTag($tag)
+    {
+        return  "</{$tag}>";
     }
 
     /**

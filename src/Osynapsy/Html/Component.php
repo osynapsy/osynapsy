@@ -30,10 +30,10 @@ class Component extends Tag
         $this->appendToDom($id, $this);
     }
 
-    protected function build()
+    protected function build($depth = 0)
     {
         $this->__build_extra__();
-        return parent::build(-1);
+        return parent::build($depth);
     }
 
     /**
