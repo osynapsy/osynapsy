@@ -92,7 +92,6 @@ class Form extends Component
         $rawComponent = '\\Osynapsy\\Html\\Bcl\\'.$mainComponent;
         $component = new $rawComponent($this->id.'_panel', 'div');
         $component->setParameter('label-position','inside');
-        $component->tagdep =& $this->tagdep;
         return $component;
     }
 
