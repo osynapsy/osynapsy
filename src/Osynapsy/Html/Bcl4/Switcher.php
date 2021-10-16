@@ -32,11 +32,8 @@ class Switcher extends Component
 
     public function setAction($action, $parameters = null, $class = 'click-execute', $confirmMessage = null)
     {
-        $this->checkBox->att([
-            'data-action' => $action,
-            'data-action-parameters' => $parameters
-        ]);
-        $this->checkBox->att('class', $class, true);
+        $this->checkBox->att(['data-action' => $action, 'data-action-parameters' => $parameters]);
+        $this->checkBox->addClass($class);
         if (!empty($confirmMessage)) {
             $this->checkBox->att('data-action-confirm', $confirmMessage);
         }
