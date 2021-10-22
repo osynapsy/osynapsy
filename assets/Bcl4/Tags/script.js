@@ -54,7 +54,7 @@ Bcl4Tags = {
     {
         let hiddenBox = document.createElement('input');
         hiddenBox.setAttribute('type', 'hidden');
-        hiddenBox.setAttribute('id', '__' + id + '[]');
+        hiddenBox.setAttribute('name', '__' + id + '[]');
         hiddenBox.setAttribute('value', label);
         return hiddenBox;
     },
