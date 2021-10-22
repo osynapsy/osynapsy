@@ -99,15 +99,16 @@ class XlsToArray
             foreach($constant as $field => $value) {
                 $sqlParams[$field] = $value;
             }
-
+            $IDs = [];
             if (!empty($sqlParams)){
                 try {
-                    $this->db->insert($table, $sqlParams);
+                    $IDs[] = $this->db->insert($table, $sqlParams);
                     $insert++;
                 } catch (\Exception $e) {
                     $this->error[] = "Row n. $k not imported";
                 }
             }
+            return $IDs;
         }
 
         return $insert;
