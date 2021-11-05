@@ -16,32 +16,32 @@ namespace Osynapsy\Event;
  *
  * @author Peter
  */
-class Dispatcher 
+class Dispatcher
 {
     private static $controller;
-    public static $listeners = [];    
-    
+    public static $listeners = [];
+
     public function __construct($controller)
     {
         self::$controller = $controller;
     }
-    
+
     public function dispatch(Event $event)
     {
         $this->loadGlobalListeners($event->getId());
         $this->triggerEvent($event);
     }
-    
+
     private function triggerEvent(Event $event)
     {
         if (empty(self::$listeners[$event->getId()])) {
             return;
         }
-        foreach(self::$listeners[$event->getId()] as $listener) {                        
+        foreach(self::$listeners[$event->getId()] as $listener) {
             $listener->trigger($event);
         }
     }
-    
+
     private function loadGlobalListeners($eventId)
     {
         $listeners = $this->getController()->getRequest()->get('listeners');
@@ -52,36 +52,36 @@ class Dispatcher
             if ($listenerEventId != $eventId) {
                 continue;
             }
-            if (!array_key_exists($eventId, $this->listeners2)) {
+            if (!array_key_exists($eventId, $this->listeners)) {
                 $this->listeners[$eventId] = [];
-            }            
+            }
             $listenerId = '\\'.trim(str_replace(':','\\',$listener));
             $this->listeners[$eventId][] = new $listenerId($this->getController());
         }
     }
-    
+
     private function getController()
     {
         return self::$controller;
-    }        
-    
+    }
+
     public static function addListener(callable $trigger, array $eventIDs)
     {
         $listener = new class(self::$controller) implements InterfaceListener
-        {            
+        {
             private $controller;
             private $trigger;
-            
+
             public function __construct($controller)
             {
                 $this->controller = $controller;
             }
-                        
+
             public function setTrigger(callable $callable)
             {
-                $this->trigger = $callable;               
+                $this->trigger = $callable;
             }
-            
+
             public function trigger(Event $event)
             {
                 $trigger = $this->trigger;
