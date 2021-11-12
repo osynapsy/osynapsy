@@ -14,7 +14,7 @@ namespace Osynapsy\Kernel;
 /**
  * The router class process all ruotes of the application and search the route
  * that match the request coming from the web
- * 
+ *
  * @author Pietro Celeste <p.celeste@osynapsy.net>
  */
 class Router
@@ -22,9 +22,9 @@ class Router
     private $routes;
     private $requestRoute;
     private $matchedRoute;
-    
+
     //Rispettare l'ordine
-    private $patternPlaceholder = [        
+    private $patternPlaceholder = [
         '/'  => '\\/',
         //number
         '{i}' => '([\\d]+){1}',
@@ -41,16 +41,16 @@ class Router
         //?????
         '{.}' => '([.]+){1}'
     ];
-    
+
     public function __construct()
     {
         $this->routes = new RouteCollection();
         $this->matchedRoute = new Route('matched');
     }
-    
+
     /**
      * Get the specified route
-     * 
+     *
      * @param type $key identify of the route
      * @return object
      */
@@ -58,10 +58,10 @@ class Router
     {
         return $this->routes->get($key);
     }
-    
+
     /**
      * Add route to the collection;
-     * 
+     *
      * @param type $id  identify of the route
      * @param type $url uri of the route
      * @param type $controller controller of the ruote
@@ -70,13 +70,13 @@ class Router
      * @param array $attributes other attributes of the ruote
      */
     public function addRoute($id, $url, $controller, $templateId, $application, array $attributes = [])
-    {        
-        $this->routes->addRoute($id, $url, $application, $controller, $templateId, $attributes);        
+    {
+        $this->routes->addRoute($id, $url, $application, $controller, $templateId, $attributes);
     }
-    
+
     /**
      * Process all the ruote of the collection and return the matched route
-     * 
+     *
      * @param type $uriToMatch ruote request from the web client;
      * @return object matched ruote;
      */
@@ -90,7 +90,7 @@ class Router
         //Get current request method;
         $requestMethod = strtolower(filter_input(\INPUT_SERVER, 'REQUEST_METHOD'));
         foreach($routes as $route) {
-            //Check if url accept request http method;         
+            //Check if url accept request http method;
             if (!is_null($route->acceptedMethods) && !in_array($requestMethod, $route->acceptedMethods)) {
                continue;
             }
@@ -109,41 +109,41 @@ class Router
             if (!empty($this->matchedRoute) && $this->matchedRoute->weight > $matchedRoute->weight) {
                 continue;
             }
-            $this->matchedRoute = $matchedRoute;                        
-        }        
+            $this->matchedRoute = $matchedRoute;
+        }
         return $this->getRoute();
-    }        
-    
+    }
+
     /**
      * Process the ruote passed and check if match che request uri.
-     * 
+     *
      * @param type $route
      * @return mixed return false if ruote passed don't match the request uri then return the matched ruote;
      */
     private function matchRoute($route)
-    {        
+    {
         if (!substr_count($route->uri, '{')){
-            return $route->uri === $this->requestRoute ? $route : false;  
+            return $route->uri === $this->requestRoute ? $route : false;
         }
-        $output = $result = [];        
-        preg_match_all('/{.+?}/', $route->uri, $output);        
-        $braceParameters = array_merge(['/' => null] ,  array_flip($output[0]));        
+        $output = $result = [];
+        preg_match_all('/{.+?}/', $route->uri, $output);
+        $braceParameters = array_merge(['/' => null] ,  array_flip($output[0]));
         array_walk(
-            $braceParameters, 
-            function(&$value, $key, $placeholder) {            
+            $braceParameters,
+            function(&$value, $key, $placeholder) {
                 if (array_key_exists($key, $placeholder)) {
                     $value = $placeholder[$key];
                     return;
                 }
-                $value = str_replace(['{','}'],['(',')'], $key);                
-            }, 
+                $value = str_replace(['{','}'],['(',')'], $key);
+            },
             $this->patternPlaceholder
-        );        
+        );
         $pattern = str_replace(
             array_keys($braceParameters),
-            array_values($braceParameters), 
+            array_values($braceParameters),
             $route->uri
-        );         
+        );
         preg_match('/^'.$pattern.'$/', $this->requestRoute, $result);
         if (empty($result)) {
             return false;
@@ -153,14 +153,14 @@ class Router
         $route->weight = count($result);
         return $route;
     }
-    
+
     /**
      * Return the matched uri
-     * 
+     *
      * @return type
      */
     public function getRoute()
     {
         return $this->matchedRoute;
-    }    
+    }
 }
