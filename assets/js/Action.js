@@ -52,7 +52,7 @@ Osynapsy.action =
             type : 'post',
             dataType : 'json',
             beforeSend : function() {
-                $('.field-in-error').removeClass('field-in-error');
+                //$('.field-in-error').removeClass('field-in-error');
                 if (fileUploadIsRequired) {
                     Osynapsy.waitMask.showProgress();
                     return;
@@ -120,19 +120,20 @@ Osynapsy.action =
     {
         var errors = [];
         var self = this;
-        $.each(response.errors, function(idx, val){
+        response.errors.forEach(function(val, idx){
             if (val[0] === 'alert'){
                 alert(val[1]);
                 return true;
             }
-            var cmp = $('#'+val[0]);
-            if ($(cmp).hasClass('field-in-error')){
+            var component = document.getElementById(val[0]);
+            if (component.classList.hasClass('field-in-error')){
                 return true;
             }
-            if ($(cmp).length > 0) {
-                $(cmp).addClass('field-in-error').on('change', function() { $(this).removeClass('field-in-error'); });
-            }
-            errors.push(cmp.length > 0 ? self.showErrorOnLabel(cmp, val[1]) : val[1]);
+            component.classList.add('field-in-error');
+            Osynapsy.element(component).on('change', function() {
+                this.classList.remove('field-in-error');
+            });
+            errors.push(self.showErrorOnLabel(component, val[1]));
         });
         if (errors.length === 0) {
             return;
@@ -147,7 +148,7 @@ Osynapsy.action =
     {
         let command;
         try {
-            $.each(response.command, function(idx, val){
+            response.command.forEach(function(val, idx){
                 command = val;
                 if (command[0] in Osynapsy) {
                     Osynapsy[command[0]](command[1]);
