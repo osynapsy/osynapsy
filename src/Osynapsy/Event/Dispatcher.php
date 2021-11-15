@@ -52,11 +52,11 @@ class Dispatcher
             if ($listenerEventId != $eventId) {
                 continue;
             }
-            if (!array_key_exists($eventId, $this->listeners)) {
-                $this->listeners[$eventId] = [];
+            if (!array_key_exists($eventId, self::$listeners)) {
+                self::$listeners[$eventId] = [];
             }
             $listenerId = '\\'.trim(str_replace(':','\\',$listener));
-            $this->listeners[$eventId][] = new $listenerId($this->getController());
+            self::$listeners[$eventId][] = new $listenerId($this->getController());
         }
     }
 
