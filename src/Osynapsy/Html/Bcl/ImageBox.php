@@ -152,9 +152,10 @@ class ImageBox extends Component
 
     protected function setImageData()
     {
-        if (file_exists($this->image['diskPath'])) {
-            $this->image['dimension'] = getimagesize($this->image['diskPath']);
+        if (!file_exists($this->image['diskPath'])) {
+            return;
         }
+        $this->image['dimension'] = getimagesize($this->image['diskPath']);
         if (empty($this->image['dimension'])) {
             throw new \Exception('File not found', 404);
         }
