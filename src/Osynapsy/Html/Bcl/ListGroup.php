@@ -33,4 +33,10 @@ class ListGroup extends Component
         $id = count($this->repo);
         $this->repo[$id] = new Link(sprintf('%s_%s', $this->id, $id), $uri, $label, 'list-group-item list-group-item-action');
     }
+
+    public function setFixedPosition($width = '100%', $top = '0px', $left = '0px')
+    {
+        $this->addClass('position-fixed d-none d-lg-block');
+        $this->att('style', sprintf('width : %s; top : %s; left : %s;', $width, $top, $left));
+    }
 }
