@@ -12,7 +12,7 @@ namespace Osynapsy\Html;
 
 class Tag
 {
-    const TAG_WITHOUT_CLOSURE = ['input','img','link'];
+    const TAG_WITHOUT_CLOSURE = ['input','img','link','meta'];
 
     private $attributes = [];
     private $childs = [];
