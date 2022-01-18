@@ -130,7 +130,7 @@ Osynapsy.action =
                 return true;
             }
             component.classList.add('field-in-error');
-            Osynapsy.element(component).on('change', function() {
+            Osynapsy.element(component).on('change', null, function() {
                 this.classList.remove('field-in-error');
             });
             errors.push(self.showErrorOnLabel(component, val[1]));
