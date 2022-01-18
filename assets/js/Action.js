@@ -126,7 +126,7 @@ Osynapsy.action =
                 return true;
             }
             var component = document.getElementById(val[0]);
-            if (component.classList.hasClass('field-in-error')){
+            if (component.classList.contains('field-in-error')){
                 return true;
             }
             component.classList.add('field-in-error');
