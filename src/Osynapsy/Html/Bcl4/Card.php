@@ -37,6 +37,7 @@ class Card extends Component
     private $currentColumn = null;
     private $title;
     private $commands = [];
+    protected $collapsable = false;
     public $monoRow = false;
 
     public function __construct($id, $class = 'card', $tag = 'div')
@@ -54,7 +55,7 @@ class Card extends Component
 
     protected function __build_extra__()
     {
-        $this->buildTitle();
+        $this->add($this->buildTitle());
         $this->buildCommands();
         $this->att('class', $this->classCss['main']);
         foreach ($this->sections as $key => $section){
@@ -84,9 +85,21 @@ class Card extends Component
         if (empty($this->title)) {
             return;
         }
-        $this->getBody()->add(
-            '<div class="'.$this->classCss['title'].'">'.$this->title.'</div>'
-        );
+        $titleContainer = new Tag('div', null, $this->classCss['title']);
+        $titleContainer->add($this->title);
+        if ($this->collapsable) {
+            $titleContainer->add('&nbsp;');
+            $titleContainer->add($this->collapsableCommandFactory());
+        }
+        return $titleContainer;
+    }
+
+    protected function collapsableCommandFactory()
+    {
+        $iconFa = 'fa fa-arrow-down';
+        $command = new Tag('small', null, $iconFa);
+        $command->onclick = "$(this).toggleClass('fa-arrow-down').toggleClass('fa-arrow-right');";
+        return $command;
     }
 
     public function addRow()
@@ -197,7 +210,12 @@ class Card extends Component
 
     public function setTitleOnHead($title, array $commands = [])
     {
-        $this->getHead()->add(new Tag('div', null, 'float-left'))->add($title);
+        $titleContainer = $this->getHead()->add(new Tag('div', null, 'float-left'));
+        $titleContainer->add($title);
+        if ($this->collapsable) {
+            $titleContainer->add('&nbsp');
+            $titleContainer->add($this->collapsableCommandFactory());
+        }
         if (empty($commands)) {
             return;
         }
@@ -229,5 +247,10 @@ class Card extends Component
     public function setTopRightIndex(int $top, int $right, int $width = 200)
     {
         $this->att('style', sprintf('position: fixed; z-index: 1030; top: %spx; right: %spx; width: %spx;', $top, $right, $width));
+    }
+
+    public function setCollapsable($collapsable = true)
+    {
+        $this->collapsable = $collapsable;
     }
 }
