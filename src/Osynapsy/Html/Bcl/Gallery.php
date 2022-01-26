@@ -24,6 +24,7 @@ class Gallery extends Component
     protected $defaultPhoto;
     protected $contextMenu;
     protected $modalViewerDimension;
+    protected $showCommands = false;
 
     public function __construct($id, $cellWidth = 4)
     {
@@ -41,21 +42,16 @@ class Gallery extends Component
         foreach ($this->data as $photo) {
             $row->add($this->cellFactory($photo));
         }
-        //$row->add($this->cellAddFactory());
-        $this->add($this->buttonOpenModalFactory());
+        if ($this->showCommands) {
+            $this->add($this->buttonOpenModalFactory());
+        }
     }
 
     protected function cellFactory($photo)
     {
         $div = new Tag('div', null, sprintf('text-center col-%s', $this->cellWidth));
         $div->add($this->thumbnailFactory($photo));
-        return $div;
-    }
-
-    protected function cellAddFactory()
-    {
-        $div = new Tag('div', null, sprintf('text-center col-%s mt-2', $this->cellWidth));
-        $div->add(new Tag('div', null, 'img-thumbnail'))->add(new Tag('span', null, 'fa fa-plus'));
+        $div->add($this->labelFactory($photo));
         return $div;
     }
 
@@ -68,6 +64,24 @@ class Gallery extends Component
         return $img;
     }
 
+
+    protected function labelFactory($photo)
+    {
+        if (empty($photo['label'])) {
+            return '';
+        }
+        $div = new Tag('div', null, 'gallery-photo-label');
+        $div->add(sprintf('<small>%s</small>', $photo['label']));
+        return $div;
+    }
+
+    protected function cellAddFactory()
+    {
+        $div = new Tag('div', null, sprintf('text-center col-%s mt-2', $this->cellWidth));
+        $div->add(new Tag('div', null, 'img-thumbnail'))->add(new Tag('span', null, 'fa fa-plus'));
+        return $div;
+    }
+
     protected function buttonOpenModalFactory()
     {
         $Button = new Button($this->id.'Add', 'button', 'btn btn-primary btn-block', 'Aggiungi foto');
@@ -77,8 +91,10 @@ class Gallery extends Component
 
     protected function modalUploadFactory()
     {
-        $Modal = new Modal($this->id.'ModalUpload', 'Aggiungi foto');
+        $modalId = $this->id.'ModalUpload';
+        $Modal = new Modal($modalId, 'Aggiungi foto');
         $Modal->getPanelBody()->addColumn()->push('Seleziona l\'immagine da aggiungere alla gallery', $this->fileUploadFactory());
+        $Modal->getPanelFoot()->add($this->buttonCloseModalFactory($modalId));
         $Modal->getPanelFoot()->add($this->buttonSendPhotoToGalleryFactory());
         return $Modal;
     }
@@ -97,9 +113,13 @@ class Gallery extends Component
 
     protected function modalViewerFactory()
     {
-        $Modal = new Modal($this->id.'ModalViewer', 'Foto', $this->modalViewerDimension);
+        $modalId = $this->id.'ModalViewer';
+        $Modal = new Modal($modalId, 'Foto', $this->modalViewerDimension);
         $Modal->getPanelBody()->addColumn()->setClass('text-center')->add(new Tag('img', $this->id.'Viewer', 'img-thumbnail'));
-        $Modal->getPanelFoot()->add($this->buttonDeletePhotoFactory());
+        $Modal->getPanelFoot()->add($this->buttonCloseModalFactory($modalId));
+        if ($this->showCommands) {
+            $Modal->getPanelFoot()->add($this->buttonDeletePhotoFactory());
+        }
         return $Modal;
     }
 
@@ -108,5 +128,17 @@ class Gallery extends Component
         $Button = new Button($this->id.'DeleteImage', 'button', 'btn btn-danger', 'Elimina foto');
         $Button->setAction('deletePhotoFromGallery', null, 'click-execute', 'Sei sicuro di voler eliminare la foto corrente (L\'operazione non è reversibile)? ');
         return $Button;
+    }
+
+    protected function buttonCloseModalFactory($modalId)
+    {
+        $Button = new Button($modalId.'CloseModal', 'button', 'btn btn-danger', 'Chiudi');
+        $Button->att('data-dismiss','modal');
+        return $Button;
+    }
+
+    public function showCommands($value)
+    {
+        $this->showCommands = $value;
     }
 }
