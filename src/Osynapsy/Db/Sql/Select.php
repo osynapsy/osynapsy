@@ -46,7 +46,8 @@ class Select
         'JOIN' => [],
         'WHERE' => [],
         'GROUP BY' => [],
-        'ORDER BY' => []
+        'ORDER BY' => [],
+        'LIMIT' => null
     ];
     private $parameters = [];
 
@@ -159,6 +160,11 @@ class Select
         }
         $this->elements['ORDER BY'] = array_merge($this->elements['ORDER BY'], $fields);
         return $this;
+    }
+
+    public function limit($from, $width)
+    {
+        $this->elements['LIMIT'] = "$from,$width";
     }
 
     public function __toString()
