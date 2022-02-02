@@ -19,7 +19,7 @@ class Dropdown extends Component
 {
     private $list;
     private $button;
-    
+
     public function __construct($name, $label, $align = 'left', $tag = 'div')
     {
         parent::__construct($tag);
@@ -30,7 +30,7 @@ class Dropdown extends Component
              ->att('class','dropdown-toggle',true)
              ->att('data-toggle','dropdown')
              ->att('aria-haspopup','false')
-             ->att('aria-expanded','false');        
+             ->att('aria-expanded','false');
         $this->button->add($label.' <span class="caret"></span>');
         $this->list = $this->add(
             new Tag('ul')
@@ -38,7 +38,7 @@ class Dropdown extends Component
          ->att('onclick',"var t = this; setTimeout(function() { $(t).closest('.dropdown').removeClass('open'); }, 300);")
          ->att('aria-labelledby',$name);
     }
-    
+
     protected function __build_extra__()
     {
         foreach ($this->data as $key => $rec) {
@@ -47,7 +47,7 @@ class Dropdown extends Component
                 continue;
             }
             if ($rec === 'divider') {
-                $this->list->add(new Tag('li'))->att(['class' => 'divider','role' => 'separator']);
+                $this->list->add(new Tag('li'))->att(['class' => 'divider dropdown-divider','role' => 'separator']);
                 continue;
             }
             $rec = array_values($rec);
@@ -55,9 +55,9 @@ class Dropdown extends Component
             $li->add(is_object($rec[1]) ? $rec[1] : '<a href="#">'.$rec[1].'</a>');
         }
     }
-            
+
     public function getButton()
     {
         return $this->button;
-    }    
+    }
 }
