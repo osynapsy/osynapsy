@@ -209,3 +209,9 @@ input[type="text"].field-in-error, textarea.field-in-error {
 .form-group-infobox {
     line-height: 1;
 }
+
+.osy-fixed-bottom {
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+}
