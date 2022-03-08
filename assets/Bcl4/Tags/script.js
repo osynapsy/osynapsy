@@ -61,7 +61,7 @@ Bcl4Tags = {
     badgeDeleteFactory : function()
     {
         let button = document.createElement('i');
-        button.classList.add('fa', 'fa-close', 'bcl4-tags-delete');
+        button.classList.add('fa', 'fa-times', 'bcl4-tags-delete');
         return button;
     },
     updateHiddenField : function(tagWrapper)

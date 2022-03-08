@@ -54,7 +54,7 @@ class Tags extends Component
         $wrapper->add(sprintf('<input type="hidden" name="__%s[]" value="%s">', $this->hiddenId, $value));
         $badge = $wrapper->add(new Tag('span', null, $this->labelClass));
         $badge->add($value);
-        $badge->add(new Tag('span', null, 'fa fa-close bcl4-tags-delete'));
+        $badge->add(new Tag('span', null, 'fa fa-times bcl4-tags-delete'));
         return $wrapper;
     }
 
