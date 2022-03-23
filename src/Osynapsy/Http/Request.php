@@ -41,6 +41,7 @@ class Request extends Dictionary
         $rawHost .= $this->get('server.HTTP_HOST');
         $url = $rawHost.$this->get('server.REQUEST_URI');
         $this->set('page.url', $url);
+        $this->set('page.uri', $this->get('server.REQUEST_URI'));
         $this->set('server.RAW_URL_PAGE', $url);
         $this->set('server.RAW_URL_SITE', $rawHost);
         $this->set('server.url', $rawHost);
@@ -48,7 +49,7 @@ class Request extends Dictionary
             $this->set('client.accept', explode(',', $server['HTTP_ACCEPT']));
         }
     }
-    
+
     public function getAcceptedContentType()
     {
         return $this->get('client.accept');
