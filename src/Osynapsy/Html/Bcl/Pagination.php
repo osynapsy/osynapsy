@@ -353,7 +353,7 @@ class Pagination extends Component
         } elseif (!empty($_REQUEST[$this->id.'_page_dimension'])) {
             $this->statistics['pageDimension'] = $_REQUEST[$this->id.'_page_dimension'];
         } else {
-            $this->statistics['pageDimension'] = $pageDimension;
+            $_REQUEST[$this->id.'PageDimension'] = $this->statistics['pageDimension'] = $pageDimension;
         }
         if ($pageDimension === 10) {
             return;
