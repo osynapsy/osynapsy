@@ -60,7 +60,7 @@ class Loader
 
     private function loadFile($path)
     {
-        return function_exists('apcu_fetch') ? $this->loadFileFromCache($path) : $this->loadFileFromDisk($path);
+        return function_exists('apcux_fetch') ? $this->loadFileFromCache($path) : $this->loadFileFromDisk($path);
     }
 
     protected function loadFileFromCache($path)
