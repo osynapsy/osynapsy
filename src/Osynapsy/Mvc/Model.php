@@ -11,25 +11,16 @@
 
 namespace Osynapsy\Mvc;
 
-use Osynapsy\Data\Dictionary;
 use Osynapsy\Mvc\Model\Field as ModelField;
 use Osynapsy\Helper\Net\UploadManager;
 
 abstract class Model
 {
-    const ACTION_AFTER_INSERT_HISTORY_PUSH_STATE = 'historyPushState';    
+    const ACTION_AFTER_INSERT_HISTORY_PUSH_STATE = 'historyPushState';
     const ACTION_AFTER_EXEC_BACK = 'back';
     const ACTION_AFTER_EXEC_NONE = false;
     const ACTION_AFTER_EXEC_REFRESH = 'refresh';
-    
-    private $repo;
-    protected $controller = null;
-    protected $sequence = null;
-    protected $table = null;
-    protected $db = null;   
-    protected $values = array();    
-    protected $softdelete;
-    protected $errorMessages = array(        
+    const ERROR_MESSAGES = [
         'email' => 'Il campo <fieldname> non contiene un indirizzo mail valido.',
         'fixlength' => 'Il campo <fieldname> solo valori con lunghezza pari a ',
         'integer' => 'Il campo <fieldname> accetta solo numeri interi.',
@@ -38,241 +29,202 @@ abstract class Model
         'notnull' => 'Il campo <fieldname> è obbligatorio.',
         'numeric' => 'Il campo <fieldname> accetta solo valori numerici.',
         'unique' => '<value> è già presente in archivio.'
-    );
+    ];
+
+    protected $controller = null;
+    protected $db;
+    protected $table;
+    protected $sequence;
+    protected $actions = [];
+    protected $fields = [];
+    protected $values = [];
+    protected $softdelete;
 
     public function __construct($controller)
     {
         $this->controller = $controller;
-        $this->db = $this->controller->getDb();
-        $this->repo = new Dictionary();
-        $this->repo->set('actions.after-insert', $this->controller->getRequest()->get('page.url'))
-                   ->set('actions.after-update', 'back')
-                   ->set('actions.after-delete', 'back')
-                   ->set('fields',array());
+        $this->db = $this->getController()->getDb();
+        $this->setAfterAction($this->getController()->getRequest()->get('page.url'), 'back', 'back');
         $this->init();
         if (empty($this->table)) {
             throw new \Exception('Model table is empty');
         }
-        $this->repo->set('table', $this->table);
     }
-    
-    public function get($key)
+
+    public function getController()
     {
-        return $this->repo->get($key);
+        return $this->controller;
     }
-    
+
     public function getDb()
     {
         return $this->db;
     }
-    
-    public function set($key, $value, $append=false)
+
+    public function getResponse()
     {
-        $this->repo->set($key, $value);
-        return $this;
+        return $this->getController()->getResponse();
     }
-    
+
     protected function setAfterAction($insert, $update, $delete)
     {
-        $this->repo->set('actions.after-insert', $insert)
-                   ->set('actions.after-update', $update)
-                   ->set('actions.after-delete', $delete);        
+        $this->actions = [
+            'after-insert' => $insert,
+            'after-update' => $update,
+            'after-delete' => $delete
+        ];
     }
-    
-    public function setSequence($seq)
+
+    public function setSequence($sequence)
     {
-        $this->sequence = $seq;
+        $this->sequence = $sequence;
     }
-    
+
     public function setTable($table, $sequence = null)
     {
         $this->table = $table;
         $this->sequence = $sequence;
     }
-    
+
     public function delete()
     {
-        $this->beforeDelete();
-        if ($this->controller->getResponse()->error()){ 
-            return; 
-        }
-        $where = array();
-        foreach ($this->repo->get('fields') as $field) {
-            if ($field->isPkey()) { 
-                $where[$field->name] =  $field->value;
-            }
-        }
-        if (empty($where)) { 
-            return; 
+        $this->addError($this->beforeDelete());
+        $where = $this->whereConditionFactory();
+        if (empty($where)) {
+            return;
         }
         if (!empty($this->softdelete)) {
-            $this->db->update(
-                $this->repo->get('table'),
-                $this->softdelete,
-                $where
-            );
+            $this->getDb()->update($this->table, $this->softdelete, $where);
         } else {
-            $this->db->delete(
-                $this->repo->get('table'),
-                $where
-            );
+            $this->getDb()->delete($this->table, $where);
         }
         $this->afterDelete();
-        if ($this->repo->get('actions.after-delete') === self::ACTION_AFTER_EXEC_NONE) {
-            return;
+        if ($this->actions['after-delete'] === self::ACTION_AFTER_EXEC_NONE) {
+            $this->getController()->getResponse()->go($this->actions['after-delete']);
         }
-        $this->controller->getResponse()->go($this->repo->get('actions.after-delete'));
     }
 
-    public function insert($values, $where=null)
+    public function insert($values, $where = null)
     {
-        $beforeError = $this->beforeInsert();
-        if (!empty($beforeError)) {
-            $this->getController()->getResponse()->error('alert', $beforeError);			
-        }
-        if ($this->controller->getResponse()->error()) {
+        $this->addError($this->beforeInsert());
+        if ($this->getController()->getResponse()->error()) {
             return;
-        }        
+        }
         $lastId = null;
-         
         if ($this->sequence && is_array($where) && count($where) == 1) {
-            $lastId = $values[$where[0]] = $this->db->execUnique("SELECT {$this->sequence}.nextval FROM DUAL",'NUM');
-            $this->db->insert($this->repo->get('table'), $values);
+            $lastId = $values[$where[0]] = $this->getIdFromSequence($this->sequence);
+            $this->getDb()->insert($this->table, $values);
         } else {
-            $lastId = $this->db->insert($this->repo->get('table'), $values);
-        }        
+            $lastId = $this->getDb()->insert($this->table, $values);
+        }
         $this->afterInsert($lastId);
-                
-        switch ($this->get('actions.after-insert')) {
+        switch ($this->actions['after-insert']) {
             case self::ACTION_AFTER_EXEC_NONE:
                 break;
             case self::ACTION_AFTER_INSERT_HISTORY_PUSH_STATE:
-                $this->getController()->getResponse()->js("history.pushState(null,null,'{$lastId}');");
+                $this->getResponse()->js("history.pushState(null,null,'{$lastId}');");
                 break;
             case self::ACTION_AFTER_EXEC_BACK:
-            case self::ACTION_AFTER_EXEC_REFRESH:            
-                $this->getController()->getResponse()->go($this->get('actions.after-insert'));                
-                break;            
-            default: 
-                $this->getController()->getResponse()->go($this->get('actions.after-insert').$lastId);                
+            case self::ACTION_AFTER_EXEC_REFRESH:
+                $this->getResponse()->go($this->actions['after-insert']);
+                break;
+            default:
+                $this->getResponse()->go($this->actions['after-insert'].$lastId);
                 break;
         }
+    }
+
+    protected function getIdFromSequence($sequence)
+    {
+        return is_callable($sequence) ? $sequence() : $this->getDb()->execOne("SELECT {$this->sequence}.nextval FROM DUAL");
     }
 
     public function update($values, $where)
     {
-        $beforeError = $this->beforeUpdate();
-        if (!empty($beforeError)) {
-			$this->getController()->getResponse()->error('alert',$beforeError);			
-		}
+        $this->addError($this->beforeUpdate());
         if ($this->getController()->getResponse()->error()) {
             return;
         }
-        $this->db->update($this->repo->get('table'), $values, $where);
+        $this->getDb()->update($this->table, $values, $where);
         $this->afterUpdate();
-        if ($this->repo->get('actions.after-update') === self::ACTION_AFTER_EXEC_NONE) {
-            return;
+        if ($this->actions['after-update'] !== self::ACTION_AFTER_EXEC_NONE) {
+            $this->getResponse()->go($this->actions['after-update'], false);
         }
-        $this->controller->getResponse()->go($this->repo->get('actions.after-update'), false);        
-    }    
+    }
 
     public function find()
     {
-        $sqlField = $sqlWhere = $sqlParam = array();
-        $fields = $this->repo->get('fields');
-        
-        $k=0;
-        foreach ($fields as $field) {
-            if ($field->isPkey()) {
-                $sqlWhere[] = $field->name . ' = '.($this->db->getType() == 'oracle' ? ':'.$k : '?');
-                $sqlParam[] = $field->value;
-                $k++;
-            } 
-            $sqlField[] = $field->name;
+        $where = $this->whereConditionFactory();
+        if (!empty($where)) {
+            $this->values = $this->getDb()->selectOne($this->table, $where);
+            $this->assocData();
         }
-        
-        if (empty($sqlWhere)){ 
-            return; 
-        }
-        
-        $sql  = " SELECT *".PHP_EOL;        
-        $sql .= " FROM  ".$this->repo->get('table')." ".PHP_EOL;
-        $sql .= " WHERE ".implode(' AND ',$sqlWhere);
-        try {
-            $rec = $this->db->execUnique($sql, $sqlParam, 'ASSOC');
-            if (!empty($rec)) {
-                $this->values = $rec;
-            }
-        } catch (\Exception $e) {
-            $this->controller->getResponse()->addContent('MODEL FIND ERROR: <pre>'.$e->getMessage()."\n".$sql.'</pre>');
-        }
-        $this->assocData();
     }
-    
-    protected function addError($errorId, $field, $postfix = '')
+
+    protected function whereConditionFactory()
     {
-        $error = str_replace(
-            array('<fieldname>', '<value>'),
-            array('<!--'.$field->html.'-->', $field->value),            
-            $this->errorMessages[$errorId].$postfix
-        );
-        $this->controller->getResponse()->error($field->html, $error);
+        $result = [];
+        foreach ($this->fields as $field) {
+            if ($field->isPkey()) {
+                $result[$field->name] = $field->value;
+            }
+        }
+        return $result;
     }
-    
+
     public function assocData()
     {
-        if (!is_array($this->values)) {
-            return;
-        }
-        foreach ($this->repo->get('fields') as $f) {
-            if (!array_key_exists($f->html, $_REQUEST) && array_key_exists($f->name, $this->values)) {
-                $_REQUEST[ $f->html ] = $this->values[ $f->name ];
+        if (is_array($this->values)) {
+            foreach ($this->fields as $f) {
+               if (!array_key_exists($f->html, $_REQUEST) && array_key_exists($f->name, $this->values)) {
+                    $_REQUEST[ $f->html ] = $this->values[ $f->name ];
+                }
             }
         }
     }
-    
-    public function getValue($key)
+
+    protected function addFieldError($errorId, $field, $postfix = '')
     {
-        return array_key_exists($key, $this->values) ? $this->values[$key] : null;
+        $error = str_replace(['<fieldname>', '<value>'], ['<!--'.$field->html.'-->', $field->value], self::ERROR_MESSAGES[$errorId].$postfix);
+        $this->addError($error, $field->html);
     }
-    
-    public function getController()
+
+    protected function addError($errorMessage, $target = 'alert')
     {
-        return $this->controller;
+        if (!empty($errorMessage)) {
+            $this->getController()->getResponse()->error($target, $errorMessage);
+        }
     }
-    
+
     public function map($htmlField, $dbField = null, $value = null, $type = 'string')
     {
+        $requestValue = isset($_REQUEST[$htmlField]) ? $_REQUEST[$htmlField] : null;
         $modelField = new ModelField($this, $dbField, $htmlField, $type);
-        $modelField->setValue(
-            isset($_REQUEST[$modelField->html]) ? $_REQUEST[$modelField->html] : null, 
-            $value
-        );
-        $this->repo->set('fields.'.$modelField->html, $modelField);
-        return $modelField;
+        $modelField->setValue($requestValue, $value);
+        return $this->fields[$modelField->html] = $modelField;
     }
-    
+
     /**
-     * 
+     *
      * @return void
      */
     public function save()
     {
         //Recall before exec method with arbirtary code
-        $beforeError = $this->beforeExec();
-        if (!empty($beforeError)) {
-            $this->getController()->getResponse()->error('alert',$beforeError);			
-	}
+        $this->addError($this->beforeExec());
         //Init arrays
         $keys = $values = $where = [];
-        
         //skim the field list for check value and build $values, $where and $key list
-        foreach ($this->repo->get('fields') as $field) {
+        foreach ($this->fields as $field) {
+            $value = $field->value;
             //Check if value respect rule
-            $value = $this->sanitizeFieldValue($field);
+            $this->validateFieldValue($field, $value);
             //If field isn't in readonly mode assign values to values list for store it in db
+            if (in_array($field->type, ['file', 'image'])) {
+                $value = $this->grabUploadedFile($field);
+            }
             if (!$field->readonly) {
-                $values[$field->name] = $value; 
+                $values[$field->name] = $value;
             }
             //If field isn't primary key skip key assignment
             if (!$field->isPkey()) {
@@ -286,10 +238,10 @@ abstract class Model
             }
         }
         //If occurred some error stop db updating
-        if ($this->controller->getResponse()->error()) { 
-            return; 
+        if ($this->getController()->getResponse()->error()) {
+            return;
         }
-        //If where list is empty execute db insert else execute a db update
+        //If where condition is empty execute db insert else execute a db update
         if (empty($where)) {
             $this->insert($values, $keys);
         } else {
@@ -298,128 +250,151 @@ abstract class Model
         //Recall after exec method with arbirtary code
         $this->afterExec();
     }
-    
-    private function sanitizeFieldValue(&$field)
+
+    private function validateFieldValue($field, $value)
     {
-        $value = $field->value;
-        if (!$field->isNullable() && $value !== '0' && empty($value)) {
-            $this->addError('notnull', $field);            
+        if (!$field->isNullable()) {
+            $this->validateNotNullValue($field, $value);
         }
         if ($field->isUnique() && $value) {
-            $nOccurence = $this->db->execUnique(
-                "SELECT COUNT(*) FROM {$this->table} WHERE {$field->name} = ?",
-                array($value)
-            );
-            if (!empty($nOccurence)) {
-                $this->addError('unique', $field);
-            }
+            $this->validateUniqueValue($field, $value);
         }
-        //Controllo la lunghezza massima della stringa. Se impostata.
-        if ($field->maxlength && (strlen($value) > $field->maxlength)) {
-            $this->addError('maxlength', $field, $field->maxlength.' caratteri');           
-        } elseif ($field->minlength && (strlen($value) < $field->minlength)) {
-            $this->addError('minlength', $field, $field->minlength.' caratteri');
-        } elseif ($field->fixlength && !in_array(strlen($value),$field->fixlength)) {
-            $this->addError('fixlength', $field, implode(' o ',$field->fixlength).' caratteri');            
-        }
+        $this->validateValueLength($field, $value);
         switch ($field->type) {
             case 'float':
             case 'money':
             case 'numeric':
             case 'number':
-                if ($value && filter_var($value, \FILTER_VALIDATE_FLOAT) === false) {
-                    $this->addError('numeric', $field);                    
-                }
+                $this->validateFloatValue($field, $value);
                 break;
             case 'integer':
             case 'int':
-                if ($value && filter_var($value, \FILTER_VALIDATE_INT) === false) {
-                    $this->addError('integer', $field);                    
-                }
+                $this->validateIntegerValue($field, $value);
                 break;
             case 'email':
-                if (!empty($value) && filter_var($value, \FILTER_VALIDATE_EMAIL) === false) {
-                    $this->addError('email', $field);                    
-                }
-                break;
-            case 'file':
-            case 'image':                
-                $value = $this->grabUploadedFile($field);                
+                $this->validateEmailAddressValue($field, $value);
                 break;
         }
-        return $value;
     }
-    
+
+    protected function validateNotNullValue($field, $value)
+    {
+        if ($value !== '0' && empty($value)) {
+            $this->addFieldError('notnull', $field);
+        }
+    }
+
+    protected function validateUniqueValue($field, $value)
+    {
+        $sql = sprintf("SELECT COUNT(*) FROM %s WHERE %s = ?", $this->table, $field->name);
+        $nOccurence = $this->getDb()->execUnique($sql, [$value]);
+        if (!empty($nOccurence)) {
+            $this->addFieldError('unique', $field);
+        }
+    }
+
+    protected function validateValueLength($field, $value)
+    {
+        //Controllo la lunghezza massima della stringa. Se impostata.
+        if ($field->maxlength && (strlen($value) > $field->maxlength)) {
+            $this->addFieldError('maxlength', $field, $field->maxlength.' caratteri');
+        } elseif ($field->minlength && (strlen($value) < $field->minlength)) {
+            $this->addFieldError('minlength', $field, $field->minlength.' caratteri');
+        } elseif ($field->fixlength && !in_array(strlen($value),$field->fixlength)) {
+            $this->addFieldError('fixlength', $field, implode(' o ',$field->fixlength).' caratteri');
+        }
+    }
+
+    protected function validateFloatValue($field, $value)
+    {
+        if ($value && filter_var($value, \FILTER_VALIDATE_FLOAT) === false) {
+            $this->addFieldError('numeric', $field);
+        }
+    }
+
+    protected function validateIntegerValue($field, $value)
+    {
+        if ($value && filter_var($value, \FILTER_VALIDATE_INT) === false) {
+            $this->addFieldError('integer', $field);
+        }
+    }
+
+    protected function validateEmailAddressValue($field, $value)
+    {
+        if (!empty($value) && filter_var($value, \FILTER_VALIDATE_EMAIL) === false) {
+            $this->addFieldError('email', $field);
+        }
+    }
+
     private function grabUploadedFile(&$field)
     {
-        if (
-            !is_array($_FILES) 
-            || !array_key_exists($field->html, $_FILES)
-            || empty($_FILES[$field->html]['name'])
-        ) {
-            $field->readonly = true;            
+        if (!is_array($_FILES) || !array_key_exists($field->html, $_FILES) || empty($_FILES[$field->html]['name'])) {
+            $field->readonly = true;
             return $field->value;
         }
-                
         $upload = new UploadManager();
         try {
             $field->value = $upload->saveFile($field->html, $field->uploadDir);
             $field->readonly = false;
         } catch(\Exception $e) {
-            $this->controller->getResponse()->error('alert', $e->getMessage());
-            $field->readonly = true;            
+            $this->addError($e->getMessage());
+            $field->readonly = true;
         }
-        $this->set('actions.after-update','refresh');
-        //$this->set('actions.after-insert','refresh');
+        $this->actions['after-update'] = 'refresh';
         $this->afterUpload($field->value, $field);
         return $field->value;
     }
-    
-    protected function afterUpload($filename, $field = null)
-    {        
-    }
-    
-    public function setValue($field, $value, $defaultValue = null)
+
+    public function setValue($fieldName, $value, $defaultValue = null)
     {
-        $this->repo->get('fields.'.$field)->setValue($value, $defaultValue);
+        $this->field[$fieldName]->setValue($value, $defaultValue);
     }
-    
+
     public function softDelete($field, $value)
     {
         $this->softdelete = array($field => $value);
     }
-    
+
+    public function getValue($key)
+    {
+        return array_key_exists($key, $this->values) ? $this->values[$key] : null;
+    }
+
+    abstract protected function init();
+
+    protected function afterUpload($filename, $field = null)
+    {
+    }
+
     protected function beforeExec()
     {
     }
-    
+
     protected function beforeInsert()
     {
     }
-    
+
     protected function beforeUpdate()
     {
     }
-    
+
     protected function beforeDelete()
     {
     }
-    
+
     protected function afterExec()
     {
     }
-    
+
     protected function afterInsert($id)
     {
     }
-    
+
     protected function afterUpdate()
     {
     }
-    
+
     protected function afterDelete()
     {
     }
-    
-    abstract protected function init();        
 }
