@@ -99,7 +99,7 @@ abstract class Model
             $this->getDb()->delete($this->table, $where);
         }
         $this->afterDelete();
-        if ($this->actions['after-delete'] === self::ACTION_AFTER_EXEC_NONE) {
+        if ($this->actions['after-delete'] !== self::ACTION_AFTER_EXEC_NONE) {
             $this->getController()->getResponse()->go($this->actions['after-delete']);
         }
     }
