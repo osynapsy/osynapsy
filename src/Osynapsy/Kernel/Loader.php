@@ -60,6 +60,23 @@ class Loader
 
     private function loadFile($path)
     {
+        return function_exists('apcu_fetch') ? $this->loadFileFromCache($path) : $this->loadFileFromDisk($path);
+    }
+
+    protected function loadFileFromCache($path)
+    {
+        $keyId = 'config.file.'.sha1($path);
+        $mtime = filemtime($path);
+        $result = apcu_fetch($keyId);
+        if ($result === false || empty($result[0]) || $mtime > $result[0]) {
+            $result = [$mtime, $this->loadFileFromDisk($path)];
+            apcu_store($keyId , $result);
+        }
+        return $result[1];
+    }
+
+    protected function loadFileFromDisk($path)
+    {
         $xml = new \SimpleXMLIterator($path, null, true);
         return $this->parseXml($xml);
     }
