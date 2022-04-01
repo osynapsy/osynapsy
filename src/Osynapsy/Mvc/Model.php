@@ -86,72 +86,6 @@ abstract class Model
         $this->sequence = $sequence;
     }
 
-    public function delete()
-    {
-        $this->addError($this->beforeDelete());
-        $where = $this->whereConditionFactory();
-        if (empty($where)) {
-            return;
-        }
-        if (!empty($this->softdelete)) {
-            $this->getDb()->update($this->table, $this->softdelete, $where);
-        } else {
-            $this->getDb()->delete($this->table, $where);
-        }
-        $this->afterDelete();
-        if ($this->actions['after-delete'] !== self::ACTION_AFTER_EXEC_NONE) {
-            $this->getController()->getResponse()->go($this->actions['after-delete']);
-        }
-    }
-
-    public function insert($values, $where = null)
-    {
-        $this->addError($this->beforeInsert());
-        if ($this->getController()->getResponse()->error()) {
-            return;
-        }
-        $lastId = null;
-        if ($this->sequence && is_array($where) && count($where) == 1) {
-            $lastId = $values[$where[0]] = $this->getIdFromSequence($this->sequence);
-            $this->getDb()->insert($this->table, $values);
-        } else {
-            $lastId = $this->getDb()->insert($this->table, $values);
-        }
-        $this->afterInsert($lastId);
-        switch ($this->actions['after-insert']) {
-            case self::ACTION_AFTER_EXEC_NONE:
-                break;
-            case self::ACTION_AFTER_INSERT_HISTORY_PUSH_STATE:
-                $this->getResponse()->js("history.pushState(null,null,'{$lastId}');");
-                break;
-            case self::ACTION_AFTER_EXEC_BACK:
-            case self::ACTION_AFTER_EXEC_REFRESH:
-                $this->getResponse()->go($this->actions['after-insert']);
-                break;
-            default:
-                $this->getResponse()->go($this->actions['after-insert'].$lastId);
-                break;
-        }
-    }
-
-    protected function getIdFromSequence($sequence)
-    {
-        return is_callable($sequence) ? $sequence() : $this->getDb()->execOne("SELECT {$this->sequence}.nextval FROM DUAL");
-    }
-
-    public function update($values, $where)
-    {
-        $this->addError($this->beforeUpdate());
-        if ($this->getController()->getResponse()->error()) {
-            return;
-        }
-        $this->getDb()->update($this->table, $values, $where);
-        $this->afterUpdate();
-        if ($this->actions['after-update'] !== self::ACTION_AFTER_EXEC_NONE) {
-            $this->getResponse()->go($this->actions['after-update'], false);
-        }
-    }
-
     public function find()
     {
         $where = $this->whereConditionFactory();
@@ -169,7 +103,7 @@ abstract class Model
                 $result[$field->name] = $field->value;
             }
         }
-        return $result;
+        return array_filter($result , function($value) { return ($value !=='0' && !empty($value)); });
     }
 
     public function assocData()
@@ -180,6 +114,73 @@ abstract class Model
                     $_REQUEST[ $f->html ] = $this->values[ $f->name ];
                 }
             }
+        }
+    }
+
+    public function insert($values, $where = null)
+    {
+        $this->addError($this->beforeInsert());
+        if ($this->getController()->getResponse()->error()) {
+            return;
+        }
+        $lastId = null;
+        if ($this->sequence && is_array($where) && count($where) == 1) {
+            $lastId = $values[$where[0]] = $this->getIdFromSequence($this->sequence);
+            $this->getDb()->insert($this->table, $values);
+        } else {
+            $lastId = $this->getDb()->insert($this->table, $values);
+        }
+        $this->afterInsert($lastId);
+        $this->execAfterAction('after-insert', $lastId);
+    }
+
+    protected function getIdFromSequence($sequence)
+    {
+        return is_callable($sequence) ? $sequence() : $this->getDb()->execOne("SELECT {$this->sequence}.nextval FROM DUAL");
+    }
+
+    public function update($values, $where)
+    {
+        $this->addError($this->beforeUpdate());
+        if ($this->getController()->getResponse()->error()) {
+            return;
+        }
+        $this->getDb()->update($this->table, $values, $where);
+        $this->afterUpdate();
+        $this->execAfterAction('after-update');
+    }
+
+    public function delete()
+    {
+        $this->addError($this->beforeDelete());
+        $where = $this->whereConditionFactory();
+        if (empty($where)) {
+            return;
+        }
+        if (!empty($this->softdelete)) {
+            $this->getDb()->update($this->table, $this->softdelete, $where);
+        } else {
+            $this->getDb()->delete($this->table, $where);
+        }
+        $this->afterDelete();
+        $this->execAfterAction('after-delete');
+    }
+
+    protected function execAfterAction($actionId, $lastId = null)
+    {
+        switch ($this->actions[$actionId]) {
+            case self::ACTION_AFTER_EXEC_NONE:
+                break;
+            case self::ACTION_AFTER_INSERT_HISTORY_PUSH_STATE:
+                $this->getResponse()->js("history.pushState(null,null,'{$lastId}');");
+                break;
+            case self::ACTION_AFTER_EXEC_BACK:
+            case self::ACTION_AFTER_EXEC_REFRESH:
+                $this->getResponse()->go($this->actions[$actionId]);
+                break;
+            default:
+                $this->getResponse()->go($this->actions[$actionId].$lastId);
+                break;
         }
     }
 
@@ -205,6 +206,7 @@ abstract class Model
     }
 
     /**
+     * Save the record on database after record values validation.
      *
      * @return void
      */
@@ -219,10 +221,10 @@ abstract class Model
             $value = $field->value;
             //Check if value respect rule
             $this->validateFieldValue($field, $value);
-            //If field isn't in readonly mode assign values to values list for store it in db
             if (in_array($field->type, ['file', 'image'])) {
                 $value = $this->grabUploadedFile($field);
             }
+            //If field isn't in readonly mode assign values to values list for store it in db
             if (!$field->readonly) {
                 $values[$field->name] = $value;
             }
@@ -251,6 +253,10 @@ abstract class Model
         $this->afterExec();
     }
 
+    /*
+     *
+     *
+     */
     private function validateFieldValue($field, $value)
     {
         if (!$field->isNullable()) {
