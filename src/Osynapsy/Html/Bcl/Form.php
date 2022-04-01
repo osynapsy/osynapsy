@@ -138,8 +138,13 @@ class Form extends Component
 
     public function fixCommandBar($class = 'fixed-bottom p-2 b-light')
     {
-       $this->footClass = $class;
-       $this->footStyle = 'background-color: rgba(255,255,255,0.8); border-top: 1px solid #ddd;';
+        if (empty($this->foot)) {
+            $this->footClass = $class;
+            $this->footStyle = 'background-color: rgba(255,255,255,0.8); border-top: 1px solid #ddd;';
+            return;
+        }
+        $this->foot->addClass($class);
+        $this->foot->att('style', 'background-color: rgba(255,255,255,0.8); border-top: 1px solid #ddd;');
     }
 
     public function foot($obj, $right = false)
@@ -166,7 +171,7 @@ class Form extends Component
         return $this->body;
     }
 
-    public function setCommand($delete = false, $save = true, $back = true, $closeModal = false)
+    public function setCommand($delete = false, $save = true, $back = true, $closeModal = false, $fixbar = false)
     {
         if ($back) {
             $this->foot($this->buttonBackFactory());
@@ -179,6 +184,9 @@ class Form extends Component
         }
         if ($save) {
             $this->foot(is_object($save) ? $save : $this->buttonSaveFactory($save), true);
+        }
+        if ($fixbar) {
+            $this->fixCommandBar();
         }
     }
 
