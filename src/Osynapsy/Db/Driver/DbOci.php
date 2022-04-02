@@ -308,8 +308,7 @@ class DbOci implements InterfaceDbo
 
     public function update($table, array $values, array $condition)
     {
-        $fields = array();
-        $where = array();
+        $fields = $where = [];
         foreach ($values as $field => $value) {
             $fields[] = "{$field} = :{$field}";
         }
@@ -321,10 +320,7 @@ class DbOci implements InterfaceDbo
             $where[] = "$field = :WHERE_{$field}";
             $values['WHERE_'.$field] = $value;
         }
-        $cmd = 'UPDATE '.$table.' SET ';
-        $cmd .= implode(', ',$fields);
-        $cmd .= ' WHERE ';
-        $cmd .= implode(' AND ',$where);
+        $cmd = sprintf('UPDATE %s SET %s WHERE %s', $table, implode(', ', $fields), implode(' AND ',$where));
         return $this->execCommand($cmd, $values);
     }
 
