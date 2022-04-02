@@ -12,19 +12,23 @@ use Osynapsy\Html\Bcl\Button;
  */
 class Dropdown extends Component
 {
+    const ALIGN_LEFT = 'left';
+    const ALIGN_RIGHT = 'right';
+
     private $button;
     private $align;
-    public function __construct($name, $label, $align = 'left', $tag = 'div')
+
+    public function __construct($name, $label, $align = self::ALIGN_LEFT, $tag = 'div')
     {
         parent::__construct($tag);
         $this->setClass('dropdown');
         $this->add($this->buildMainButton($name, $label));
         $this->align = $align;
     }
-    
+
     private function buildMainButton($name, $label)
     {
-        $this->button = new Button($name.'_btn', 'button', 'dropdown-toggle', $label);
+        $this->button = new Button($name.'_btn', 'button', 'btn dropdown-toggle', $label);
         $this->button->att([
             'data-toggle' => 'dropdown',
             'aria-haspopup' => 'true',
@@ -32,25 +36,25 @@ class Dropdown extends Component
         ]);
         return $this->button;
     }
-    
+
     protected function __build_extra__()
     {
-        $list = $this->add(new Tag('div', null, 'dropdown-menu dropdown-menu-'.$this->align));        
-        $list->att('aria-labelledby', $this->getButton()->id);         
+        $list = $this->add(new Tag('div', null, 'dropdown-menu dropdown-menu-'.$this->align));
+        $list->att('aria-labelledby', $this->getButton()->id);
         foreach ($this->data as $rec) {
             if (is_object($rec)) {
-                $list->add($rec)->att('class', 'dropdown-item', true);                           
+                $list->add($rec)->att('class', 'dropdown-item', true);
                 continue;
             }
             if ($rec === 'divider') {
                 $list->add(new Tag('div', null, 'dropdown-divider'));
                 continue;
-            }            
+            }
         }
     }
-            
+
     public function getButton()
     {
         return $this->button;
-    }    
+    }
 }
