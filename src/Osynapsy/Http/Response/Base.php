@@ -193,7 +193,7 @@ abstract class Base
      */
     public function getHeader($key)
     {
-        return $this->hasHeader($key) ? explode('; ',$this->repo['header'][$key]) : [];
+        return $this->hasHeader($key) ? explode(', ',$this->repo['header'][$key]) : [];
     }
 
     /**
