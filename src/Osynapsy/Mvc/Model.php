@@ -14,7 +14,7 @@ namespace Osynapsy\Mvc;
 use Osynapsy\Mvc\Model\Field as ModelField;
 use Osynapsy\Helper\Net\UploadManager;
 
-abstract class Model
+abstract class Model implements InterfaceModel
 {
     const ACTION_AFTER_INSERT_HISTORY_PUSH_STATE = 'historyPushState';
     const ACTION_AFTER_EXEC_BACK = 'back';
@@ -49,6 +49,16 @@ abstract class Model
         if (empty($this->table)) {
             throw new \Exception('Model table is empty');
         }
+    }
+
+    abstract protected function init();
+
+    public function map($htmlField, $dbField = null, $value = null, $type = 'string') : ModelField
+    {
+        $requestValue = isset($_REQUEST[$htmlField]) ? $_REQUEST[$htmlField] : null;
+        $modelField = new ModelField($this, $dbField, $htmlField, $type);
+        $modelField->setValue($requestValue, $value);
+        return $this->fields[$modelField->html] = $modelField;
     }
 
     public function getController()
@@ -197,20 +207,12 @@ abstract class Model
         }
     }
 
-    public function map($htmlField, $dbField = null, $value = null, $type = 'string')
-    {
-        $requestValue = isset($_REQUEST[$htmlField]) ? $_REQUEST[$htmlField] : null;
-        $modelField = new ModelField($this, $dbField, $htmlField, $type);
-        $modelField->setValue($requestValue, $value);
-        return $this->fields[$modelField->html] = $modelField;
-    }
-
     /**
      * Save the record on database after record values validation.
      *
      * @return void
      */
-    public function save()
+    public function save() : void
     {
         //Recall before exec method with arbirtary code
         $this->addError($this->beforeExec());
@@ -253,11 +255,13 @@ abstract class Model
         $this->afterExec();
     }
 
-    /*
+    /**
+     * This method validate value of field.
      *
-     *
+     * @param ModelField $field
+     * @param type $value
      */
-    private function validateFieldValue($field, $value)
+    protected function validateFieldValue(ModelField $field, $value)
     {
         if (!$field->isNullable()) {
             $this->validateNotNullValue($field, $value);
@@ -283,14 +287,14 @@ abstract class Model
         }
     }
 
-    protected function validateNotNullValue($field, $value)
+    protected function validateNotNullValue(ModelField $field, $value)
     {
         if ($value !== '0' && empty($value)) {
             $this->addFieldError('notnull', $field);
         }
     }
 
-    protected function validateUniqueValue($field, $value)
+    protected function validateUniqueValue(ModelField $field, $value)
     {
         $sql = sprintf("SELECT COUNT(*) FROM %s WHERE %s = ?", $this->table, $field->name);
         $nOccurence = $this->getDb()->execUnique($sql, [$value]);
@@ -299,7 +303,7 @@ abstract class Model
         }
     }
 
-    protected function validateValueLength($field, $value)
+    protected function validateValueLength(ModelField $field, $value)
     {
         //Controllo la lunghezza massima della stringa. Se impostata.
         if ($field->maxlength && (strlen($value) > $field->maxlength)) {
@@ -311,21 +315,21 @@ abstract class Model
         }
     }
 
-    protected function validateFloatValue($field, $value)
+    protected function validateFloatValue(ModelField $field, $value)
     {
         if ($value && filter_var($value, \FILTER_VALIDATE_FLOAT) === false) {
             $this->addFieldError('numeric', $field);
         }
     }
 
-    protected function validateIntegerValue($field, $value)
+    protected function validateIntegerValue(ModelField $field, $value)
     {
         if ($value && filter_var($value, \FILTER_VALIDATE_INT) === false) {
             $this->addFieldError('integer', $field);
         }
     }
 
-    protected function validateEmailAddressValue($field, $value)
+    protected function validateEmailAddressValue(ModelField $field, $value)
     {
         if (!empty($value) && filter_var($value, \FILTER_VALIDATE_EMAIL) === false) {
             $this->addFieldError('email', $field);
@@ -366,10 +370,9 @@ abstract class Model
         return array_key_exists($key, $this->values) ? $this->values[$key] : null;
     }
 
-    abstract protected function init();
-
-    protected function afterUpload($filename, $field = null)
+    protected function raiseException($errorMessage, $errorNum = 500)
     {
+        throw new \Exception($errorMessage, $errorNum);
     }
 
     protected function beforeExec()
@@ -401,6 +404,10 @@ abstract class Model
     }
 
     protected function afterDelete()
+    {
+    }
+
+    protected function afterUpload($filename, $field = null)
     {
     }
 }
