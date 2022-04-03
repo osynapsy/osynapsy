@@ -17,6 +17,7 @@ namespace Osynapsy\Http\Response;
 abstract class Base
 {
     protected $headers = [];
+    protected $headerNames = [];
     protected $body = [];
 
     /**
@@ -150,16 +151,24 @@ abstract class Base
      */
     public function withHeader($key, $value)
     {
+        $caseInsesitiveKey = $this->caseInsesitiveKey($key);
+        $this->headerNames[$caseInsesitiveKey] = $key;
         $this->headers[$key] = $value;
     }
 
     public function withAddedHeader($key, $value)
     {
-        if ($this->hasHeader($key)) {
-            $this->headers[$key] .= ', '.$value;
-        } else {
-            $this->headers[$key] = $value;
+        if (!$this->hasHeader($key)) {
+            $this->withHeader($key, $value);
+            return;
         }
+        $originalKey = $this->headerNames[$this->caseInsesitiveKey($key)];
+        $this->headers[$originalKey] .= ', '.$value;
+    }
+
+    protected function caseInsesitiveKey($key)
+    {
+        return strtolower($key);
     }
 
     /**
@@ -170,7 +179,7 @@ abstract class Base
      */
     public function hasHeader($key) : bool
     {
-        return array_key_exists($key, $this->headers);
+        return array_key_exists($this->caseInsesitiveKey($key), $this->headerNames);
     }
 
     /**
