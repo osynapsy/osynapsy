@@ -189,7 +189,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      *
      * @return \Osynapsy\Mvc\Application
      */
-    final public function getModel()
+    final public function getModel() : InterfaceModel
     {
         return $this->model;
     }
