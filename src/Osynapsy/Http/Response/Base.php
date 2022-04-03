@@ -67,9 +67,9 @@ abstract class Base
         $this->withHeader("Pragma","no-cache");
     }
 
-    public function send($body, $part =  'main', $checkUnique = false)
+    public function send($body, $part = 'main', $overwriteIfExists = false)
     {
-        $this->addContent($body, $part, $checkUnique);
+        $this->addContent($body, $part, $overwriteIfExists);
     }
 
     public function exec()
@@ -232,11 +232,10 @@ abstract class Base
      */
     protected function sendHeader()
     {
-        if (headers_sent()) {
-            return;
-        }
-        foreach ($this->headers as $key => $value) {
-            header($key.': '.$value);
+        if (!headers_sent()) {
+            foreach ($this->headers as $key => $value) {
+               header($key.': '.$value);
+            }
         }
     }
 
