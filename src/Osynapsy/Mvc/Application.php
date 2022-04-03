@@ -5,7 +5,7 @@ use Osynapsy\Kernel\Route;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response\Base as Response;
 use Osynapsy\Db\DbFactory;
-use Osynapsy\Http\Response\JsonOsynapsy as JsonResponse;
+use Osynapsy\Http\Response\JsonOsynapsy as JsonOsynapsyResponse;
 use Osynapsy\Http\Response\HtmlOcl as HtmlResponse;
 use Osynapsy\Http\Response\Xml as XmlResponse;
 
@@ -97,8 +97,9 @@ class Application
         switch($accept[0]) {
             case 'text/json':
             case 'application/json':
+            case 'application/json-osynapsy':
                 ini_set("xdebug.overload_var_dump", "off");
-                $this->setResponse(new JsonResponse());
+                $this->setResponse(new JsonOsynapsyResponse());
                 break;
             case 'application/xml':
                 ini_set("xdebug.overload_var_dump", "off");
