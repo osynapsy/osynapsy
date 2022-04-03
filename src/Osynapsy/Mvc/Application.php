@@ -5,7 +5,7 @@ use Osynapsy\Kernel\Route;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response\Base as Response;
 use Osynapsy\Db\DbFactory;
-use Osynapsy\Http\Response\Json as JsonResponse;
+use Osynapsy\Http\Response\JsonOsynapsy as JsonResponse;
 use Osynapsy\Http\Response\HtmlOcl as HtmlResponse;
 use Osynapsy\Http\Response\Xml as XmlResponse;
 
