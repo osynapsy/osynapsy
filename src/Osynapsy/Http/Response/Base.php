@@ -158,7 +158,7 @@ abstract class Base
     public function withAddedHeader($key, $value)
     {
         if ($this->hasHeader($key)) {
-            $this->repo['header'][$key] .= '; '.$value;
+            $this->repo['header'][$key] .= ', '.$value;
         } else {
             $this->repo['header'][$key] = $value;
         }
