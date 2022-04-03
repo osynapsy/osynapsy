@@ -14,8 +14,9 @@ namespace Osynapsy\Mvc\Model;
 use Osynapsy\Event\EventLocal;
 use Osynapsy\Mvc\Controller;
 use Osynapsy\Mvc\Model\Field;
+use Osynapsy\Mvc\InterfaceModel;
 
-abstract class Record
+abstract class Record implements InterfaceModel
 {
     const BEHAVIOR_INSERT = 'insert';
     const BEHAVIOR_UPDATE = 'update';
