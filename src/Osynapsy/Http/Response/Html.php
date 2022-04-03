@@ -20,7 +20,7 @@ class Html extends Base
     public function __construct()
     {
         parent::__construct('text/html');
-        $this->repo['content'] = [
+        $this->repo['body'] = [
             'main' => []
         ];
     }
@@ -42,7 +42,7 @@ class Html extends Base
                 return '<!--'.$v.'-->';
             },
             array_keys(
-                $this->repo['content']
+                $this->repo['body']
             )
         );
         $parts = array_map(
@@ -50,7 +50,7 @@ class Html extends Base
                 return is_array($p) ? implode("\n",$p) : $p;
             },
             array_values(
-                $this->repo['content']
+                $this->repo['body']
             )
         );
         return str_replace($dummy, $parts, $buffer);
@@ -64,7 +64,7 @@ class Html extends Base
             return $this->replaceContent($this->template);
         }
         $response = '';
-        foreach ($this->repo['content'] as $content) {
+        foreach ($this->repo['body'] as $content) {
             $response .= is_array($content) ? implode('',$content) : $content;
         }
         return $response;

@@ -17,18 +17,18 @@ namespace Osynapsy\Http\Response;
 abstract class Base
 {
     protected $repo = [
-        'content' => [],
-        'header' => []
+        'header' => [],
+        'body' => []
     ];
 
     /**
-     * Init response with the content type
+     * Init response with the body type
      *
-     * @param type $contentType
+     * @param type $bodyType
      */
-    public function __construct($contentType = 'text/html')
+    public function __construct($bodyType = 'text/html')
     {
-        $this->setContentType($contentType);
+        $this->setContentType($bodyType);
     }
 
     public function addBufferToContent($path = null, $part = 'main')
@@ -37,51 +37,51 @@ abstract class Base
     }
 
     /**
-     * Method that add content to the response
+     * Method that add body to the response
      *
-     * @param mixed $content
+     * @param mixed $body
      * @param mixed $part
      * @param bool $checkUnique
      * @return mixed
      */
-    public function addContent($content, $part = 'main', $checkUnique = false)
+    public function addContent($body, $part = 'main', $checkUnique = false)
     {
-        if ($checkUnique && !empty($this->repo['content'][$part]) && in_array($content, $this->repo['content'][$part])) {
+        if ($checkUnique && !empty($this->repo['body'][$part]) && in_array($body, $this->repo['body'][$part])) {
             return;
         }
-        if (!array_key_exists($part, $this->repo['content'])) {
-            $this->repo['content'][$part] = [];
+        if (!array_key_exists($part, $this->repo['body'])) {
+            $this->repo['body'][$part] = [];
         }
-        $this->repo['content'][$part][] = $content;
+        $this->repo['body'][$part][] = $body;
     }
 
     public function addValue($key, $value)
     {
-        $this->repo['content'][$key] = $value;
+        $this->repo['body'][$key] = $value;
     }
 
     public function clearCache()
     {
-        $this->setHeader("Expires","Tue, 01 Jan 2000 00:00:00 GMT");
-        $this->setHeader("Last-Modified", gmdate("D, d M Y H:i:s") . " GMT");
-        $this->setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
-        $this->setHeader("Cache-Control", "post-check=0, pre-check=0", false);
-        $this->setHeader("Pragma","no-cache");
+        $this->withHeader("Expires","Tue, 01 Jan 2000 00:00:00 GMT");
+        $this->withHeader("Last-Modified", gmdate("D, d M Y H:i:s") . " GMT");
+        $this->withHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        $this->withHeader("Cache-Control", "post-check=0, pre-check=0", false);
+        $this->withHeader("Pragma","no-cache");
     }
 
-    public function send($content, $part =  'main', $checkUnique = false)
+    public function send($body, $part =  'main', $checkUnique = false)
     {
-        $this->addContent($content, $part, $checkUnique);
+        $this->addContent($body, $part, $checkUnique);
     }
 
     public function exec()
     {
         $this->sendHeader();
-        echo implode('',$this->repo['content']);
+        echo implode('',$this->repo['body']);
     }
 
     /**
-     * Include a php page e return content string
+     * Include a php page e return body string
      *
      * @param string $path
      * @param array $params
@@ -115,33 +115,33 @@ abstract class Base
     }
 
     /**
-     * Reset content part.
+     * Reset body part.
      *
      * @param mixed $part
      */
     public function resetContent($part = 'main')
     {
-        $this->repo['content'][$part] = [];
+        $this->repo['body'][$part] = [];
     }
 
     /**
-     * Set content of the response
+     * Set body of the response
      *
      * @param string $value
      */
     public function setContent($value)
     {
-        $this->repo['content'] = $value;
+        $this->repo['body'] = $value;
     }
 
     /**
-     * Set content type of the response
+     * Set body type of the response
      *
      * @param string $type
      */
     public function setContentType($type)
     {
-        $this->repo['header']['Content-Type'] = $type;
+        $this->withHeader('Content-Type', $type);
     }
 
     /**
@@ -150,9 +150,50 @@ abstract class Base
      * @param string $key
      * @param string $value
      */
-    public function setHeader($key, $value)
+    public function withHeader($key, $value)
     {
         $this->repo['header'][$key] = $value;
+    }
+
+    public function withAddedHeader($key, $value)
+    {
+        if ($this->hasHeader($key)) {
+            $this->repo['header'][$key] .= '; '.$value;
+        } else {
+            $this->repo['header'][$key] = $value;
+        }
+    }
+
+    /**
+     * Check if key exists in header repository
+     *
+     * @param type $key key to search
+     * @return bool
+     */
+    public function hasHeader($key) : bool
+    {
+        return array_key_exists($key, $this->repo['header']);
+    }
+
+    /**
+     * Return the header line by key
+     *
+     * @param type $key
+     * @return string
+     */
+    public function getHeaderLine($key) : ?string
+    {
+        return $this->hasHeader($key) ? $this->repo['header'][$key] : null;
+    }
+
+    /**
+     *
+     * @param type $key
+     * @return type
+     */
+    public function getHeader($key)
+    {
+        return $this->hasHeader($key) ? explode('; ',$this->repo['header'][$key]) : [];
     }
 
     /**

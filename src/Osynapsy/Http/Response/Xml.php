@@ -30,7 +30,7 @@ class Xml extends Base
     public function __toString()
     {
         $this->sendHeader();
-        return $this->repo['content'];
+        return $this->repo['body'];
     }
 
     public function debug($msg)
@@ -46,7 +46,7 @@ class Xml extends Base
     {
         ob_clean();
         $this->sendHeader();
-        die(json_encode($this->repo['content']));
+        die(json_encode($this->repo['body']));
     }
 
     /**
@@ -63,10 +63,10 @@ class Xml extends Base
     public function error($objectId = null, $errorMessage = null)
     {
         if (is_null($objectId) && is_null($errorMessage)){
-            return array_key_exists('errors',$this->repo['content']);
+            return array_key_exists('errors',$this->repo['body']);
         }
         if (!is_null($objectId) && is_null($errorMessage)){
-            return array_key_exists('errors', $this->repo['content']) && array_key_exists($objectId, $this->repo['content']['errors']);
+            return array_key_exists('errors', $this->repo['body']) && array_key_exists($objectId, $this->repo['body']['errors']);
         }
         if (function_exists('mb_detect_encoding') && !mb_detect_encoding($errorMessage, 'UTF-8', true)) {
             $errorMessage = \utf8_encode($errorMessage);
@@ -130,10 +130,10 @@ class Xml extends Base
      */
     public function message($typ, $act, $val)
     {
-        if (!array_key_exists($typ, $this->repo['content'])){
-            $this->repo['content'][$typ] = array();
+        if (!array_key_exists($typ, $this->repo['body'])){
+            $this->repo['body'][$typ] = array();
         }
-        $this->repo['content'][$typ][] = array($act,$val);
+        $this->repo['body'][$typ][] = array($act,$val);
     }
 
     public function js($cmd)
