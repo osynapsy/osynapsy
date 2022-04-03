@@ -48,7 +48,7 @@ Osynapsy.action =
         var requestParameters = {
             url  : actionUrl,
             data : formData,
-            headers: {'Osynapsy-Action': action, 'Accept': 'application/json'},
+            headers: {'Osynapsy-Action': action, 'Accept': 'application/json-osynapsy'},
             type : 'post',
             dataType : 'json',
             beforeSend : function() {
