@@ -32,7 +32,7 @@ class Json extends Base
     public function __toString()
     {
         $this->sendHeader();
-        return json_encode($this->repo['body']);
+        return json_encode($this->body);
     }
 
     public function debug($msg)
@@ -48,7 +48,7 @@ class Json extends Base
     {
         ob_clean();
         $this->sendHeader();
-        die(json_encode($this->repo['body']));
+        die(json_encode($this->body));
     }
 
     /**
@@ -65,10 +65,10 @@ class Json extends Base
     public function error($objectId = null, $errorMessage = null)
     {
         if (is_null($objectId) && is_null($errorMessage)){
-            return array_key_exists('errors',$this->repo['body']);
+            return array_key_exists('errors',$this->body);
         }
         if (!is_null($objectId) && is_null($errorMessage)){
-            return array_key_exists('errors', $this->repo['body']) && array_key_exists($objectId, $this->repo['body']['errors']);
+            return array_key_exists('errors', $this->body) && array_key_exists($objectId, $this->body['errors']);
         }
         if (function_exists('mb_detect_encoding') && !mb_detect_encoding($errorMessage, 'UTF-8', true)) {
             $errorMessage = \utf8_encode($errorMessage);
@@ -132,10 +132,10 @@ class Json extends Base
      */
     public function message($typ, $act, $val)
     {
-        if (!array_key_exists($typ, $this->repo['body'])){
-            $this->repo['body'][$typ] = array();
+        if (!array_key_exists($typ, $this->body)){
+            $this->body[$typ] = array();
         }
-        $this->repo['body'][$typ][] = array($act,$val);
+        $this->body[$typ][] = array($act,$val);
     }
 
     public function jquery($selector)

@@ -20,39 +20,18 @@ class Html extends Base
     public function __construct()
     {
         parent::__construct('text/html');
-        $this->repo['body'] = [
-            'main' => []
-        ];
+        $this->body = ['main' => []];
     }
 
     public function addBufferToContent($path = null, $part = 'main')
     {
-        $this->addContent(
-            $this->replaceContent(
-                self::getBuffer($path)
-            ),
-            $part
-        );
+        $this->addContent($this->replaceContent(self::getBuffer($path)), $part);
     }
 
     private function replaceContent($buffer)
     {
-        $dummy = array_map(
-            function ($v) {
-                return '<!--'.$v.'-->';
-            },
-            array_keys(
-                $this->repo['body']
-            )
-        );
-        $parts = array_map(
-            function ($p) {
-                return is_array($p) ? implode("\n",$p) : $p;
-            },
-            array_values(
-                $this->repo['body']
-            )
-        );
+        $dummy = array_map(function ($v) { return '<!--'.$v.'-->'; }, array_keys($this->body));
+        $parts = array_map(function ($p) { return is_array($p) ? implode("\n",$p) : $p; }, array_values($this->body));
         return str_replace($dummy, $parts, $buffer);
     }
 
@@ -64,7 +43,7 @@ class Html extends Base
             return $this->replaceContent($this->template);
         }
         $response = '';
-        foreach ($this->repo['body'] as $content) {
+        foreach ($this->body as $content) {
             $response .= is_array($content) ? implode('',$content) : $content;
         }
         return $response;

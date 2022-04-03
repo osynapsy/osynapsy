@@ -16,10 +16,8 @@ namespace Osynapsy\Http\Response;
  */
 abstract class Base
 {
-    protected $repo = [
-        'header' => [],
-        'body' => []
-    ];
+    protected $headers = [];
+    protected $body = [];
 
     /**
      * Init response with the body type
@@ -46,18 +44,18 @@ abstract class Base
      */
     public function addContent($body, $part = 'main', $checkUnique = false)
     {
-        if ($checkUnique && !empty($this->repo['body'][$part]) && in_array($body, $this->repo['body'][$part])) {
+        if ($checkUnique && !empty($this->body[$part]) && in_array($body, $this->body[$part])) {
             return;
         }
-        if (!array_key_exists($part, $this->repo['body'])) {
-            $this->repo['body'][$part] = [];
+        if (!array_key_exists($part, $this->body)) {
+            $this->body[$part] = [];
         }
-        $this->repo['body'][$part][] = $body;
+        $this->body[$part][] = $body;
     }
 
     public function addValue($key, $value)
     {
-        $this->repo['body'][$key] = $value;
+        $this->body[$key] = $value;
     }
 
     public function clearCache()
@@ -77,7 +75,7 @@ abstract class Base
     public function exec()
     {
         $this->sendHeader();
-        echo implode('',$this->repo['body']);
+        echo implode('',$this->body);
     }
 
     /**
@@ -121,7 +119,7 @@ abstract class Base
      */
     public function resetContent($part = 'main')
     {
-        $this->repo['body'][$part] = [];
+        $this->body[$part] = [];
     }
 
     /**
@@ -131,7 +129,7 @@ abstract class Base
      */
     public function setContent($value)
     {
-        $this->repo['body'] = $value;
+        $this->body = $value;
     }
 
     /**
@@ -152,15 +150,15 @@ abstract class Base
      */
     public function withHeader($key, $value)
     {
-        $this->repo['header'][$key] = $value;
+        $this->headers[$key] = $value;
     }
 
     public function withAddedHeader($key, $value)
     {
         if ($this->hasHeader($key)) {
-            $this->repo['header'][$key] .= ', '.$value;
+            $this->headers[$key] .= ', '.$value;
         } else {
-            $this->repo['header'][$key] = $value;
+            $this->headers[$key] = $value;
         }
     }
 
@@ -172,7 +170,7 @@ abstract class Base
      */
     public function hasHeader($key) : bool
     {
-        return array_key_exists($key, $this->repo['header']);
+        return array_key_exists($key, $this->headers);
     }
 
     /**
@@ -183,7 +181,7 @@ abstract class Base
      */
     public function getHeaderLine($key) : ?string
     {
-        return $this->hasHeader($key) ? $this->repo['header'][$key] : null;
+        return $this->hasHeader($key) ? $this->headers[$key] : null;
     }
 
     /**
@@ -193,7 +191,7 @@ abstract class Base
      */
     public function getHeader($key)
     {
-        return $this->hasHeader($key) ? explode(', ',$this->repo['header'][$key]) : [];
+        return $this->hasHeader($key) ? explode(', ',$this->headers[$key]) : [];
     }
 
     /**
@@ -237,7 +235,7 @@ abstract class Base
         if (headers_sent()) {
             return;
         }
-        foreach ($this->repo['header'] as $key => $value) {
+        foreach ($this->headers as $key => $value) {
             header($key.': '.$value);
         }
     }
