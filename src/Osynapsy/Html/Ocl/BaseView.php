@@ -11,15 +11,16 @@
 
 namespace Osynapsy\Html\Ocl;
 
-use Osynapsy\Mvc\Controller;
 use Osynapsy\Kernel;
+use Osynapsy\Mvc\InterfaceController;
+use Osynapsy\Mvc\InterfaceView;
 
-abstract class BaseView
+abstract class BaseView implements InterfaceView
 {
     protected $components = array();
     private $controller;
 
-    public function __construct(Controller $controller, $title = '')
+    public function __construct(InterfaceController $controller, $title = '')
     {
         $this->controller = $controller;
         $this->setTitle($title);
