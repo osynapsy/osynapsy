@@ -16,17 +16,21 @@ use Osynapsy\Mvc\Application;
 
 interface InterfaceController
 {
-    public function __construct(Request $request = null, Application $application = null);    
-    
+    public function __construct(Request $request = null, Application $application = null);
+
     public function getDb();
-    
+
     public function getDispatcher();
-    
-    public function getModel();
-    
+
+    public function getModel() : InterfaceModel;
+
     public function getResponse();
-    
+
     public function getRequest();
-    
+
+    public function setModel(InterfaceModel $model);
+
+    public function setView(InterfaceView $view);
+
     public function run($action, $parameters = []);
 }
