@@ -372,7 +372,7 @@ abstract class Model implements InterfaceModel
 
     protected function raiseException($errorMessage, $errorNum = 500)
     {
-        throw new \Exception($errorMessage, $errorNum);
+        throw new ModelException($errorMessage, $errorNum);
     }
 
     protected function beforeExec()
