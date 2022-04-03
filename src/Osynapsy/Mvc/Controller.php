@@ -28,6 +28,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     private $application;
     private $externalActions = [];
     public $model;
+    protected $view;
 
     /**
      * Contructor of controller,
@@ -313,13 +314,23 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     /**
      * Set external class action for manage action
      *
-     * @param string $actionName
+     * @param string $actionId
      * @param string $actionClass
      * @return void
      */
-    public function setExternalAction($actionName, InterfaceAction $actionClass)
+    public function setExternalAction($actionId, InterfaceAction $actionClass) : void
     {
-        $this->externalActions[$actionName] = $actionClass;
+        $this->externalActions[$actionId] = $actionClass;
+    }
+
+    /**
+     * Set model for controller
+     *
+     * @param InterfaceModel $model
+     */
+    public function setModel(InterfaceModel $model)
+    {
+        $this->model = $model;
     }
 
     /**
@@ -330,6 +341,16 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      */
     public function setResponse(Response $response) : Response
     {
-        return $response; //$this->getApp()->setResponse($response);
+        return $response;
+    }
+
+    /**
+     * Set view for controller
+     *
+     * @param InterfaceModel $view
+     */
+    public function setView(InterfaceView $view)
+    {
+        $this->view = $view;
     }
 }
