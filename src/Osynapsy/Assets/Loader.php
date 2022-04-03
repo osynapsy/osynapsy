@@ -12,6 +12,7 @@
 namespace Osynapsy\Assets;
 
 use Osynapsy\Mvc\Controller;
+use Osynapsy\Kernel\KernelException;
 
 class Loader extends Controller
 {
@@ -32,7 +33,7 @@ class Loader extends Controller
     private function getFile($filename)
     {
         if (!is_file($filename)) {
-            throw new \Osynapsy\Kernel\KernelException('Page not found', 404);
+            throw new KernelException('Page not found', 404);
         }
         $this->copyFileToCache($this->getRequest()->get('page.url'), $filename);
         return $this->sendFile($filename);
@@ -63,7 +64,6 @@ class Loader extends Controller
             if (file_exists($currentPath)) {
                 continue;
             }
-
             mkdir($currentPath);
         }
         $currentPath .= $file;
@@ -79,7 +79,7 @@ class Loader extends Controller
         // calc the string in GMT not localtime and add the offset
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
         //output the HTTP header
-        $this->getResponse()->setHeader('Expires', gmdate("D, d M Y H:i:s", time() + $offset) . " GMT");
+        $this->getResponse()->withHeader('Expires', gmdate("D, d M Y H:i:s", time() + $offset) . " GMT");
         switch($ext) {
             case 'js':
                 $this->getResponse()->setContentType('application/javascript');
