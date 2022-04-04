@@ -17,9 +17,20 @@ class Link extends Component
 {
     public function __construct($id, $link, $label, $class = '')
     {
-        parent::__construct('a', $id);        
-        $this->att('href', $link === false ? 'javascript:void(0);' : $link)
-             ->add($label);        
-        $this->SetClass($class);
-    }        
+        parent::__construct('a', $id);
+        $this->add($label);
+        $this->setHref($link);
+        $this->setClass($class);
+    }
+
+    public function setHref($uri)
+    {
+        $this->att('href', empty($uri) ? 'javascript:void(0);' : $uri);
+    }
+
+    public function appendToHref($uri)
+    {
+        $currentUri = $this->att('href');
+        $this->setHref($currentUri.$uri);
+    }
 }
