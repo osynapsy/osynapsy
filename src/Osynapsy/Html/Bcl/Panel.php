@@ -130,12 +130,10 @@ class Panel extends Component
         $label = $cellData['lbl'];
         $content = $cellData['obj'];
         $Cell = new Tag('div', null , $this->buildCellClass($cellData, $width));
-        $Cell->add(new Tag('div', null, 'form-group'))->addFromArray(
-            array_merge(
-                $label === false ? [] : [$this->buildLabel($label, $content)],
-                is_array($content) ? $content : [$content]
-            )
-        );
+        $Cell->add(new Tag('div', null, 'form-group'))->addFromArray(array_merge(
+            $label === false ? [] : [$this->buildLabel($label, $content)],
+            is_array($content) ? $content : [$content]
+        ));
         return $Cell;
     }
 
@@ -158,19 +156,23 @@ class Panel extends Component
         return implode(' ', $class);
     }
 
-    private function buildLabel($cellLabel, $cellContent)
+    private function buildLabel($rawCellLabel, $cellContent)
     {
+        $cellLabel = is_array($rawCellLabel) ? array_shift($rawCellLabel) : $rawCellLabel;
         if (is_a($cellContent, 'Tag') && ($cellContent->tag == 'button')) {
             $cellLabel = '&nbsp';
         }
         if (empty($cellLabel)) {
             return;
         }
-        $label = new Tag('label', null, $this->buildLabelClass($cellContent));
+        $container = new Tag('div');
+        $label = $container->add(new Tag('label', null, $this->buildLabelClass($cellContent)));
         $label->att('for', is_a($cellContent, 'Tag') ? $cellContent->id : '');
-        $label->att('style', 'display: block');
         $label->add(trim($cellLabel));
-        return $label;
+        if (is_array($rawCellLabel)) {
+            $container->addFromArray($rawCellLabel);
+        }
+        return $container;
     }
 
     private function buildLabelClass($cellContent)
@@ -193,7 +195,7 @@ class Panel extends Component
     public function put($lbl, $obj, $row = 0, $col = 0, $width=1, $offset = null, $class = '')
     {
         if ($obj instanceof Tag) {
-            $obj->att('data-label', strip_tags($lbl));
+            $obj->att('data-label', strip_tags(is_array($lbl) ? $lbl[0] : $lbl));
         }
         $this->cells[$row][$col][] = [
             'lbl' => $lbl,
