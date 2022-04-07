@@ -14,6 +14,12 @@ namespace Osynapsy\Mvc;
 use Osynapsy\Mvc\Model\Field as ModelField;
 use Osynapsy\Helper\Net\UploadManager;
 
+/**
+ * The abstract class Model implement base method for manage mapping
+ * of the html fields on db fields.
+ *
+ * @author Pietro Celeste <p.celete@osynapsy.org>
+ */
 abstract class Model implements InterfaceModel
 {
     const ACTION_AFTER_INSERT_HISTORY_PUSH_STATE = 'historyPushState';
@@ -367,7 +373,7 @@ abstract class Model implements InterfaceModel
 
     public function getValue($key)
     {
-        return array_key_exists($key, $this->values) ? $this->values[$key] : null;
+        return is_array($this->values) && array_key_exists($key, $this->values) ? $this->values[$key] : null;
     }
 
     protected function raiseException($errorMessage, $errorNum = 500)
