@@ -239,14 +239,25 @@ class DataGrid extends Component
         if (is_callable($field)) {
             $function = $field;
             $field = '';
-        } elseif (is_callable($type)) {
+        } elseif ($type !== 'date' && is_callable($type)) {
             $function = $type;
             $type = 'string';
         }
-        $column = new DataGridColumn($label, $field, $class, $type, $function, $fieldOrderBy);
-        $column->setParent($this->id);
-        $this->columns[$label] = $column;
-        return $column;
+        $this->columns[$label] = new DataGridColumn($label, $field, $class, $type, $function, $fieldOrderBy);
+        $this->columns[$label]->setParent($this->id);
+        return $this->columns[$label];
+    }
+
+    /**
+     * Remove column from repo of columns
+     *
+     * @param string $label
+     */
+    public function removeColumn($label)
+    {
+        if (array_key_exists($label, $this->columns)) {
+            unset($this->columns[$label]);
+        }
     }
 
     /**
@@ -255,7 +266,7 @@ class DataGrid extends Component
      * @param string $label
      * @return Column
      */
-    protected function getColumn($label)
+    public function getColumn($label)
     {
         return $this->columns[$label];
     }
