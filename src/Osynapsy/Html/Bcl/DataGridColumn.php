@@ -35,14 +35,8 @@ class DataGridColumn
     ];
     private $parentId;
 
-    public function __construct(
-        $label,
-        $field,
-        $class = '',
-        $type = 'string',
-        callable $function = null,
-        $fieldOrderBy = null
-    ){
+    public function __construct($label, $field, $class = '', $type = 'string', callable $function = null, $fieldOrderBy = null)
+    {
         $this->properties['label'] = $label;
         $this->properties['field'] = $field;
         $this->properties['type'] = $type;
@@ -213,9 +207,12 @@ class DataGridColumn
 
     public function addClassTd(array $class)
     {
-        $this->properties['classTd'] = array_merge(
-            $this->properties['classTd'],
-            $class
-        );
+        $this->properties['classTd'] = array_merge($this->properties['classTd'], $class);
+    }
+
+    public function setClass($class)
+    {
+        $this->properties['class'] = $class;
+        $this->properties['classTd'] = [$class];
     }
 }
