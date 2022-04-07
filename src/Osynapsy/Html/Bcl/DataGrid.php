@@ -234,30 +234,30 @@ class DataGrid extends Component
      * @param callable $function for manipulate data value
      * @return $this
      */
-    public function addColumn(
-        $label,
-        $field,
-        $class = '',
-        $type = 'string',
-        callable $function = null,
-        $fieldOrderBy = null
-    ){
+    public function addColumn($label, $field, $class = '', $type = 'string', callable $function = null, $fieldOrderBy = null)
+    {
         if (is_callable($field)) {
             $function = $field;
             $field = '';
+        } elseif (is_callable($type)) {
+            $function = $type;
+            $type = 'string';
         }
-        $column = new DataGridColumn(
-            $label,
-            $field,
-            $class,
-            $type,
-            $function,
-            $fieldOrderBy
-        );
+        $column = new DataGridColumn($label, $field, $class, $type, $function, $fieldOrderBy);
         $column->setParent($this->id);
         $this->columns[$label] = $column;
         return $column;
-        //$this->addColumn($label, $field, $class, $type, $function, $fieldOrderBy);
+    }
+
+    /**
+     * Get column by label
+     *
+     * @param string $label
+     * @return Column
+     */
+    protected function getColumn($label)
+    {
+        return $this->columns[$label];
     }
 
     /**
@@ -270,6 +270,11 @@ class DataGrid extends Component
         return $this->pagination;
     }
 
+    /**
+     * Get number of rows of data
+     *
+     * @return int
+     */
     public function getRowsCount()
     {
         return count($this->data);
