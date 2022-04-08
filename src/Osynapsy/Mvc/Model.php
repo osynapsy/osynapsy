@@ -85,9 +85,9 @@ abstract class Model implements InterfaceModel
     protected function setAfterAction($insert, $update, $delete)
     {
         $this->actions = [
-            'after-insert' => $insert,
-            'after-update' => $update,
-            'after-delete' => $delete
+            'after-insert' => $insert ?? $this->actions['after-insert'],
+            'after-update' => $update ?? $this->actions['after-update'],
+            'after-delete' => $delete ?? $this->actions['after-delete']
         ];
     }
 
