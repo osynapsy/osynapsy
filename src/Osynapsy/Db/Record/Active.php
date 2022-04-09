@@ -166,10 +166,6 @@ abstract class Active implements InterfaceRecord
                 }
                 $searchArray[$foreignIdx] = $this->fieldExists($field) ? $this->get($field) : $field;
             }
-            //old
-            /*foreach ($this->keys as $idx => $field) {
-                $searchArray[$extension[1][$idx]] = $this->get($field);
-            } */
             try {
                 $extens = $extension[0]->findByAttributes($searchArray);
                 $values = array_merge($values, is_array($extens) ? $extens : []);
