@@ -90,24 +90,13 @@ abstract class Active implements InterfaceRecord
             throw new \Exception('Parameter required');
         }
         $this->searchCondition = $reSearchParameters;
-        $where = [
-            'conditions' => [],
-            'parameters' => []
-        ];
-        $range = range('a','z');
-        $i = 0;
-        foreach ($reSearchParameters as $field => $value) {
-            $fieldsh1 = $range[$i];
-            $where['conditions'][] = "$field = :{$fieldsh1}";
-            $where['parameters'][$fieldsh1] = $value;
-            $i++;
-        }
-        $sql = "SELECT * FROM {$this->table} WHERE ".implode(' AND ', $where['conditions'])." ORDER BY 1";
+        list($conditions, $parameters) = $this->conditionsFactory($reSearchParameters);
+        $sql = sprintf("SELECT * FROM %s WHERE %s ORDER BY 1", $this->table, implode(' AND ', $conditions));
         if ($this->debug) {
             echo $sql;
         }
         try {
-            $this->activeRecord = $this->getDb()->execUnique($sql, $where['parameters'], 'ASSOC');
+            $this->activeRecord = $this->getDb()->execOneAssoc($sql, $parameters);
         } catch (\Exception $e) {
             throw new \Exception('Query error : '.$sql."\n".$e->getMessage(), 100);
         }
@@ -121,6 +110,45 @@ abstract class Active implements InterfaceRecord
         }
         $this->behavior = self::BEHAVIOR_UPDATE;
         return $this->activeRecord;
+    }
+
+    protected function conditionsFactory($reSearchParameters)
+    {
+        $conditions = $parameters  = [];
+        $i = 0;
+        /*$range = range('a','z');
+        foreach ($reSearchParameters as $field => $value) {
+            $fieldsh1 = $range[$i];
+            $where['conditions'][] = "$field = :{$fieldsh1}";
+            $where['parameters'][$fieldsh1] = $value;
+            $i++;
+        }*/
+        foreach ($reSearchParameters as $field => $value) {
+            list($condition, $conditionParameters) = $this->conditionFactory($field, $value, $i);
+            $conditions[] = $condition;
+            $parameters += $conditionParameters;
+        }
+        return [$conditions, $parameters];
+    }
+
+    /**
+     * Build single condition
+     *
+     * @param string $fieldName
+     * @param mixed $value
+     * @param int $idx
+     */
+    protected function conditionFactory($fieldName, $value, &$idx)
+    {
+        $values = is_array($value) ? $value : [$fieldName => $value];
+        $parameters = $conditions = [];
+        foreach ($values as $field => $value) {
+            $parameterId = "p{$idx}";
+            $conditions[] = sprintf("%s = :%s", !is_int($field) ? $field : $fieldName, $parameterId);
+            $parameters[$parameterId] = $value;
+            $idx++;
+        }
+        return ['('.implode(' OR ', $conditions).')', $parameters];
     }
 
     private function findInExtensions()
