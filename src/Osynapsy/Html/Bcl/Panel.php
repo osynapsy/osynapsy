@@ -14,7 +14,10 @@ namespace Osynapsy\Html\Bcl;
 use Osynapsy\Html\Tag as Tag;
 use Osynapsy\Html\Component as Component;
 
-//Costruttore del pannello html
+/**
+ * Build a html panel. Ispirate to thinker python panel
+ *
+ */
 class Panel extends Component
 {
     const FORM_TYPE_HORIZONTAL = 'horizontal';
