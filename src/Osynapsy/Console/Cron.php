@@ -13,6 +13,7 @@ namespace Osynapsy\Console;
 
 use Osynapsy\Kernel\Loader;
 use Osynapsy\Kernel\Route;
+use Osynapsy\Http\Request;
 use Osynapsy\Kernel;
 
 /**
@@ -28,6 +29,9 @@ class Cron
 
     public function __construct(array $argv)
     {
+        if (empty($argv)) {
+            $this->raiseException('Non hai fornito un application path');
+        }
         $this->script = array_shift($argv);
         $this->argv = $argv;
     }
@@ -36,6 +40,7 @@ class Cron
     {
         $appConfiguration = $this->loadAppConfiguration($this->argv[0]);
         $cronJobs = $this->getCronJobs($appConfiguration);
+        //var_dump($appConfiguration, $cronJobs);
         if (!empty($cronJobs)) {
             $this->exec($cronJobs);
         }
@@ -44,7 +49,7 @@ class Cron
     private function loadAppConfiguration($instancePath)
     {
         if (!is_dir($instancePath)) {
-            return;
+            $this->raiseException(sprintf('Il percorso %s non esiste', $instancePath));
         }
         $loader = new Loader($instancePath);
         return $loader->search('app');
@@ -77,6 +82,13 @@ class Cron
     private function execJob($jobId, $application, $controller)
     {
         $job = new Route($jobId, null, $application, $controller);
-        echo $this->kernel->followRoute($job);
+        $request = new Request();
+        $request->set('page.route', $job);
+        echo $this->kernel->runApplication($job, $request);
+    }
+
+    protected function raiseException($message)
+    {
+        throw new \Exception($message);
     }
 }
