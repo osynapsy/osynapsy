@@ -15,7 +15,7 @@ use Osynapsy\Mvc\Model\Field as ModelField;
 use Osynapsy\Helper\Net\UploadManager;
 
 /**
- * The abstract class Model implement base method for manage mapping
+ * The abstract class Model implement base methods for manage mapping
  * of the html fields on db fields.
  *
  * @author Pietro Celeste <p.celete@osynapsy.org>
