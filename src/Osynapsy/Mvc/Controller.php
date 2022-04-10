@@ -161,7 +161,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     /**
      * Return dispatcher instance
      *
-     * @return \Osynapsy\Mvc\Application
+     * @return EventDispatcher
      */
     public function getDispatcher() : EventDispatcher
     {
@@ -174,7 +174,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     /**
      * Return external action
      *
-     * @return \Osynapsy\Mvc\Application
+     * @return mixed
      */
     final public function getExternalAction($actionId)
     {
@@ -187,7 +187,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      /**
      * Return model instance
      *
-     * @return \Osynapsy\Mvc\Application
+     * @return Model
      */
     final public function getModel() : InterfaceModel
     {
