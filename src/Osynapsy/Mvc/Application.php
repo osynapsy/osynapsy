@@ -16,7 +16,7 @@ use Osynapsy\Http\Response\Xml as XmlResponse;
  */
 class Application implements InterfaceApplication
 {
-    private $db;
+    protected $db;
     protected $route;
     protected $request;
     protected $response;
@@ -33,8 +33,47 @@ class Application implements InterfaceApplication
     {
         $this->route = $route;
         $this->request = $request;
-        $this->loadDatasources();
+        $this->initDatasources();
         $this->init();
+    }
+
+    protected function init()
+    {
+        $accept = $this->getRequest()->getAcceptedContentType();
+        if (empty($accept)) {
+            $accept = ['text/html'];
+        }
+        switch($accept[0]) {
+            case 'text/json':
+            case 'application/json':
+            case 'application/json-osynapsy':
+                ini_set("xdebug.overload_var_dump", "off");
+                $this->setResponse(new JsonOsynapsyResponse());
+                break;
+            case 'application/xml':
+                ini_set("xdebug.overload_var_dump", "off");
+                $this->setResponse(new XmlResponse());
+                break;
+            default:
+                $this->setResponse(new HtmlResponse());
+                break;
+        }
+    }
+
+    /**
+     * Init datasources configurated in instance configuration file
+     */
+    protected function initDatasources()
+    {
+        $listDatasource = $this->getRequest()->search('db',
+            "env.app.{$this->getRoute()->application}.datasources"
+        );
+        $this->dbFactory = new DbFactory();
+        foreach ($listDatasource as $datasource) {
+            $connectionString = $datasource['@value'];
+            $this->dbFactory->createConnection($connectionString);
+        }
+        $this->db = $this->dbFactory->getConnection(0);
     }
 
     /**
@@ -88,45 +127,11 @@ class Application implements InterfaceApplication
         return $this->route;
     }
 
-    protected function init()
-    {
-        $accept = $this->getRequest()->getAcceptedContentType();
-        if (empty($accept)) {
-            $accept = ['text/html'];
-        }
-        switch($accept[0]) {
-            case 'text/json':
-            case 'application/json':
-            case 'application/json-osynapsy':
-                ini_set("xdebug.overload_var_dump", "off");
-                $this->setResponse(new JsonOsynapsyResponse());
-                break;
-            case 'application/xml':
-                ini_set("xdebug.overload_var_dump", "off");
-                $this->setResponse(new XmlResponse());
-                break;
-            default:
-                $this->setResponse(new HtmlResponse());
-                break;
-        }
-    }
-
     /**
-     * Load datasources configurated into instance configuration file
+     * Return current application state
+     *
+     * @return boolean
      */
-    private function loadDatasources()
-    {
-        $listDatasource = $this->getRequest()->search('db',
-            "env.app.{$this->getRoute()->application}.datasources"
-        );
-        $this->dbFactory = new DbFactory();
-        foreach ($listDatasource as $datasource) {
-            $connectionString = $datasource['@value'];
-            $this->dbFactory->createConnection($connectionString);
-        }
-        $this->db = $this->dbFactory->getConnection(0);
-    }
-
     public function run()
     {
         return true;
