@@ -16,7 +16,7 @@ use Osynapsy\Http\Request;
 
 interface InterfaceApplication
 {
-    public function __construct($db, Route &$route, Request &$request);
-    
+    public function __construct(Route &$route, Request &$request);
+
     public function run();
 }
