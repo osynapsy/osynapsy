@@ -127,7 +127,7 @@ class Kernel
             $this->loadRoutes();
             $this->findActiveRoute();
             $this->validateRouteController();
-            return $this->runApplication();
+            return $this->runApplication($this->route, $this->request);
         } catch (\Exception $exception) {
             $errorDispatcher = new ErrorDispatcher($this->getRequest());
             return $errorDispatcher->dispatchException($exception);
@@ -146,12 +146,12 @@ class Kernel
         return $exception;
     }
 
-    protected function runApplication()
+    public function runApplication($route, $request)
     {
-        $reqApp = $this->request->get(sprintf("env.app.%s.controller", $this->route->application));
+        $reqApp = $request->get(sprintf("env.app.%s.controller", $route->application));
         //If isn't configured an app controller for current instance load default App controller
         $applicationClass = empty($reqApp) ? self::DEFAULT_APP_CONTROLLER : str_replace(':', '\\', $reqApp);
-        $application = new $applicationClass($this->route, $this->request);
+        $application = new $applicationClass($route, $request);
         $application->run();
         return (string) $application->runAction();
     }
