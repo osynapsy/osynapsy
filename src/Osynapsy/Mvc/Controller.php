@@ -44,7 +44,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * @param Request $request
      * @param Application $application
      */
-    public function __construct(Request $request = null, Application $application = null)
+    public function __construct(Request $request = null, InterfaceApplication $application = null)
     {
         $this->application = $application;
         $this->parameters = $request->get('page.route')->parameters;
@@ -326,7 +326,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * @param string $actionClass
      * @return void
      */
-    public function setExternalAction($actionId, InterfaceAction $actionClass) : void
+    public function setExternalAction(string $actionId, InterfaceAction $actionClass) : void
     {
         $this->externalActions[$actionId] = $actionClass;
     }

@@ -12,13 +12,17 @@
 namespace Osynapsy\Mvc;
 
 use Osynapsy\Http\Request;
-use Osynapsy\Mvc\Application;
+use Osynapsy\Mvc\Action\InterfaceAction;
+use Osynapsy\Mvc\InterfaceApplication;
+use Osynapsy\Db\Driver\InterfaceDbo;
 
 interface InterfaceController
 {
-    public function __construct(Request $request = null, Application $application = null);
+    public function __construct(Request $request = null, InterfaceApplication $application = null);
 
-    public function getDb();
+    public function getApp() : InterfaceApplication;
+
+    public function getDb() : InterfaceDbo;
 
     public function getDispatcher();
 
@@ -27,6 +31,8 @@ interface InterfaceController
     public function getResponse();
 
     public function getRequest();
+
+    public function setExternalAction(string $actionId, InterfaceAction $actionClass) : void;
 
     public function setModel(InterfaceModel $model);
 
