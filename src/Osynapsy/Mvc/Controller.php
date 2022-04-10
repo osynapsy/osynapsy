@@ -132,7 +132,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      *
      * @return \Osynapsy\Mvc\Application
      */
-    final public function getApp() : \Osynapsy\Mvc\Application
+    final public function getApp() : \Osynapsy\Mvc\InterfaceApplication
     {
         return $this->application;
     }
@@ -151,9 +151,9 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     /**
      * Return DbFactory instance
      *
-     * @return \Osynapsy\Mvc\Application
+     * @return \Osynapsy\Db\DbFactory
      */
-    final public function getDbFactory()
+    final public function getDbFactory() : \Osynapsy\Db\DbFactory
     {
         return $this->getApp()->getDbFactory();
     }
