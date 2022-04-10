@@ -13,11 +13,19 @@ namespace Osynapsy\Html\Bcl;
 
 use Osynapsy\Html\Ocl\CheckList as OclCheckList;
 
+/**
+ * Build a list of check
+ * 
+ */
 class CheckList extends OclCheckList
 {
+    /**
+     *
+     * @param string $name
+     */
     public function __construct($name)
     {
-        parent::__construct($name);        
+        parent::__construct($name);
         $this->requireCss('Bcl/CheckList/style.css');
     }
 }
