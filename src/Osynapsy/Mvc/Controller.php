@@ -102,9 +102,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      */
     private function execIndexAction() : Response
     {
-        $this->loadTemplate(
-            $this->getRequest()->get('page.route')->template
-        );
+        $this->loadTemplate($this->getRequest()->get('page.route')->template);
         if ($this->model) {
             $this->model->find();
         }
