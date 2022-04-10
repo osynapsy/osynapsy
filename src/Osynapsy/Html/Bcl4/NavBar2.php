@@ -67,13 +67,16 @@ class NavBar2 extends Component
     private function buildHeader()
     {
         $brand = $this->getParameter('brand');
+        $brandPrefix = $this->getParameter('brandPrefix');
+        if (!empty($brandPrefix)) {
+            $this->add($brandPrefix);
+        }
         if (!empty($brand)) {
             $this->add(new Tag('a', null, 'navbar-brand'))
                  ->att('href', $brand[1])
                  ->add($brand[0]);
         }
-        $this->add(new Tag('button'))->att([
-            'class' => "navbar-toggler",
+        $this->add(new Tag('button', null, 'navbar-toggler'))->att([
             'type' => "button",
             'data-toggle' => "collapse",
             'data-target' => "#".$this->id.'Content',
@@ -160,9 +163,10 @@ class NavBar2 extends Component
      * @param string $href is url where user will be send if click brand
      * @return $this
      */
-    public function setBrand($label, $href = '#')
+    public function setBrand($label, $href = '#', $prefix = null)
     {
         $this->setParameter('brand', [$label, $href]);
+        $this->setParameter('brandPrefix', $prefix);
         return $this;
     }
 
