@@ -19,6 +19,14 @@ use Osynapsy\Http\Response\Base as Response;
 use Osynapsy\Observer\InterfaceSubject;
 use Osynapsy\Mvc\Action\InterfaceAction;
 
+/**
+ * Abstract Osynapsy controller.
+ *
+ * This class is the implementation of "C" of MVC pattern by Osynapsy.
+ * The default method is indexAction which is recall if not specific action is recall
+ * from fronted.
+ *
+ */
 abstract class Controller implements InterfaceController, InterfaceSubject
 {
     use \Osynapsy\Observer\Subject;
