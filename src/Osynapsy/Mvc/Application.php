@@ -10,9 +10,12 @@ use Osynapsy\Http\Response\HtmlOcl as HtmlResponse;
 use Osynapsy\Http\Response\Xml as XmlResponse;
 
 /**
- * Description of ApplicationController
+ * Application controller is the main controller of app.
+ * Kernel locate application controller and pass the request and route to load.
+ * Application controller analyze permessions and load route control or raise
+ * exception if current user don't has access to request route.
  *
- * @author Pietro
+ * @author Pietro Celeste <p.celeste@osynapsy.org>
  */
 class Application implements InterfaceApplication
 {
@@ -34,10 +37,14 @@ class Application implements InterfaceApplication
         $this->route = $route;
         $this->request = $request;
         $this->initDatasources();
-        $this->init();
+        $this->initResponse();
     }
 
-    protected function init()
+    /**
+     * Initialize response according with request contentType.
+     *
+     */
+    protected function initResponse()
     {
         $accept = $this->getRequest()->getAcceptedContentType();
         if (empty($accept)) {
@@ -98,7 +105,7 @@ class Application implements InterfaceApplication
     }
 
     /**
-     * Return current Request
+     * Return current Request object
      *
      * @return Request
      */
@@ -108,7 +115,7 @@ class Application implements InterfaceApplication
     }
 
     /**
-     * Return current Response
+     * Return current Response object
      *
      * @return Response
      */
