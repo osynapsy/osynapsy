@@ -14,7 +14,8 @@ namespace Osynapsy\Kernel;
 use Osynapsy\Data\Dictionary;
 
 /**
- * Description of LoaderXml
+ * This class is used from kernel to load xml configuration.
+ * App configuration and Instance configuration.
  *
  * @author Pietro Celeste <p.celeste@osynapsy.org>
  */
@@ -23,6 +24,10 @@ class Loader
     private $repo;
     private $path;
 
+    /**
+     *
+     * @param string $path Path of xml file to load
+     */
     public function __construct($path)
     {
         $this->path = realpath($path);
@@ -60,7 +65,7 @@ class Loader
 
     private function loadFile($path)
     {
-        return function_exists('apcux_fetch') ? $this->loadFileFromCache($path) : $this->loadFileFromDisk($path);
+        return function_exists('apcu_fetch') ? $this->loadFileFromCache($path) : $this->loadFileFromDisk($path);
     }
 
     protected function loadFileFromCache($path)
@@ -81,6 +86,11 @@ class Loader
         return $this->parseXml($xml);
     }
 
+    /**
+     * Load application configuration
+     *
+     * @return void
+     */
     private function loadAppConfiguration()
     {
         $apps = $this->repo->get('configuration.app');
@@ -99,6 +109,13 @@ class Loader
         }
     }
 
+    /**
+     * Parse configuration xml file or xml fragment
+     *
+     * @param string $xml
+     * @param array $tree
+     * @return array
+     */
     private function parseXml($xml, &$tree = [])
     {
         for($xml->rewind(); $xml->valid(); $xml->next() ) {
@@ -120,11 +137,25 @@ class Loader
         return $tree;
     }
 
+    /**
+     * Get configuration key or branch
+     *
+     * @param string $key
+     * @return mixed
+     */
     public function get($key = '')
     {
         return $this->repo->get('configuration'.(empty($key) ? '' : ".{$key}"));
     }
 
+    /**
+     * Search branch in dictionary
+     *
+     * @param string $keySearch
+     * @param string $searchPath
+     * @param bool $debug
+     * @return mixed
+     */
     public function search($keySearch, $searchPath = null, $debug = false)
     {
         $fullPath = 'configuration';
