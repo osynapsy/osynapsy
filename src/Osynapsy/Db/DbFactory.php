@@ -15,7 +15,7 @@ use Osynapsy\Db\Driver\DbOci;
 use Osynapsy\Db\Driver\DbPdo;
 
 /**
- * Description of DbFactory
+ * This class build db connection and store it in connectionPool repo.
  *
  * @author Pietro Celeste <p.celeste@spinit.it>
  */
@@ -43,13 +43,13 @@ class DbFactory
      *
      * @return object
      */
-    public function createConnection($connectionString)
+    public function createConnection($connectionString, $idx = null)
     {
         if (array_key_exists($connectionString, $this->connectionIndex)) {
             return $this->connectionPool[$this->connectionIndex[$connectionString]];
         }
         $databaseConnection = strtok($connectionString, ':') === 'oracle' ? new DbOci($connectionString) : new DbPdo($connectionString);
-        $currentIndex = count($this->connectionPool);
+        $currentIndex = $idx ?? count($this->connectionPool);
         $this->connectionIndex[$connectionString] = $currentIndex;
         $this->connectionPool[$currentIndex] = $databaseConnection;
         return $databaseConnection;
