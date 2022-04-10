@@ -13,6 +13,7 @@ namespace Osynapsy\Db;
 
 use Osynapsy\Db\Driver\DbOci;
 use Osynapsy\Db\Driver\DbPdo;
+use Osynapsy\Db\Driver\InterfaceDbo;
 
 /**
  * This class build db connection and store it in connectionPool repo.
@@ -37,13 +38,13 @@ class DbFactory
     }
 
     /**
-     * Exec a db connection and return
+     * Execute a db connection and return it
      *
      * @param string $connectionString contains parameter to access db (ex.: mysql:database:host:username:password:port)
-     *
-     * @return object
+     * @param mixed $idx
+     * @return InterfaceDbo object
      */
-    public function createConnection($connectionString, $idx = null)
+    public function createConnection($connectionString, $idx = null) : InterfaceDbo
     {
         if (array_key_exists($connectionString, $this->connectionIndex)) {
             return $this->connectionPool[$this->connectionIndex[$connectionString]];
