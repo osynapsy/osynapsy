@@ -14,7 +14,7 @@ use Osynapsy\Http\Response\Xml as XmlResponse;
  *
  * @author Pietro
  */
-class Application
+class Application implements InterfaceApplication
 {
     private $db;
     protected $route;
