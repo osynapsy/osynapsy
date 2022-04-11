@@ -128,6 +128,9 @@ class DataGridColumn
      */
     public function valueFormatting($value, &$cell, $properties, $rec, &$tr)
     {
+        if (!empty($properties['function'])) {
+            $value = $properties['function']($value, $cell, $rec, $tr);
+        }
         switch($properties['type']) {
             case self::FIELD_TYPE_CHECKBOX:
                 if (empty($value)) {
@@ -155,9 +158,6 @@ class DataGridColumn
             case self::FIELD_TYPE_COMMAND:
                 $properties['classTd'][] = 'cmd-row';
                 break;
-        }
-        if (!empty($properties['function'])) {
-            $value = $properties['function']($value, $cell, $rec, $tr);
         }
         if (!empty($properties['classTd'])) {
             $cell->att('class', implode(' ', $properties['classTd']), true);
