@@ -40,9 +40,8 @@ class Cron
     {
         $appConfiguration = $this->loadAppConfiguration($this->argv[0]);
         $cronJobs = $this->getCronJobs($appConfiguration);
-        //var_dump($appConfiguration, $cronJobs);
         if (!empty($cronJobs)) {
-            $this->exec($cronJobs);
+            $this->exec($cronJobs, $appConfiguration);
         }
     }
 
@@ -69,20 +68,22 @@ class Cron
         return $jobs;
     }
 
-    private function exec($jobs)
+    private function exec($jobs, $appConfiguration)
     {
         $this->kernel = new Kernel($this->argv[0]);
+        $request = new Request();
+        $request->set('app', $appConfiguration);
         foreach($jobs as $appId => $appJobs) {
             foreach($appJobs as $jobId => $jobController){
-                $this->execJob($jobId , $appId, $jobController);
+                $this->execJob($jobId , $appId, $jobController, $request);
             }
         }
     }
 
-    private function execJob($jobId, $application, $controller)
+    private function execJob($jobId, $application, $controller, $request)
     {
         $job = new Route($jobId, null, $application, $controller);
-        $request = new Request();
+
         $request->set('page.route', $job);
         echo $this->kernel->runApplication($job, $request);
     }
