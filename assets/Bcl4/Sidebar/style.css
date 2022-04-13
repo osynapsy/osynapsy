@@ -11,7 +11,7 @@ and open the template in the editor.
 /* The sidebar menu */
 .sidebar {
   height: 100%; /* 100% Full-height */
-  width: 0; /* 0 width - change this with JavaScript */
+  width: 300px; /* 0 width - change this with JavaScript */
   position: fixed; /* Stay in place */
   z-index: 1; /* Stay on top */
   top: 0;
@@ -19,7 +19,9 @@ and open the template in the editor.
   background-color: #111; /* Black*/
   overflow-x: hidden; /* Disable horizontal scroll */
   padding-top: 60px; /* Place content 60px from the top */
-  transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
+  transition: 0.2s; /* 0.5 second transition effect to slide in the sidebar */
+  z-index: 1999;
+  border-right: 1px solid gray;
 }
 
 /* The sidebar links */
@@ -29,7 +31,7 @@ and open the template in the editor.
   font-size: 25px;
   color: #818181;
   display: block;
-  transition: 0.3s;
+  /*transition: 0.3s;*/
 }
 
 /* When you mouse over the navigation links, change their color */
