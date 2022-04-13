@@ -83,7 +83,6 @@ class Cron
     private function execJob($jobId, $application, $controller, $request)
     {
         $job = new Route($jobId, null, $application, $controller);
-
         $request->set('page.route', $job);
         echo $this->kernel->runApplication($job, $request);
     }
