@@ -11,9 +11,9 @@
 
 namespace Osynapsy\Html\Bcl;
 
-use Osynapsy\Html\Ocl\ComboBox as OclComboBox;
+use Osynapsy\Html\Ocl\ComboBox as OclComboBoxTree;
 
-class ComboBox extends OclComboBox
+class ComboBoxTree extends OclComboBoxTree
 {
     public function __construct($name)
     {
