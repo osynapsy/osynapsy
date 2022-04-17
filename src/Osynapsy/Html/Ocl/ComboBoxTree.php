@@ -21,19 +21,26 @@ class ComboBoxTree extends ComboBox
     private $dataGroup = [];
     private $dataRequest;
 
-    public function __build_extra__()
+    protected function __build_extra__()
     {
         $this->addClass('form-control');
-        $this->getRequestValue();
+        $this->dataRequest = $this->getRequestValue();
         if (!$this->getParameter('option-select-disable')){
             array_unshift($this->data, $this->placeholder);
         }
         $this->treeFactory();
     }
 
-    private function treeFactory()
+    protected function getRequestValue()
     {
-        $dataRoot = array();
+        $fieldName = $this->multiple ? str_replace('[]','',$this->name) : $this->name;
+        $dataRequest = $this->getGlobal($fieldName, $_REQUEST);
+        return is_array($dataRequest) ? $dataRequest : array($dataRequest);
+    }
+
+    protected function treeFactory()
+    {
+        $dataRoot = [];
         foreach ($this->data as $raw) {
             $record = array_values($raw);
             if (empty($record[2])) {
@@ -62,12 +69,5 @@ class ComboBoxTree extends ComboBox
                 $this->branchFactory($this->dataGroup[$value], $level+1);
             }
         }
-    }
-
-    private function getRequestValue()
-    {
-        $fieldName = $this->multiple ? str_replace('[]','',$this->name) : $this->name;
-        $dataRequest = $this->getGlobal($fieldName, $_REQUEST);
-        $this->dataRequest = is_array($dataRequest) ? $dataRequest : array($dataRequest);
     }
 }
