@@ -19,7 +19,7 @@ class ComboBox extends Component
     public $isTree = false;
     public $placeholder = ['', '- Seleziona -'];
     protected $defaultValue;
-    protected $currentValue;
+    protected $requestValue;
 
     public function __construct($name)
     {
@@ -29,9 +29,9 @@ class ComboBox extends Component
 
     protected function __build_extra__()
     {
-        $this->currentValue = $this->getGlobal($this->name, $_REQUEST);
-        if (empty($this->currentValue) && $this->currentValue !== '0') {
-            $this->currentValue = $this->defaultValue;
+        $this->requestValue = $this->getGlobal($this->name, $_REQUEST);
+        if (empty($this->requestValue) && $this->requestValue !== '0') {
+            $this->requestValue = $this->defaultValue;
         }
         if (!empty($this->placeholder) && !$this->getParameter('option-select-disable') && is_array($this->data)){
             array_unshift($this->data, $this->placeholder);
@@ -57,7 +57,7 @@ class ComboBox extends Component
         if ($disabled) {
             $this->att('disabled','disabled');
         }
-        if ($this->currentValue == $value) {
+        if ($this->requestValue == $value) {
             $option->att('selected', 'selected');
         }
         if (empty($this->getAttribute('readonly')) || !empty($option->getAttribute('selected'))) {
