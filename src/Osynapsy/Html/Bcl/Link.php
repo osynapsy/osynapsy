@@ -14,16 +14,19 @@ namespace Osynapsy\Html\Bcl;
 use Osynapsy\Html\Ocl\Link as OclLink;
 
 class Link extends OclLink
-{    
-    public function openInModal($title, $widht = '640px', $height = '480px')
+{
+    public function openInModal($title, $widht = '640px', $height = '480px', $postData = false)
     {
         $this->setClass('open-modal')->att([
             'title' => $title,
             'modal-width' => $widht,
             'modal-height' => $height
         ]);
+        if ($postData) {
+            $this->addClass('postdata');
+        }
     }
-    
+
     public function setDisabled($condition)
     {
         if ($condition) {
