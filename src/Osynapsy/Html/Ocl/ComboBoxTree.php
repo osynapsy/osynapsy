@@ -19,12 +19,11 @@ class ComboBoxTree extends ComboBox
 {
     public $placeholder = ['','Seleziona .....', null];
     private $dataGroup = [];
-    private $dataRequest;
 
     protected function __build_extra__()
     {
         $this->addClass('form-control');
-        $this->dataRequest = $this->getRequestValue();
+        $this->requestValue = $this->getRequestValue();
         if (!$this->getParameter('option-select-disable')){
             array_unshift($this->data, $this->placeholder);
         }
@@ -34,8 +33,7 @@ class ComboBoxTree extends ComboBox
     protected function getRequestValue()
     {
         $fieldName = $this->multiple ? str_replace('[]','',$this->name) : $this->name;
-        $dataRequest = $this->getGlobal($fieldName, $_REQUEST);
-        return is_array($dataRequest) ? $dataRequest : array($dataRequest);
+        return $this->getGlobal($fieldName, $_REQUEST);
     }
 
     protected function treeFactory()
