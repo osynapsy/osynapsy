@@ -90,7 +90,7 @@ class ComboBox extends Component
 
     public function setPlaceholder($label, $value = '')
     {
-        $this->placeholder = $label === false ? [] : [$value, $label];
+        $this->placeholder = $label === false ? [] : [$value, $label, null];
         return $this;
     }
 }
