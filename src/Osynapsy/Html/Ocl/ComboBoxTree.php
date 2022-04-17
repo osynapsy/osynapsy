@@ -17,7 +17,7 @@ namespace Osynapsy\Html\Ocl;
  */
 class ComboBoxTree extends ComboBox
 {
-    public $placeholder = ['','Seleziona .....', null];
+    public $placeholder = ['', 'Seleziona .....', null];
     private $dataGroup = [];
 
     protected function __build_extra__()
@@ -60,7 +60,7 @@ class ComboBoxTree extends ComboBox
             return;
         }
         foreach ($data as $rec) {
-            list($value, $label, $disabled) = array_slice($rec, 0, 3);
+            list($value, $label, ) = array_slice($rec, 0, 3);
             $label = str_repeat('&nbsp;', $level * 5) . $this->nvl($label, $value);
             $this->optionFactory($value, $label, 0);
             if (array_key_exists($value, $this->dataGroup)) {
