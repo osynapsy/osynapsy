@@ -158,6 +158,40 @@ class Pagination extends Component
         return empty($this->data) ? array() : $this->data;
     }
 
+    private function calcPage($requestPage)
+    {
+        $this->statistics['pageCurrent'] = max(1,(int) $requestPage);
+        if ($this->statistics['rowsTotal'] == 0 || empty($this->statistics['pageDimension'])) {
+            return;
+        }
+        $this->statistics['pageTotal'] = ceil($this->statistics['rowsTotal'] / $this->statistics['pageDimension']);
+        $this->att(
+            'data-page-max',
+            max($this->statistics['pageTotal'],1)
+        );
+        switch ($requestPage) {
+            case 'first':
+                $this->statistics['pageCurrent'] = 1;
+                break;
+            case 'last' :
+                $this->statistics['pageCurrent'] = $this->statistics['pageTotal'];
+                break;
+            case 'prev':
+                if ($this->statistics['pageCurrent'] > 1){
+                    $this->statistics['pageCurrent']--;
+                }
+                break;
+            case 'next':
+                if ($this->statistics['pageCurrent'] < $this->statistics['pageTotal']) {
+                    $this->statistics['pageCurrent']++;
+                }
+                break;
+            default:
+                $this->statistics['pageCurrent'] = min($this->statistics['pageCurrent'], $this->statistics['pageTotal']);
+                break;
+        }
+    }
+
     private function buildMySqlQuery($where)
     {
         $sql = sprintf("SELECT a.* FROM (%s) a %s %s", $this->sql, $where, $this->orderBy ? "\nORDER BY {$this->orderBy}" : '');
@@ -222,39 +256,7 @@ class Pagination extends Component
         return " WHERE " .implode(' AND ',$filter);
     }
 
-    private function calcPage($requestPage)
-    {
-        $this->statistics['pageCurrent'] = max(1,(int) $requestPage);
-        if ($this->statistics['rowsTotal'] == 0 || empty($this->statistics['pageDimension'])) {
-            return;
-        }
-        $this->statistics['pageTotal'] = ceil($this->statistics['rowsTotal'] / $this->statistics['pageDimension']);
-        $this->att(
-            'data-page-max',
-            max($this->statistics['pageTotal'],1)
-        );
-        switch ($requestPage) {
-            case 'first':
-                $this->statistics['pageCurrent'] = 1;
-                break;
-            case 'last' :
-                $this->statistics['pageCurrent'] = $this->statistics['pageTotal'];
-                break;
-            case 'prev':
-                if ($this->statistics['pageCurrent'] > 1){
-                    $this->statistics['pageCurrent']--;
-                }
-                break;
-            case 'next':
-                if ($this->statistics['pageCurrent'] < $this->statistics['pageTotal']) {
-                    $this->statistics['pageCurrent']++;
-                }
-                break;
-            default:
-                $this->statistics['pageCurrent'] = min($this->statistics['pageCurrent'], $this->statistics['pageTotal']);
-                break;
-        }
-    }
+
 
     public function getPageDimensionsCombo()
     {
