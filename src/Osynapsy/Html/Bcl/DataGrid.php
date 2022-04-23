@@ -13,8 +13,6 @@ namespace Osynapsy\Html\Bcl;
 
 use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
-use Osynapsy\Html\Bcl4\Pagination as PaginationBs4;
-use Osynapsy\Db\Pagination as PaginatorDb;
 
 class DataGrid extends Component
 {
@@ -65,7 +63,7 @@ class DataGrid extends Component
         $this->add($this->body);
         //If datagrid has pager append to foot and show it.
         if (!empty($this->pagination)) {
-            $this->add($this->buildPagination());
+            $this->add($this->buildPagination($this->pagination));
         }
     }
 
@@ -194,26 +192,17 @@ class DataGrid extends Component
      *
      * @return Tag
      */
-    private function buildPagination()
+    private function buildPagination($pagination)
     {
-        $row = new Tag('div', null, 'row bcl-datagrid-pagination');
-        if (empty($this->pagination)) {
-            return $row;
+        $row = new Tag('div', null, 'd-flex flex-row-reverse mt-1');
+        $row->add(new Tag('div', null, 'pt-1 pl-2'))->add($pagination)->setPosition('end');
+        if ($this->showPaginationPageInfo) {
+            $row->add(new Tag('div', null, 'p-2'))->add($pagination->getInfo());
         }
-        $paginationWidth = 12;
-        $hidden = $this->pagination->getStatistic('pageTotal') > 1 ? '' : 'd-none';
-        if ($this->showPaginationPageDimension && $this->pagination->getStatistic('pageTotal') > 1) {
-            $row->add(new Tag('div', null, 'col-sm-4 d-none d-sm-block col-lg-2'))
-                ->add($this->pagination->getPageDimensionsCombo());
-            $paginationWidth -= 4;
+        if ($this->showPaginationPageDimension) {
+            $row->add('<div class="px-2 py-1">'.$pagination->getPageDimensionsCombo()->addClass('form-control-sm').'</div>');
+            $row->add('<div class="p-2">Elementi per pagina</div>');
         }
-        if ($this->showPaginationPageInfo && $this->pagination->getStatistic('pageTotal') > 1) {
-            $row->add(new Tag('div', null, 'col-sm-4 d-none d-md-block offset-lg-2 text-center'))
-                ->add('<label class="" style="margin-top: 30px;">'.$this->pagination->getInfo().'</label>');
-            $paginationWidth -= 4;
-        }
-        $row->add(new Tag('div', null, sprintf('col-sm-8 col-md-%s text-right %s', $paginationWidth, $hidden)))
-            ->add($this->pagination)->setClass('mt-4')->setPosition('end');
         return $row;
     }
 
@@ -352,10 +341,8 @@ class DataGrid extends Component
      */
     public function setPagination($db, $sqlQuery, $sqlParameters, $pageDimension = 10, $showPageDimension = true, $showPageInfo = true)
     {
-        $this->pagination = new Pagination(
-            $this->id.(strpos($this->id, '_') ? '_pagination' : 'Pagination'),
-            empty($pageDimension) ? 10 : $pageDimension
-        );
+        $paginationId = $this->id.(strpos($this->id, '_') ? '_pagination' : 'Pagination');
+        $this->pagination = new Pagination($paginationId, empty($pageDimension) ? 10 : $pageDimension);
         $this->pagination->setSql($db, $sqlQuery, $sqlParameters);
         $this->pagination->setParentComponent($this->id);
         $this->showPaginationPageDimension = $showPageDimension;
