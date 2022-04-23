@@ -192,51 +192,39 @@ class Pagination extends Component
         }
     }
 
+    protected function sqlFactory($where)
+    {
+        return sprintf("SELECT a.* FROM (%s) a %s %s", $this->sql, $where, $this->orderBy ? "\nORDER BY {$this->orderBy}" : '');
+    }
+
     private function buildMySqlQuery($where)
     {
-        $sql = sprintf("SELECT a.* FROM (%s) a %s %s", $this->sql, $where, $this->orderBy ? "\nORDER BY {$this->orderBy}" : '');
-        if (empty($this->statistics['pageDimension'])) {
-            return $sql;
+        $sql = $this->sqlFactory($where);
+        if (!empty($this->statistics['pageDimension'])) {
+            $startFrom = ($this->statistics['pageCurrent'] - 1) * $this->statistics['pageDimension'];
+            $sql .= sprintf("\nLIMIT %s, %s", max(0, $startFrom), $this->statistics['pageDimension']);
         }
-        $startFrom = ($this->statistics['pageCurrent'] - 1) * $this->statistics['pageDimension'];
-        $startFrom = max(0, $startFrom);
-        $sql .= "\nLIMIT ".$startFrom." , ".$this->statistics['pageDimension'];
         return $sql;
     }
 
     private function buildPgSqlQuery($where)
     {
-        $sql = "SELECT a.* FROM ({$this->sql}) a {$where} ";
-        if ($this->orderBy) {
-            $sql .= "\nORDER BY {$this->orderBy}";
+        $sql = $this->sqlFactory($where);
+        if (!empty($this->statistics['pageDimension'])) {
+            $startFrom = ($this->statistics['pageCurrent'] - 1) * $this->statistics['pageDimension'];
+            $sql .= sprintf("\nLIMIT %s OFFSET %s", $this->statistics['pageDimension'], max(0, $startFrom));
         }
-        if (empty($this->statistics['pageDimension'])) {
-            return $sql;
-        }
-        $startFrom = ($this->statistics['pageCurrent'] - 1) * $this->statistics['pageDimension'];
-        $startFrom = max(0, $startFrom);
-        $sql .= "\nLIMIT ".$this->statistics['pageDimension']." OFFSET ".$startFrom;
         return $sql;
     }
 
     private function buildOracleQuery($where)
     {
-        $sql = "SELECT a.*
-                FROM (
-                    SELECT b.*,rownum as \"_rnum\"
-                    FROM (
-                        SELECT a.*
-                        FROM ($this->sql) a
-                        ".(empty($where) ? '' : $where)."
-                        ".(!empty($_REQUEST[$this->id.'_order']) ? ' ORDER BY '.str_replace(array('][','[',']'),array(',','',''),$_REQUEST[$this->id.'_order']) : '')."
-                    ) b
-                ) a ";
-        if (empty($this->statistics['pageDimension'])) {
-            return $sql;
+        $sql = sprintf('SELECT c.* FROM ( SELECT b.*,rownum as "_rnum" FROM (%s) b) c', $this->sqlFactory($where));
+        if (!empty($this->statistics['pageDimension'])) {
+            $startFrom = (($this->statistics['pageCurrent'] - 1) * $this->statistics['pageDimension']) + 1 ;
+            $endTo = ($this->statistics['pageCurrent'] * $this->statistics['pageDimension']);
+            $sql .= sprintf(' WHERE "_rnum" BETWEEN %s AND %s', $startFrom, $endTo);
         }
-        $startFrom = (($this->statistics['pageCurrent'] - 1) * $this->statistics['pageDimension']) + 1 ;
-        $endTo = ($this->statistics['pageCurrent'] * $this->statistics['pageDimension']);
-        $sql .=  "WHERE \"_rnum\" BETWEEN $startFrom AND $endTo";
         return $sql;
     }
 
@@ -249,14 +237,12 @@ class Pagination extends Component
                 $filter[] = $field;
                 continue;
             }
-            $filter[] = "$field = ".($this->db->getType() == 'oracle' ? ':'.$i : '?');
+            $filter[] = sprintf("%s = %s", $field, ($this->db->getType() == 'oracle' ? ':'.$i : '?'));
             $this->par[] = $value;
             $i++;
         }
         return " WHERE " .implode(' AND ',$filter);
     }
-
-
 
     public function getPageDimensionsCombo()
     {
