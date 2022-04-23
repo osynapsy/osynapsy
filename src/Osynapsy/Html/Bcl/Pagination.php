@@ -14,6 +14,7 @@ namespace Osynapsy\Html\Bcl;
 use Osynapsy\Html\Component;
 use Osynapsy\Html\Ocl\HiddenBox;
 use Osynapsy\Html\Tag;
+use Osynapsy\Db\Paginator;
 
 /**
  * Description of Pagination
@@ -97,7 +98,7 @@ class Pagination extends Component
 
     protected function ulFactory($pageMin, $pageMax)
     {
-        $ul = new Tag('ul', null, 'pagination justify-content-'.$this->position);
+        $ul = new Tag('ul', null, 'pagination pagination-sm justify-content-'.$this->position);
         $ul->add($this->liFactory('&laquo;', 'first', $this->statistics['pageCurrent'] < 2 ? 'disabled' : ''));
         for ($i = $pageMin; $i <= $pageMax; $i++) {
             $ul->add($this->liFactory($i, $i, $i == $this->statistics['pageCurrent'] ? 'active' : ''));
@@ -246,19 +247,23 @@ class Pagination extends Component
 
     public function getPageDimensionsCombo()
     {
-        $Combo = new ComboBox($this->id.(strpos($this->id, '_') ? '_page_dimension' : 'PageDimension'));
-        $Combo->setPlaceholder($this->pageDimensionPalceholder);
+        $Combo = new ComboBox($this->pageDimensionFieldIdFactory());
+        $Combo->setPlaceholder(false);
         $Combo->att('onchange',"Osynapsy.refreshComponents(['{$this->parentComponent}'])")
-              ->att('style','margin-top: 20px;')
-              ->setArray($this->pageDimensions);
+              ->setData($this->pageDimensions);
         return $Combo;
+    }
+
+    protected function pageDimensionFieldIdFactory()
+    {
+        return $this->id . (strpos($this->id, '_') ? '_page_dimension' : 'PageDimension');
     }
 
     public function getInfo()
     {
         $end = min($this->getStatistic('pageCurrent') * $this->getStatistic('pageDimension'), $this->getStatistic('rowsTotal'));
         $start = ($this->getStatistic('pageCurrent') - 1) * $this->getStatistic('pageDimension') + 1;
-        return sprintf('<small>Da %s a %s di %s %s</small>', $start, $end, $this->getStatistic('rowsTotal'), $this->entity);
+        return sprintf(' %s - %s di %s %s', min($start, $end), $end, $this->getStatistic('rowsTotal'), strtolower($this->entity));
     }
 
     public function getOrderBy()
@@ -295,19 +300,18 @@ class Pagination extends Component
 
     public function setPageDimension($pageDimension)
     {
-        if (!empty($_REQUEST[$this->id.'PageDimension'])) {
-            $this->statistics['pageDimension'] = $_REQUEST[$this->id.'PageDimension'];
-        } elseif (!empty($_REQUEST[$this->id.'_page_dimension'])) {
-            $this->statistics['pageDimension'] = $_REQUEST[$this->id.'_page_dimension'];
+        $comboId = $this->pageDimensionFieldIdFactory();
+        if (!empty($_REQUEST[$comboId])) {
+            $this->statistics['pageDimension'] = $_REQUEST[$comboId];
         } else {
-            $_REQUEST[$this->id.'PageDimension'] = $this->statistics['pageDimension'] = $pageDimension;
+            $_REQUEST[$comboId] = $this->statistics['pageDimension'] = $pageDimension;
         }
         if ($pageDimension === 10) {
             return;
         }
         foreach(array_keys($this->pageDimensions) as $key) {
             $dimension = $pageDimension * $key;
-            $this->pageDimensions[$key] = [$dimension, "{$dimension} righe"];
+            $this->pageDimensions[$key] = [$dimension, "{$dimension}"];
         }
     }
 
