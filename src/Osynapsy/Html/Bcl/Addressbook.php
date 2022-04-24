@@ -122,8 +122,7 @@ class Addressbook extends PanelNew
     public function addToFoot($content)
     {
         if (!$this->foot) {
-            $this->foot = new Tag('div');
-            $this->foot->class = 'text-center';
+            $this->foot = new Tag('div', null, 'd-flex justify-content-end');
         }
         $this->foot->add($content);
     }
