@@ -26,7 +26,7 @@ use Osynapsy\Html\Bcl\IPagination;
  */
 class Pagination extends Component implements IPagination
 {
-    private $entity = 'Record';
+    private $entity = 'record';
     protected $data = [];
     protected $errors = [];
     protected $pageDimensionPalceholder = '- Dimensione pagina -';
@@ -35,11 +35,11 @@ class Pagination extends Component implements IPagination
     private $paginator;
     private $position = 'center';
     private $pageDimensions = [
-        1 => ['10', '10 righe'],
-        2 => ['20', '20 righe'],
-        5 => ['50', '50 righe'],
-        10 => ['100', '100 righe'],
-        20 => ['200', '200 righe']
+        1 => ['10', '10'],
+        2 => ['20', '20'],
+        5 => ['50', '50'],
+        10 => ['100', '100'],
+        20 => ['200', '200']
     ];
     protected $rawPagination;
 
@@ -67,7 +67,7 @@ class Pagination extends Component implements IPagination
         $this->extraFieldsFactory();
         $this->add($this->fieldCurrentPageFactory());
         $this->add($this->fieldOrderByFactory());
-        $ul = $this->add(new Tag('ul', null, 'pagination justify-content-'.$this->position));
+        $ul = $this->add(new Tag('ul', null, 'pagination pagination-sm justify-content-'.$this->position));
         $liFirst = $ul->add($this->liPageItemFactory($this->getMeta(Paginator::META_PAGE_CUR) < 2 ? 'disabled' : ''));
         $liFirst->add($this->linkPageItemFactory('first', '&laquo;'));
         for ($i = $this->getMeta(Paginator::META_PAGE_MIN); $i <= $this->getMeta(Paginator::META_PAGE_MAX); $i++) {
@@ -130,9 +130,8 @@ class Pagination extends Component implements IPagination
     public function getPageDimensionsCombo()
     {
         $Combo = new ComboBox($this->id.(strpos($this->id, '_') ? '_page_dimension' : 'PageDimension'));
-        $Combo->setPlaceholder($this->pageDimensionPalceholder);
+        $Combo->setPlaceholder(false);
         $Combo->att('onchange',"Osynapsy.refreshComponents(['{$this->parentComponent}'])")
-              ->att('style','margin-top: 20px;')
               ->setArray($this->pageDimensions);
         return $Combo;
     }
@@ -146,15 +145,7 @@ class Pagination extends Component implements IPagination
     {
         $end = min($this->getMeta('pageCurrent') * $this->getMeta('pageDimension'), $this->getMeta('rowsTotal'));
         $start = ($this->getMeta('pageCurrent') - 1) * $this->getMeta('pageDimension') + 1;
-        $info = 'da ';
-        $info .= $start;
-        $info .= ' a ';
-        $info .= $end;
-        $info .= ' di ';
-        $info .= $this->getMeta('rowsTotal');
-        $info .= ' ';
-        $info .= $this->entity;
-        return $info;
+        return sprintf('%s - %s di %s %s', $start, $end, $this->getMeta('rowsTotal'), $this->entity);
     }
 
     public function getTotal($key)
