@@ -194,15 +194,15 @@ class DataGrid extends Component
      */
     private function buildPagination($pagination)
     {
-        $row = new Tag('div', null, 'd-flex flex-row-reverse mt-1');
-        $row->add(new Tag('div', null, 'pt-1 pl-2'))->add($pagination)->setPosition('end');
+        $row = new Tag('div', null, 'd-flex justify-content-end mt-1');
+        if ($this->showPaginationPageDimension) {
+            $row->add('<div class="p-2">Elementi per pagina</div>');
+            $row->add('<div class="px-2 py-1">'.$pagination->getPageDimensionsCombo()->addClass('form-control-sm').'</div>');
+        }
         if ($this->showPaginationPageInfo) {
             $row->add(new Tag('div', null, 'p-2'))->add($pagination->getInfo());
         }
-        if ($this->showPaginationPageDimension) {
-            $row->add('<div class="px-2 py-1">'.$pagination->getPageDimensionsCombo()->addClass('form-control-sm').'</div>');
-            $row->add('<div class="p-2">Elementi per pagina</div>');
-        }
+        $row->add(new Tag('div', null, 'pt-1 pl-2'))->add($pagination)->setPosition('end');
         return $row;
     }
 
