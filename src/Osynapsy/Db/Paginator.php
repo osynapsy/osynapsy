@@ -78,18 +78,60 @@ class Paginator
         $this->filters[$field] = $value;
     }
 
+    public function get($currentPage = null)
+    {
+        if (empty($this->data)) {
+            $this->loadData($currentPage ?? $this->getRequest('get.page'), true);
+        }
+        $pageCurrent = $this->getMeta(self::META_PAGE_CUR);
+        $pageTotal = $this->getMeta(self::META_PAGE_TOT);
+        $pagerDimension = min(7, $pageTotal);
+        $pagerMedian = floor($pagerDimension / 2);
+        $pagerMinimum = max(1, $pageCurrent - $pagerMedian);
+        $pagerMaximum = max($pagerDimension, min($pageCurrent + $pagerMedian, $pageTotal));
+        $this->setMeta(self::META_PAGE_MAX, $pagerMaximum);
+        $this->setMeta(self::META_PAGE_MIN, min($pagerMinimum, $pageTotal - $pagerDimension + 1));
+        return $this->data;
+    }
+
+    protected function loadData($requestPage = null, $exceptionOnError = false)
+    {
+        if (empty($this->sql)) {
+            return [];
+        }
+        $where = empty($this->filters) ? '' : $this->buildFilter();
+        $count = sprintf("SELECT COUNT(*) FROM (%s) a %s",$this->sql, $where);
+        $this->meta['rowsTotal'] = $this->getDb()->execUnique($count, $this->par);
+        $this->calcPage($requestPage);
+        switch ($this->getDb()->getType()) {
+            case 'oracle':
+                $sql = $this->buildOracleQuery($where);
+                break;
+            case 'pgsql':
+                $sql = $this->buildPgSqlQuery($where);
+                break;
+            default:
+                $sql = $this->buildMySqlQuery($where);
+                break;
+        }
+        $this->data = $this->getDb()->execAssoc($sql, $this->par);
+        $this->columns = $this->getDb()->getColumns();
+        return empty($this->data) ? [] : $this->data;
+    }
+
+    protected function buildSqlQuery($rawQuery, $where)
+    {
+        $orderBy = empty($this->sort) ? '' : sprintf(PHP_EOL.'ORDER BY %s', $this->sort);
+        return sprintf('SELECT a.* FROM (%s) a %s %s', $rawQuery, $where, $orderBy);
+    }
+
     private function buildMySqlQuery($where)
     {
-        $sql = sprintf("SELECT a.* FROM (%s) a %s ", $this->sql, $where);
-        if ($this->sort) {
-            $sql .= "\nORDER BY {$this->sort}";
+        $sql = $this->buildSqlQuery($this->sql, $where);
+        if (!empty($this->meta[self::META_PAGE_SIZE])) {
+            $startFrom = max(0, ($this->meta['pageCurrent'] - 1) * $this->meta[self::META_PAGE_SIZE]);
+            $sql .= sprintf(PHP_EOL."LIMIT %s, %s", $startFrom,$this->meta[self::META_PAGE_SIZE]);
         }
-        if (empty($this->meta[self::META_PAGE_SIZE])) {
-            return $sql;
-        }
-        $startFrom = ($this->meta['pageCurrent'] - 1) * $this->meta[self::META_PAGE_SIZE];
-        $startFrom = max(0, $startFrom);
-        $sql .= "\nLIMIT ".$startFrom." , ".$this->meta[self::META_PAGE_SIZE];
         $this->setMeta('rowsFrom', $startFrom);
         $this->setMeta('rowsTo', min($this->getMeta('rowsTotal'), $startFrom + $this->meta[self::META_PAGE_SIZE]));
         return $sql;
@@ -97,57 +139,38 @@ class Paginator
 
     private function buildPgSqlQuery($where)
     {
-        $sql = "SELECT a.* FROM ({$this->sql}) a {$where} ";
-        if ($this->sort) {
-            $sql .= "\nORDER BY {$this->sort}";
+        $sql = $this->buildSqlQuery($this->sql, $where);
+        if (!empty($this->meta['pageSize'])) {
+            $startFrom = max(0, ($this->meta['pageCurrent'] - 1) * $this->meta['pageSize']);
+            $sql .= sprintf(PHP_EOL."LIMIT %s OFFSET %s", $this->meta['pageSize'], $startFrom);
         }
-        if (empty($this->meta['pageSize'])) {
-            return $sql;
-        }
-        $startFrom = ($this->meta['pageCurrent'] - 1) * $this->meta['pageSize'];
-        $startFrom = max(0, $startFrom);
-        $sql .= "\nLIMIT ".$this->meta['pageSize']." OFFSET ".$startFrom;
         return $sql;
     }
 
     private function buildOracleQuery($where)
     {
-        $sql = "SELECT a.*
-                FROM (
-                    SELECT b.*,rownum as \"_rnum\"
-                    FROM (
-                        SELECT a.*
-                        FROM ($this->sql) a
-                        ".(empty($where) ? '' : $where)."
-                        ".(!empty($this->sort) ? ' ORDER BY '.$this->sort : '')."
-                    ) b
-                ) a ";
-        if (empty($this->meta['pageSize'])) {
-            return $sql;
+        $sql = sprintf("SELECT a.* FROM (SELECT b.*,rownum as \"_rnum\" FROM (%s) b) a ", $this->buildQuery($this->sql, $where));
+        if (!empty($this->meta['pageSize'])) {
+            $startFrom = (($this->meta['pageCurrent'] - 1) * $this->meta['pageSize']) + 1 ;
+            $endTo = ($this->meta['pageCurrent'] * $this->meta['pageSize']);
+            $sql .=  sprintf(PHP_EOL."WHERE \"_rnum\" BETWEEN %s AND %s", $startFrom, $endTo);
         }
-        $startFrom = (($this->meta['pageCurrent'] - 1) * $this->meta['pageSize']) + 1 ;
-        $endTo = ($this->meta['pageCurrent'] * $this->meta['pageSize']);
-        $sql .=  "WHERE \"_rnum\" BETWEEN $startFrom AND $endTo";
         return $sql;
     }
 
     private function buildFilter()
     {
-        if (empty($this->filters)) {
-            return;
-        }
-        $filter = array();
+        $filter = [];
         $i = 0;
         foreach ($this->filters as $field => $value) {
             if (is_null($value)) {
-                $filter[] = $field;
                 continue;
             }
-            $filter[] = "$field = ".($this->getDb()->getType() == 'oracle' ? ':'.$i : '?');
+            $filter[] = sprintf("$field = %s", $this->getDb()->getType() == 'oracle' ? ':'.$i : '?');
             $this->par[] = $value;
             $i++;
         }
-        return " WHERE " .implode(' AND ',$filter);
+        return sprintf(" WHERE %s", implode(' AND ',$filter));
     }
 
     private function calcPage($requestPage)
@@ -178,22 +201,6 @@ class Paginator
                 $this->meta['pageCurrent'] = min($this->meta['pageCurrent'], $this->meta['pageTotal']);
                 break;
         }
-    }
-
-    public function get($currentPage = null)
-    {
-        if (empty($this->data)) {
-            $this->loadData($currentPage ?? $this->getRequest('get.page'), true);
-        }
-        $pageCurrent = $this->getMeta(self::META_PAGE_CUR);
-        $pageTotal = $this->getMeta(self::META_PAGE_TOT);
-        $pagerDimension = min(7, $pageTotal);
-        $pagerMedian = floor($pagerDimension / 2);
-        $pagerMinimum = max(1, $pageCurrent - $pagerMedian);
-        $pagerMaximum = max($pagerDimension, min($pageCurrent + $pagerMedian, $pageTotal));
-        $this->setMeta(self::META_PAGE_MAX, $pagerMaximum);
-        $this->setMeta(self::META_PAGE_MIN, min($pagerMinimum, $pageTotal - $pagerDimension + 1));
-        return $this->data;
     }
 
     public function getId()
@@ -229,48 +236,6 @@ class Paginator
     public function getTotal($key)
     {
         return $this->getStatistic('total'.ucfirst($key));
-    }
-
-    public function loadData($requestPage = null, $exceptionOnError = false)
-    {
-        if (empty($this->sql)) {
-            return [];
-        }
-        $where = $this->buildFilter();
-        $count = "SELECT COUNT(*) FROM (\n{$this->sql}\n) a " . $where;
-        try {
-            $this->meta['rowsTotal'] = $this->getDb()->execUnique($count, $this->par);
-        } catch(\Exception $e) {
-            $this->errors[] = $e->getMessage();
-            if ($exceptionOnError) {
-                throw new \Exception($e->getMessage().PHP_EOL.PHP_EOL.$count);
-            }
-            return [];
-        }
-        $this->calcPage($requestPage);
-        switch ($this->getDb()->getType()) {
-            case 'oracle':
-                $sql = $this->buildOracleQuery($where);
-                break;
-            case 'pgsql':
-                $sql = $this->buildPgSqlQuery($where);
-                break;
-            default:
-                $sql = $this->buildMySqlQuery($where);
-                break;
-        }
-        //Eseguo la query
-        try {
-            $this->data = $this->getDb()->execAssoc($sql, $this->par);
-            //Salvo le colonne nella propietà columns
-            $this->columns = $this->getDb()->getColumns();
-        } catch (\Exception $e) {
-            $this->errors[] = $e->getMessage();
-            if ($exceptionOnError) {
-                throw new \Exception($e->getMessage().PHP_EOL.PHP_EOL.$sql);
-            }
-        }
-        return empty($this->data) ? [] : $this->data;
     }
 
     private function loadChilds()
