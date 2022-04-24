@@ -110,7 +110,7 @@ class Form extends Component
     public function head()
     {
         if (empty($this->head)) {
-            $this->head = new Tag('div', null, 'd-flex block-header m-b');
+            $this->head = new Tag('div', null, 'd-flex flex-md-row flex-column block-header m-b');
         }
         return $this->head->add(new Tag('div', null, 'p-2'));
     }
@@ -144,10 +144,10 @@ class Form extends Component
     public function foot($obj, $right = false)
     {
         if (empty($this->foot)) {
-            $this->foot = new Tag('div', null, trim('row mt-2 pt-2 '.$this->footClass));
+            $this->foot = new Tag('div', null, trim('d-flex mt-2 '.$this->footClass));
             $this->foot->style = $this->footStyle;
-            $this->footLeft = $this->foot->add(new Tag('div', null, 'col-lg-6 col-xs-6 col-6'));
-            $this->footRight = $this->foot->add(new Tag('div', null, 'col-lg-6 col-xs-6 col-6 text-right'));
+            $this->footLeft = $this->foot->add(new Tag('div', null, 'p-1 mr-auto'));
+            $this->footRight = $this->foot->add(new Tag('div', null, 'p-1'));
         }
         $column = $right ? $this->footRight : $this->footLeft;
         $column->add($obj);
