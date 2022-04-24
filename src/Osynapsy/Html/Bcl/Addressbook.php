@@ -25,6 +25,9 @@ class Addressbook extends PanelNew
     protected $foot;
     protected $emptyMessage;
     protected $itemSelected;
+    protected $paginator;
+    protected $showPaginationPageDimension;
+    protected $showPaginationPageInfo;
 
     public function __construct($id, $emptyMessage = 'Addressbook is empty', $columns = 4)
     {
@@ -38,14 +41,23 @@ class Addressbook extends PanelNew
 
     protected function __build_extra__()
     {
-        $this->itemSelected = empty($_REQUEST[$this->id.'_chk']) ? [] : $_REQUEST[$this->id.'_chk'];
+        if (!empty($this->paginator)) {
+            try {
+                $this->setData($this->paginator->loadData(null, true));
+                $this->buildPagination($this->paginator);
+            } catch (\Exception $e) {
+                $this->emptyMessage = $e->getMessage();
+            }
+        }
         if (empty($this->data)) {
             $this->addColumn(12)->add($this->emptyMessageFactory($this->emptyMessage));
-        } else {
-            $this->bodyFactory();
-            if ($this->foot) {
-                $this->addColumn(12)->add($this->foot);
-            }
+            parent::__build_extra__();
+            return;
+        }
+        $this->itemSelected = empty($_REQUEST[$this->id.'_chk']) ? [] : $_REQUEST[$this->id.'_chk'];
+        $this->bodyFactory();
+        if ($this->foot) {
+            $this->addColumn(12)->add($this->foot);
         }
         parent::__build_extra__();
     }
@@ -119,11 +131,38 @@ class Addressbook extends PanelNew
         }
     }
 
+    /**
+     * Build Datagrid pagination
+     *
+     * @return Tag
+     */
+    private function buildPagination($pagination)
+    {
+        if ($this->showPaginationPageDimension) {
+            $this->addToFoot('<div class="p-2">Elementi per pagina</div>');
+            $this->addToFoot('<div class="px-2 py-1">'.$pagination->getPageDimensionsCombo()->addClass('form-control-sm').'</div>');
+        }
+        if ($this->showPaginationPageInfo) {
+            $this->addToFoot(new Tag('div', null, 'p-2'))->add($pagination->getInfo());
+        }
+        $this->addToFoot(new Tag('div', null, 'pt-1 pl-2'))->add($pagination)->setPosition('end');
+    }
+
     public function addToFoot($content)
     {
         if (!$this->foot) {
-            $this->foot = new Tag('div', null, 'd-flex justify-content-end');
+            $this->foot = new Tag('div', null, 'd-flex justify-content-end mt1');
         }
         $this->foot->add($content);
+        return $content;
+    }
+
+    public function setPaginator($paginator, $showPageDimension = true, $showPageInfo = true)
+    {
+        $this->paginator = $paginator;
+        $this->paginator->setParentComponent($this->id);
+        $this->showPaginationPageDimension = $showPageDimension;
+        $this->showPaginationPageInfo = $showPageInfo;
+        return $this->paginator;
     }
 }
