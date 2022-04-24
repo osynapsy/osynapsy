@@ -14,7 +14,6 @@ namespace Osynapsy\Html\Bcl;
 use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
 use Osynapsy\Data\Dictionary;
-use Osynapsy\Html\Bcl\Column;
 use Osynapsy\Html\Bcl\Alert;
 
 /**
@@ -59,15 +58,11 @@ class Form extends Component
     protected function __build_extra__()
     {
         if ($this->head) {
-            $this->add(new Tag('div', null, 'block-header m-b'))
-                 ->add(new Tag('div', null, $this->headClass))
-                 ->add($this->head);
+            $this->add($this->head);
         }
-
         if ($this->alert) {
             $this->add($this->alert);
         }
-
         $this->add($this->body);
         //Append foot
         if (!$this->foot) {
@@ -112,14 +107,12 @@ class Form extends Component
         $this->headCommand->add($object);
     }
 
-    public function head($width = 12, $offset = 0)
+    public function head()
     {
-        //Head setting
         if (empty($this->head)) {
-            $this->head = new Tag('dummy');
+            $this->head = new Tag('div', null, 'd-flex block-header m-b');
         }
-        $column = $this->head->add(new Column($width, $offset));
-        return $column;
+        return $this->head->add(new Tag('div', null, 'p-2'));
     }
 
     public function alert($label = null, $type = 'danger')
@@ -203,10 +196,10 @@ class Form extends Component
         $objTitle = new Tag($hsize);
         $objTitle->add($title);
         $column = $this->head($size);
-        $column->push(false, $objTitle, false);
-        $this->headCommandWidth -= $size;
+        $column->addClass('mr-auto')->add($objTitle);
+        //$this->headCommandWidth -= $size;
         if (!empty($subTitle)) {
-            $column->push(false,'<h4><i>'.$subTitle.'</i></h4>',false);
+            $column->add('<h4><i>'.$subTitle.'</i></h4>');
         }
         return $objTitle;
     }
