@@ -23,7 +23,7 @@ class Select
     private $dummy;
     private $parent;
     private $part = [
-        'WITH RECURSIVE ' => [
+        'WITH' => [
             'separator' => ' '.PHP_EOL
         ],
         'SELECT' => [
@@ -44,7 +44,7 @@ class Select
         ]
     ];
     private $elements = [
-        'WITH RECURSIVE' => null,
+        'WITH' => [],
         'SELECT' => [],
         'FROM' => [],
         'JOIN' => [],
@@ -85,9 +85,15 @@ class Select
         return $this;
     }
 
-    public function withRecursive($recursiveQuery)
+    public function with($queryAlias, $subQuery)
     {
-        $this->elements['WITH RECURSIVE'] = sprintf('( %s )',$recursiveQuery);
+        $this->elements['WITH'][] = sprintf('%s AS ( %s )',$queryAlias, $subQuery);
+    }
+
+    public function withRecursive($queryAlias, $queryRecursive, $parameters = [])
+    {
+        $stringParameters = empty($parameters) ? '' : '('.implode(',',$parameters).')';
+        $this->with(sprintf('RECURSIVE %s %s',$queryAlias, $stringParameters), $queryRecursive);
     }
 
     public function select(array $fields = null, array $parameters = [])
