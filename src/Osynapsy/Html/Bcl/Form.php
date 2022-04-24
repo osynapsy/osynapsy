@@ -134,6 +134,7 @@ class Form extends Component
         if (empty($this->foot)) {
             $this->footClass = $class;
             $this->footStyle = 'background-color: rgba(255,255,255,0.8); border-top: 1px solid #ddd;';
+            $this->addClass('mb-5');
             return;
         }
         $this->foot->addClass($class);
