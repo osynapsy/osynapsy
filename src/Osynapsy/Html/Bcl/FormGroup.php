@@ -43,8 +43,8 @@ class FormGroup extends Component
 
     protected function labelFactory()
     {
-        $div = new Tag('div');
-        $label = $div->add(new Tag('label', null, $this->labelClass));
+        $div = new Tag('div', null, 'd-flex');
+        $label = $div->add(new Tag('label', null, sprintf('%s mr-auto', $this->labelClass)));
         if (is_object($this->object)) {
             $label->att('for',$this->object->id);
         }
