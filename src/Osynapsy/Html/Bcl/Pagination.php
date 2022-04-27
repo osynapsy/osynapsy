@@ -14,7 +14,7 @@ namespace Osynapsy\Html\Bcl;
 use Osynapsy\Html\Component;
 use Osynapsy\Html\Ocl\HiddenBox;
 use Osynapsy\Html\Tag;
-use Osynapsy\Db\Paginator;
+use Osynapsy\Db\PaginatorSimple;
 
 /**
  * Description of Pagination
@@ -127,122 +127,22 @@ class Pagination extends Component
         $this->filters[$field] = $value;
     }
 
-    public function loadData($requestPage = null)
+    public function loadData($defaultPage = null)
     {
-        if (empty($this->sql)) {
-            return [];
-        }
-        if (filter_input(\INPUT_POST, $this->id.'OrderBy')) {
-            $this->setOrder(filter_input(\INPUT_POST, $this->id.'OrderBy'));
-        }
-        if (is_null($requestPage) && filter_input(\INPUT_POST, $this->id)) {
-            $requestPage = filter_input(\INPUT_POST, $this->id);
-        }
-        $where = !empty($this->filters) ? $this->buildFilter() : '';
-        $count = "SELECT COUNT(*) FROM (\n{$this->sql}\n) a " . $where;
-        $this->statistics['rowsTotal'] = $this->db->execUnique($count, $this->par);
-        $this->att('data-total-rows', $this->statistics['rowsTotal']);
-        $this->calcPage($requestPage);
-        switch ($this->db->getType()) {
-            case 'oracle':
-                $sql = $this->buildOracleQuery($where);
-                break;
-            case 'pgsql':
-                $sql = $this->buildPgSqlQuery($where);
-                break;
-            default:
-                $sql = $this->buildMySqlQuery($where);
-                break;
-        }
-        $this->data = $this->db->execQuery($sql, $this->par, 'ASSOC');
-        $this->columns = $this->db->getColumns();
-        return empty($this->data) ? array() : $this->data;
+        $requestPage = filter_input(\INPUT_POST, $this->id) ?? $defaultPage;
+        $sort = $this->getSort(filter_input(\INPUT_POST, $this->id.'OrderBy'));
+        $pageDimension = $this->statistics['pageDimension'];
+        $paginator = new PaginatorSimple($this->id.'Paginator', $this->db, $this->sql, $this->par);
+        $this->data = $paginator->get($requestPage, $pageDimension, $sort);
+        $this->statistics = $paginator->getAllMeta();
+        $this->loaded = true;
+        return $this->data;
     }
 
-    private function calcPage($requestPage)
+    public function getSort($requestSort)
     {
-        $this->statistics['pageCurrent'] = max(1,(int) $requestPage);
-        if ($this->statistics['rowsTotal'] == 0 || empty($this->statistics['pageDimension'])) {
-            return;
-        }
-        $this->statistics['pageTotal'] = ceil($this->statistics['rowsTotal'] / $this->statistics['pageDimension']);
-        $this->att(
-            'data-page-max',
-            max($this->statistics['pageTotal'],1)
-        );
-        switch ($requestPage) {
-            case 'first':
-                $this->statistics['pageCurrent'] = 1;
-                break;
-            case 'last' :
-                $this->statistics['pageCurrent'] = $this->statistics['pageTotal'];
-                break;
-            case 'prev':
-                if ($this->statistics['pageCurrent'] > 1){
-                    $this->statistics['pageCurrent']--;
-                }
-                break;
-            case 'next':
-                if ($this->statistics['pageCurrent'] < $this->statistics['pageTotal']) {
-                    $this->statistics['pageCurrent']++;
-                }
-                break;
-            default:
-                $this->statistics['pageCurrent'] = min($this->statistics['pageCurrent'], $this->statistics['pageTotal']);
-                break;
-        }
-    }
-
-    protected function sqlFactory($where)
-    {
-        return sprintf("SELECT a.* FROM (%s) a %s %s", $this->sql, $where, $this->orderBy ? "\nORDER BY {$this->orderBy}" : '');
-    }
-
-    private function buildMySqlQuery($where)
-    {
-        $sql = $this->sqlFactory($where);
-        if (!empty($this->statistics['pageDimension'])) {
-            $startFrom = ($this->statistics['pageCurrent'] - 1) * $this->statistics['pageDimension'];
-            $sql .= sprintf("\nLIMIT %s, %s", max(0, $startFrom), $this->statistics['pageDimension']);
-        }
-        return $sql;
-    }
-
-    private function buildPgSqlQuery($where)
-    {
-        $sql = $this->sqlFactory($where);
-        if (!empty($this->statistics['pageDimension'])) {
-            $startFrom = ($this->statistics['pageCurrent'] - 1) * $this->statistics['pageDimension'];
-            $sql .= sprintf("\nLIMIT %s OFFSET %s", $this->statistics['pageDimension'], max(0, $startFrom));
-        }
-        return $sql;
-    }
-
-    private function buildOracleQuery($where)
-    {
-        $sql = sprintf('SELECT c.* FROM ( SELECT b.*,rownum as "_rnum" FROM (%s) b) c', $this->sqlFactory($where));
-        if (!empty($this->statistics['pageDimension'])) {
-            $startFrom = (($this->statistics['pageCurrent'] - 1) * $this->statistics['pageDimension']) + 1 ;
-            $endTo = ($this->statistics['pageCurrent'] * $this->statistics['pageDimension']);
-            $sql .= sprintf(' WHERE "_rnum" BETWEEN %s AND %s', $startFrom, $endTo);
-        }
-        return $sql;
-    }
-
-    private function buildFilter()
-    {
-        $i = 0;
-        $filter = [];
-        foreach ($this->filters as $field => $value) {
-            if (is_null($value)) {
-                $filter[] = $field;
-                continue;
-            }
-            $filter[] = sprintf("%s = %s", $field, ($this->db->getType() == 'oracle' ? ':'.$i : '?'));
-            $this->par[] = $value;
-            $i++;
-        }
-        return " WHERE " .implode(' AND ',$filter);
+        $this->orderBy = empty($requestSort) ? $this->orderBy : str_replace(['][', '[', ']'], [',' ,'' ,''], $requestSort);
+        return $this->orderBy;
     }
 
     public function getPageDimensionsCombo()
