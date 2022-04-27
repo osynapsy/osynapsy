@@ -41,16 +41,16 @@ class Calendar extends Component
     private $monthStart;
     private $monthEnd;
     private $currentDay;
-    private $today;    
+    private $today;
     private $title;
-    
+
     public function __construct($title = 'Calendar', $id = 'calendar')
     {
         parent::__construct('div', $id);
         $this->setClass('card border-0');
         $this->requireJs('Bcl/Calendar/script.js');
         $this->requireCss('Bcl/Calendar/style.css');
-        $this->title = $title;        
+        $this->title = $title;
         $this->init();
     }
 
@@ -62,29 +62,40 @@ class Calendar extends Component
         $this->monthCurrent = $this->monthStart->format('m');
         $this->today = new \DateTime('today');
     }
-    
+
     protected function __build_extra__(): void
     {
         $this->add(new HiddenBox("{$this->id}_date"));
         $this->buildHead();
         $this->buildBody();
     }
-    
+
     protected function buildHead()
     {
         $head = $this->add(new Tag('div', null, 'card-header bg-white border-0 px-0'));
-        $row = $head->add(new Tag('div', null, 'row m-0'));
-        $col1 = $row->add(new Tag('div', null, 'col p-0'));
-        $col1->add(new Tag('h5', null, 'font-weight-normal d-inline-block mt-1'))->add('&nbsp;<i class="fa fa-calendar"></i> '.$this->title);        
-        $col2 = $row->add(new Tag('div', null, 'col p-0 text-center'));
-        $col2->add($this->buildButtonPrev());
-        $col2->add(new Tag('h5', null, 'font-weight-normal d-inline-block mt-1'))
-             ->add($this->monthStart->format('F Y'));                              
-        $col2->add($this->buildButtonNext());
-        $col3 = $row->add(new Tag('div', null, 'col text-right'));
-        $col3->add($this->buildButtonToday());
+        $row = $head->add(new Tag('div', null, 'row'));
+        $row->add(new Tag('div', null, 'col-4 text-nowrap text-truncate'))->add($this->titleFactory($this->title));
+        $row->add(new Tag('div', null, 'col-4 text-center text-nowrap'))->add($this->shiftCalendarCommandsFactory());
+        $row->add(new Tag('div', null, 'col-4 text-right'))->add($this->buildButtonToday());
     }
-    
+
+    protected function titleFactory($title)
+    {
+        $result = new Tag('h5', null, 'font-weight-normal');
+        $result->add('&nbsp;<i class="fa fa-calendar"></i> '.$title);
+        return $result;
+    }
+
+    protected function shiftCalendarCommandsFactory()
+    {
+        $dummy = new Tag('dummy');
+        $dummy->add($this->buildButtonPrev());
+        $dummy->add(new Tag('h5', null, 'font-weight-normal d-inline-block mt-1'));
+        $dummy->add($this->monthStart->format('F Y'));
+        $dummy->add($this->buildButtonNext());
+        return $dummy;
+    }
+
     protected function buildButtonNext()
     {
         $date = clone $this->monthEnd;
@@ -93,7 +104,7 @@ class Calendar extends Component
         $btn->att('onclick',"$('#{$this->id}_date').val('".($date->modify('+1 day')->format('Y-m-1'))."'); Osynapsy.refreshComponents(['{$this->id}']);");
         return $btn;
     }
-    
+
     protected function buildButtonPrev()
     {
         $date = clone $this->monthStart;
@@ -102,21 +113,23 @@ class Calendar extends Component
         $btn->att('onclick',"$('#{$this->id}_date').val('".($date->modify('-1 day')->format('Y-m-1'))."'); Osynapsy.refreshComponents(['{$this->id}']);");
         return $btn;
     }
-   
+
     protected function buildButtonToday()
-    {        
+    {
         $btn = new Button('btn_today', 'button', 'border btn-sm', 'Oggi');
         $btn->att('style', 'margin-top: -10px;');
         $btn->att('onclick',"$('#{$this->id}_date').val('".($this->today->format('Y-m-1'))."'); Osynapsy.refreshComponents(['{$this->id}']);");
         return $btn;
     }
-    
+
     protected function buildBody()
     {
-        $body = $this->add(new Tag('div', null, 'card-body p-0'));
-        $row = $body->add(new Tag('div', null, 'row m-0'));
+        $body = $this->add(new Tag('table', null, 'card-body p-0'));
+        $body->att('style',' table-layout: fixed; word-wrap: break-word;');
+        $row = $body->add(new Tag('thead'))->add(new Tag('tr', null, 'm-0'));
         for ($i = 0; $i < 7; $i++) {
-            $row->add(new Tag('div', null, 'col border text-center'))
+            $row->add(new Tag('th', null, 'border text-center'))
+                ->att('style', 'width: 14.28%')
                 ->add(new Tag('small'))
                 ->add($this->daysOfWeek[$i]);
         }
@@ -125,12 +138,12 @@ class Calendar extends Component
             $this->buildBodyRow($body, $i);
         }
     }
-    
+
     protected function buildBodyRow($body)
     {
-        $row = $body->add(new Tag('div', null, 'row m-0'));
+        $row = $body->add(new Tag('tr', null, 'm-0'));
         for ($i = 0; $i < 7; $i++) {
-            $isToday = $this->currentDay == $this->today;            
+            $isToday = $this->currentDay == $this->today;
             $cell = $row->add(
                 $this->buildBodyRowCell(
                     $this->currentDay->format('d'),
@@ -143,34 +156,34 @@ class Calendar extends Component
             if (empty($this->currentDay->format('w'))){
                 $cell->addClass('text-danger');
             }
-            $this->currentDay->modify('+1 day');            
+            $this->currentDay->modify('+1 day');
         }
     }
-    
+
     protected function buildBodyRowCell($j, $classText = '')
     {
-        $cell = new Tag('div', null, 'col border');
-        $cell->add(new Tag('div', null, 'cell-head text-center p-1')) 
-             ->add(new Tag('small', null, $classText))->att('style', 'font-size: 0.8em')            
+        $cell = new Tag('td', null, 'border');
+        $cell->add(new Tag('div', null, 'cell-head text-center p-1'))
+             ->add(new Tag('small', null, $classText))->att('style', 'font-size: 0.8em')
              ->add($j);
         $cell->add(new Tag('div', null, 'cell-body'))->add('&nbsp;');
         $cell->add(new Tag('div', null, 'cell-body'))->add('&nbsp;');
-        $cell->add(new Tag('div', null, 'cell-body'))->add('&nbsp;');        
+        $cell->add(new Tag('div', null, 'cell-body'))->add('&nbsp;');
         return $cell;
     }
-    
+
     public function getCurrentMonth()
     {
         return $this->monthCurrent;
     }
-    
+
     private function initCurrentDay()
     {
         $dayOfWeek = $this->getDayOfWeek($this->monthStart) - 1;
         $currentDay = clone $this->monthStart;
         return $currentDay->modify("- $dayOfWeek day");
     }
-    
+
     private function getDayOfWeek(\DateTime $datetime)
     {
         $dayOfWeek = $datetime->format('w');
