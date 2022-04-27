@@ -23,7 +23,7 @@ class DataTable extends Component
         'body' => null,
         'foot' => null
     );
-    
+
     public function __construct($name)
     {
         parent::__construct('div', $name);
@@ -32,42 +32,28 @@ class DataTable extends Component
         $this->part['body'] = new Tag('div');
         $this->part['foot'] = new Tag('div');
     }
-    
+
     public function __build_extra__()
     {
-        $table = $this->add(
-            new Tag('table')
-        )->att(
-            'class', 'table table-hover'
-        );
-        $table->add(
-            $this->thead(
-                array_keys($this->data[0])
-            )
-        );
-        $tbody = $table->add(
-            new Tag('tbody')
-        );
+        $table = $this->add(new Tag('table', null, 'table table-hover'));
+        $table->add($this->thead(array_keys($this->data[0])));
+        $tbody = $table->add(new Tag('tbody'));
         foreach ($this->data as $rec) {
-            $tbody->add(
-                $this->row($rec)
-            );
+            $tbody->add($this->row($rec));
         }
     }
-    
+
     private function row($row)
     {
         $tr = new Tag('tr');
         $i = 0;
         foreach($row as $fieldName => $fieldValue) {
-            $tr->add(
-                $this->cellRow($i, $fieldName, $fieldValue)
-            );
+            $tr->add($this->cellRow($i, $fieldName, $fieldValue));
             $i++;
         }
         return $tr;
     }
-    
+
     private function cellRow($pos, $fieldName, $fieldValue)
     {
         $td = new Tag('td');
@@ -78,18 +64,18 @@ class DataTable extends Component
         $td->add($fieldValue);
         return $td;
     }
-    
-    private function cellHead($idx, $value) 
-    {    
+
+    private function cellHead($idx, $value)
+    {
         $th = new Tag('th');
         if (!empty($this->columns[$idx]) && !empty($this->columns[$idx]['fncCellHead'])) {
             $function = $this->columns[$idx]['fncCellHead'];
             $function($value, $th);
-        }        
+        }
         $th->add($value);
         return $th;
     }
-    
+
     private function thead($rec)
     {
         $thead = new Tag('thead');
@@ -100,15 +86,15 @@ class DataTable extends Component
         }
         return $thead;
     }
-    
-    public function setColumn($idx, $funcCellRow, $funcCellHead = null)    
+
+    public function setColumn($idx, $funcCellRow, $funcCellHead = null)
     {
         $this->columns[$idx] = [
             'fncCellRow' => $funcCellRow,
             'fncCellHead' => $funcCellHead
-        ];        
+        ];
     }
-    
+
     private function addColumn($idx, $columnTitle)
     {
         switch ($columnTitle[0]) {
@@ -123,7 +109,7 @@ class DataTable extends Component
                 });
             break;
             default :
-                
+
                 break;
         }
         return $columnTitle;
