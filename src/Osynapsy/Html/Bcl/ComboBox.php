@@ -20,4 +20,12 @@ class ComboBox extends OclComboBox
         parent::__construct($name);
         $this->att('class','form-control',true);
     }
+
+    public function enableSearch()
+    {
+        $this->addClass('selectpicker');
+        $this->att('data-live-search', 'true');
+        $this->requireCss('Bcl/ComboBox/bootstrap-select.css');
+        $this->requireJs('Bcl/ComboBox/bootstrap-select.js');
+    }
 }
