@@ -4,7 +4,7 @@ Bcl4DatePicker =
     {
         $('.date-picker').each(function(){
             var self = this;
-            var opt = {                
+            var opt = {
                 format: $(this).data('date-format'),
                 toolbarPlacement : 'top',
                 buttons : {
@@ -34,16 +34,17 @@ Bcl4DatePicker =
                 } else {
                     opt['maxDate'] = new Date(maxDate);
                 }
-            }            
+            }
             $(this).datetimepicker(opt);
         });
-        $('body').on('change.datetimepicker', function() {                        
-            if ($(this).attr('onchange')) {
-                eval($(this).attr('onchange')); 
+        $('body').on('change.datetimepicker', function(e) {
+            let self = e.target;
+            if ($(self).attr('onchangedate')) {
+                eval($(self).attr('onchangedate'));
             }
-            if ($(this).hasClass('change-execute')) {
-                Osynapsy.action.execute(this);
-            }            
+            if ($(self).hasClass('change-execute')) {
+                Osynapsy.action.execute(self);
+            }
         });
     }
 };
