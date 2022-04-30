@@ -112,7 +112,7 @@ class DatePicker extends Component
 
     public function onChange($code)
     {
-        $this->att('onchange', $code);
+        $this->att('onchangedate', $code);
     }
 
     public function setAction($action, $parameters = null, $confirmMessage = null, $class = 'change-execute')
