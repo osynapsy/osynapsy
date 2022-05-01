@@ -207,13 +207,14 @@ var Osynapsy = new (function(){
     {
         if (pub.typingTimeout !== undefined) {
             clearTimeout(pub.typingTimeout);
+            console.log('not call');
         }
         pub.typingTimeout = setTimeout(function(){
             var code = obj.getAttribute('ontyping');
             if (code) {
                 eval(code);
             }
-        }, 500);
+        }, 1000);
     };
 
     pub.goto = function(url)
@@ -241,13 +242,13 @@ var Osynapsy = new (function(){
         Osynapsy.include('Action.js', function() { if(console) console.log('Action module is loaded'); });
         Osynapsy.element('body').on('click','.save-history', function(){
             Osynapsy.include('History.js', function() { Osynapsy.History.save(); });
-        }).on('click','.cmd-execute, .click-execute, .onclick-execute',function() {
+        }).on('click','.click-execute, .onclick-execute',function() {
             Osynapsy.action.execute(this);
         }).on('click', '.cmd-back', function() {
             Osynapsy.include('History.js', function() { Osynapsy.History.back(); });
         }).on('blur','.blur-execute', function(){
             Osynapsy.action.execute(this);
-        }).on('change','.change-execute', function(){
+        }).on('change','.change-execute[data-action]', function(){
             Osynapsy.action.execute(this);
         }).on('keyup', '.typing-execute', function(){
            Osynapsy.typingEvent(this);
