@@ -80,7 +80,7 @@ class PaginatorSimple
 
     protected function loadData($sql, $parameters, $requestPage, $pageSize)
     {
-        $count = sprintf("SELECT COUNT(*) FROM (%s) a", $sql);
+        $count = $this->buildSqlCountFactory($sql);
         $this->meta['rowsTotal'] = $this->getDb()->execUnique($count, $parameters);
         $this->calcPage($requestPage);
         $sqlNoPaginated = $this->buildSqlQuery($sql, $this->sort);
@@ -97,6 +97,18 @@ class PaginatorSimple
         }
         $data = $this->getDb()->execAssoc($sqlPaginated, $parameters);
         return is_array($data) ? $data : [];
+    }
+
+    protected function buildSqlCountFactory($sql)
+    {
+        $select = 'SELECT';
+        $startWithSelect = (substr(trim(strtoupper($sql)), 0, strlen($select)) === $select);
+        $groupByIsPresent = strpos(strtoupper($sql), 'GROUP BY');
+        if ($startWithSelect === false || $groupByIsPresent) {
+            return sprintf("SELECT COUNT(*) FROM (%s) a", $sql);
+        }
+        $fromPosition = strpos(strtoupper($sql), 'FROM');
+        return 'SELECT count(*) '.substr($sql, $fromPosition);
     }
 
     protected function buildSqlQuery($rawQuery, $sort)
