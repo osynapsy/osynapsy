@@ -30,19 +30,19 @@ abstract class Eav
     private $originalRecord = [];
     private $state = 'insert';
     private $sequence;
-    private $table;    
-    private $searchCondition = [];        
+    private $table;
+    private $searchCondition = [];
     private $softDelete = [];
     private $keys = [];
-    private $fields = [];    
-    
+    private $fields = [];
+
     /**
      * Object constructor
      *
      * @param PDO $dbCn A valid dbPdo wrapper
      * @return void
      */
-    public function __construct($dbCn) 
+    public function __construct($dbCn)
     {
         $this->dbConnection = $dbCn;
         $this->keys = $this->primaryKey();
@@ -51,7 +51,7 @@ abstract class Eav
         $this->fields = $this->fields();
         $this->softDelete = $this->softDelete();
     }
-    
+
     /**
      * Load record from database and store in originalRecord + activeRecord
      *
@@ -62,7 +62,7 @@ abstract class Eav
     {
         if (empty($reSearchParameters)) {
             throw new \Exception('Parameter required');
-        }        
+        }
         $this->searchCondition = $reSearchParameters;
         $where = [
             'conditions' => [],
@@ -73,86 +73,86 @@ abstract class Eav
         foreach ($reSearchParameters as $field => $value) {
             $fieldsh1 = $range[$i];
             $where['conditions'][] = "$field = :{$fieldsh1}";
-            $where['parameters'][$fieldsh1] = $value; 
+            $where['parameters'][$fieldsh1] = $value;
             $i++;
         }
-        try {            
-            $sql = "SELECT * FROM {$this->table} WHERE ".implode(' AND ', $where['conditions'])." ORDER BY 1";            
+        try {
+            $sql = "SELECT * FROM {$this->table} WHERE ".implode(' AND ', $where['conditions'])." ORDER BY 1";
             $this->loadFieldValues(
-                $this->dbConnection->execQuery($sql, $where['parameters'],'ASSOC')
+                $this->dbConnection->execAssoc($sql, $where['parameters'])
             );
-            
+
         } catch (\Exception $e) {
             throw new \Exception('Query error : '.$sql."\n".$e->getMessage(), 100);
-        }        
+        }
         if (empty($this->originalRecord)) {
             return $this->originalRecord;
         }
         $this->state = 'update';
         return $this->activeRecord;
     }
-    
-    
+
+
     protected function loadFieldValues($recordSet)
-    {        
+    {
         foreach($recordSet as $fields){
             $attributeId = $fields[$this->attributeIdField()];
             $attributeValue = $fields[$this->attributeValueField()];
-            $this->originalRecord[$attributeId] = $attributeValue; 
+            $this->originalRecord[$attributeId] = $attributeValue;
             $this->activeRecord[$attributeId] = $attributeValue;
         }
     }
-    
+
     /**
      * Check if field exsist into record;
-     * 
+     *
      * @param string $field
      * @return boolean
      */
     public function fieldExists($field)
-    {        
+    {
         return empty($this->fields) ? true : in_array($field, $this->fields);
     }
-    
+
     /**
      * Find record in table through key value example : 1, [1,2]
-     * 
+     *
      * @param int|string|array $keyValues
      * @return array
      * @throws \Exception
      */
     public function findByKey($keyValues)
-    {        
+    {
         $this->reset();
         $raw = is_array($keyValues) ? $keyValues : [$keyValues];
         if (count($this->keys) != count($raw)) {
             throw new \Exception('Values don\'t match keys '.count($this->keys).' ('.count($raw).')', 202);
-        }        
+        }
         $params = [];
         foreach($this->keys as $idx => $key) {
             if (!$raw[$idx]) {
                 throw new \Exception('Values key is empty', 10);
             }
-            $params[$key] = $raw[$idx]; 
+            $params[$key] = $raw[$idx];
         }
         return $this->find($params);
     }
-    
+
     /**
      * Find record in table through array of attributes (example ['type' => 1])
-     * 
-     * @param array $reSearchParameters 
+     *
+     * @param array $reSearchParameters
      * @return array
      */
     public function findByAttributes(array $reSearchParameters)
     {
-        $this->reset();        
-        return $this->find($reSearchParameters);        
+        $this->reset();
+        return $this->find($reSearchParameters);
     }
-    
+
     /**
      * Get single value from active record or get all active record
-     * 
+     *
      * @param string $key
      * @return mixed
      */
@@ -166,18 +166,18 @@ abstract class Eav
         }
         return false;
     }
-    
+
     /**
      * Set value on current active record
-     * 
-     * @param string $field 
+     *
+     * @param string $field
      * @param string|int $value
      * @param string|int $defaultValue
      * @return $this
      * @throws \Exception
      */
     public function setValue($field, $value = null, $defaultValue = null)
-    {        
+    {
         if (empty($field)) {
             throw new \Exception('Field parameter is empty');
         }
@@ -187,16 +187,16 @@ abstract class Eav
         if (in_array($field, $this->keys)) {
             return $this;
         }
-        $this->activeRecord[$field] = ($value !== '0' && $value !== 0 && empty($value))  ? $defaultValue : $value;        
+        $this->activeRecord[$field] = ($value !== '0' && $value !== 0 && empty($value))  ? $defaultValue : $value;
         return $this;
     }
-    
+
     /**
      * Flush array contente and set for every element value in the record.
-     * 
+     *
      * @return void
      * @throws \Exception
-     */    
+     */
     public function setValues(array $values)
     {
         foreach($values as $field => $value) {
@@ -204,10 +204,10 @@ abstract class Eav
         }
         return $this;
     }
-    
+
     /**
      * Save current active record on database
-     * 
+     *
      * @return string
      * @throws \Exception
      */
@@ -225,16 +225,16 @@ abstract class Eav
         $this->afterSave();
         //return $id;
     }
-    
+
     /**
      * Insert current active record on database
-     * 
+     *
      * @return string
      */
     private function insert()
     {
-        $this->beforeInsert();        
-        $sequenceId = $this->getSequenceNextValue();                
+        $this->beforeInsert();
+        $sequenceId = $this->getSequenceNextValue();
         $autoincrementId = $this->dbConnection->insert(
             $this->table,
             $this->activeRecord
@@ -243,16 +243,16 @@ abstract class Eav
         $this->loadRecordAfterInsert($id);
         $this->afterInsert($id);
         return $id;
-    }        
-    
+    }
+
     /**
      * After insert load record from db.
-     * 
+     *
      * @return string
      */
     private function loadRecordAfterInsert($id)
     {
-        if (!empty($id) && count($this->keys) == 1) {                     
+        if (!empty($id) && count($this->keys) == 1) {
             $this->findByKey($id);
             return;
         }
@@ -265,10 +265,10 @@ abstract class Eav
         }
         $this->findByAttributes($attributes);
     }
-    
+
     /**
      * Update current active record on database
-     * 
+     *
      * @throws \Exception
      */
     private function update()
@@ -278,7 +278,7 @@ abstract class Eav
             throw new \Exception('Primary key is empty');
         }
         $updateCondition = $this->searchCondition;
-        $valueToInsert = array_diff_key($this->activeRecord, $this->originalRecord);        
+        $valueToInsert = array_diff_key($this->activeRecord, $this->originalRecord);
         foreach($valueToInsert as $virtualField => $value) {
             $params = $updateCondition;
             $params[$this->attributeIdField()] = $virtualField;
@@ -288,7 +288,7 @@ abstract class Eav
             //Add virtual field for make ugual db and original field.
             $this->originalRecord[$virtualField] = $value;
         }
-        $valueToUpdate = array_diff_assoc($this->activeRecord, $this->originalRecord);        
+        $valueToUpdate = array_diff_assoc($this->activeRecord, $this->originalRecord);
         foreach($valueToUpdate as $virtualField => $value) {
             $updateCondition[$this->attributeIdField()] = $virtualField;
             $this->dbConnection->update(
@@ -302,10 +302,10 @@ abstract class Eav
         }
         $this->afterUpdate();
     }
-    
+
     /**
      * Delete current active record from database
-     * 
+     *
      * @throws \Exception
      */
     public function delete()
@@ -328,10 +328,10 @@ abstract class Eav
         }
         $this->afterDelete();
     }
-    
+
     /**
      * Reset current active record
-     * 
+     *
      * @return $this
      */
     public function reset()
@@ -342,30 +342,30 @@ abstract class Eav
         $this->searchCondition = [];
         return $this;
     }
-            
+
     /**
      * Get current db connection
-     * 
+     *
      * @return DbPdo object
      */
     public function getDb()
     {
         return $this->dbConnection;
     }
-    
+
     /**
      * Get current state of active record
-     * 
+     *
      * @return string
      */
     public function getState()
     {
         return $this->state;
     }
-    
+
     /**
      * Get next value from sequence
-     * 
+     *
      * @return string
      */
     protected function getSequenceNextValue()
@@ -375,59 +375,57 @@ abstract class Eav
         }
         $firstKey = key(
             $this->keys
-        );        
-        $sequenceValue = $this->getDb()->execUnique(
-            "SELECT {$this->sequence}.nextval FROM dual"
         );
+        $sequenceValue = $this->getDb()->execOne("SELECT {$this->sequence}.nextval FROM dual");
         if (!empty($sequenceValue) && !empty($firstKey)) {
             $this->activeRecord[$firstKey] = $sequenceValue;
         }
         return $sequenceValue;
     }
-    
+
     /**
      * Get sequence
-     * 
+     *
      * @return string
      */
     protected function sequence()
     {
         return '';
     }
-    
+
     /**
      * Active or disactive softDelete
-     * 
+     *
      * @return boolean
      */
     protected function softDelete()
     {
         return false;
     }
-    
+
     protected function afterDelete(){}
-        
+
     protected function afterInsert(){}
-    
+
     protected function afterSave(){}
-    
+
     protected function afterUpdate(){}
-    
-    protected function beforeDelete(){}     
-        
+
+    protected function beforeDelete(){}
+
     protected function beforeInsert(){}
-    
+
     protected function beforeSave(){}
-    
-    protected function beforeUpdate(){}  
-    
+
+    protected function beforeUpdate(){}
+
     abstract public function fields();
-    
+
     abstract public function primaryKey();
-        
+
     abstract public function table();
-    
+
     abstract public function attributeIdField();
-    
+
     abstract public function attributeValueField();
 }
