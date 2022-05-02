@@ -19,18 +19,18 @@ use Osynapsy\Html\Component;
  * @author Pietro Celeste <p.celeste@spinit.it>
  */
 class ListSortable extends Component
-{    	
+{
     private $rootKey = '[--ROOT--]';
     private $head;
     private $columnFunction = array();
     private $emptyMessage;
-    
+
 	public function __construct($id)
     {
         parent::__construct('div', $id);
-        
+
         $this->requireCss('Ocl/ListSortable/style.css');
-        //$this->requireJs('Lib/jquery-sortable-0.9.13/jquery-sortable.js');  
+        //$this->requireJs('Lib/jquery-sortable-0.9.13/jquery-sortable.js');
         $this->requireJs('Lib/html5-sortable/jquery-sortable.js');
 		$this->requireJs('Ocl/ListSortable/script.js');
         $this->add('<input type="hidden" id="'.$id.'_order" name="'.$id.'">');
@@ -42,11 +42,11 @@ class ListSortable extends Component
         $this->setParameter('add_position','header');
         $this->setParameter('num_row',0);
         $this->setParameter('list_height',false);
-        $this->setParameter('cols_width',false);        
+        $this->setParameter('cols_width',false);
     }
 
     protected function __build_extra__()
-    {						
+    {
 		if ($this->head) {
             $this->add(
                 $this->head
@@ -54,32 +54,32 @@ class ListSortable extends Component
         }
 		$this->add(
             $this->buildBody()
-        );        
+        );
     }
-	
+
 	protected function buildHead()
 	{
         if ($this->getParameter('height')) {
             $this->att('style','height : '.$this->setParameter('height').'px; overflow:auto;');
-        }       
+        }
 	}
-	
+
 	protected function buildBody($rootKey=null)
     {
 		$ul = new Tag('ul');
 		if (is_null($rootKey)){
-			$rootKey = $this->rootKey;			
+			$rootKey = $this->rootKey;
 			$ul->att('class','osy-listsortable-body');
-            if (empty($this->data[$rootKey])) {                
-                $this->buildEmptyMessage();                
+            if (empty($this->data[$rootKey])) {
+                $this->buildEmptyMessage();
             }
-		} else {			
+		} else {
 	 	    $ul->att('data-parent',$rootKey)
 			   ->att('class','osy-listsortable-leaf');
-		}		
+		}
         if (!array_key_exists($rootKey,$this->data)) {
 			return '';
-		}        
+		}
         foreach ($this->data[$rootKey] as $kr => $row) {
             $li = $ul->add(new Tag('li'));
             $li->att('class','row clearfix');
@@ -98,22 +98,22 @@ class ListSortable extends Component
             if (!empty($row['_id']) && !empty($this->data[$row['_id']])) {
                 $branchBody = $this->buildBody($row['_id']);
                 $li->add($branchBody);
-            }            
-        }        
+            }
+        }
 		return $ul;
 	}
-	
+
     private function buildEmptyMessage()
-    {        
+    {
         if (empty($this->emptyMessage)) {
             return;
-        }        
+        }
         $this->add('<div class="osy-listsortable-emptymessage">'.$this->emptyMessage.'</div>');
     }
-    
+
     private function buildRow($rec, $container)
     {
-        foreach($rec as $fieldName => $fieldValue) {		           
+        foreach($rec as $fieldName => $fieldValue) {
             $container->add(
                 $this->buildCell(
                     $fieldName,
@@ -123,7 +123,7 @@ class ListSortable extends Component
             );
         }
     }
-    
+
     private function buildCell($fieldName, $fieldValue, $container)
     {
         $print = false;
@@ -133,7 +133,7 @@ class ListSortable extends Component
         switch($fieldName[0]) {
             case '_':
                 $par = explode(',',$fieldName);
-                switch($par[0]) {                          
+                switch($par[0]) {
                     case '_id':
                         $container->att('data-id', $fieldValue);
                         return;
@@ -143,11 +143,11 @@ class ListSortable extends Component
                     case '_cmd':
                         return '<div class="cmd">'.$fieldValue.'</div>';
                     case '_detail':
-                        return '<div class="cmd"><a href="'.$fieldValue.'" class="btn btn-default save-history"><span class="glyphicon glyphicon-pencil"></span></a></div>';                        
-                    
+                        return '<div class="cmd"><a href="'.$fieldValue.'" class="btn btn-default save-history"><span class="glyphicon glyphicon-pencil"></span></a></div>';
+
                 }
                 break;
-            default:                                
+            default:
                 $print = true;
                 break;
         }
@@ -155,25 +155,25 @@ class ListSortable extends Component
             return "<div class=\"cell\">$fieldValue</div>";
         }
     }
-    
+
     public function addColumnFunction($column, callable $function)
     {
         $this->columnFunction[$column] = $function;
     }
-    
+
     public function getHead()
     {
         if ($this->head){
             return $this->head;
         }
-        $this->head = new Tag('div');        
+        $this->head = new Tag('div');
         $this->head->att('class','clearfix ocl-listsortable-head');
         return $this->head;
     }
 
     public function setSql($db, $sql, $par = array())
     {
-        $rs =  $db->execQuery($sql, $par, 'ASSOC');        
+        $rs =  $db->execAssoc($sql, $par);
 		$this->setParameter('num_row',count($rs));
 
         foreach($rs as $rec) {
@@ -184,7 +184,7 @@ class ListSortable extends Component
             }
         }
     }
-    
+
     public function setEmptyMessage($msg)
     {
         $this->emptyMessage = $msg;

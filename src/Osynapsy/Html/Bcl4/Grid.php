@@ -18,7 +18,7 @@ class Grid extends Component
     protected $rows = [];
     protected $formatValueFnc;
     protected $addCommand;
-    
+
     public function __construct($id, $tag = 'div', $class = 'grid')
     {
         parent::__construct($tag, $id);
@@ -33,20 +33,20 @@ class Grid extends Component
             ."</style>"
          );
     }
-    
+
     protected function __build_extra__(): void
-    {                
+    {
         if (empty($this->data)) {
             return;
         }
         if (empty($this->addCommand)) {
             array_unshift($this->data, $this->addCommand);
         }
-        foreach ($this->data as $key => $rec) {            
-            $this->addCell($rec, $key, $this->cellSize);            
+        foreach ($this->data as $key => $rec) {
+            $this->addCell($rec, $key, $this->cellSize);
         }
-    }        
-    
+    }
+
     public function addCell($rec, $id = null, $size = 12, $class = null)
     {
         $Column = $this->getRow($size)->add(
@@ -54,24 +54,24 @@ class Grid extends Component
         );
         return $Column->add($this->buildCell($id, $rec));
     }
-    
+
     public function addCellCommand($cell, $command)
     {
         if (empty($cell) || empty($command)) {
             return;
         }
-        $cell->add(new Tag('div', null, 'card-command position-absolute'))->add($command);        
+        $cell->add(new Tag('div', null, 'card-command position-absolute'))->add($command);
     }
-    
+
     private function buildCell($rawid, $rec)
     {
-        $id = is_numeric($rawid) ? $this->id.'_cell_'.$rawid : $rawid; 
+        $id = is_numeric($rawid) ? $this->id.'_cell_'.$rawid : $rawid;
         $Cell = new Tag('div', $id, 'grid-cell '.implode(' ',$this->cellClass));
-        $fnc = $this->formatValueFnc;        
+        $fnc = $this->formatValueFnc;
         $Cell->add($fnc($rec, $Cell, $this));
         return $Cell;
-    }        
-    
+    }
+
     private function getRow($cellSize, $id = null)
     {
         if (empty($this->residualRowSize)) {
@@ -86,24 +86,24 @@ class Grid extends Component
     {
         $this->cellSize = $size;
     }
-    
+
     public function setCellClass($cellClass)
     {
         $this->cellClass = explode(' ',$cellClass);
     }
-    
+
     public function setSql($db, $sql, array $parameters = [])
-    {        
-        $this->data = $db->execQuery($sql, $parameters);
+    {
+        $this->data = $db->execAssoc($sql, $parameters);
     }
-    
+
     public function setAddCommand($command)
     {
         $this->addCommand = $command;
     }
-        
+
     public function setFormatValue(callable $fnc)
     {
         $this->formatValueFnc = $fnc;
-    }    
+    }
 }

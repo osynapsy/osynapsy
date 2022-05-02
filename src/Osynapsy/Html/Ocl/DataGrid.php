@@ -17,8 +17,8 @@ use Osynapsy\Html\Ocl\HiddenBox as HiddenBox;
 
 class DataGrid extends Component
 {
-    private $__col = array();      
-    private $dataGroups = array(); //array contenente i dati raggruppati    
+    private $__col = array();
+    private $dataGroups = array(); //array contenente i dati raggruppati
     private $db  = null;
     private $toolbar;
     private $columns = array();
@@ -26,7 +26,7 @@ class DataGrid extends Component
     private $extra;
     protected $request;
     private $functionRow;
-    
+
     public function __construct($name)
     {
         $this->requireJs('Ocl/DataGrid/script.js');
@@ -49,7 +49,7 @@ class DataGrid extends Component
         $this->setParameter('border', 'on');
         $this->setParameter('treestate', '');
         $this->request = [
-            'nodeOpenIds' => filter_input(\INPUT_POST, $name.'_open'),            
+            'nodeOpenIds' => filter_input(\INPUT_POST, $name.'_open'),
             'nodeSelectedId' => filter_input(\INPUT_POST, $name),
         ];
     }
@@ -87,13 +87,13 @@ class DataGrid extends Component
         $this->add(new HiddenBox($this->id.'_open'))->setClass('open-folders');
         //Aggiungo il campo che conterrà il ramo selezionato.
         $this->add(new HiddenBox($this->id, $this->id.'_sel'))->setClass('selected-folder');
-        $this->add(new HiddenBox($this->id.'_order'));        
+        $this->add(new HiddenBox($this->id.'_order'));
         $tableContainer = $this->add(new Tag('div'))->att([
             'id' => $this->id.'-body',
             'class' => 'osy-datagrid-2-body table-responsive',
             'data-rows-num' => $this->getParameter('rec_num')
         ]);
-        $this->buildAddButton($tableContainer);        
+        $this->buildAddButton($tableContainer);
         $table = $tableContainer->add(new Tag('table'));
         $table->att([
             'data-rows-num' => $this->getParameter('rec_num'),
@@ -101,8 +101,8 @@ class DataGrid extends Component
             'data-show-columns' => "false",
             'data-search' => 'false',
             'data-toolbar' => '#'.$this->id.'_toolbar',
-            'class' => 'display table dataTable no-footer border-'.$this->getParameter('border')        
-        ]);        
+            'class' => 'display table dataTable no-footer border-'.$this->getParameter('border')
+        ]);
         if ($this->getParameter('border') == 'on') {
             $table->att('class', 'table-bordered', true);
         }
@@ -110,12 +110,12 @@ class DataGrid extends Component
             $table->add(new Tag('tr'))->add(new Tag('td'))->add($this->getParameter('error-in-sql'));
             return;
         }
-        if (is_array($this->getParameter('cols'))) {            
+        if (is_array($this->getParameter('cols'))) {
             $this->buildHead(
                 $table->add(new Tag('thead'))
             );
         }
-        if (is_array($this->data) && !empty($this->data)) {            
+        if (is_array($this->data) && !empty($this->data)) {
             $this->buildBody(
                 $table->add(new Tag('tbody')),
                 $this->data,
@@ -128,7 +128,7 @@ class DataGrid extends Component
         $this->att('class', $this->getParameter('type'), true);
 
         $this->add('<div class="osy-datagrid-2-foot text-center">'.$this->buildPaging().'</div>');
-        
+
         $this->buildExtra($table);
     }
 
@@ -142,7 +142,7 @@ class DataGrid extends Component
     {
         $this->extra = $callableExtra;
     }
-    
+
     public function getToolbar()
     {
         if (!empty($this->toolbar)) {
@@ -151,7 +151,7 @@ class DataGrid extends Component
         $this->toolbar = $this->add(new Tag('div'))->att([
             'id' => $this->id.'_toolbar',
             'class' => 'osy-datagrid-2-toolbar row'
-        ]);  
+        ]);
         return $this->toolbar;
     }
 
@@ -167,7 +167,7 @@ class DataGrid extends Component
                  ->add($this->getParameter('record-add-label'));
         }
     }
-    
+
     private function buildBody($container, $data, $lev, $ico_arr = null)
     {
         if (!is_array($data)) {
@@ -198,17 +198,17 @@ class DataGrid extends Component
             $i++;
         }
     }
-    
+
     protected function formatOption($opt)
     {
         return $opt;
     }
-    
+
     private function buildHead($thead)
     {
         $tr = new Tag('tr');
         $cols = $this->getParameter('cols');
-        foreach ($cols as $k => $col) {            
+        foreach ($cols as $k => $col) {
             $opt = [
                 'alignment'=> '',
                 'class'    => $this->getColumnProperty($k, 'class'),
@@ -220,7 +220,7 @@ class DataGrid extends Component
                 'style'    => $this->getColumnProperty($k, 'style'),
                 'title'    => $col['name']
             ];
-            
+
             switch ($opt['title'][0]) {
                 case '_':
                     $opt['print'] = false;
@@ -245,9 +245,9 @@ class DataGrid extends Component
                         case '_rad'   :
                             $opt['title'] = '&nbsp;';
                             $opt['print'] = true;
-                            break;                        
+                            break;
                         case '_!html' :
-                            $opt['class'] .= ' text-center';                        
+                            $opt['class'] .= ' text-center';
                         case '_button':
                         case '_html'  :
                         case '_text'  :
@@ -270,12 +270,12 @@ class DataGrid extends Component
                     $opt['title'] = str_replace(array('$','?','#','!'),array('','','',''),$opt['title']);
                     break;
             }
-            
+
             $opt = $this->formatOption($opt);
-            
+
             if (!$opt['print']) {
                 continue;
-            }            
+            }
             $this->__par['cols_vis'] += 1;
             $cel = $tr->add(new Tag('th'))
                       ->att('real_name',$opt['realname'])
@@ -293,7 +293,7 @@ class DataGrid extends Component
                 $cel->att('class','osy-datagrid-asc');
                 $cel->add(' <span class="orderIcon glyphicon glyphicon-sort-by-alphabet"></span>');
                 continue;
-            } 
+            }
             if (strpos($_REQUEST[$this->id.'_order'],'['.($k+1).' DESC]') !== false) {
                 $cel->att('class','osy-datagrid-desc');
                 $cel->add(' <span class="orderIcon glyphicon glyphicon-sort-by-alphabet-alt"></span>');
@@ -353,7 +353,7 @@ class DataGrid extends Component
                 // gestire automaticamente su tutti gli elementi da esso derivati
                 /*'value'    => htmlentities($v)*/
                 'value'    => $v
-            );            
+            );
             switch ($opt['cell']['rawtitle'][0]) {
                 case '_':
                     @list($opt['cell']['format'], $opt['cell']['title'], $opt['cell']['parameter']) = explode(',',$opt['cell']['rawtitle']);
@@ -366,9 +366,9 @@ class DataGrid extends Component
                     $opt['cell']['class'][] = 'center';
                     break;
             }
-            
+
             $opt['cell'] = $this->formatOption($opt['cell']);
-            
+
             if (!empty($opt['cell']['format'])){
                 list($opt, $lev, $pos, $ico_arr) = $this->formatCellValue($opt, $lev, $pos, $ico_arr, $row);
                 //var_dump($opt['row']);
@@ -397,9 +397,9 @@ class DataGrid extends Component
             }
             if (!empty($this->__col[$i]) && is_array($this->__col[$i])){
                 $this->__build_attr($cel,$this->__col[$i]);
-            }            
+            }
             $cel->add(($opt['cell']['value'] !== '0' && empty($opt['cell']['value'])) ? '&nbsp;' : nl2br($opt['cell']['value']));
-            if (!empty($opt['cell']['attr']) && is_array($opt['cell']['attr'])) {                
+            if (!empty($opt['cell']['attr']) && is_array($opt['cell']['attr'])) {
                 $cel->att($opt['cell']['attr']);
             }
             $orw->add($cel);
@@ -412,19 +412,19 @@ class DataGrid extends Component
             foreach ($opt['row']['attr'] as $item){
                 $orw->att($item[0], $item[1], true);
             }
-        }        
-        $grd->add($orw.'');        
+        }
+        $grd->add($orw.'');
     }
-    
+
     protected function formatCellOption($opt, $lev, $pos, $ico_arr, $data)
     {
         return $opt;
     }
-    
+
     private function formatCellValue($opt, $lev, $pos, $ico_arr = null, $data = array())
     {
         $opt['cell']['print'] = false;
-        
+
         switch ($opt['cell']['format'])
         {
             case '_attr':
@@ -462,7 +462,7 @@ class DataGrid extends Component
                 $opt['cell']['print'] = true;
                 break;
             case '_chk':
-                $val = explode('#',$opt['cell']['rawvalue']);                
+                $val = explode('#',$opt['cell']['rawvalue']);
                 if ($val[0] === '0' || !empty($val[0])) {
                     $opt['cell']['value'] = "<input type=\"checkbox\" name=\"chk_{$this->id}[]\" value=\"{$val[0]}\"".(empty($val[1]) ? '' : ' checked').">";
                 }
@@ -477,8 +477,8 @@ class DataGrid extends Component
                 $opt['cell']['print'] = true;
                 break;
             case '_tree':
-                //Il primo elemento deve essere l'id dell'item il secondo l'id del gruppo di appartenenza                              
-                list($nodeId, $parentNodeId, $nodeState) = \array_pad(explode(',',$opt['cell']['rawvalue']),3,null);               
+                //Il primo elemento deve essere l'id dell'item il secondo l'id del gruppo di appartenenza
+                list($nodeId, $parentNodeId, $nodeState) = \array_pad(explode(',',$opt['cell']['rawvalue']),3,null);
                 $opt['row']['attr'][] = ['treeNodeId', $nodeId];
                 $opt['row']['attr'][] = ['treeParentNodeId', $parentNodeId];
                 $opt['row']['attr'][] = ['data-treedeep', $lev];
@@ -500,16 +500,16 @@ class DataGrid extends Component
                     $ico .= '<span class="tree '.$cls.'">&nbsp;</span>';
                 }
                 $ico .= '<span class="tree '.(array_key_exists($nodeId, $this->dataGroups) ? 'tree-plus-' : 'tree-con-').$pos.'">&nbsp;</span>';
-                $opt['row']['prefix'][] = $ico;                
+                $opt['row']['prefix'][] = $ico;
                 /*if (!empty($lev) && !isset($_REQUEST[$this->id.'_open'])) {
                     $opt['row']['class'][] = 'hide';
                 } else*/
                 if (!empty($lev) && strpos($this->request['nodeOpenIds'], '['.$parentNodeId.']') === false){
                     $opt['row']['class'][] = 'hide';
-                } elseif (strpos($this->request['nodeOpenIds'], '['.$nodeId.']') !== false) {                    
-                    $opt['row']['prefix'][0] = str_replace('tree-plus-','minus tree-plus-',$opt['row']['prefix'][0]);                
+                } elseif (strpos($this->request['nodeOpenIds'], '['.$nodeId.']') !== false) {
+                    $opt['row']['prefix'][0] = str_replace('tree-plus-','minus tree-plus-',$opt['row']['prefix'][0]);
                 }
-                break;           
+                break;
             case '_!html':
                 $opt['cell']['class'][] = 'text-center';
             case '_html' :
@@ -549,7 +549,7 @@ class DataGrid extends Component
                 $opt['cell']['print'] = true;
                 break;
         }
-        
+
         return array(
             $this->formatCellOption($opt, $lev, $pos, $ico_arr, $data),
             $lev,
@@ -560,9 +560,9 @@ class DataGrid extends Component
 
     private function buildPaging()
     {
-        if (empty($this->__par['row-num']) || empty($this->__par['pag_tot'])) {            
+        if (empty($this->__par['row-num']) || empty($this->__par['pag_tot'])) {
             return '';
-        }        
+        }
         $foot = '<button type="button" name="btn_pag" data-mov="start" value="&lt;&lt;" class="btn btn-primary btn-xs osy-datagrid-2-paging">&lt;&lt;</button>';
         $foot .= '<button type="button" name="btn_pag" data-mov="-1" value="&lt;" class="btn btn-primary btn-xs  osy-datagrid-2-paging">&lt;</button>';
         $foot .= '<span>&nbsp;';
@@ -570,7 +570,7 @@ class DataGrid extends Component
         $foot .= 'Pagina '.$this->getParameter('pag_cur').' di <span id="_pag_tot">'.$this->getParameter('pag_tot').'</span>';
         $foot .= '&nbsp;</span>';
         $foot .= '<button type="button" name="btn_pag" data-mov="+1" value="&gt;" class="btn btn-primary btn-xs  osy-datagrid-2-paging">&gt;</button>';
-        $foot .= '<button type="button" name="btn_pag" data-mov="end" value="&gt;&gt;" class="btn btn-primary btn-xs  osy-datagrid-2-paging">&gt;&gt;</button>';        
+        $foot .= '<button type="button" name="btn_pag" data-mov="end" value="&gt;&gt;" class="btn btn-primary btn-xs  osy-datagrid-2-paging">&gt;&gt;</button>';
         return $foot;
     }
 
@@ -648,24 +648,18 @@ class DataGrid extends Component
                 }
                 break;
         }
-        //Eseguo la query        
+        //Eseguo la query
         try {
-            $this->setData(
-                $this->db->execQuery(
-                    $sql, 
-                    $this->getParameter('datasource-sql-par'),
-                    'ASSOC'
-                )
-            );
+            $this->setData($this->db->execAssoc($sql, $this->getParameter('datasource-sql-par')));
         } catch (\Exception $e) {
             die($sql.$e->getMessage());
         }
         //Salvo le colonne in un option
-        $this->setParameter('cols', $this->db->getColumns());       
+        $this->setParameter('cols', $this->db->getColumns());
         $this->setParameter('cols_vis', 0);
         if (is_array($this->getParameter('cols'))) {
             $this->setParameter('cols_tot', count($this->getParameter('cols')));
-        }        
+        }
     }
 
     private function dataGroup()
@@ -677,9 +671,9 @@ class DataGrid extends Component
             if (!empty($groupId)) {
                 $this->dataGroups[$groupId][] = $value;
                 continue;
-            } 
+            }
             $data[] = $value;
-        }       
+        }
         $this->data = $data;
     }
 
@@ -725,15 +719,15 @@ class DataGrid extends Component
         $this->setParameter('datasource-sql', $sql);
         $this->setParameter('datasource-sql-par', $par);
     }
-    
+
     public function setDefaultOrderBy($column)
     {
         if (!isset($_REQUEST[$this->id.'_order'])) {
             $_REQUEST[$this->id.'_order'] = $column;
-        }        
+        }
         return $this;
     }
-    
+
     public function setFuncionRow($function)
     {
         $this->functionRow = $function;

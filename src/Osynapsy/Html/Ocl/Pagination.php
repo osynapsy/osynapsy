@@ -30,7 +30,7 @@ class Pagination extends Component
     protected $fields = array();
     private $loaded = false;
     protected $par;
-    protected $sql;  
+    protected $sql;
     protected $orderBy = null;
     protected $parentComponent;
     protected $position = 'center';
@@ -40,24 +40,24 @@ class Pagination extends Component
         'pageTotal' => 1,
         'pageCurrent' => 1,
         'rowsTotal' => 0
-    ); 
+    );
     protected $pageDimensions = [
         1 => ['10', '10 righe'],
         2 => ['20', '20 righe'],
         5 => ['50', '50 righe'],
         10 => ['100', '100 righe'],
         20 => ['200', '200 righe']
-    ];       
+    ];
     /**
      * Costructor of pager component.
-     * 
+     *
      * @param type $id Identify of component
      * @param type $dim Page dimension in number of row
      * @param type $tag Tag of container
      * @param type $infiniteContainer Enable infinite scroll?
      */
     public function __construct($id, $pageDimension = 10, $tag = 'div', $infiniteContainer = false)
-    {        
+    {
         parent::__construct($tag, $id);
         if (!empty($infiniteContainer)) {
             $this->setInfiniteScroll($infiniteContainer);
@@ -70,7 +70,7 @@ class Pagination extends Component
         $this->setPageDimension($pageDimension);
         $this->setOrder(filter_input(\INPUT_POST, $this->id.'OrderBy'));
     }
-    
+
     public function __build_extra__()
     {
         if (!$this->loaded) {
@@ -83,7 +83,7 @@ class Pagination extends Component
         foreach($this->fields as $field) {
             $this->add(new HiddenBox($field, $field.'_hidden'));
         }
-        $ul = $this->add(new Tag('ul', null, 'pagination justify-content-'.$this->position));        
+        $ul = $this->add(new Tag('ul', null, 'pagination justify-content-'.$this->position));
         $liFirst = $ul->add(new Tag('li', null, 'page-item'));
         if ($this->statistics['pageCurrent'] < 2) {
             $liFirst->att('class','disabled');
@@ -116,17 +116,17 @@ class Pagination extends Component
                ->att('data-value','last')
                ->add('&raquo;');
     }
-    
+
     public function addField($field)
     {
         $this->fields[] = $field;
     }
-    
+
     public function addFilter($field, $value = null)
     {
         $this->filters[$field] = $value;
     }
-    
+
     private function buildMySqlQuery($where)
     {
         $sql = "SELECT a.* FROM ({$this->sql}) a {$where} ";
@@ -140,11 +140,11 @@ class Pagination extends Component
         }
         $startFrom = ($this->statistics['pageCurrent'] - 1) * $this->statistics['pageDimension'];
         $startFrom = max(0, $startFrom);
-        
+
         $sql .= "\nLIMIT ".$startFrom." , ".$this->statistics['pageDimension'];
         return $sql;
     }
-    
+
     private function buildPgSqlQuery($where)
     {
         $sql = "SELECT a.* FROM ({$this->sql}) a {$where} ";
@@ -158,10 +158,10 @@ class Pagination extends Component
         }
         $startFrom = ($this->statistics['pageCurrent'] - 1) * $this->statistics['pageDimension'];
         $startFrom = max(0, $startFrom);
-        $sql .= "\nLIMIT ".$this->statistics['pageDimension']." OFFSET ".$startFrom;              
+        $sql .= "\nLIMIT ".$this->statistics['pageDimension']." OFFSET ".$startFrom;
         return $sql;
     }
-    
+
     private function buildOracleQuery($where)
     {
         $sql = "SELECT a.*
@@ -182,7 +182,7 @@ class Pagination extends Component
         $sql .=  "WHERE \"_rnum\" BETWEEN $startFrom AND $endTo";
         return $sql;
     }
-    
+
     private function buildFilter()
     {
         if (empty($this->filters)) {
@@ -198,12 +198,12 @@ class Pagination extends Component
             $filter[] = "$field = ".($this->db->getType() == 'oracle' ? ':'.$i : '?');
             $this->par[] = $value;
             $i++;
-        }       
-        return " WHERE " .implode(' AND ',$filter);        
+        }
+        return " WHERE " .implode(' AND ',$filter);
     }
 
     private function calcPage($requestPage)
-    {                
+    {
         $this->statistics['pageCurrent'] = max(1,(int) $requestPage);
         if ($this->statistics['rowsTotal'] == 0 || empty($this->statistics['pageDimension'])) {
             return;
@@ -235,7 +235,7 @@ class Pagination extends Component
                 break;
         }
     }
-    
+
     public function getPageDimensionsCombo()
     {
         $Combo = new ComboBox($this->id.(strpos($this->id, '_') ? '_page_dimension' : 'PageDimension'));
@@ -245,7 +245,7 @@ class Pagination extends Component
               ->setArray($this->pageDimensions);
         return $Combo;
     }
-    
+
     public function getInfo()
     {
         $end = min($this->getStatistic('pageCurrent') * $this->getStatistic('pageDimension'), $this->getStatistic('rowsTotal'));
@@ -255,30 +255,30 @@ class Pagination extends Component
         $info .= ' a ';
         $info .= $end;
         $info .= ' di ';
-        $info .= $this->getStatistic('rowsTotal'); 
+        $info .= $this->getStatistic('rowsTotal');
         $info .= ' ';
         $info .= $this->entity;
-        
+
         return $info;
     }
-    
+
     public function getOrderBy()
     {
         return $this->orderBy;
     }
-    
+
     public function getTotal($key)
     {
         return $this->getStatistic('total'.ucfirst($key));
     }
-    
+
     public function getStatistic($key = null)
     {
         return array_key_exists($key, $this->statistics) ? $this->statistics[$key] : null;
     }
-    
+
     public function loadData($requestPage = null)
-    {        
+    {
         if (empty($this->sql)) {
             return array();
         }
@@ -286,19 +286,19 @@ class Pagination extends Component
             $requestPage = filter_input(\INPUT_POST, $this->id);
         }
         $where = $this->buildFilter();
-      
+
         $count = "SELECT COUNT(*) FROM (\n{$this->sql}\n) a " . $where;
-          
-        try {                     
+
+        try {
             $this->statistics['rowsTotal'] = $this->db->execUnique($count, $this->par);
             $this->att('data-total-rows', $this->statistics['rowsTotal']);
         } catch(\Exception $e) {
             echo $this->errors[] = '<pre>'.$count."\n".$e->getMessage().'</pre>';
             return array();
         }
-        
+
         $this->calcPage($requestPage);
-        
+
         switch ($this->db->getType()) {
             case 'oracle':
                 $sql = $this->buildOracleQuery($where);
@@ -310,9 +310,9 @@ class Pagination extends Component
                 $sql = $this->buildMySqlQuery($where);
                 break;
         }
-        //Eseguo la query        
+        //Eseguo la query
         try {
-            $this->data = $this->db->execQuery($sql, $this->par, 'ASSOC');
+            $this->data = $this->db->execAssoc($sql, $this->par);
         } catch (\Exception $e) {
             die($sql.$e->getMessage());
         }
@@ -321,7 +321,7 @@ class Pagination extends Component
         $this->columns = $this->db->getColumns();
         return empty($this->data) ? array() : $this->data;
     }
-    
+
     public function setInfiniteScroll($container)
     {
         $this->requireJs('Lib/imagesLoaded-4.1.1/imagesloaded.js');
@@ -332,7 +332,7 @@ class Pagination extends Component
         }
         return $this->att('data-container',$container);
     }
-    
+
     public function setOrder($field)
     {
         if (empty($this->orderBy)) {
@@ -340,7 +340,7 @@ class Pagination extends Component
         }
         return $this;
     }
-    
+
     public function setPageDimension($pageDimension)
     {
         if (!empty($_REQUEST[$this->id.'PageDimension'])) {
@@ -358,19 +358,19 @@ class Pagination extends Component
             $this->pageDimensions[$key] = [$dimension, "{$dimension} righe"];
         }
     }
-    
+
     public function setParentComponent($componentId)
     {
         $this->parentComponent = $componentId;
         $this->att('data-parent', $componentId);
         return $this;
     }
-    
+
     public function setPosition($position)
     {
         $this->position = $position;
     }
-    
+
     public function setSql($db, $cmd, array $par = array())
     {
         $this->db = $db;
@@ -378,7 +378,7 @@ class Pagination extends Component
         $this->par = $par;
         return $this;
     }
-                   
+
     public function getStatistics()
     {
         return $this->page;

@@ -41,13 +41,7 @@ class Autocomplete extends Component
             return;
         }
         if (!empty($this->query['search']['sql'])) {
-            $this->setData(
-                $this->db->execQuery(
-                    $this->query['search']['sql'],
-                    $this->query['search']['parameters'],
-                    'NUM'
-                )
-            );
+            $this->setData($this->db->exec($this->query['search']['sql'], $this->query['search']['parameters']));
         }
         $this->addValueList();
     }
