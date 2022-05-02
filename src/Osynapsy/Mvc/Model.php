@@ -303,7 +303,7 @@ abstract class Model implements InterfaceModel
     protected function validateUniqueValue(ModelField $field, $value)
     {
         $sql = sprintf("SELECT COUNT(*) FROM %s WHERE %s = ?", $this->table, $field->name);
-        $nOccurence = $this->getDb()->execUnique($sql, [$value]);
+        $nOccurence = $this->getDb()->execOne($sql, [$value]);
         if (!empty($nOccurence)) {
             $this->addFieldError('unique', $field);
         }
