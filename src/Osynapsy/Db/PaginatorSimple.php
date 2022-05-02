@@ -81,7 +81,7 @@ class PaginatorSimple
     protected function loadData($sql, $parameters, $requestPage, $pageSize)
     {
         $count = $this->buildSqlCountFactory($sql);
-        $this->meta['rowsTotal'] = $this->getDb()->execUnique($count, $parameters);
+        $this->meta['rowsTotal'] = $this->getDb()->execOne($count, $parameters);
         $this->calcPage($requestPage);
         $sqlNoPaginated = $this->buildSqlQuery($sql, $this->sort);
         switch ($this->getDb()->getType()) {
