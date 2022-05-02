@@ -27,6 +27,7 @@ class DbPdo extends \PDO implements InterfaceDbo
     const FETCH_NUM = 'NUM';
     const FETCH_ASSOC = 'ASSOC';
     const FETCH_BOTH = 'BOTH';
+    const FETCH_KEY_PAIR = 'KEY_PAIR';
 
     private $cursor = null;
     private $connectionStringDecoder = [
@@ -172,7 +173,8 @@ class DbPdo extends \PDO implements InterfaceDbo
             case self::FETCH_ASSOC:
                 $pdoFetchMethod = \PDO::FETCH_ASSOC;
                 break;
-            case 'KEY_PAIR':
+            case self::FETCH_KEY_PAIR:
+            case \PDO::FETCH_KEY_PAIR:
                 $pdoFetchMethod = \PDO::FETCH_KEY_PAIR;
                 break;
             default :
