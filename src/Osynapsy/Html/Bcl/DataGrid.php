@@ -344,7 +344,7 @@ class DataGrid extends Component
      * @param array $sqlParameters Parameters of sql query
      * @param integer $pageDimension Page dimension (in row)
      */
-    public function setPagination($db, $sqlQuery, $sqlParameters, $pageDimension = 10, $showPageDimension = true, $showPageInfo = true, $showExecutionTime = true)
+    public function setPagination($db, $sqlQuery, $sqlParameters, $pageDimension = 10, $showPageDimension = true, $showPageInfo = true, $showExecutionTime = false)
     {
         $paginationId = $this->id.(strpos($this->id, '_') ? '_pagination' : 'Pagination');
         $this->pagination = new Pagination($paginationId, empty($pageDimension) ? 10 : $pageDimension);
