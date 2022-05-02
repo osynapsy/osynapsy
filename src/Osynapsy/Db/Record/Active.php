@@ -498,9 +498,7 @@ abstract class Active implements InterfaceRecord
         $firstKey = key(
             $this->keys
         );
-        $sequenceValue = $this->getDb()->execUnique(
-            "SELECT {$this->sequence}.nextval FROM dual"
-        );
+        $sequenceValue = $this->getDb()->execOne("SELECT {$this->sequence}.nextval FROM dual");
         if (!empty($sequenceValue) && !empty($firstKey)) {
             $this->activeRecord[$firstKey] = $sequenceValue;
         }
