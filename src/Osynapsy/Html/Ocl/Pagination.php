@@ -290,7 +290,7 @@ class Pagination extends Component
         $count = "SELECT COUNT(*) FROM (\n{$this->sql}\n) a " . $where;
 
         try {
-            $this->statistics['rowsTotal'] = $this->db->execUnique($count, $this->par);
+            $this->statistics['rowsTotal'] = $this->db->execOne($count, $this->par);
             $this->att('data-total-rows', $this->statistics['rowsTotal']);
         } catch(\Exception $e) {
             echo $this->errors[] = '<pre>'.$count."\n".$e->getMessage().'</pre>';

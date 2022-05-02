@@ -18,7 +18,7 @@ class LabelBox extends Component
 {
     protected $hiddenBox;
     protected $label;
-    
+
     public function __construct($id, $label='')
     {
         $this->requireCss('Bcl/LabelBox/style.css');
@@ -27,7 +27,7 @@ class LabelBox extends Component
         $this->hiddenBox = $this->add(new HiddenBox($id));
         $this->add($label);
     }
-    
+
     public function setValue($value, $force = false)
     {
         if (!$force && !empty($_REQUEST[$this->hiddenBox->id])) {
@@ -36,18 +36,18 @@ class LabelBox extends Component
         $_REQUEST[$this->hiddenBox->id] = $value;
         return $this;
     }
-    
+
     public function setLabelFromSQL($db, $sql, $par=array())
     {
-        $this->label = $db->execUnique($sql, $par);
+        $this->label = $db->execOne($sql, $par);
     }
-    
+
     public function setLabel($label)
     {
         $this->label = $label;
         return $this;
     }
-    
+
     public function __build_extra__()
     {
         if (is_null($this->label)) {

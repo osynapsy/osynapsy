@@ -49,10 +49,9 @@ class Autocomplete extends Component
     private function addInput()
     {
         if (!empty($this->query['decode']['sql'])) {
-            $_REQUEST[$this->id] = $this->db->execUnique(
+            $_REQUEST[$this->id] = $this->db->execOne(
                 $this->query['decode']['sql'],
-                $this->query['decode']['parameters'],
-                'NUM'
+                $this->query['decode']['parameters']
             );
         }
         $this->add($this->buildAutocomplete())
