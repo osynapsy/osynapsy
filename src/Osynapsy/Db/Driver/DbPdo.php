@@ -11,6 +11,8 @@
 
 namespace Osynapsy\Db\Driver;
 
+use Osynapsy\Db\Sql\Select;
+
 /**
  * Pdo wrap class
  *
@@ -24,11 +26,6 @@ namespace Osynapsy\Db\Driver;
  */
 class DbPdo extends \PDO implements InterfaceDbo
 {
-    const FETCH_NUM = 'NUM';
-    const FETCH_ASSOC = 'ASSOC';
-    const FETCH_BOTH = 'BOTH';
-    const FETCH_KEY_PAIR = 'KEY_PAIR';
-
     private $cursor = null;
     private $connectionStringDecoder = [
         'sqlite' => ['type','db'],
@@ -139,64 +136,54 @@ class DbPdo extends \PDO implements InterfaceDbo
         return;
     }
 
-    public function exec($sql, array $parameters = [])
+    public function find($sql, array $parameters = [])
     {
-        return $this->execQuery($sql, $parameters, self::FETCH_NUM);
+        return $this->execQuery($sql, $parameters, \PDO::FETCH_NUM);
     }
 
-    public function execAssoc($sql, array $parameters = [])
+    public function findAssoc($sql, array $parameters = [])
     {
-        return $this->execQuery($sql, $parameters, self::FETCH_ASSOC);
+        return $this->execQuery($sql, $parameters, \PDO::FETCH_ASSOC);
     }
 
-    public function execOne($sql, array $parameters = [])
+    public function findOne($sql, array $parameters = [])
     {
-        return $this->execUnique($sql, $parameters, self::FETCH_NUM);
+        return $this->execUnique($sql, $parameters, \PDO::FETCH_NUM);
     }
 
-    public function execOneAssoc($sql, array $parameters = [])
+    public function findOneAssoc($sql, array $parameters = [])
     {
-        return $this->execUnique($sql, $parameters, self::FETCH_ASSOC);
+        return $this->execUnique($sql, $parameters, \PDO::FETCH_ASSOC);
     }
 
-    public function execQuery($sql, $parameters = null, $fetchMethod = null, $fetchColumnIdx = null)
+    public function findColumn($sql, array $parameters = [], $columnIdx = 0)
+    {
+        return $this->execQuery($sql, $parameters, \PDO::FETCH_COLUMN, $columnIdx);
+    }
+
+    public function execKeyPair($sql, array $parameters = [])
+    {
+        return $this->execQuery($sql, $parameters, \PDO::FETCH_KEY_PAIR);
+    }
+
+    protected function execQuery($sql, $parameters = null, $pdoFetchMethod = null, $fetchColumnIdx = null)
     {
         $this->cursor = $this->prepare($sql);
         $this->cursor->execute($parameters);
         if (!is_null($fetchColumnIdx)) {
-            return $this->cursor->fetchAll(\PDO::FETCH_COLUMN, $fetchColumnIdx);
-        }
-        switch ($fetchMethod) {
-            case self::FETCH_NUM:
-                $pdoFetchMethod = \PDO::FETCH_NUM;
-                break;
-            case self::FETCH_ASSOC:
-                $pdoFetchMethod = \PDO::FETCH_ASSOC;
-                break;
-            case self::FETCH_KEY_PAIR:
-            case \PDO::FETCH_KEY_PAIR:
-                $pdoFetchMethod = \PDO::FETCH_KEY_PAIR;
-                break;
-            default :
-                $pdoFetchMethod = \PDO::FETCH_BOTH;
-                break;
+            return $this->cursor->fetchAll(\PDO::FETCH_COLUMN, $pdoFetchMethod);
         }
         return $this->cursor->fetchAll($pdoFetchMethod);
     }
 
-    public function execUnique($sql, $parameters = null, $fetchMethod = self::FETCH_NUM)
+    protected function execUnique($sql, $parameters = null, $fetchMethod = self::FETCH_NUM)
     {
         $raw = $this->execQuery($sql, $parameters, $fetchMethod);
         if (empty($raw)) {
             return null;
         }
         $one = array_shift($raw);
-        return count($one) == 1 ? array_values($one)[0] : $one;
-    }
-
-    public function fetch_all($rs)
-    {
-        return $rs->fetchAll(\PDO::FETCH_ASSOC);
+        return is_array($one) && count($one) == 1 ? array_values($one)[0] : $one;
     }
 
     public function getColumns($stmt = null)
@@ -307,13 +294,13 @@ class DbPdo extends \PDO implements InterfaceDbo
         return $this->insert($table, array_merge($args, $conditions));
     }
 
-    public function select($table, array $conditions, array $fields = ['*'], array $orderBy = [], $fetchMethod = 'ASSOC')
+    public function select($table, array $conditions, array $fields = ['*'], array $orderBy = [], int $fetchMethod = \PDO::FETCH_ASSOC)
     {
         list($sql, $params) = $this->selectBuild($table, $fields, $conditions, $orderBy);
         return $this->execQuery($sql, $params, $fetchMethod);
     }
 
-    public function selectOne($table, array $conditions, array $fields = ['*'], $fetchMethod = 'ASSOC')
+    public function selectOne($table, array $conditions, array $fields = ['*'], int $fetchMethod = \PDO::FETCH_ASSOC)
     {
         list($sql, $params) = $this->selectBuild($table, $fields, $conditions, []);
         return $this->execUnique($sql, $params, $fetchMethod);
@@ -342,6 +329,13 @@ class DbPdo extends \PDO implements InterfaceDbo
             $sql[] = 'ORDER BY '.implode(' ', $orderBy);
         }
         return [implode(PHP_EOL, $sql), $params];
+    }
+
+    public function selectFactory(array $fields = []) : Select
+    {
+        $Select = new Select($fields);
+        $Select->setDb($this);
+        return $Select;
     }
 
     public function cast($field,$type)
