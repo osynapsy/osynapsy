@@ -161,7 +161,7 @@ class DbPdo extends \PDO implements InterfaceDbo
         return $this->execQuery($sql, $parameters, \PDO::FETCH_COLUMN, $columnIdx);
     }
 
-    public function execKeyPair($sql, array $parameters = [])
+    public function findKeyPair($sql, array $parameters = [])
     {
         return $this->execQuery($sql, $parameters, \PDO::FETCH_KEY_PAIR);
     }

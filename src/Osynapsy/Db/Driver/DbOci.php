@@ -285,7 +285,10 @@ class DbOci implements InterfaceDbo
 
     public function findColumn($sql, array $parameters = [], $columnIdx = 0)
     {
+    }
 
+    public function findKeyPair($sql, array $parameters = [])
+    {
     }
 
     public function insert($table, array $values, $keys = array())

@@ -48,6 +48,8 @@ interface InterfaceDbo
 
     public function findColumn($sql, array $parameters = [], $columnIdx = 0);
 
+    public function findKeyPair($sql, array $parameters = []);
+
     public function getColumns();
 
     public function getType();
