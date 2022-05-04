@@ -256,15 +256,6 @@ class Tag
      */
     public function __toString()
     {
-        try {
-            return $this->get();
-        } catch (\Exception $e) {
-            //var_dump($str);
-            trigger_error($e->getMessage());
-            echo '<pre>';
-            var_dump(debug_backtrace(10));
-            echo '</pre>';
-            return $this->id;
-        }
+        return $this->get();
     }
 }
