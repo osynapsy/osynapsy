@@ -164,25 +164,7 @@ class DbOci implements InterfaceDbo
     protected function execQuery($sql, $parameters, $fetchMethod)
     {
         $this->cursor = $this->execCommand($sql, $parameters);
-        switch ($fetchMethod) {
-            case 'BOTH':
-                $fetchMethod = OCI_BOTH;
-                break;
-            case 'NUM':
-                $fetchMethod = OCI_NUM;
-                break;
-            default:
-                $fetchMethod = OCI_ASSOC;
-                break;
-        }
-        oci_fetch_all(
-            $this->cursor,
-            $result,
-            null,
-            null,
-            OCI_FETCHSTATEMENT_BY_ROW | OCI_RETURN_NULLS | OCI_RETURN_LOBS | $fetchMethod
-        );
-        //oci_free_statement($cur);
+        oci_fetch_all($this->cursor, $result, null, null, OCI_FETCHSTATEMENT_BY_ROW | OCI_RETURN_NULLS | OCI_RETURN_LOBS | $fetchMethod);
         return $result;
     }
 
