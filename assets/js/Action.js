@@ -5,7 +5,7 @@ Osynapsy.action =
     execute : function(object)
     {
         let form = object.closest('form');
-        let action = object.dataset.action;
+        let action = object.hasAttribute('data-action') ? object.dataset.action : null;
         if (Osynapsy.isEmpty(action)) {
             alert('Attribute data-action don\'t set.');
             return;
