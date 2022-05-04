@@ -290,7 +290,7 @@ class Pagination extends Component
         $count = "SELECT COUNT(*) FROM (\n{$this->sql}\n) a " . $where;
 
         try {
-            $this->statistics['rowsTotal'] = $this->db->execOne($count, $this->par);
+            $this->statistics['rowsTotal'] = $this->db->findOne($count, $this->par);
             $this->att('data-total-rows', $this->statistics['rowsTotal']);
         } catch(\Exception $e) {
             echo $this->errors[] = '<pre>'.$count."\n".$e->getMessage().'</pre>';
@@ -312,7 +312,7 @@ class Pagination extends Component
         }
         //Eseguo la query
         try {
-            $this->data = $this->db->execAssoc($sql, $this->par);
+            $this->data = $this->db->findAssoc($sql, $this->par);
         } catch (\Exception $e) {
             die($sql.$e->getMessage());
         }

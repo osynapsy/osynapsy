@@ -173,7 +173,7 @@ class ListSortable extends Component
 
     public function setSql($db, $sql, $par = array())
     {
-        $rs =  $db->execAssoc($sql, $par);
+        $rs =  $db->findAssoc($sql, $par);
 		$this->setParameter('num_row',count($rs));
 
         foreach($rs as $rec) {

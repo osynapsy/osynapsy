@@ -582,7 +582,7 @@ class DataGrid extends Component
         }
         try {
             $sql_cnt = "SELECT COUNT(*) FROM (\n{$sql}\n) a ";
-            $this->__par['rec_num'] = $this->db->execOne($sql_cnt,$this->getParameter('datasource-sql-par'));
+            $this->__par['rec_num'] = $this->db->findOne($sql_cnt,$this->getParameter('datasource-sql-par'));
             $this->att('data-row-num',$this->__par['rec_num']);
         } catch(\Exception $e) {
             $this->setParameter('error-in-sql','<pre>'.$sql_cnt."\n".$e->getMessage().'</pre>');
@@ -650,7 +650,7 @@ class DataGrid extends Component
         }
         //Eseguo la query
         try {
-            $this->setData($this->db->execAssoc($sql, $this->getParameter('datasource-sql-par')));
+            $this->setData($this->db->findAssoc($sql, $this->getParameter('datasource-sql-par')));
         } catch (\Exception $e) {
             die($sql.$e->getMessage());
         }
