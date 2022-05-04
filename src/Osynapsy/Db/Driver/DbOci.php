@@ -11,6 +11,8 @@
 
 namespace Osynapsy\Db\Driver;
 
+use Osynapsy\Db\Sql\Select;
+
 /**
  * Oci wrap class
  *
@@ -159,9 +161,9 @@ class DbOci implements InterfaceDbo
         return $par;
     }
 
-    public function execQuery($sql, $par = null, $fetchMethod = null)
+    protected function execQuery($sql, $parameters, $fetchMethod)
     {
-        $this->cursor = $this->execCommand($sql, $par);
+        $this->cursor = $this->execCommand($sql, $parameters);
         switch ($fetchMethod) {
             case 'BOTH':
                 $fetchMethod = OCI_BOTH;
@@ -233,9 +235,9 @@ class DbOci implements InterfaceDbo
         return $result;
     }
 
-    public function execUnique($sql, $par = null, $mth = 'NUM')
+    protected function execUnique($sql, $parameters = null, int $fetchMethod = OCI_NUM)
     {
-       $res = $this->execQuery($sql, $par, $mth);
+       $res = $this->execQuery($sql, $parameters, $fetchMethod);
        if (empty($res)) {
            return null;
        }
@@ -263,22 +265,27 @@ class DbOci implements InterfaceDbo
 
     public function exec($sql, array $parameters = [])
     {
-        return $this->execQuery($sql, $parameters, self::FETCH_NUM);
+        return $this->execQuery($sql, $parameters, OCI_NUM);
     }
 
-    public function execAssoc($sql, array $parameters = [])
+    public function findAssoc($sql, array $parameters = [])
     {
-        return $this->execQuery($sql, $parameters, self::FETCH_ASSOC);
+        return $this->execQuery($sql, $parameters, OCI_ASSOC);
     }
 
-    public function execOne($sql, array $parameters = [])
+    public function findOne($sql, array $parameters = [])
     {
-        return $this->execUnique($sql, $parameters, self::FETCH_NUM);
+        return $this->execUnique($sql, $parameters, OCI_NUM);
     }
 
-    public function execOneAssoc($sql, array $parameters = [])
+    public function findOneAssoc($sql, array $parameters = [])
     {
-        return $this->execUnique($sql, $parameters, self::FETCH_ASSOC);
+        return $this->execUnique($sql, $parameters, OCI_ASSOC);
+    }
+
+    public function findColumn($sql, array $parameters = [], $columnIdx = 0)
+    {
+
     }
 
     public function insert($table, array $values, $keys = array())
@@ -364,6 +371,13 @@ class DbOci implements InterfaceDbo
         $cmd .= ' WHERE ';
         $cmd .= implode(' AND ',$where);
         return $this->execQuery($cmd, $values, 'ASSOC');
+    }
+
+    public function selectFactory(array $fields = [])
+    {
+        $Select = new Select($fields);
+        $Select->setDb($this);
+        return $Select;
     }
 
     public function par($p)

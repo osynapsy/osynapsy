@@ -11,6 +11,8 @@
 
 namespace Osynapsy\Db\Sql;
 
+use Osynapsy\Db\Driver\InterfaceDbo;
+
 /**
  * Description of SqlQuery
  *
@@ -258,5 +260,15 @@ class Select
     private function getMaster()
     {
         return $this->parent;
+    }
+
+    public function setDb(InterfaceDbo $db)
+    {
+        $this->db = $db;
+    }
+
+    public function exec()
+    {
+        return $this->db->findAssoc($this->__toString(), $this->getParameters());
     }
 }

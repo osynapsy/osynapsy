@@ -101,7 +101,7 @@ class Paginator
         }
         $where = empty($this->filters) ? '' : $this->buildFilter();
         $count = sprintf("SELECT COUNT(*) FROM (%s) a %s",$this->sql, $where);
-        $this->meta['rowsTotal'] = $this->getDb()->execOne($count, $this->par);
+        $this->meta['rowsTotal'] = $this->getDb()->findOne($count, $this->par);
         $this->calcPage($requestPage);
         switch ($this->getDb()->getType()) {
             case 'oracle':
@@ -114,7 +114,7 @@ class Paginator
                 $sql = $this->buildMySqlQuery($where);
                 break;
         }
-        $this->data = $this->getDb()->execAssoc($sql, $this->par);
+        $this->data = $this->getDb()->findAssoc($sql, $this->par);
         $this->columns = $this->getDb()->getColumns();
         return empty($this->data) ? [] : $this->data;
     }
@@ -250,7 +250,7 @@ class Paginator
 
     private function loadChild($sql, $parameters, $foreignKeys, $fieldName)
     {
-        $rs = $this->getDb()->execAssoc($sql, $parameters);
+        $rs = $this->getDb()->findAssoc($sql, $parameters);
         foreach ($this->data as $key => $parentRecord) {
             foreach($rs as $childRecord) {
                 if (empty($parentRecord[$fieldName])) {

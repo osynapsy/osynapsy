@@ -81,7 +81,7 @@ class PaginatorSimple
     protected function loadData($sql, $parameters, $requestPage, $pageSize)
     {
         $count = $this->buildSqlCountFactory($sql);
-        $this->meta['rowsTotal'] = $this->getDb()->execOne($count, $parameters);
+        $this->meta['rowsTotal'] = $this->getDb()->findOne($count, $parameters);
         $this->calcPage($requestPage);
         $sqlNoPaginated = $this->buildSqlQuery($sql, $this->sort);
         switch ($this->getDb()->getType()) {
@@ -95,13 +95,13 @@ class PaginatorSimple
                 $sqlPaginated = $this->buildMySqlQuery($sqlNoPaginated);
                 break;
         }
-        $data = $this->getDb()->execAssoc($sqlPaginated, $parameters);
+        $data = $this->getDb()->findAssoc($sqlPaginated, $parameters);
         return is_array($data) ? $data : [];
     }
 
     protected function buildSqlCountFactory($sql)
     {
-        $select = 'SELECT';
+        $select = 'SELECTX';
         $startWithSelect = (substr(trim(strtoupper($sql)), 0, strlen($select)) === $select);
         $groupByIsPresent = strpos(strtoupper($sql), 'GROUP BY');
         if ($startWithSelect === false || $groupByIsPresent) {

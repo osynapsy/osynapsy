@@ -96,7 +96,7 @@ abstract class Active implements InterfaceRecord
             echo $sql;
         }
         try {
-            $this->activeRecord = $this->getDb()->execOneAssoc($sql, $parameters);
+            $this->activeRecord = $this->getDb()->findOneAssoc($sql, $parameters);
         } catch (\Exception $e) {
             throw new \Exception('Query error : '.$sql."\n".$e->getMessage(), 100);
         }
@@ -498,7 +498,7 @@ abstract class Active implements InterfaceRecord
         $firstKey = key(
             $this->keys
         );
-        $sequenceValue = $this->getDb()->execOne("SELECT {$this->sequence}.nextval FROM dual");
+        $sequenceValue = $this->getDb()->findOne("SELECT {$this->sequence}.nextval FROM dual");
         if (!empty($sequenceValue) && !empty($firstKey)) {
             $this->activeRecord[$firstKey] = $sequenceValue;
         }

@@ -11,9 +11,7 @@
 
 namespace Osynapsy\Db\Driver;
 
-define('Osynapsy\Core\Driver\DBPDO_NUM', 1);
-define('Osynapsy\Core\Driver\DBPDO_ASSOC', 2);
-define('Osynapsy\Core\Driver\DBPDO_BOTH', 3);
+use Osynapsy\Db\Sql\Select;
 
 /**
  * Interface for Db class driver
@@ -40,17 +38,15 @@ interface InterfaceDbo
 
     public function execMulti($command, $parameterList);
 
-    public function execQuery($query, $parameters = null, $fetchMethod = null);
+    public function find($query, array $parameters = []);
 
-    public function execUnique($query, $parameters = null, $fetchMethod = 'NUM');
+    public function findAssoc($query, array $parameters = []);
 
-    public function exec($query, array $parameters = []);
+    public function findOne($query, array $parameters = []);
 
-    public function execAssoc($query, array $parameters = []);
+    public function findOneAssoc($query, array $parameters = []);
 
-    public function execOne($query, array $parameters = []);
-
-    public function execOneAssoc($query, array $parameters = []);
+    public function findColumn($sql, array $parameters = [], $columnIdx = 0);
 
     public function getColumns();
 
@@ -61,6 +57,8 @@ interface InterfaceDbo
     public function replace($table, array $values, array $conditions);
 
     public function rollback();
+
+    public function selectFactory(array $fields) : Select;
 
     public function update($table, array $values, array $conditions);
 }

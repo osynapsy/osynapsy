@@ -79,7 +79,7 @@ abstract class Eav
         try {
             $sql = "SELECT * FROM {$this->table} WHERE ".implode(' AND ', $where['conditions'])." ORDER BY 1";
             $this->loadFieldValues(
-                $this->dbConnection->execAssoc($sql, $where['parameters'])
+                $this->dbConnection->findAssoc($sql, $where['parameters'])
             );
 
         } catch (\Exception $e) {
@@ -376,7 +376,7 @@ abstract class Eav
         $firstKey = key(
             $this->keys
         );
-        $sequenceValue = $this->getDb()->execOne("SELECT {$this->sequence}.nextval FROM dual");
+        $sequenceValue = $this->getDb()->findOne("SELECT {$this->sequence}.nextval FROM dual");
         if (!empty($sequenceValue) && !empty($firstKey)) {
             $this->activeRecord[$firstKey] = $sequenceValue;
         }
