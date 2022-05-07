@@ -39,7 +39,7 @@ class LabelBox extends Component
 
     public function setLabelFromSQL($db, $sql, $par=array())
     {
-        $this->label = $db->execOne($sql, $par);
+        $this->label = $db->findOne($sql, $par);
     }
 
     public function setLabel($label)

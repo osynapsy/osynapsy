@@ -49,7 +49,7 @@ class Autocomplete extends Component
     private function addInput()
     {
         if (!empty($this->query['decode']['sql'])) {
-            $_REQUEST[$this->id] = $this->db->execOne(
+            $_REQUEST[$this->id] = $this->db->findOne(
                 $this->query['decode']['sql'],
                 $this->query['decode']['parameters']
             );

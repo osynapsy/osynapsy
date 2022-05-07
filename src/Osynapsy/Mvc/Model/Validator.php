@@ -46,7 +46,7 @@ class Validator
             return;
         }
         $table = $this->getModel()->getRecord()->table();
-        $numberOfOccurences = $this->getModel()->getDb()->execOne(
+        $numberOfOccurences = $this->getModel()->getDb()->findOne(
             sprintf("SELECT COUNT(*) FROM %s WHERE %s = ?", $table, $field->name),
             [$value]
         );

@@ -94,7 +94,7 @@ class Grid extends Component
 
     public function setSql($db, $sql, array $parameters = [])
     {
-        $this->data = $db->execAssoc($sql, $parameters);
+        $this->data = $db->findAssoc($sql, $parameters);
     }
 
     public function setAddCommand($command)

@@ -251,7 +251,7 @@ abstract class ModelRecord implements InterfaceModel
             $this->addError('notnull', $field);
         }
         if ($field->isUnique() && $value) {
-            $nOccurence = $this->db->execOne(
+            $nOccurence = $this->db->findOne(
                 "SELECT COUNT(*) FROM {$this->getRecord()->table()} WHERE {$field->name} = ?",
                 array($value)
             );

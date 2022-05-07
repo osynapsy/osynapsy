@@ -152,7 +152,7 @@ abstract class Model implements InterfaceModel
 
     protected function getIdFromSequence($sequence)
     {
-        return is_callable($sequence) ? $sequence() : $this->getDb()->execOne("SELECT {$this->sequence}.nextval FROM DUAL");
+        return is_callable($sequence) ? $sequence() : $this->getDb()->findOne("SELECT {$this->sequence}.nextval FROM DUAL");
     }
 
     public function update($values, $where)
@@ -303,7 +303,7 @@ abstract class Model implements InterfaceModel
     protected function validateUniqueValue(ModelField $field, $value)
     {
         $sql = sprintf("SELECT COUNT(*) FROM %s WHERE %s = ?", $this->table, $field->name);
-        $nOccurence = $this->getDb()->execOne($sql, [$value]);
+        $nOccurence = $this->getDb()->findOne($sql, [$value]);
         if (!empty($nOccurence)) {
             $this->addFieldError('unique', $field);
         }
