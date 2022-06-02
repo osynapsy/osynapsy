@@ -215,4 +215,9 @@ class DataGridColumn
         $this->properties['class'] = $class;
         $this->properties['classTd'] = [$class];
     }
+
+    public function __set($name, $value)
+    {
+        $this->properties[$name] = $value;
+    }
 }
