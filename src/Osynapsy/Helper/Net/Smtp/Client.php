@@ -99,6 +99,8 @@ namespace Osynapsy\Helper\Net\Smtp;
 
 class Client
 {
+    const NEWLINE = "\r\n";
+
     public $server;
     public $port;
     public $username;
@@ -211,7 +213,7 @@ class Client
 
     private function putRow($command)
     {
-        fputs($this->conn, $command . $this->newline);
+        fputs($this->conn, $command . self::NEWLINE);
         $this->currentResponse = $this->getServerResponse();
         return substr($this->currentResponse, 0, 3);
     }
@@ -220,29 +222,29 @@ class Client
     public function send($from, $to, $subject, $message, $headers=null, $utf8=false)
     {
         /* set up the headers and message body with attachments if necessary */
-        $email  = "Date: " . date("D, j M Y G:i:s") . " +0200" . $this->newline;
-        $email .= "From: $from" . $this->newline;
-        $email .= "Reply-To: $from" . $this->newline;
+        $email  = "Date: " . date("D, j M Y G:i:s") . " +0200" . self::NEWLINE;
+        $email .= "From: $from" . self::NEWLINE;
+        $email .= "Reply-To: $from" . self::NEWLINE;
         $email .= $this->setRecipients($to);
 
         if ($headers != null) {
-            $email .= $headers . $this->newline;
+            $email .= $headers . self::NEWLINE;
         }
         if ($utf8) {
             $message = utf8_decode($message);
         }
-        $email .= "Subject: $subject" . $this->newline;
-        $email .= "MIME-Version: 1.0" . $this->newline;
+        $email .= "Subject: $subject" . self::NEWLINE;
+        $email .= "MIME-Version: 1.0" . self::NEWLINE;
         if ($this->contentType == "multipart/mixed") {
             $boundary = $this->generateBoundary();
             $message = $this->multipartMessage($message,$boundary);
-            $email .= "Content-Type: $this->contentType;" . $this->newline;
+            $email .= "Content-Type: $this->contentType;" . self::NEWLINE;
             $email .= "    boundary=\"$boundary\"";
         } else {
             $email .= "Content-Type: $this->contentType; charset=$this->charset";
         }
-        $email .= $this->newline . $this->newline . $message . $this->newline;
-        //$email .= "." . $this->newline;
+        $email .= self::NEWLINE . self::NEWLINE . $message . self::NEWLINE;
+        //$email .= "." . self::NEWLINE;
         $email .= ".";
         /* set up the server commands and send */
         $this->putRow('MAIL FROM: <'. $this->getMailAddr($from) .'>');
@@ -273,13 +275,13 @@ class Client
                 $r .= $this->recipients[$i] . ',';
             }
         }
-        $r = substr($r,0,-1) . $this->newline;  /* strip last comma */;
+        $r = substr($r,0,-1) . self::NEWLINE;  /* strip last comma */;
         if(count($this->cc)>0) { /* now add in any CCs */
             $r .= 'CC: ';
             for($i=0;$i<count($this->cc);$i++) {
                 $r .= $this->cc[$i] . ',';
             }
-            $r = substr($r,0,-1) . $this->newline;  /* strip last comma */
+            $r = substr($r,0,-1) . self::NEWLINE;  /* strip last comma */
         }
         return $r;
     }
@@ -361,7 +363,7 @@ class Client
     /* Quit and disconnect */
     function __destruct()
     {
-        fputs($this->conn, 'QUIT' . $this->newline);
+        fputs($this->conn, 'QUIT' . self::NEWLINE);
         $this->getServerResponse();
         fclose($this->conn);
     }
@@ -427,19 +429,19 @@ class Client
         }
         $altBoundary = $this->generateBoundary();
         //ob_start(); //Turn on output buffering
-        $parts  = "This is a multi-part message in MIME format." . $this->newline . $this->newline;
-        $parts .= "--" . $boundary . $this->newline;
-        $parts .= "Content-Type: multipart/alternative;" . $this->newline;
-        $parts .= "    boundary=\"$altBoundary\"" . $this->newline . $this->newline;
-        $parts .= "--" . $altBoundary . $this->newline;
-        $parts .= "Content-Type: text/plain; charset=$this->charset" . $this->newline;
-        $parts .= "Content-Transfer-Encoding: $this->transferEncodeing" . $this->newline . $this->newline;
-        $parts .= $this->altBody . $this->newline . $this->newline;
-        $parts .= "--" . $altBoundary . $this->newline;
-        $parts .= "Content-Type: text/html; charset=$this->charset" . $this->newline;
-        $parts .= "Content-Transfer-Encoding: $this->transferEncodeing" . $this->newline . $this->newline;
-        $parts .= $htmlpart . $this->newline . $this->newline;
-        $parts .= "--" . $altBoundary . "--" . $this->newline . $this->newline;
+        $parts  = "This is a multi-part message in MIME format." . self::NEWLINE . self::NEWLINE;
+        $parts .= "--" . $boundary . self::NEWLINE;
+        $parts .= "Content-Type: multipart/alternative;" . self::NEWLINE;
+        $parts .= "    boundary=\"$altBoundary\"" . self::NEWLINE . self::NEWLINE;
+        $parts .= "--" . $altBoundary . self::NEWLINE;
+        $parts .= "Content-Type: text/plain; charset=$this->charset" . self::NEWLINE;
+        $parts .= "Content-Transfer-Encoding: $this->transferEncodeing" . self::NEWLINE . self::NEWLINE;
+        $parts .= $this->altBody . self::NEWLINE . self::NEWLINE;
+        $parts .= "--" . $altBoundary . self::NEWLINE;
+        $parts .= "Content-Type: text/html; charset=$this->charset" . self::NEWLINE;
+        $parts .= "Content-Transfer-Encoding: $this->transferEncodeing" . self::NEWLINE . self::NEWLINE;
+        $parts .= $htmlpart . self::NEWLINE . self::NEWLINE;
+        $parts .= "--" . $altBoundary . "--" . self::NEWLINE . self::NEWLINE;
         if (count($this->attachments) > 0) {
             foreach ($this->attachments as $attachment) {
                 $parts .= $this->multipartMessageAttach($boundary, $attachment);
@@ -455,11 +457,11 @@ class Client
         $filename = basename($attachment['filename']);
         $attachmentBody = chunk_split(base64_encode($attachment['content']));
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
-        $parts = "--" . $boundary . $this->newline;
-        $parts .= "Content-Type: application/$ext; name=\"$filename\"" . $this->newline;
-        $parts .= "Content-Transfer-Encoding: base64" . $this->newline;
-        $parts .= "Content-Disposition: attachment; filename=\"$filename\"" . $this->newline . $this->newline;
-        $parts .= $attachmentBody . $this->newline;
+        $parts = "--" . $boundary . self::NEWLINE;
+        $parts .= "Content-Type: application/$ext; name=\"$filename\"" . self::NEWLINE;
+        $parts .= "Content-Transfer-Encoding: base64" . self::NEWLINE;
+        $parts .= "Content-Disposition: attachment; filename=\"$filename\"" . self::NEWLINE . self::NEWLINE;
+        $parts .= $attachmentBody . self::NEWLINE;
         return $parts;
     }
 
