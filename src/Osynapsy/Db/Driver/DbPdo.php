@@ -277,7 +277,7 @@ class DbPdo extends \PDO implements InterfaceDbo
 
     public function replace($table, $args, $conditions)
     {
-        if ($this->selectOne($table, $conditions, ['count(*)'], 'NUM')) {
+        if ($this->selectOne($table, $conditions, ['count(*)'], self::FETCH_NUM)) {
             $this->update($table, $args, $conditions);
             return;
         }
@@ -286,7 +286,7 @@ class DbPdo extends \PDO implements InterfaceDbo
 
     public function replaceRet($table, $args, $conditions, $fieldToReturn = null)
     {
-        $result = $this->selectOne($table, $conditions, [$fieldToReturn ?? 'count(*)'], 'NUM');
+        $result = $this->selectOne($table, $conditions, [$fieldToReturn ?? 'count(*)'], self::FETCH_NUM);
         if (!empty($result)) {
             $this->update($table, $args, $conditions);
             return $result;
