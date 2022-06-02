@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 use Osynapsy\Db\DbFactory;
-use Osynapsy\Db\Record\Active as RecordActive;
+use Osynapsy\Db\Record\Active2 as RecordActive;
 
 final class RecordTest extends TestCase
 {
@@ -13,7 +13,7 @@ final class RecordTest extends TestCase
         {
             public function table()
             {
-                return 'tbl_test';
+                return 'tbl_client';
             }
 
             public function primaryKey()
@@ -23,7 +23,7 @@ final class RecordTest extends TestCase
 
             public function fields()
             {
-                return ['id','label'];
+                return ['id', 'firstName' => 'frt_nam', 'lastName' => 'lst_nam'];
             }
         };
     }
@@ -32,9 +32,9 @@ final class RecordTest extends TestCase
     {
         $Factory = new DbFactory();
         $Factory->createConnection('sqlite::memory:');
-        $Factory->getConnection(0)->execCommand("CREATE TABLE tbl_test (id INTEGER PRIMARY KEY AUTOINCREMENT, label varchar(20)); ");
-        $Factory->getConnection(0)->insert('tbl_test', ['label' => 'test1']);
-        $Factory->getConnection(0)->insert('tbl_test', ['label' => 'test2']);
+        $Factory->getConnection(0)->execCommand("CREATE TABLE tbl_client (id INTEGER PRIMARY KEY AUTOINCREMENT, frt_nam varchar(20), lst_nam varchar(20)); ");
+        $Factory->getConnection(0)->insert('tbl_client', ['frt_nam' => 'Giuseppe', 'lst_nam' => 'Garibaldi']);
+        $Factory->getConnection(0)->insert('tbl_client', ['frt_nam' => 'Giuseppe', 'lst_nam' => 'Verdi']);
         return $Factory->getConnection(0);
     }
 
@@ -56,5 +56,23 @@ final class RecordTest extends TestCase
         $record = $this->getRecord();
         $record->findByAttributes(['id' => '4']);
         $this->assertEquals($record->getBehavior(), 'insert');
+    }
+
+    public function testSetAliasField()
+    {
+        $record = $this->getRecord();
+        $record->firstName = 'Pippo';
+        $this->assertEquals($record->firstName, 'Pippo');
+    }
+
+    public function testSetSaveAliasField()
+    {
+        $record = $this->getRecord();
+        $record->findByKey('1');
+        $record->firstName = 'Pippo';
+        $record->save();
+        $record->reset();
+        $record->findByKey('1');
+        $this->assertEquals($record->firstName, 'Pippo');
     }
 }

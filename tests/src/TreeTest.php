@@ -16,16 +16,16 @@ class TreeTest extends TestCase
         ['id' => 2, 'parent' => 1, 'isopen' => 0],
         ['id' => 3, 'parent' => 2, 'isopen' => 1],
     ];
-    
+
     public function getTreeObject() : Tree
     {
         return new Tree('id', 'parent', 'isopen', $this->arrayTest);
-    } 
-    
+    }
+
     public function testResult() : void
     {
         $treeObject = $this->getTreeObject();
-        $tree = $treeObject->get();        
+        $tree = $treeObject->get();
         $this->assertEquals($tree, [
             1 => ['id' => 1, 'parent' => null, 'isopen' => 1, '_level' => 0, '_position' => 3, '_childrens' => [
                 2 => ['id' => 2, 'parent' => 1, 'isopen' => 1, '_level' => 1, '_position' => 3, '_childrens' => [
