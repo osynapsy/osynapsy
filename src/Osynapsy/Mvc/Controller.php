@@ -35,7 +35,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     private $dispatcher;
     private $application;
     private $externalActions = [];
-    public $model;
+    private $model;
     protected $view;
 
     /**
