@@ -37,7 +37,6 @@ class Kernel
     public $controller;
     public $appController;
     private $loader;
-    private $composer;
 
     /**
      * Kernel costructor
@@ -45,9 +44,8 @@ class Kernel
      * @param string $instanceConfigurationFile path of the instance configuration file
      * @param object $composer Instance of composer loader
      */
-    public function __construct($instanceConfigurationFile, $composer = null)
+    public function __construct($instanceConfigurationFile)
     {
-        $this->composer = $composer;
         $this->loader = new Loader($instanceConfigurationFile);
         $this->request = new Request($_GET, $_POST, [], $_COOKIE, $_FILES, $_SERVER);
         $this->request->set('app.parameters', $this->loadConfig('parameter', 'name', 'value'));
@@ -108,10 +106,11 @@ class Kernel
         }
     }
 
-    protected function findActiveRoute()
+    protected function findRoute()
     {
-        $this->route = $this->router->dispatchRoute($this->requestUri);
-        $this->getRequest()->set('page.route', $this->route);
+        $route = $this->router->dispatchRoute($this->requestUri);
+        $this->getRequest()->set('page.route', $route);
+        return $route;
     }
 
     /**
@@ -125,9 +124,9 @@ class Kernel
         try {
             $this->loadRequestUri();
             $this->loadRoutes();
-            $this->findActiveRoute();
-            $this->validateRouteController();
-            return $this->runApplication($this->route, $this->request);
+            $route = $this->findRoute();
+            $this->validateRouteController($route);
+            return $this->runApplication($route, $this->request);
         } catch (\Exception $exception) {
             $errorDispatcher = new ErrorDispatcher($this->getRequest());
             return $errorDispatcher->dispatchException($exception);
@@ -157,9 +156,9 @@ class Kernel
     }
 
 
-    protected function validateRouteController()
+    protected function validateRouteController($route)
     {
-        if (!empty($this->route) && $this->route->controller) {
+        if (!empty($route) && $route->controller) {
             return;
         }
         throw $this->raiseException(404, "Page not found", sprintf(
