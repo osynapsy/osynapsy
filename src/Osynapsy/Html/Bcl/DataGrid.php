@@ -16,6 +16,9 @@ use Osynapsy\Html\Tag;
 
 class DataGrid extends Component
 {
+    const BORDER_FULL = 'full';
+    const BORDER_HORIZONTAL = 'horizontal';
+    
     private $columns = [];
     private $emptyMessage = 'No data found';
     private $pagination;
@@ -370,9 +373,9 @@ class DataGrid extends Component
      *
      * return void;
      */
-    public function setBorderOn()
+    public function setBorderOn($borderType = 'horizontal')
     {
-        $this->setClass('bcl-datagrid-border-on');
+        $this->setClass(sprintf('bcl-datagrid-border-on bcl-datagrid-border-on-%s', $borderType));
     }
 
     /**
