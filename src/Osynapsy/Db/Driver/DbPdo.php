@@ -171,7 +171,7 @@ class DbPdo extends \PDO implements InterfaceDbo
         $this->cursor = $this->prepare($sql);
         $this->cursor->execute($parameters);
         if (!is_null($fetchColumnIdx)) {
-            return $this->cursor->fetchAll(\PDO::FETCH_COLUMN, $pdoFetchMethod);
+            return $this->cursor->fetchAll(\PDO::FETCH_COLUMN, $fetchColumnIdx);
         }
         return $this->cursor->fetchAll($pdoFetchMethod);
     }
