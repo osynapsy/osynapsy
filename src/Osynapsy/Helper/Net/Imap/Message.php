@@ -140,7 +140,7 @@ class Message
 
     public function getMessageInfo($key)
     {
-        $header = imap_header($this->connection, $this->messageIdx);
+        $header = imap_headerinfo($this->connection, $this->messageIdx);
         return $header->{$key};
     }
 
