@@ -15,9 +15,9 @@ use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
 
 class CheckBox extends Component
-{    
+{
     private $checkbox = null;
-    
+
     public function __construct($name, $tag = 'span')
     {
         parent::__construct($tag, $name);
@@ -30,16 +30,24 @@ class CheckBox extends Component
         ]);
         $this->checkbox->att('class','osy-check')->att('value','1');
     }
-    
+
     protected function __build_extra__()
     {
         if (!empty($_REQUEST[$this->id])) {
             $this->checkbox->att('checked','checked');
         }
     }
-    
+
     public function getCheckbox()
     {
         return $this->checkbox;
-    }        
+    }
+
+    public function setDisabled($condition): \this
+    {
+        if ($condition) {
+            $this->att('disabled', 'disabled');
+        }
+        return $this;
+    }
 }
