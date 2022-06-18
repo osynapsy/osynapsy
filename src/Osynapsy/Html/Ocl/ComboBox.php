@@ -76,12 +76,6 @@ class ComboBox extends Component
         return parent::setAction($action, $parameters, $class, $confirmMessage);
     }
 
-    public function setArray($array)
-    {
-        $this->data = $array;
-        return $this;
-    }
-
     public function setDefaultValue($value)
     {
         $this->defaultValue = $value;
