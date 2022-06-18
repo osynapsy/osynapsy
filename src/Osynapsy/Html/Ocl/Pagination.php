@@ -241,8 +241,8 @@ class Pagination extends Component
         $Combo = new ComboBox($this->id.(strpos($this->id, '_') ? '_page_dimension' : 'PageDimension'));
         $Combo->setPlaceholder('- Dimensione pagina -');
         $Combo->att('onchange',"Osynapsy.refreshComponents(['{$this->parentComponent}'])")
-              ->att('style','margin-top: 20px;')
-              ->setArray($this->pageDimensions);
+              ->setStyle('margin-top', '20px')
+              ->setData($this->pageDimensions);
         return $Combo;
     }
 
