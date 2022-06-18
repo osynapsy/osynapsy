@@ -41,5 +41,15 @@ Osynapsy.History =
         }
         sessionStorage.history = JSON.stringify(hst);
         Osynapsy.post(stp.url, stp.parameters);
+    },
+    popLastStep : function()
+    {
+        if (!sessionStorage.history) {
+            return;
+        }
+        let history = JSON.parse(sessionStorage.history);
+        let lastUri = history.pop();
+        sessionStorage.history = JSON.stringify(history);
+        return lastUri;
     }
 };
