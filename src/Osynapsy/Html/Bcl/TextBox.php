@@ -154,4 +154,10 @@ class TextBox extends OclTextBox
         $this->setClass(trim('input-mask '.$mask['class']));
         $this->att('data-imask', $mask['id']);
     }
+    
+    public function setSmallSize()
+    {
+        $this->setClass('form-control-sm');
+        return $this;
+    }
 }

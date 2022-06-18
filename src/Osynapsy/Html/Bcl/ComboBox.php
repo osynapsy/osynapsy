@@ -18,7 +18,7 @@ class ComboBox extends OclComboBox
     public function __construct($name)
     {
         parent::__construct($name);
-        $this->att('class','form-control',true);
+        $this->setClass('form-control');
     }
 
     public function enableSearch()
@@ -27,5 +27,11 @@ class ComboBox extends OclComboBox
         $this->att('data-live-search', 'true');
         $this->requireCss('Bcl/ComboBox/bootstrap-select.css');
         $this->requireJs('Bcl/ComboBox/bootstrap-select.js');
+    }
+    
+    public function setSmallSize()
+    {
+        $this->setClass('form-control-sm');
+        return $this;
     }
 }

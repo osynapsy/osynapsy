@@ -31,7 +31,7 @@ class DatePicker extends Component
         $this->dateComponent = $this->add(new TextBox($id))->att('class','date date-picker form-control');
         switch ($bootstrapVersion) {
             case self::BS4_VER:
-                $this->add('<div class="input-group-append"><span class="input-group-text glyphicon glyphicon-calendar"></span></div>');
+                $this->add('<div class="input-group-append"><span class="input-group-text"><i class="glyphicon glyphicon-calendar"></i></span></div>');
                 break;
             default:
                 $this->add('<span class="input-group-append"><span class="glyphicon glyphicon-calendar"></span></span>');
@@ -85,6 +85,7 @@ class DatePicker extends Component
     {
         $this->dateComponent->att('data-max', $date);
     }
+    
     /**
      *
      * @param type $date accepted mixed input (ISO DATE : YYYY-MM-DD or name of other component date #name)
@@ -125,6 +126,12 @@ class DatePicker extends Component
     public function setPlaceholder($placeholder)
     {
         $this->getTextBox()->setPlaceholder($placeholder);
+        return $this;
+    }
+    
+    public function setSmallSize()
+    {
+        $this->getTextBox()->setSmallSize();
         return $this;
     }
 }

@@ -70,15 +70,14 @@ class DataGridColumn
         }
         $th = new Tag('div', null, $this->properties['class'].' bcl-datagrid-th');
         $th->add(new Tag('span'))->add($rawLabel);
-        $this->buildThOrderByDummy($th, $orderedFields);
+        if ($this->properties['type'] !== self::FIELD_TYPE_CHECKBOX) {
+            $this->buildThOrderByDummy($th, $orderedFields);
+        }
         return $th;
     }
 
     public function buildThOrderByDummy($th, $orderedFields)
     {
-        if ($this->properties['type'] === self::FIELD_TYPE_CHECKBOX) {
-            return;
-        }
         $orderByField = $this->properties['fieldOrderBy'];
         $th->att('data-idx', $orderByField)->att('class', 'bcl-datagrid-th-order-by', true);
         if (empty($orderedFields)) {

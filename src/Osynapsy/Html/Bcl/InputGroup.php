@@ -65,4 +65,9 @@ class InputGroup extends Component
     {
         return $this->textBox;
     }
+    
+    public function setSmallSize()
+    {
+        $this->setClass('input-group-sm');
+    }
 }

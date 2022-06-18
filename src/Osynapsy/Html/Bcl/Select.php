@@ -11,14 +11,14 @@
 
 namespace Osynapsy\Html\Bcl;
 
-use Osynapsy\Html\Ocl\ComboBox2;
+use Osynapsy\Html\Ocl\ComboBox;
 
 /**
  * Description of Select
  *
  * @author Peter
  */
-class Select extends ComboBox2
+class Select extends ComboBox
 {
     //put your code here
     public function __construct($name, $multiple = false, $title = null)

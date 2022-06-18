@@ -18,6 +18,6 @@ class ComboBoxTree extends OclComboBoxTree
     public function __construct($name)
     {
         parent::__construct($name);
-        $this->att('class','form-control',true);
+        $this->setClass('form-control');
     }
 }
