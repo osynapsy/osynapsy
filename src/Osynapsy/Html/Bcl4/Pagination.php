@@ -132,7 +132,7 @@ class Pagination extends Component implements IPagination
         $Combo = new ComboBox($this->id.(strpos($this->id, '_') ? '_page_dimension' : 'PageDimension'));
         $Combo->setPlaceholder(false);
         $Combo->att('onchange',"Osynapsy.refreshComponents(['{$this->parentComponent}'])")
-              ->setArray($this->pageDimensions);
+              ->setData($this->pageDimensions);
         return $Combo;
     }
 

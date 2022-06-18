@@ -100,5 +100,10 @@ class InputGroup extends Component
         }
         $this->setClass('input-group-'.$dimension);
     }
+    
+    public function setSmallSize()
+    {
+        $this->setDimension('sm');
+    }
 }
 
