@@ -94,6 +94,12 @@ class Tag
     {
         return empty($class) ? $this : $this->att('class', $class, true);
     }
+    
+    public function addStyle($style, $value)
+    {
+        $strStyle = sprintf('%s: %s;', $style, $value);
+        return empty($style) ? $this : $this->att('style', $strStyle, true);
+    }
 
     /**
      * Add childs from array
