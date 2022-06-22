@@ -7,7 +7,7 @@
 .bcl-datagrid-body .bcl-datagrid-body-row:hover { background-color: #f8f8f8;}
 .bcl-datagrid-body .row {position: relative;}
 .bcl-datagrid-body .bcl-datagrid-td:nth-last-child(2) {padding-right: 25px !important;}
-.bcl-datagrid-body .cmd-row {display: none; position: absolute; top: 0px; right: 5px; border: none !important;}
+.bcl-datagrid-body .cmd-row {display: none; z-index: 9999; opacity: 0.95; padding: 5px 2px; border: 1px solid #ddd; background-color: white; position: absolute; top: -1px; right: -1px;}
 .bcl-datagrid-body div.bcl-datagrid-body-row:hover .cmd-row {display: block;}
 .bcl-datagrid-body .cmd-row:hover a {color: red !important;}
 .bcl-datagrid .bcl-datagrid-td {overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9em; padding: 5px 15px;}
