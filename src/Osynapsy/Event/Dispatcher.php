@@ -52,7 +52,7 @@ class Dispatcher
             if ($listenerEventId != $eventId) {
                 continue;
             }
-            if (!array_key_exists($eventId, self::$listeners)) {
+            if (!array_key_exists($eventId, self::$listeners) ?? []) {
                 self::$listeners[$eventId] = [];
             }
             $listenerId = '\\'.trim(str_replace(':','\\',$listener));
