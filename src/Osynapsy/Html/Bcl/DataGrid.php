@@ -183,13 +183,35 @@ class DataGrid extends Component
     private function bodyRowFactory($record, $class = 'row bcl-datagrid-body-row')
     {
         $tr = new Tag('div', null, $class);
+        $commands = [];
         foreach ($this->columns as $column) {
-            $tr->add($column->buildTd($tr, $record ?? []));
+            $cell = $column->buildTd($tr, $record ?? []);
+            if ($column->type !== DataGridColumn::FIELD_TYPE_COMMAND) {
+                $tr->add($cell);                
+                continue;
+            }
+            $commands[] = $cell;
+        }
+        if (!empty($commands)) {
+            $tr->add($this->buildCellCommands($commands));
         }
         if (!empty($record['_url_detail'])) {
             $tr->att('data-url-detail', $record['_url_detail']);
         }
         return $tr;
+    }
+    
+    protected function buildCellCommands($commands)
+    {
+        $cell = null;
+        foreach ($commands as $i => $command) {
+            if (empty($i)) {
+                $cell = $command;
+                continue;
+            }            
+            $cell->add($command->child(0));
+        }
+        return $cell;
     }
 
     /**
