@@ -1,4 +1,14 @@
 <?php
+
+/*
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Osynapsy\Data\Validator;
 
 
@@ -19,7 +29,7 @@ class IsIban extends Validator
         'ba' => 20,
         'br' => 29,
         'bg' => 22,
-        'cr' => 21,        
+        'cr' => 21,
         'cy' => 28,
         'cz' => 24,
         'de' => 22,
@@ -29,7 +39,7 @@ class IsIban extends Validator
         'fo' => 18,
         'fi' => 18,
         'fr' => 27,
-        'ge' => 22,        
+        'ge' => 22,
         'gi' => 23,
         'gr' => 27,
         'gl' => 18,
@@ -77,7 +87,7 @@ class IsIban extends Validator
         'gb' => 22,
         'vg' => 24
     ];
-    
+
     private $chars = [
         'a' => 10,
         'b' => 11,
@@ -106,15 +116,15 @@ class IsIban extends Validator
         'y' => 34,
         'z' => 35
     ];
-    
+
     public function check()
     {
-        $iban = strtolower(str_replace(' ','',$this->field['value']));                
+        $iban = strtolower(str_replace(' ','',$this->field['value']));
         $country = substr($iban,0,2);
         if (!array_key_exists($country, $this->countries)) {
             throw new \Exception(sprintf('IBAN Country code (%s) is unknown.', strtoupper($country)));
         }
-        if (strlen($iban) !== $this->countries[$country]) {            
+        if (strlen($iban) !== $this->countries[$country]) {
             throw new \Exception(sprintf('The Iban length is wrong (%s). Iban must measure exactly %s characters.', strlen($iban), $this->countries[$country]));
         }
         $MovedChar = substr($iban, 4).substr($iban,0,4);
@@ -129,22 +139,22 @@ class IsIban extends Validator
 
         if ($this->myBcMod($NewString, '97') != 1) {
             throw new \Exception('The Iban is wrong (check code verification failed)');
-        }        
+        }
     }
-    
-    private function myBcMod($x, $y) 
-    { 
-        // how many numbers to take at once? carefull not to exceed (int) 
-        $take = 5;     
-        $mod = ''; 
 
-        do { 
-            $a = (int)$mod.substr( $x, 0, $take ); 
-            $x = substr( $x, $take ); 
-            $mod = $a % $y;    
-        } 
-        while ( strlen($x) ); 
+    private function myBcMod($x, $y)
+    {
+        // how many numbers to take at once? carefull not to exceed (int)
+        $take = 5;
+        $mod = '';
 
-        return (int)$mod; 
+        do {
+            $a = (int)$mod.substr( $x, 0, $take );
+            $x = substr( $x, $take );
+            $mod = $a % $y;
+        }
+        while ( strlen($x) );
+
+        return (int)$mod;
     }
 }

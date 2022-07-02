@@ -1,9 +1,12 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Osynapsy\Data;
@@ -18,7 +21,7 @@ class Tree
     const POSITION_BEGIN = 1;
     const POSITION_BETWEEN = 2;
     const POSITION_END = 3;
-    
+
     private $keyId;
     private $keyParent;
     private $keyIsOpen;
@@ -26,7 +29,7 @@ class Tree
     private $dataSet;
     private $rawTree;
     private $tree;
-    
+
     public function __construct($idKey, $parentKey, $isOpenKey = null, array $dataSet = [])
     {
         $this->keyId = $idKey;
@@ -34,7 +37,7 @@ class Tree
         $this->keyIsOpen = $isOpenKey;
         $this->setDataset($dataSet);
     }
-    
+
     protected function branchFactory(&$rawDataSet, $parentId = 0, $level = 0)
     {
         $branch = [];
@@ -42,7 +45,7 @@ class Tree
         foreach ($rawDataSet[$parentId] as $idx => $child){
             $childId = $child[$this->keyId];
             $child['_level'] = $level;
-            $child['_position'] = $this->setPosition($idx, $lastIdx);            
+            $child['_position'] = $this->setPosition($idx, $lastIdx);
             if(!empty($rawDataSet[$childId])){
                $child['_childrens'] = $this->branchFactory($rawDataSet, $childId, $level + 1);
                if (in_array($childId, $this->openNodes)) {
@@ -53,10 +56,10 @@ class Tree
                 $this->openNodes[] = $child[$this->keyParent];
             }
             $branch[$childId] = $child;
-        } 
+        }
         return $branch;
     }
-    
+
     public function get()
     {
         if (!is_null($this->tree)) {
@@ -66,34 +69,34 @@ class Tree
         $this->tree = $this->branchFactory($this->rawTree);
         return $this->tree;
     }
-    
+
     public function getOpenNodes()
     {
         return $this->openNodes;
-    }        
-    
+    }
+
     protected function rawTreeFactory()
     {
         $this->rawTree = [];
         foreach ($this->dataSet as $rec){
             $this->rawTree[$rec[$this->keyParent] ?? 0][] = $rec;
-        }        
+        }
     }
-    
+
     public function setDataset(array $dataset)
     {
         $this->dataSet = $dataset;
     }
-    
+
     /**
      * Calcolo in che posizione si trova l'elemento (In testa = 1, nel mezzo = 2, alla fine = 99);
-     * 
+     *
      * @param int $idx posizione dell'elemento
      * @param int $last posizione dell'ultimo elemento
-     * @return int 
+     * @return int
      */
     private function setPosition($idx, $last)
-    {        
+    {
         if ($idx === $last) {
             return self::POSITION_END;
         }
