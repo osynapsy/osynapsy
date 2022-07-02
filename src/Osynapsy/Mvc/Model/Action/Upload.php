@@ -1,4 +1,14 @@
 <?php
+
+/*
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Osynapsy\Mvc\Model\Action;
 
 use Osynapsy\Helper\Net\UploadManager;
@@ -11,17 +21,17 @@ use Osynapsy\Mvc\Action\Base;
  * @author pietr
  */
 class Upload extends Base
-{    
+{
     protected $uploadSuccessful = 0;
-    protected $uploadManager; 
+    protected $uploadManager;
 
     public function execute()
     {
         try {
             $this->saveFiles();
-            $this->getModel()->save();        
+            $this->getModel()->save();
             if ($this->getModel()->behavior === 'insert') {
-                $this->afterInsert();           
+                $this->afterInsert();
             }
             $this->getResponse()->pageRefresh();
         } catch (ModelErrorException $e) {
@@ -31,13 +41,13 @@ class Upload extends Base
             $this->getResponse()->alertJs($e->getMessage());
             $this->resetFileBoxFields();
         }
-    }    
-    
+    }
+
     protected function afterInsert()
     {
         $this->getResponse()->historyPushState($this->getModel()->getLastId());
     }
-    
+
     protected function getModelField($fieldName)
     {
         $field = $this->getModel()->getField($fieldName);
@@ -46,7 +56,7 @@ class Upload extends Base
         }
         return $field;
     }
-    
+
     protected function getUploadManager()
     {
         if (empty($this->uploadManager)) {
@@ -54,38 +64,38 @@ class Upload extends Base
         }
         return $this->uploadManager;
     }
-    
+
     protected function resetFileBoxFields()
     {
         foreach (array_keys($_FILES) as $fieldName) {
             $this->getResponse()->jquery("#{$fieldName}")->val('')->exec();
         }
     }
-    
+
     protected function saveFiles()
     {
         if (!is_array($_FILES)) {
             throw new \Exception('No files is uploaded', 204);
-        }        
+        }
         foreach (array_keys($_FILES) as $fieldName) {
             if (!empty($_FILES[$fieldName]) && !empty($_FILES[$fieldName]['name'])) {
                 $this->saveFile($fieldName);
-            }            
+            }
         }
     }
-    
+
     protected function saveFile($fieldName)
-    {        
-        $field = $this->getModelField($fieldName);            
-        $field->value = $this->getUploadManager()->saveFile($field->html, $field->uploadDir);            
-        $field->readonly = false;            
-        $this->uploadSuccessful++;        
+    {
+        $field = $this->getModelField($fieldName);
+        $field->value = $this->getUploadManager()->saveFile($field->html, $field->uploadDir);
+        $field->readonly = false;
+        $this->uploadSuccessful++;
     }
-        
+
     private function sendErrors($errors)
     {
         foreach($errors as $fieldHtml => $error) {
             $this->getResponse()->error($fieldHtml, $error);
         }
-    } 
+    }
 }

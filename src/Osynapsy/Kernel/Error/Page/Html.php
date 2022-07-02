@@ -1,4 +1,14 @@
 <?php
+
+/*
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Osynapsy\Kernel\Error\Page;
 
 use Osynapsy\Kernel\Error\InterfacePage;
@@ -16,19 +26,19 @@ class Html implements InterfacePage
     public $message;
     public $submessage;
     public $trace;
-        
+
     public function get() : string
     {
         return (string) $this->render();
     }
-    
+
     public function render()
     {
         $trace = $this->renderTrace();
         $this->containerClass = empty($trace) ? 'container-center' : 'container';
         $messageFontSize = empty($trace) ? 'font-2em' : 'font-1em';
         $title = strip_tags($this->message);
-        $message = nl2br($this->message);        
+        $message = nl2br($this->message);
         $comment = implode(PHP_EOL, $this->comments);
         $submessage = $this->submessage;
         return <<<PAGE
@@ -38,7 +48,7 @@ class Html implements InterfacePage
                 <style>
                 * {font-family: Arial;}
                 body {margin: 0px; position: relative;}
-                div.container-center {position: absolute; top: 40%; width: 100%; text-align: center; margin: auto;}                
+                div.container-center {position: absolute; top: 40%; width: 100%; text-align: center; margin: auto;}
                 table {width: 100%; margin-top: 20px;}
                 .font-2em {font-size: 2em;}
                 .font-1em {font-size: 1em;}
@@ -47,7 +57,7 @@ class Html implements InterfacePage
             </style>
             </head>
             <body>
-            <div class="{$this->containerClass}">       
+            <div class="{$this->containerClass}">
                 <div class="message {$messageFontSize}">{$message}<br><div class="submessage">{$submessage}</div></div>
                 {$trace}
             </div>
@@ -56,9 +66,9 @@ class Html implements InterfacePage
             -->
             </body>
             </html>
-PAGE;        
+PAGE;
     }
-    
+
     protected function renderTrace()
     {
         if (empty($this->trace)) {
@@ -76,26 +86,26 @@ PAGE;
             $trace .= '<td>'.(!empty($step['class']) ? $step['class'] : '&nbsp;').'</td>';
             $trace .= '<td>'.(!empty($step['function']) ? $step['function'] : '&nbsp;').'</td>';
             $trace .= '<td>'.(!empty($step['file']) ? $step['file'] : '&nbsp;').'</td>';
-            $trace .= '<td>'.(!empty($step['line']) ? $step['line'] : '&nbsp;').'</td>';            
-            $trace .= '</tr>';            
+            $trace .= '<td>'.(!empty($step['line']) ? $step['line'] : '&nbsp;').'</td>';
+            $trace .= '</tr>';
         }
         $trace .= '</table>';
         return $trace;
     }
-    
+
     public function setComment($comment): void
-    {        
+    {
         $this->comments = array_merge($this->comments, $comment);
     }
-    
+
     public function setMessage($message, $submessage = null): void
     {
         $this->message = $message;
         $this->submessage = $submessage;
     }
-    
+
     public function setTrace(array $trace): void
     {
         $this->trace = $trace;
-    }    
+    }
 }

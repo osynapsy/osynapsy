@@ -1,4 +1,14 @@
 <?php
+
+/*
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Osynapsy\Mvc\Model;
 
 use Osynapsy\Mvc\Model\Field;
@@ -11,13 +21,13 @@ use Osynapsy\Mvc\Model\Field;
 class ModelErrorException extends \Exception
 {
     private $errors = [];
-    
+
     public function setError($message)
     {
-        $this->errors[] = $message; 
+        $this->errors[] = $message;
         $this->appendToMessage($message);
     }
-    
+
     public function setErrorOnField(Field $field, $rawErrorMessage)
     {
         $errorMessage = str_replace(
@@ -33,7 +43,7 @@ class ModelErrorException extends \Exception
     {
         return $this->errors;
     }
-    
+
     public function appendToMessage($message)
     {
         $this->message .= PHP_EOL.$message;

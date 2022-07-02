@@ -1,9 +1,12 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Osynapsy\Http;
@@ -13,11 +16,11 @@ namespace Osynapsy\Http;
  *
  * @author Pietro Celeste <p.celeste@spinit.it>
  */
-class RequestRaw 
+class RequestRaw
 {
 	private $raw;
     private $server;
-    
+
     public function __construct()
     {
 		$this->server = $_SERVER;
@@ -31,10 +34,10 @@ class RequestRaw
 			$data .= $name . ': ' . $value . "\n";
 		}
 		$data .= "\n".$this->buildBody();
-		
+
 		$this->raw = $data;
 	}
-	
+
     private function buildBody()
     {
         if (empty($_POST)) {
@@ -46,22 +49,22 @@ class RequestRaw
         }
         return implode('&',$post);
     }
-    
+
     private function getHeaderList()
     {
 		$headerList = [];
 		foreach ($this->server as $key => $value) {
-			if (preg_match('/^HTTP_/',$key)) {								
+			if (preg_match('/^HTTP_/',$key)) {
 				// add to list
 				$headerList[$this->convertHeaderKey($key)] = $value;
 			}
 		}
 		return $headerList;
 	}
-    
+
     /**
      * convert HTTP_HEADER_NAME to Header-Name
-     * 
+     *
      * @param string $key of php $_SERVER array
      * @return string
      */
@@ -69,14 +72,14 @@ class RequestRaw
     {
         $httpHeaderKey = strtr(substr($key,5),'_',' ');
 		$httpHeaderKey = ucwords(strtolower($httpHeaderKey));
-		return strtr($httpHeaderKey,' ','-');        
+		return strtr($httpHeaderKey,' ','-');
     }
-    
+
     public function get()
     {
         return $this->raw;
     }
-    
+
     public function __toString()
     {
         return $this->get;

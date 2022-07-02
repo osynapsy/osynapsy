@@ -1,4 +1,14 @@
 <?php
+
+/*
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Osynapsy\Mvc\Action;
 
 use Osynapsy\Helper\ImageProcessing\Image;
@@ -9,13 +19,13 @@ use Osynapsy\Helper\ImageProcessing\Image;
  * @author Pietro
  */
 class ImageCrop implements Base
-{    
-    protected $field; 
+{
+    protected $field;
     private $targetFile;
     private $pathinfo = [];
-    
+
     public function execute()
-    {        
+    {
         if (empty($this->field)) {
             throw new Exception("Property \$field isn't set.");
         }
@@ -28,19 +38,19 @@ class ImageCrop implements Base
             $this->parameters[4]
         );
     }
-    
+
     private function init()
-    {        
+    {
         $this->targetFile = $this->getModel()->getRecord()->get($this->field);
         if (empty($this->targetFile)) {
             return;
         }
-        $this->pathinfo = pathinfo($this->targetFile);         
+        $this->pathinfo = pathinfo($this->targetFile);
     }
-            
+
     public function crop($cropWidth, $cropHeight, $cropX, $cropY, $filename, $newWidth = null, $newHeight = null)
-    {       
-        $img = new Image('.'.$this->targetFile);        
+    {
+        $img = new Image('.'.$this->targetFile);
         $img->crop($cropX, $cropY, $cropWidth, $cropHeight);
         if (!empty($filename) && $filename[0] !== '/') {
             $filename = $this->pathinfo['dirname'].'/'.$filename.'.'.$this->pathinfo['extension'];
@@ -48,15 +58,15 @@ class ImageCrop implements Base
         if (!empty($newWidth) && !empty($newHeight)) {
             $img->resize($newWidth, $newHeight);
         }
-        $img->save('.'.$filename);                
+        $img->save('.'.$filename);
         $this->getModel()->getRecord()->save([$this->field => $filename]);
-    }    
-        
+    }
+
     public function getTarget()
     {
         return $this->targetFile;
     }
-    
+
     public function getInfo($key)
     {
         if (array_key_exists($key, $this->pathinfo)) {
