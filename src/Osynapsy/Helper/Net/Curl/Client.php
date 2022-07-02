@@ -1,4 +1,14 @@
 <?php
+
+/*
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Osynapsy\Helper\Net\Curl;
 
 /**
@@ -11,7 +21,7 @@ class Client
     const REQUEST_GET = 1;
     const REQUEST_POST = 2;
     const REQUEST_USERAGENT = '';
-    
+
     private $optionDecoder = [
         'Proxy' => \CURLOPT_PROXY,
         'ProxyPort' => \CURLOPT_PROXYPORT,
@@ -20,7 +30,7 @@ class Client
         'SslVerifyPeer' => \CURLOPT_SSL_VERIFYPEER,
         'UserAgent' => \CURLOPT_USERAGENT
     ];
-    
+
     private $parameters = [
         \CURLOPT_PROXY => null,
         \CURLOPT_PROXYPORT => null,
@@ -29,10 +39,10 @@ class Client
         \CURLOPT_SSL_VERIFYHOST => false,
         \CURLOPT_SSL_VERIFYPEER => false,
         \CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
-        \CURLOPT_RETURNTRANSFER => true        
+        \CURLOPT_RETURNTRANSFER => true
     ];
     private $handle;
-                    
+
     public function execute()
     {
         foreach ($this->parameters as $option => $value) {
@@ -41,7 +51,7 @@ class Client
         $response = curl_exec($this->handle);
         return $response;
     }
-    
+
     public function prepare($url, array $data = [], $type = self::REQUEST_GET)
     {
         $this->handle = curl_init($url);
@@ -49,7 +59,7 @@ class Client
             curl_setopt($this->handle, \CURLOPT_CUSTOMREQUEST, "GET");
         }
     }
-    
+
     public function __call($name, $args)
     {
         if (substr($name,0,3) != 'set' || empty($args)) {
@@ -61,7 +71,7 @@ class Client
         }
         $this->parameters[$this->optionDecoder[$parameter]] = $args[0];
     }
-    
+
     public function setProxy($proxy, $port)
     {
         $this->parameters[\CURLOPT_PROXY] = $proxy;
