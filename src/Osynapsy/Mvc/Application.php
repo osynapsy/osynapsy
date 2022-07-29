@@ -48,6 +48,7 @@ class Application implements InterfaceApplication
         $this->request = $request;
         $this->initDatasources();
         $this->initResponse();
+        $this->init();
     }
 
     /**
@@ -91,6 +92,10 @@ class Application implements InterfaceApplication
             $this->dbFactory->createConnection($connectionString);
         }
         $this->db = $this->dbFactory->getConnection(0);
+    }
+    
+    protected function init()
+    {        
     }
 
     /**
@@ -142,25 +147,15 @@ class Application implements InterfaceApplication
     public function getRoute() : Route
     {
         return $this->route;
-    }
+    }   
 
     /**
-     * Return current application state
-     *
-     * @return boolean
-     */
-    public function run()
-    {
-        return true;
-    }
-
-    /**
-     * Run request action from the user
+     * Execute request action from the user
      *
      * @return string
      * @throws \Osynapsy\Kernel\KernelException
      */
-    public function runAction() : string
+    public function executeAction() : string
     {
         if (empty($this->route) || !$this->route->controller) {
             throw new \Osynapsy\Kernel\KernelException('Route not found', 404);
