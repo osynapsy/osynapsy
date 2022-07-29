@@ -28,11 +28,9 @@ interface InterfaceApplication
 
     public function getResponse() : Response;
 
-    public function getRoute() : Route;
+    public function getRoute() : Route;    
 
-    public function run();
-
-    public function runAction() : string;
+    public function executeAction() : string;
 
     public function setResponse(Response $response);
 }
