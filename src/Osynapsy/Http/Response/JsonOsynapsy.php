@@ -148,4 +148,16 @@ class JsonOsynapsy extends Json
             $this->dispatch();
         }
     }
+        
+    /**
+     * Print on console log debug message
+     *
+     * @param string $message to print     
+     */
+    public function debug($message)
+    {
+        $backtrace = debug_backtrace(\DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
+        $this->message('command', date('Y-m-d H:i:s') , sprintf('%s->%s line %s', $backtrace[1]['class'], $backtrace[1]['function'], $backtrace[1]['line']));
+        $this->message('command', date('Y-m-d H:i:s') , is_string($message) ? $message : print_r($message, true));
+    }
 }
