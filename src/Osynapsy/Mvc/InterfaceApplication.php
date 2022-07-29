@@ -30,7 +30,7 @@ interface InterfaceApplication
 
     public function getRoute() : Route;    
 
-    public function executeAction() : string;
+    public function execute() : string;
 
     public function setResponse(Response $response);
 }

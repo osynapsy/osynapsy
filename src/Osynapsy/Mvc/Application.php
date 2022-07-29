@@ -155,7 +155,7 @@ class Application implements InterfaceApplication
      * @return string
      * @throws \Osynapsy\Kernel\KernelException
      */
-    public function executeAction() : string
+    public function execute() : string
     {
         if (empty($this->route) || !$this->route->controller) {
             throw new \Osynapsy\Kernel\KernelException('Route not found', 404);
