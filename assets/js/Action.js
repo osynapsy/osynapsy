@@ -152,6 +152,8 @@ Osynapsy.action =
                 command = val;
                 if (command[0] in Osynapsy) {
                     Osynapsy[command[0]](command[1]);
+                } else {
+                    console.log(command[0] + ' -  ' +command[1]);
                 }
             });
         } catch (error) {
