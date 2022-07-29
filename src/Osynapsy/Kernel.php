@@ -26,16 +26,12 @@ use Osynapsy\Kernel\Error\Dispatcher as ErrorDispatcher;
  */
 class Kernel
 {
-    const VERSION = '0.8-DEV';
+    const VERSION = '0.8.1-DEV';
     const DEFAULT_APP_CONTROLLER = '\\Osynapsy\\Mvc\\Application';
     const DEFAULT_ASSET_CONTROLLER = 'Osynapsy\\Assets\\Loader';
 
-    public $route;
     public $router;
     public $request;
-    public $requestUri;
-    public $controller;
-    public $appController;
     private $loader;
 
     /**
@@ -47,27 +43,50 @@ class Kernel
     public function __construct($instanceConfigurationFile)
     {
         $this->loader = new Loader($instanceConfigurationFile);
-        $this->request = new Request($_GET, $_POST, [], $_COOKIE, $_FILES, $_SERVER);
-        $this->request->set('app.parameters', $this->loadConfig('parameter', 'name', 'value'));
-        $this->request->set('env', $this->loader->get());
-        $this->request->set('app.layouts', $this->loadConfig('layout', 'name', 'path'));
-        $this->request->set('observers', $this->loadConfig('observer', '@value', 'subject'));
-        $this->request->set('listeners', $this->loadConfig('listener', '@value', 'event'));
     }
 
-    public function getRequest()
+    /**
+     * Run process to get response starting to request uri
+     *
+     * @return string
+     */
+    public function run()
     {
-        return $this->request;
+        try {
+            $this->request = $this->requestFactory();
+            $requestUri = $this->requestUriFactory();
+            $router = $this->routerFactory($this->getRequest(), $requestUri);
+            $applications = $this->getLoader()->get('app');
+            if (empty($applications)) {
+                throw $this->raiseException(1001, 'No app configuration found');
+            }
+            $this->loadApplicationRoutes($router, $applications);
+            $route = $this->findRequestRoute($router, $requestUri);
+            $this->validateRouteController($route);
+            return $this->runApplication($route, $this->getRequest());
+        } catch (\Exception $exception) {
+            $errorDispatcher = new ErrorDispatcher($this->getRequest());
+            return $errorDispatcher->dispatchException($exception);
+        } catch (\Error $error) {
+            $errorDispatcher = new ErrorDispatcher($this->getRequest());
+            return $errorDispatcher->dispatchError($error);
+        }
     }
 
-    public function getVersion()
+    private function requestFactory()
     {
-        return self::VERSION;
+        $request = new Request($_GET, $_POST, [], $_COOKIE, $_FILES, $_SERVER);
+        $request->set('app.parameters', $this->loadConfig('parameter', 'name', 'value'));
+        $request->set('env', $this->getLoader()->get());
+        $request->set('app.layouts', $this->loadConfig('layout', 'name', 'path'));
+        $request->set('observers', $this->loadConfig('observer', '@value', 'subject'));
+        $request->set('listeners', $this->loadConfig('listener', '@value', 'event'));
+        return $request;
     }
 
     private function loadConfig($key, $name, $value)
     {
-        $array = $this->loader->search($key);
+        $array = $this->getLoader()->search($key);
         $result = [];
         foreach($array as $rec) {
             $result[$rec[$name]] = $rec[$value];
@@ -75,22 +94,23 @@ class Kernel
         return $result;
     }
 
-    protected function loadRequestUri()
+    private function routerFactory($request)
     {
-        $this->requestUri = strtok(filter_input(INPUT_SERVER, 'REQUEST_URI'), '?');
+        $router = new Router($request);
+        $router->addRoute('OsynapsyAssetsManager', '/assets/osynapsy/'.self::VERSION.'/{*}', self::DEFAULT_ASSET_CONTROLLER, '', 'Osynapsy');
+        return $router;
+    }
+
+    private function requestUriFactory()
+    {
+        return strtok(filter_input(INPUT_SERVER, 'REQUEST_URI'), '?');
     }
 
     /**
      * Load in router object all route of application present in config file
      */
-    private function loadRoutes()
+    private function loadApplicationRoutes($router, $applications)
     {
-        $this->router = new Router($this->request);
-        $this->router->addRoute('OsynapsyAssetsManager', '/assets/osynapsy/'.self::VERSION.'/{*}', self::DEFAULT_ASSET_CONTROLLER, '', 'Osynapsy');
-        $applications = $this->loader->get('app');
-        if (empty($applications)) {
-            throw $this->raiseException(1001, 'No app configuration found');
-        }
         foreach (array_keys($applications) as $applicationId) {
             $routes = $this->loader->search('route', "app.{$applicationId}");
             foreach ($routes as $route) {
@@ -101,38 +121,35 @@ class Kernel
                 $uri = $route['path'];
                 $controller = $route['@value'];
                 $template = !empty($route['template']) ? $this->request->get('app.layouts.'.$route['template']) : '';
-                $this->router->addRoute($id, $uri, $controller, $template, $applicationId, $route);
+                $router->addRoute($id, $uri, $controller, $template, $applicationId, $route);
             }
         }
     }
 
-    protected function findRoute()
+    private function findRequestRoute($router, $requestUri)
     {
-        $route = $this->router->dispatchRoute($this->requestUri);
+        $route = $router->dispatchRoute($requestUri);
         $this->getRequest()->set('page.route', $route);
         return $route;
     }
 
-    /**
-     * Run process to get response starting to request uri
-     *
-     * @param string $requestUri is Uri requested from
-     * @return string
-     */
-    public function run()
+    private function runApplication($route, $request)
     {
-        try {
-            $this->loadRequestUri();
-            $this->loadRoutes();
-            $route = $this->findRoute();
-            $this->validateRouteController($route);
-            return $this->runApplication($route, $this->request);
-        } catch (\Exception $exception) {
-            $errorDispatcher = new ErrorDispatcher($this->getRequest());
-            return $errorDispatcher->dispatchException($exception);
-        } catch (\Error $error) {
-            $errorDispatcher = new ErrorDispatcher($this->getRequest());
-            return $errorDispatcher->dispatchError($error);
+        $reqApp = $request->get(sprintf("env.app.%s.controller", $route->application));
+        //If isn't configured an app controller for current instance load default App controller
+        $applicationClass = empty($reqApp) ? self::DEFAULT_APP_CONTROLLER : str_replace(':', '\\', $reqApp);
+        $application = new $applicationClass($route, $request);
+        $application->run();
+        return (string) $application->runAction();
+    }
+
+    private function validateRouteController($route)
+    {
+        if (empty($route)) {
+            throw $this->raiseException(404, "Page not found", sprintf(
+                'THE REQUEST PAGE NOT EXIST ON THIS SERVER <br><br> %s',
+                $this->request->get('server.REQUEST_URI')
+            ));
         }
     }
 
@@ -145,25 +162,23 @@ class Kernel
         return $exception;
     }
 
-    public function runApplication($route, $request)
+    public function getLoader()
     {
-        $reqApp = $request->get(sprintf("env.app.%s.controller", $route->application));
-        //If isn't configured an app controller for current instance load default App controller
-        $applicationClass = empty($reqApp) ? self::DEFAULT_APP_CONTROLLER : str_replace(':', '\\', $reqApp);
-        $application = new $applicationClass($route, $request);
-        $application->run();
-        return (string) $application->runAction();
+        return $this->loader;
     }
 
-
-    protected function validateRouteController($route)
+    public function getRequest()
     {
-        if (!empty($route) && $route->controller) {
-            return;
-        }
-        throw $this->raiseException(404, "Page not found", sprintf(
-            'THE REQUEST PAGE NOT EXIST ON THIS SERVER <br><br> %s',
-            $this->request->get('server.REQUEST_URI')
-        ));
+        return $this->request;
+    }
+
+    public function getRouter()
+    {
+        return $this->router;
+    }
+
+    public function getVersion()
+    {
+        return self::VERSION;
     }
 }
