@@ -1,64 +1,133 @@
 <?php
 namespace Osynapsy\Html;
 
-use Osynapsy\Mvc\InterfaceController;
+use Osynapsy\Html\Tag;
+use Osynapsy\Html\Component;
 
+/**
+ * Manage html template
+ *
+ * @author Pietro Celeste <p.celeste@opensymap.net>
+ */
 class Template
 {
+    const JS_PART_ID = 'js';
+    const CSS_PART_ID = 'css';
+    const BODY_PART_ID = 'body';
+
     protected $path;
-    protected $controller;
-    protected $template;
-    protected $keys;
+    protected $parts = [];
 
-    public function __construct($path, InterfaceController $controller)
-    {
-        $this->path = $path;
-        $this->controller = $controller;
-        $this->validatePath();
-        $this->initTemplate();
-        $this->initKeys();
-    }
+    /**
+     * Unused method (for future develop)
+     */
 
-    protected function validatePath()
-    {
-        if (!is_file($this->path)) {
-            throw new \Exception(sprintf('Template file %s not exists', $this->path));
-        }
-    }
-
-    protected function initTemplate()
-    {
-        $controller = $this->getController();
-        include $this->getPath();
-        $this->template = ob_get_contents();
-        ob_clean();
-    }
-
-    protected function initKeys()
+    private function initKeys()
     {
         preg_match_all('/<\!--(.*?)-->/', $this->template, $this->keys);
     }
 
-    protected function getController()
+    public function setPath($path)
     {
-        return $this->controller;
+        $this->path = $path;
+        $this->validatePath($path);
     }
 
-    protected function getPath()
+    public function getPath()
     {
         return $this->path;
     }
 
-    public function get(array $contents)
+    public function validatePath($path)
     {
-        $html = $this->template;
-        $layoutKeys = array_column($this->keys, 0);
-        foreach($contents as $contentKey => $content) {
-            $result = array_search($contentKey, $layoutKeys);
-            if ($result !== false) {
-                $html = str_replace($this->keys[$result][1], $content, $html);
+        if (!is_file($path)) {
+            throw new \Exception('File not exists', 404);
+        }
+    }
+
+    public function getRaw()
+    {
+        include $this->getPath();
+        $template = ob_get_contents();
+        ob_clean();
+        return $template;
+    }
+
+    public function get()
+    {
+        $componentIDs = empty($_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']) ? [] : explode(';', $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']);
+        return empty($componentIDs) ? $this->buildFullTemplate() : $this->buildRequestedComponents($componentIDs);
+    }
+
+    protected function buildFullTemplate()
+    {
+        $template = $this->getRaw();
+        $this->addComponentRequirements(Component::getRequire());
+        foreach($this->parts as $id => $parts) {
+            $content = implode(PHP_EOL, $parts);
+            $template = str_replace(sprintf('<!--%s-->', $id), $content, $template);
+        }
+        return $template;
+    }
+
+    protected function buildRequestedComponents($componentIDs)
+    {
+        $response = new Tag('div','response');
+        foreach($componentIDs as $componentID) {
+            $response->add(Component::getById($componentID));
+        }
+        return $response->__toString();
+    }
+
+    protected function addComponentRequirements($requirements)
+    {
+        if (!empty($requirements)) {
+            foreach ($requirements as $type => $urls) {
+                $this->addComponentRequirement($type, $urls);
             }
         }
-        return $html;
+    }
+
+    private function addComponentRequirement($type, $urls)
+    {
+        foreach ($urls as $url) {
+            $method = sprintf('add%s', $type);
+            $this->{$method}($url);
+        }
+    }
+
+    public function addCss($cssWebPath)
+    {
+        $this->addIfNoDuplicate(sprintf('<link href="%s" rel="stylesheet" />', $cssWebPath), self::CSS_PART_ID);
+    }
+
+    public function addStyle($style)
+    {
+        $this->addIfNoDuplicate('<style>'.PHP_EOL.$style.PHP_EOL.'</style>', self::CSS_PART_ID);
+    }
+
+    public function addJs($jsWebPath)
+    {
+        $this->addIfNoDuplicate(sprintf('<script src="%s"></script>', $jsWebPath), self::JS_PART_ID);
+    }
+
+    public function addJsCode($code)
+    {
+        $this->addIfNoDuplicate('<script>'.PHP_EOL.$code.PHP_EOL.'</script>', self::JS_PART_ID);
+    }
+
+    public function addIfNoDuplicate($content, $partId = self::BODY_PART_ID)
+    {
+        if (!array_key_exists($partId, $this->parts) || !in_array($content, $this->parts[$partId])) {
+            $this->parts[$partId][] = $content;
+        }
+    }
+
+    public function add($content, $partId = self::BODY_PART_ID)
+    {
+        if (!array_key_exists($partId, $this->parts)) {
+            $this->parts[$partId] = [];
+        }
+        $this->parts[$partId][] = $content;
     }
 }
