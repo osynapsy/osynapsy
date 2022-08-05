@@ -58,6 +58,11 @@ class Template
         return $this->path;
     }
 
+    public function getRaw()
+    {
+        return $this->template;
+    }
+
     public function get()
     {
         $componentIDs = empty($_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']) ? [] : explode(';', $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']);
@@ -70,7 +75,7 @@ class Template
         foreach($componentIDs as $componentID) {
             $response->add(Component::getById($componentID));
         }
-        return $response;
+        return $response->get();
     }
 
     protected function buildFullTemplate()
