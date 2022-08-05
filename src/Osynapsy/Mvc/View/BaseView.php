@@ -13,7 +13,6 @@ namespace Osynapsy\Mvc\View;
 
 use Osynapsy\Kernel;
 use Osynapsy\Mvc\InterfaceController;
-use Osynapsy\Mvc\InterfaceView;
 
 abstract class BaseView implements InterfaceView
 {
