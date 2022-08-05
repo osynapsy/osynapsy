@@ -35,7 +35,7 @@ class Template
     public function include($path)
     {
         if (!is_file($path)) {
-            throw new \Exception('File not exists', 404);
+            throw new \Exception(sprintf('Template %s not exists', $path), 404);
         }
         include $path;
         $template = ob_get_contents();
