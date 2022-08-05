@@ -28,7 +28,7 @@ abstract class BaseView implements InterfaceView
 
     protected function add($part)
     {
-        $this->getController()->getResponse()->send($part);
+        $this->getTemplate()->add($part);
         if (is_object($part)) {
             return $part;
         }
@@ -36,7 +36,7 @@ abstract class BaseView implements InterfaceView
 
     public function addCss($path)
     {
-        $this->getController()->getResponse()->addCss($path);
+        $this->getTemplate()->addCss($path);
     }
 
     public function addCssLibrary($path)
@@ -46,12 +46,12 @@ abstract class BaseView implements InterfaceView
 
     public function addJs($path)
     {
-        $this->getController()->getResponse()->addJs($path);
+        $this->getTemplate()->addJs($path);
     }
 
     public function addJsCode($code)
     {
-        $this->getController()->getResponse()->addJsCode($code);
+        $this->getTemplate()->addJsCode($code);
     }
 
     public function addJsLibrary($path)
@@ -63,12 +63,12 @@ abstract class BaseView implements InterfaceView
     {
         $meta = new \Osynapsy\Html\Tag('meta');
         $meta->att(['property' => $property, 'content' => $content]);
-        $this->getController()->getResponse()->addContent($meta, 'meta');
+        $this->getTemplate()->addContent($meta, 'meta');
     }
 
     public function addStyle($style)
     {
-        $this->getController()->getResponse()->addStyle($style);
+        $this->getTemplate()->addStyle($style);
     }
 
     public function get()
@@ -86,6 +86,11 @@ abstract class BaseView implements InterfaceView
         return $this->getController()->getModel();
     }
 
+    public function getTemplate()
+    {
+        return $this->getController()->getTemplate();
+    }
+
     public function getDb()
     {
         return $this->getController()->getDb();
@@ -93,7 +98,7 @@ abstract class BaseView implements InterfaceView
 
     public function setTitle($title)
     {
-        $this->getController()->getResponse()->addContent($title,'title');
+        $this->getTemplate()->add($title, 'title');
     }
 
     public function __toString()
