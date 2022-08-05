@@ -50,7 +50,6 @@ class Component extends Tag
     public static function appendToDom($id, Tag $component)
     {
         self::$dom[$id] = $component;
-        return $component;
     }
 
     /**
