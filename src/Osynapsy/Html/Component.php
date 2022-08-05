@@ -18,7 +18,7 @@ use Osynapsy\Kernel;
  */
 class Component extends Tag
 {
-    protected static $ids = [];
+    protected static $dom = [];
     protected static $require = [];
     protected $data = [];
     protected $__par = [];
@@ -27,7 +27,9 @@ class Component extends Tag
     public function __construct($tag, $id = null)
     {
         parent::__construct($tag, $id);
-        $this->appendToDom($id, $this);
+        if (!empty($id)) {
+            $this->appendToDom($id, $this);
+        }
     }
 
     protected function build($depth = 0)
@@ -47,10 +49,7 @@ class Component extends Tag
 
     public static function appendToDom($id, Tag $component)
     {
-        if (!empty($id)) {
-            self::$ids[$id] = $component;
-        }
-        return $component;
+        self::$dom[$id] = $component;
     }
 
     /**
@@ -61,7 +60,7 @@ class Component extends Tag
      */
     public static function getById($id)
     {
-        return array_key_exists($id, self::$ids) ? self::$ids[$id] : null;
+        return self::$dom[$id] ?? null;
     }
 
     /**
@@ -151,14 +150,13 @@ class Component extends Tag
         if (!array_key_exists($type, self::$require)) {
             self::$require[$type] = [];
         } elseif (in_array($file, self::$require[$type])) {
-           return;
+            return;
         }
         if ($type === 'jscode') {
             self::$require[$type][] = $file;
             return;
         }
-        $fullPath = in_array($file[0], ['/','h']) ? $file : '/assets/osynapsy/'.Kernel::VERSION.'/'.$file;
-        self::$require[$type][] = $fullPath;
+        self::$require[$type][] = self::buildScriptWebPath($file);
     }
 
     /**
@@ -192,6 +190,11 @@ class Component extends Tag
     public static function requireCss($file)
     {
         self::requireFile($file, 'css');
+    }
+
+    protected static function buildScriptWebPath($file)
+    {
+        return in_array($file[0], ['/','h']) ? $file : '/assets/osynapsy/'.Kernel::VERSION.'/'.$file;
     }
 
     /**
