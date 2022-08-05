@@ -3,9 +3,10 @@ namespace Osynapsy\Html;
 
 use Osynapsy\Html\Tag;
 use Osynapsy\Html\Component;
+use Osynapsy\Kernel;
 
 /**
- * Manage html template
+ * Description of Template
  *
  * @author Pietro Celeste <p.celeste@opensymap.net>
  */
@@ -13,14 +14,11 @@ class Template
 {
     const JS_PART_ID = 'js';
     const CSS_PART_ID = 'css';
-    const BODY_PART_ID = 'body';
+    const BODY_PART_ID = 'main';
 
+    protected $controller;
     protected $path;
     protected $parts = [];
-
-    /**
-     * Unused method (for future develop)
-     */
 
     private function initKeys()
     {
@@ -31,6 +29,16 @@ class Template
     {
         $this->path = $path;
         $this->validatePath($path);
+    }
+
+    public function setController($controller)
+    {
+        $this->controller = $controller;
+    }
+
+    public function getController()
+    {
+        return $this->controller;
     }
 
     public function getPath()
@@ -45,9 +53,9 @@ class Template
         }
     }
 
-    public function getRaw()
+    public function include($path)
     {
-        include $this->getPath();
+        include $path;
         $template = ob_get_contents();
         ob_clean();
         return $template;
@@ -56,18 +64,7 @@ class Template
     public function get()
     {
         $componentIDs = empty($_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']) ? [] : explode(';', $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']);
-        return empty($componentIDs) ? $this->buildFullTemplate() : $this->buildRequestedComponents($componentIDs);
-    }
-
-    protected function buildFullTemplate()
-    {
-        $template = $this->getRaw();
-        $this->addComponentRequirements(Component::getRequire());
-        foreach($this->parts as $id => $parts) {
-            $content = implode(PHP_EOL, $parts);
-            $template = str_replace(sprintf('<!--%s-->', $id), $content, $template);
-        }
-        return $template;
+        return !empty($componentIDs) ? $this->buildRequestedComponents($componentIDs) : $this->buildFullTemplate();
     }
 
     protected function buildRequestedComponents($componentIDs)
@@ -76,16 +73,19 @@ class Template
         foreach($componentIDs as $componentID) {
             $response->add(Component::getById($componentID));
         }
-        return $response->__toString();
+        return $response;
     }
 
-    protected function addComponentRequirements($requirements)
+    protected function buildFullTemplate()
     {
-        if (!empty($requirements)) {
-            foreach ($requirements as $type => $urls) {
-                $this->addComponentRequirement($type, $urls);
-            }
+        $template = empty($this->path) ? '<!--main-->' : $this->include($this->path);
+        foreach (Component::getRequire() as $type => $urls) {
+            $this->addComponentRequirement($type, $urls);
         }
+        foreach($this->parts as $id => $parts) {
+            $template = str_replace(sprintf('<!--%s-->', $id), implode(PHP_EOL, $parts), $template);
+        }
+        return $template;
     }
 
     private function addComponentRequirement($type, $urls)
@@ -106,9 +106,9 @@ class Template
         $this->addIfNoDuplicate('<style>'.PHP_EOL.$style.PHP_EOL.'</style>', self::CSS_PART_ID);
     }
 
-    public function addJs($jsWebPath)
+    public function addJs($jsWebPath, $scriptId = '')
     {
-        $this->addIfNoDuplicate(sprintf('<script src="%s"></script>', $jsWebPath), self::JS_PART_ID);
+        $this->addIfNoDuplicate(sprintf('<script src="%s"%s></script>', $jsWebPath, empty($scriptId) ? '' : " id=\"$scriptId\""), self::JS_PART_ID);
     }
 
     public function addJsCode($code)
@@ -129,5 +129,21 @@ class Template
             $this->parts[$partId] = [];
         }
         $this->parts[$partId][] = $content;
+    }
+
+    public function appendLibrary(array $optionalLibrary = [], $appendFormController = true)
+    {
+        foreach ($optionalLibrary as $pathLibrary) {
+            if (strpos($pathLibrary, '.css') !== false) {
+                $this->addCss('/assets/osynapsy/'.Kernel::VERSION.$pathLibrary);
+                continue;
+            }
+            $this->addJs('/assets/osynapsy/'.Kernel::VERSION.$pathLibrary);
+        }
+        if (!$appendFormController) {
+            return;
+        }
+        $this->addJs('/assets/osynapsy/'.Kernel::VERSION.'/js/Osynapsy.js', 'osynapsyjs');
+        $this->addCss('/assets/osynapsy/'.Kernel::VERSION.'/css/style.css');
     }
 }
