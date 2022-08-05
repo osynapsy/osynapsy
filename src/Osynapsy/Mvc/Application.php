@@ -16,7 +16,7 @@ use Osynapsy\Http\Request;
 use Osynapsy\Http\Response\Base as Response;
 use Osynapsy\Db\DbFactory;
 use Osynapsy\Http\Response\JsonOsynapsy as JsonOsynapsyResponse;
-use Osynapsy\Http\Response\HtmlOcl as HtmlResponse;
+use Osynapsy\Http\Response\Html as HtmlResponse;
 use Osynapsy\Http\Response\Xml as XmlResponse;
 
 /**
@@ -93,9 +93,9 @@ class Application implements InterfaceApplication
         }
         $this->db = $this->dbFactory->getConnection(0);
     }
-    
+
     protected function init()
-    {        
+    {
     }
 
     /**
@@ -147,7 +147,7 @@ class Application implements InterfaceApplication
     public function getRoute() : Route
     {
         return $this->route;
-    }   
+    }
 
     /**
      * Execute request action from the user
