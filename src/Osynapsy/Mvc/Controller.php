@@ -16,6 +16,7 @@ use Osynapsy\Event\Event;
 use Osynapsy\Mvc\Application;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response\Base as Response;
+use Osynapsy\Html\Template;
 use Osynapsy\Observer\InterfaceSubject;
 use Osynapsy\Mvc\Action\InterfaceAction;
 
@@ -34,6 +35,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     private $parameters;
     private $dispatcher;
     private $application;
+    private $template;
     private $externalActions = [];
     private $model;
     protected $view;
@@ -51,6 +53,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         $this->loadObserver();
         $this->setState('beforeInit');
         $this->init();
+        $this->initTemplate($this->getRequest()->getRoute()->template);
         $this->setState('afterInit');
     }
 
@@ -102,15 +105,30 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      */
     private function execIndexAction() : Response
     {
-        $this->loadTemplate($this->getRequest()->get('page.route')->template);
         if ($this->model) {
             $this->model->find();
         }
         $response = $this->indexAction();
         if ($response) {
-            $this->getResponse()->addContent($response);
+            $this->getTemplate()->add($response);
         }
+        $this->getResponse()->addContent($this->getTemplate()->get());
         return $this->getResponse();
+    }
+
+    /**
+     * Load html file template
+     *
+     * @param string $path of template
+     * @return void
+     */
+    private function initTemplate(string $path)
+    {
+        $this->template = new Template();
+        $this->template->setController($this);
+        if (!empty($path)) {
+            $this->template->setPath($path);
+        }
     }
 
     /**
@@ -241,6 +259,16 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     }
 
     /**
+     * Return current template object
+     *
+     * @return \Osynapsy\Html\Template
+     */
+    public function getTemplate()
+    {
+        return $this->template;
+    }
+
+    /**
      * Child class must implement default Action indexAction.
      */
     abstract public function indexAction();
@@ -251,20 +279,6 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     abstract public function init();
 
     /**
-     * Load html file template
-     *
-     * @param string $path of template
-     * @return void
-     */
-    public function loadTemplate(string $path)
-    {
-        if (empty($path) || !method_exists($this->getResponse(), 'loadTemplate')) {
-            return;
-        }
-        $this->getResponse()->loadTemplate($path, $this);
-    }
-
-    /**
      * Load html file view in current response
      *
      * @param string $path
@@ -272,13 +286,10 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * @param bool $return
      * @return void
      */
-    public function loadView(string $path, array $params = [], bool $return = false)
+    public function loadView(string $path)
     {
-        $view = $this->getResponse()->getBuffer($path, $this);
-        if ($return) {
-            return $view;
-        }
-        $this->getResponse()->addContent($view);
+        $view = $this->getTemplate()->include($path);
+        $this->getTemplate()->add($view);
     }
 
     /**
