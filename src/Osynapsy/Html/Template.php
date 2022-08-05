@@ -19,6 +19,7 @@ class Template
     protected $controller;
     protected $path;
     protected $parts = [];
+    protected $template = '<!--main-->';
 
     private function initKeys()
     {
@@ -28,7 +29,18 @@ class Template
     public function setPath($path)
     {
         $this->path = $path;
-        $this->validatePath($path);
+        $this->template = $this->include($this->path);
+    }
+
+    public function include($path)
+    {
+        if (!is_file($path)) {
+            throw new \Exception('File not exists', 404);
+        }
+        include $path;
+        $template = ob_get_contents();
+        ob_clean();
+        return $template;
     }
 
     public function setController($controller)
@@ -44,21 +56,6 @@ class Template
     public function getPath()
     {
         return $this->path;
-    }
-
-    public function validatePath($path)
-    {
-        if (!is_file($path)) {
-            throw new \Exception('File not exists', 404);
-        }
-    }
-
-    public function include($path)
-    {
-        include $path;
-        $template = ob_get_contents();
-        ob_clean();
-        return $template;
     }
 
     public function get()
@@ -78,7 +75,7 @@ class Template
 
     protected function buildFullTemplate()
     {
-        $template = empty($this->path) ? '<!--main-->' : $this->include($this->path);
+        $template = $this->template;
         foreach (Component::getRequire() as $type => $urls) {
             $this->addComponentRequirement($type, $urls);
         }
