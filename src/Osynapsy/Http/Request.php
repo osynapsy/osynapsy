@@ -54,4 +54,9 @@ class Request extends Dictionary
     {
         return $this->get('client.accept');
     }
+
+    public function getRoute()
+    {
+        return $this->get('page.route');
+    }
 }
