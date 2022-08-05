@@ -27,7 +27,7 @@ use Osynapsy\Kernel\Error\Dispatcher as ErrorDispatcher;
 class Kernel
 {
     const VERSION = '0.8.1-DEV';
-    const DEFAULT_APP_CONTROLLER = '\\Osynapsy\\Mvc\\Application';
+    const DEFAULT_APP_CONTROLLER = '\\Osynapsy\\Mvc\\Application\\BaseApplication';
     const DEFAULT_ASSET_CONTROLLER = 'Osynapsy\\Assets\\Loader';
 
     public $router;
@@ -138,7 +138,7 @@ class Kernel
         $reqApp = $request->get(sprintf("env.app.%s.controller", $route->application));
         //If isn't configured an app controller for current instance load default App controller
         $applicationClass = empty($reqApp) ? self::DEFAULT_APP_CONTROLLER : str_replace(':', '\\', $reqApp);
-        $application = new $applicationClass($route, $request);        
+        $application = new $applicationClass($route, $request);
         return (string) $application->execute();
     }
 

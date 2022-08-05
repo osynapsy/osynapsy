@@ -62,7 +62,7 @@ abstract class BaseView implements InterfaceView
     {
         $meta = new \Osynapsy\Html\Tag('meta');
         $meta->att(['property' => $property, 'content' => $content]);
-        $this->getTemplate()->addContent($meta, 'meta');
+        $this->getTemplate()->add($meta, 'meta');
     }
 
     public function addStyle($style)
