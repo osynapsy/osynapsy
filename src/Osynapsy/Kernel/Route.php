@@ -16,7 +16,7 @@ namespace Osynapsy\Kernel;
  *
  * @author Peter
  */
-class Route 
+class Route
 {
     private $route = [
         'id' => null,
@@ -27,40 +27,40 @@ class Route
         'weight' => null,
         'acceptedMethods' => null
     ];
-    
+
     public function __construct($id = '', $uri = '', $application = '', $controller = '', $template = '', array $attributes = [])
-    {        
+    {
         $this->id = empty($id) ? sha1($uri) : $id;
         $this->uri = $uri;
         $this->application = trim($application);
         $this->setController($controller);
-        $this->template = $template;        
+        $this->template = $template;
         $this->route += $attributes;
         $this->setAcceptedMethods($this->methods);
     }
-    
+
     public function __get($key)
     {
         return array_key_exists($key, $this->route) ? $this->route[$key] : null;
     }
-    
+
     public function __set($key, $value)
     {
         $this->route[$key] = $value;
     }
-    
+
     public function __toString()
     {
         return $this->id;
     }
-    
+
     public function setController($controller)
     {
         $this->controller = trim(str_replace(':','\\',$controller));
     }
-    
+
     public function setAcceptedMethods($methods)
-    {        
+    {
         if (empty($methods)) {
             return;
         }
@@ -70,7 +70,7 @@ class Route
                 break;
             case 'array':
                 $this->acceptedMethods = $methods;
-                break;            
-        }        
+                break;
+        }
     }
 }

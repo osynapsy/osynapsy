@@ -53,7 +53,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
         $this->loadObserver();
         $this->setState('beforeInit');
         $this->init();
-        $this->initTemplate($this->getRequest()->getRoute()->template);
+        $this->initTemplate();
         $this->setState('afterInit');
     }
 
@@ -119,15 +119,17 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     /**
      * Load html file template
      *
-     * @param string $path of template
+     * @param string $templateId of template
      * @return void
      */
-    private function initTemplate(string $path)
+    private function initTemplate()
     {
-        $this->template = new Template();
+        $templateId = $this->getRequest()->getRoute()->template;
+        $template = $this->getRequest()->getTemplate($templateId);
+        $this->template =  new Template();
         $this->template->setController($this);
-        if (!empty($path)) {
-            $this->template->setPath($path);
+        if (!empty($template) && !empty($template['path'])) {
+            $this->template->setPath($template['path']);
         }
     }
 

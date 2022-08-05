@@ -78,7 +78,7 @@ class Kernel
         $request = new Request($_GET, $_POST, [], $_COOKIE, $_FILES, $_SERVER);
         $request->set('app.parameters', $this->loadConfig('parameter', 'name', 'value'));
         $request->set('env', $this->getLoader()->get());
-        $request->set('app.layouts', $this->loadConfig('layout', 'name', 'path'));
+        $request->set('app.template', $this->loadConfig('layout', 'name', 'path'));
         $request->set('observers', $this->loadConfig('observer', '@value', 'subject'));
         $request->set('listeners', $this->loadConfig('listener', '@value', 'event'));
         return $request;
@@ -120,7 +120,7 @@ class Kernel
                 $id = isset($route['id']) ? $route['id'] : uniqid();
                 $uri = $route['path'];
                 $controller = $route['@value'];
-                $template = !empty($route['template']) ? $this->request->get('app.layouts.'.$route['template']) : '';
+                $template = $route['template'] ?? null;
                 $router->addRoute($id, $uri, $controller, $template, $applicationId, $route);
             }
         }

@@ -59,4 +59,16 @@ class Request extends Dictionary
     {
         return $this->get('page.route');
     }
+
+    public function getTemplate($id)
+    {
+        if (empty($id)) {
+            return [];
+        }
+        $applicationId = $this->getRoute()->application;
+        $path = sprintf('env.app.%s.layouts.layout', $applicationId);
+        $templates = array_column($this->get($path), 'name');
+        $templateKey = array_search($id, $templates);
+        return $this->get(sprintf('%s.%s', $path, $templateKey));
+    }
 }
