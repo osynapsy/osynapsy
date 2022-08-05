@@ -89,7 +89,7 @@ final class TemplateTest extends TestCase
         $DataGrid = new DataGrid('testGrid');
         $template = $this->template(self::VALID_TEMPLATE_PATH);
         $template->add($DataGrid);
-        $result = $template->get();
+        $result = $template->get(true);
         //Test script include
         $this->assertMatchesRegularExpression('/DataGrid/', $result);
         $this->assertMatchesRegularExpression('/id="testGrid"/', $result);
