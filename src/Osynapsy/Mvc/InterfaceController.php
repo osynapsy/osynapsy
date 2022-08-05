@@ -13,7 +13,7 @@ namespace Osynapsy\Mvc;
 
 use Osynapsy\Http\Request;
 use Osynapsy\Mvc\Action\InterfaceAction;
-use Osynapsy\Mvc\InterfaceApplication;
+use Osynapsy\Mvc\Application\InterfaceApplication;
 use Osynapsy\Db\Driver\InterfaceDbo;
 
 interface InterfaceController

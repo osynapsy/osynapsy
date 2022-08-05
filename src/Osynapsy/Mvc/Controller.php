@@ -13,7 +13,7 @@ namespace Osynapsy\Mvc;
 
 use Osynapsy\Event\Dispatcher as EventDispatcher;
 use Osynapsy\Event\Event;
-use Osynapsy\Mvc\Application;
+use Osynapsy\Mvc\Application\InterfaceApplication;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response\Base as Response;
 use Osynapsy\Html\Template;
@@ -156,7 +156,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      *
      * @return \Osynapsy\Mvc\Application
      */
-    final public function getApp() : \Osynapsy\Mvc\InterfaceApplication
+    final public function getApp() : InterfaceApplication
     {
         return $this->application;
     }

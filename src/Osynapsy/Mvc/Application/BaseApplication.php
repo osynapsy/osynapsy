@@ -9,15 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\Mvc;
+namespace Osynapsy\Mvc\Application;
 
 use Osynapsy\Kernel\Route;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response\Base as Response;
-use Osynapsy\Db\DbFactory;
 use Osynapsy\Http\Response\JsonOsynapsy as JsonOsynapsyResponse;
 use Osynapsy\Http\Response\Html as HtmlResponse;
 use Osynapsy\Http\Response\Xml as XmlResponse;
+use Osynapsy\Db\DbFactory;
 
 /**
  * Application controller is the main controller of app.
@@ -27,7 +27,7 @@ use Osynapsy\Http\Response\Xml as XmlResponse;
  *
  * @author Pietro Celeste <p.celeste@osynapsy.org>
  */
-class Application implements InterfaceApplication
+class BaseApplication implements InterfaceApplication
 {
     protected $db;
     protected $route;

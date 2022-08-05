@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\Mvc;
+namespace Osynapsy\Mvc\Application;
 
 use Osynapsy\Kernel\Route;
 use Osynapsy\Http\Request;
@@ -28,7 +28,7 @@ interface InterfaceApplication
 
     public function getResponse() : Response;
 
-    public function getRoute() : Route;    
+    public function getRoute() : Route;
 
     public function execute() : string;
 

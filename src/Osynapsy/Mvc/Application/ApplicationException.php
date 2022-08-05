@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\Mvc;
+namespace Osynapsy\Mvc\Application;
 
 /**
  * Description of KernelException
