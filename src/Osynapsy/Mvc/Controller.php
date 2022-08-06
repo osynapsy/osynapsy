@@ -126,7 +126,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
     {
         $templateId = $this->getRequest()->getRoute()->template;
         $template = $this->getRequest()->getTemplate($templateId);
-        $this->template =  new Template();
+        $this->template = empty($template['@value']) ? new Template() : new $template['@value'];
         $this->template->setController($this);
         if (!empty($template) && !empty($template['path'])) {
             $this->template->setPath($template['path']);
