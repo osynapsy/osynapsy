@@ -26,7 +26,7 @@ use Osynapsy\Kernel\Error\Dispatcher as ErrorDispatcher;
  */
 class Kernel
 {
-    const VERSION = '0.8.5-DEV';
+    const VERSION = '0.8.6-DEV';
     const DEFAULT_APP_CONTROLLER = '\\Osynapsy\\Mvc\\Application\\BaseApplication';
     const DEFAULT_ASSET_CONTROLLER = 'Osynapsy\\Assets\\Loader';
 
@@ -78,18 +78,18 @@ class Kernel
         $request = new Request($_GET, $_POST, [], $_COOKIE, $_FILES, $_SERVER);
         $request->set('app.parameters', $this->loadConfig('parameter', 'name', 'value'));
         $request->set('env', $this->getLoader()->get());
-        $request->set('app.template', $this->loadConfig('layout', 'name', 'path'));
+        $request->set('app.templates', $this->loadConfig('layout', 'name'));
         $request->set('observers', $this->loadConfig('observer', '@value', 'subject'));
         $request->set('listeners', $this->loadConfig('listener', '@value', 'event'));
         return $request;
     }
 
-    private function loadConfig($key, $name, $value)
+    private function loadConfig($dictionaryDataPath, $fielId, $fieldValue = null)
     {
-        $array = $this->getLoader()->search($key);
+        $rawdata = $this->getLoader()->search($dictionaryDataPath);
         $result = [];
-        foreach($array as $rec) {
-            $result[$rec[$name]] = $rec[$value];
+        foreach($rawdata as $rec) {
+            $result[$rec[$fielId]] = is_null($fieldValue) ? $rec : $rec[$fieldValue];
         }
         return $result;
     }
