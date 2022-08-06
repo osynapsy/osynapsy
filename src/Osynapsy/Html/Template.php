@@ -21,6 +21,10 @@ class Template
     protected $parts = [];
     protected $template = '<!--main-->';
 
+    public function init()
+    {
+    }
+
     private function initKeys()
     {
         preg_match_all('/<\!--(.*?)-->/', $this->template, $this->keys);
@@ -46,6 +50,7 @@ class Template
     public function setController($controller)
     {
         $this->controller = $controller;
+        $this->init();
     }
 
     public function getController()
