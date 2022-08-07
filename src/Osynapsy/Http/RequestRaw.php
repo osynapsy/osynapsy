@@ -54,7 +54,7 @@ class RequestRaw
     {
 		$headerList = [];
 		foreach ($this->server as $key => $value) {
-			if (preg_match('/^HTTP_/',$key)) {
+			if (preg_match('/^HTTP_/', $key)) {
 				// add to list
 				$headerList[$this->convertHeaderKey($key)] = $value;
 			}
@@ -82,6 +82,6 @@ class RequestRaw
 
     public function __toString()
     {
-        return $this->get;
+        return $this->get();
     }
 }
