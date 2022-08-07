@@ -30,11 +30,6 @@ abstract class Base
         $this->setContentType($bodyType);
     }
 
-    public function addBufferToContent($path = null, $part = 'main')
-    {
-        $this->addContent($this->getBuffer($path) , $part);
-    }
-
     /**
      * Method that add body to the response
      *
@@ -54,18 +49,13 @@ abstract class Base
         $this->body[$part][] = $body;
     }
 
-    public function addValue($key, $value)
-    {
-        $this->body[$key] = $value;
-    }
-
     public function clearCache()
     {
-        $this->withHeader("Expires","Tue, 01 Jan 2000 00:00:00 GMT");
+        $this->withHeader("Expires", "Tue, 01 Jan 2000 00:00:00 GMT");
         $this->withHeader("Last-Modified", gmdate("D, d M Y H:i:s") . " GMT");
         $this->withHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
         $this->withHeader("Cache-Control", "post-check=0, pre-check=0", false);
-        $this->withHeader("Pragma","no-cache");
+        $this->withHeader("Pragma", "no-cache");
     }
 
     public function send($body, $part = 'main', $overwriteIfExists = false)
@@ -73,34 +63,10 @@ abstract class Base
         $this->addContent($body, $part, $overwriteIfExists);
     }
 
-    public function exec()
+    public function get()
     {
         $this->sendHeader();
-        echo implode('',$this->body);
-    }
-
-    /**
-     * Include a php page e return body string
-     *
-     * @param string $path
-     * @param array $params
-     * @return string
-     * @throws \Exception
-     */
-    public static function getBuffer($path = null, $controller = null)
-    {
-        $buffer = 1;
-        if (!empty($path)) {
-            if (!is_file($path)) {
-                throw new \Exception('File '.$path.' not exists');
-            }
-            $buffer = include $path;
-        }
-        if ($buffer === 1) {
-            $buffer = ob_get_contents();
-            ob_clean();
-        }
-        return $buffer;
+        return implode('',$this->body);
     }
 
     /**
@@ -121,16 +87,6 @@ abstract class Base
     public function resetContent($part = 'main')
     {
         $this->body[$part] = [];
-    }
-
-    /**
-     * Set body of the response
-     *
-     * @param string $value
-     */
-    public function setContent($value)
-    {
-        $this->body = $value;
     }
 
     /**
