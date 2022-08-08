@@ -64,7 +64,9 @@ class StringStreamTest extends TestCase
         $string1 = 'test the StringStream';
         $string2 = ' and it method write';
         $stream = new StringStream($string1);
+        $stream->end();
         $stream->write($string2);
+        $stream->rewind();
         $this->assertEquals($stream->getContent(), $string1.$string2);
     }
 
@@ -93,6 +95,27 @@ class StringStreamTest extends TestCase
         $stream->seek(5);
         $stream->read(5);
         $this->assertEquals(10, $stream->tell());
+    }
+
+    public function testStreamSearch(): void
+    {
+        $string1 = 'test the StringStream';
+        $stream = new StringStream($string1, 'r');
+        $this->assertEquals(5, $stream->search('the'));
+    }
+
+    public function testStreamPrepend(): void
+    {
+        $stream = new StringStream('<html>{{main}}</html>', 'a');
+        $stream->prepend('test prepend', '{{main}}');
+        $this->assertEquals('<html>test prepend{{main}}</html>', (string) $stream);
+    }
+
+    public function testStreamPostpend(): void
+    {
+        $stream = new StringStream('<html>{{main}}</html>', 'a');
+        $stream->postpend('test postpend', '{{main}}');
+        $this->assertEquals('<html>{{main}}test postpend</html>', (string) $stream);
     }
 
     protected function debug($result)
