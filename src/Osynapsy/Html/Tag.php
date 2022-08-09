@@ -94,7 +94,7 @@ class Tag
     {
         return empty($class) ? $this : $this->att('class', $class, true);
     }
-    
+
     public function addStyle($style, $value)
     {
         $strStyle = sprintf('%s: %s;', $style, $value);
@@ -155,7 +155,7 @@ class Tag
             $result .= $this->indendationBeforeClosingTag($indentation);
             $result .= $this->buildClosingTag($tag);
         }
-        return $result.PHP_EOL;
+        return $result . (empty($depth) ? '' : PHP_EOL);
     }
 
     protected function buildIndedation($depth)
