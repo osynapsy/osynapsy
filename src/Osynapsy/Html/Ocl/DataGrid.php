@@ -309,7 +309,7 @@ class DataGrid extends Component
     {
         $t = $i = 0;
         $orw = tag::create('tr');
-        $orw->tagdep = (abs($grd->tagdep) + 1) * -1;
+        $orw->tagdep = (abs($grd->tagdep ?? 0) + 1) * -1;
         $opt = array(
             'row' => array(
                 'class'  => array(),
