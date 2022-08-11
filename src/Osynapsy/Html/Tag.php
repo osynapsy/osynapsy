@@ -174,7 +174,7 @@ class Tag
                 $attributes .= ' error="Attribute value is array"';
                 continue;
             }
-            $attributes .= sprintf(' %s="%s"', $attribute, htmlspecialchars($value, ENT_QUOTES));
+            $attributes .= sprintf(' %s="%s"', $attribute, htmlspecialchars($value ?? '', ENT_QUOTES));
         }
         return sprintf('<%s%s>' , $tag, $attributes);
     }
