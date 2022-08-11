@@ -115,7 +115,7 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
         return $nnode ? false : true;
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value) : void
     {
         if (is_null($offset)) {
             $this->repo[] = $value;
@@ -124,17 +124,17 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
         }
     }
 
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset) : bool
     {
         return isset($this->repo[$offset]);
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset) : void
     {
         unset($this->repo[$offset]);
     }
 
-    public function &offsetGet($offset)
+    public function &offsetGet(mixed $offset) : mixed
     {
         /*
         if (isset($this->repo[$offset])) {
@@ -147,32 +147,32 @@ class Dictionary implements \ArrayAccess, \Iterator, \Countable
         return $value;
     }
 
-    public function rewind()
+    public function rewind() : void
     {
         reset($this->repo);
     }
 
-    public function current()
+    public function current() : mixed
     {
         return current($this->repo);
     }
 
-    public function key()
+    public function key() : mixed
     {
         return key($this->repo);
     }
 
-    public function next()
+    public function next() : void
     {
-        return next($this->repo);
+        next($this->repo);
     }
 
-    public function valid()
+    public function valid() : bool
     {
         return $this->current() !== false;
     }
 
-    public function count()
+    public function count() : int
     {
         return count($this->repo);
     }
