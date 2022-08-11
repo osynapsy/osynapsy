@@ -88,7 +88,7 @@ class Router
             return false;
         }
         //Get current request method;
-        $requestMethod = strtolower(filter_input(\INPUT_SERVER, 'REQUEST_METHOD'));
+        $requestMethod = strtolower(filter_input(\INPUT_SERVER, 'REQUEST_METHOD') ?? '');
         foreach($routes as $route) {
             //Check if url accept request http method;
             if (!is_null($route->acceptedMethods) && !in_array($requestMethod, $route->acceptedMethods)) {
