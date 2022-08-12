@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use Osynapsy\Http\Message\Stream\StringStream;
+use Osynapsy\Http\Psr7\Message\Stream\StringStream;
 
 /**
  * Description of StringStreamTest
