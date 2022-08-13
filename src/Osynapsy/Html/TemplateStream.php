@@ -3,6 +3,7 @@ namespace Osynapsy\Html;
 
 use Osynapsy\Html\Tag;
 use Osynapsy\Html\Component;
+use Osynapsy\Http\Psr7\Message\Stream\Base;
 use Osynapsy\Kernel;
 
 /**
@@ -10,7 +11,7 @@ use Osynapsy\Kernel;
  *
  * @author Pietro Celeste <p.celeste@opensymap.net>
  */
-class Template
+class TemplateStream
 {
     const JS_PART_ID = 'js';
     const CSS_PART_ID = 'css';
@@ -20,9 +21,22 @@ class Template
     protected $path;
     protected $parts = [];
     protected $template = '<!--main-->';
+    protected $stream;
+
+    public function __construct()
+    {
+        $this->stream = new Base(fopen('php://memory', 'r+'));
+        $this->stream->write($this->template);
+        $this->stream->rewind();
+    }
 
     public function init()
     {
+    }
+
+    public function getStream()
+    {
+        return $this->stream;
     }
 
     private function initKeys()
@@ -33,7 +47,7 @@ class Template
     public function setPath($path)
     {
         $this->path = $path;
-        $this->template = $this->include($this->path);
+        $this->getStream()->write($this->include($this->path));
     }
 
     public function include($path)
@@ -65,7 +79,8 @@ class Template
 
     public function getRaw()
     {
-        return $this->template;
+        $this->getStream()->rewind();
+        return $this->getStream()->getContents();
     }
 
     public function get()
@@ -85,14 +100,11 @@ class Template
 
     protected function buildFullTemplate()
     {
-        $template = $this->template;
         foreach (Component::getRequire() as $type => $urls) {
             $this->addComponentRequirement($type, $urls);
         }
-        foreach($this->parts as $id => $parts) {
-            $template = str_replace(sprintf('<!--%s-->', $id), implode(PHP_EOL, $parts), $template);
-        }
-        return $template;
+        $this->getStream()->rewind();
+        return $this->getStream()->getContents();
     }
 
     private function addComponentRequirement($type, $urls)
@@ -125,17 +137,17 @@ class Template
 
     public function addIfNoDuplicate($content, $partId = self::BODY_PART_ID)
     {
-        if (!array_key_exists($partId, $this->parts) || !in_array($content, $this->parts[$partId])) {
-            $this->parts[$partId][] = $content;
+        if ($this->getStream()->search($content, 0) === false) {
+            $this->add($content, $partId);
         }
     }
 
     public function add($content, $partId = self::BODY_PART_ID)
     {
-        if (!array_key_exists($partId, $this->parts)) {
-            $this->parts[$partId] = [];
+        $position = $this->getStream()->search(sprintf('<!--%s-->', $partId), 0);
+        if ($position !== false) {
+            $this->getStream()->prepend((string) $content, $partId);
         }
-        $this->parts[$partId][] = $content;
     }
 
     public function appendLibrary(array $optionalLibrary = [], $appendFormController = true)
