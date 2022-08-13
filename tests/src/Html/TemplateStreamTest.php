@@ -2,19 +2,20 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use Osynapsy\Html\Template;
+use Osynapsy\Html\TemplateStream;
 use Osynapsy\Html\Ocl\DataGrid;
 
-final class TemplateTest extends TestCase
+final class TemplateStreamTest extends TestCase
 {
     const VALID_TEMPLATE_PATH = 'templatevalid.html';
     const INVALID_TEMPLATE_PATH = 'templateinvalid.html';
 
     protected static $template;
+    protected static $microtime;
 
     public static function setUpBeforeClass() : void
     {
-        self::$template = new Template();
+        self::$microtime = microtime(true);
     }
 
     public static function getFullPath($path)
@@ -24,8 +25,9 @@ final class TemplateTest extends TestCase
 
     public static function template($path)
     {
-        self::$template->setPath(self::getFullPath($path));
-        return self::$template;
+        $template = new TemplateStream();
+        $template->setPath(self::getFullPath($path));
+        return $template;
     }
 
     public function testTemplatePathIsValid()
@@ -33,12 +35,14 @@ final class TemplateTest extends TestCase
         $template = $this->template(self::VALID_TEMPLATE_PATH);
         $this->assertNotEmpty($template->getPath());
         $this->assertEquals($this->getFullPath(self::VALID_TEMPLATE_PATH), $template->getPath());
+        $this->printExecutionTime();
     }
 
     public function testTemplatePathIsNotValid()
     {
         $this->expectException("Exception");
         $this->template(self::INVALID_TEMPLATE_PATH);
+        $this->printExecutionTime();
     }
 
     public function testTemplateContentRaw()
@@ -46,15 +50,18 @@ final class TemplateTest extends TestCase
         $templateContent = file_get_contents($this->getFullPath(self::VALID_TEMPLATE_PATH));
         $template = $this->template(self::VALID_TEMPLATE_PATH);
         $this->assertEquals($templateContent, $template->getRaw());
+        $this->printExecutionTime();
     }
 
     public function testTemplateAddJs()
     {
+        ob_flush();
         $scriptPath = '/test/script.js';
         $regexPattern = sprintf('/<script src="\/test\/script.js"><\/script>/', $scriptPath);
         $template = $this->template(self::VALID_TEMPLATE_PATH);
         $template->addJs($scriptPath);
         $this->assertMatchesRegularExpression($regexPattern, $template->get());
+        $this->printExecutionTime();
     }
 
     public function testTemplateAddJsLocalCode()
@@ -64,6 +71,7 @@ final class TemplateTest extends TestCase
         $template = $this->template(self::VALID_TEMPLATE_PATH);
         $template->addJsCode($jsCode);
         $this->assertMatchesRegularExpression($regexPattern, $template->get());
+        $this->printExecutionTime();
     }
 
     public function testTemplateAddCss()
@@ -73,6 +81,7 @@ final class TemplateTest extends TestCase
         $template = $this->template(self::VALID_TEMPLATE_PATH);
         $template->addCss($cssPath);
         $this->assertMatchesRegularExpression($regexPattern, $template->get());
+        $this->printExecutionTime();
     }
 
     public function testTemplateAddStyle()
@@ -82,6 +91,15 @@ final class TemplateTest extends TestCase
         $template = $this->template(self::VALID_TEMPLATE_PATH);
         $template->addStyle($style);
         $this->assertMatchesRegularExpression($regexPattern, $template->get());
+        $this->printExecutionTime();
+    }
+
+    public function testComponent()
+    {
+        $DataGrid = new DataGrid('testGrid');
+        //Test script include
+        $this->assertEquals('<div', substr((string) $DataGrid, 0, 4));
+        $this->printExecutionTime();
     }
 
     public function testTemplateComponentIncludeComponent()
@@ -93,6 +111,7 @@ final class TemplateTest extends TestCase
         //Test script include
         $this->assertMatchesRegularExpression('/DataGrid/', $result);
         $this->assertMatchesRegularExpression('/id="testGrid"/', $result);
+        $this->printExecutionTime();
     }
 
     public function testTemplateReturnOnlyComponent()
@@ -102,7 +121,16 @@ final class TemplateTest extends TestCase
         $DataGrid->setData([['prova' => '1']]);
         $regexPattern = '/testGrid/';
         $template = $this->template(self::VALID_TEMPLATE_PATH);
+        $template->add($DataGrid);
         $this->assertMatchesRegularExpression($regexPattern, $template->get());
+        $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS'] = '';
+        $this->printExecutionTime();
+        ob_flush();
+    }
+
+    public function printExecutionTime()
+    {
+        echo sprintf(PHP_EOL.'Tempo impiegato %s', (microtime(true) - self::$microtime));
     }
 }
 
