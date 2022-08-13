@@ -1,12 +1,12 @@
 <?php
-namespace Osynapsy\Http\Message\Stream;
+namespace Osynapsy\Http\Psr7\Message\Stream;
 
 /**
  * Description of String
  *
  * @author Pietro Celeste <pietro.celeste@gmail.com>
  */
-class StringStream
+class StreamString
 {
     protected $stream = '';
     protected $streamLength = 0;

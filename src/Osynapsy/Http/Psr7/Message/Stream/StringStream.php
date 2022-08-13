@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Http\Message\Stream;
+namespace Osynapsy\Http\Psr7\Message\Stream;
 
 /**
  * Description of String
@@ -96,9 +96,9 @@ class StringStream
         $this->position = min($position, $this->streamLength);
     }
 
-    public function search($key)
+    public function search($key, $position = null)
     {
-        return strpos($this->stream, $key, $this->position);
+        return strpos($this->stream, $key, $position ?? $this->position);
     }
 
     public function tell()
