@@ -3,7 +3,7 @@ namespace Osynapsy\Html;
 
 use Osynapsy\Html\Tag;
 use Osynapsy\Html\Component;
-use Osynapsy\Http\Psr7\Message\Stream\Base;
+use Osynapsy\Http\Psr7\Message\Stream\StreamString;
 use Osynapsy\Kernel;
 
 /**
@@ -25,9 +25,7 @@ class TemplateStream
 
     public function __construct()
     {
-        $this->stream = new Base(fopen('php://memory', 'r+'));
-        $this->stream->write($this->template);
-        $this->stream->rewind();
+        $this->stream = new StreamString($this->template);
     }
 
     public function init()
