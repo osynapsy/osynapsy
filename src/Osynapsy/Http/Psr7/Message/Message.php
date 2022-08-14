@@ -11,7 +11,8 @@ use Psr\Http\Message\StreamInterface;
  */
 class Message implements MessageInterface
 {
-    private $protocol = '1.1';
+    const VALID_PROTOCOL_VERSION = ['1.0', '1.1', '2.0', '2'];
+    protected $protocol = '1.1';
     protected $headers = [];
     protected $headerNames = [];
     protected $bodyStream;
@@ -21,11 +22,29 @@ class Message implements MessageInterface
         return $this->protocol;
     }
 
-    public function withProtocolVersion($protocol)
+    protected function setProtocolVersion($protocolVersion)
+    {
+        $this->validateProtocolVersion($protocolVersion);
+        $this->protocol = $protocolVersion;
+    }
+
+    public function withProtocolVersion($protocolVersion)
     {
         $result = clone $this;
-        $result->protocol = $protocol;
+        $result->setProtocolVersion($protocolVersion);
         return $result;
+    }
+
+    protected function validateProtocolVersion($protocolVersion)
+    {
+        if (!in_array($protocolVersion, self::VALID_PROTOCOL_VERSION)) {
+            throw new InvalidArgumentException(
+                sprtinf(
+                    'Invalid HTTP version. Must be one of: %s',
+                    implode(', ', self::VALID_PROTOCOL_VERSION)
+                )
+            );
+        }
     }
 
     public function withHeader($key, $value)
@@ -107,13 +126,28 @@ class Message implements MessageInterface
         return $this->bodyStream;
     }
 
-    public function withBody(StreamInterface $body)
+    protected function setHeaders(array $headers)
     {
-        if ($body === $this->bodyStream) {
+        foreach($headers as $name => $value) {
+            $caseInsesitiveKey = $this->caseInsesitiveKey($name);
+            $this->headerNames[$caseInsesitiveKey] = $name;
+            $values = is_array($value) ? $value : [$value];
+            $this->headers[$name] = array_merge($this->headers[$name] ?? [], $values);
+        }
+    }
+
+    protected function setBody(StreamInterface $stream)
+    {
+        $this->bodyStream = $stream;
+    }
+
+    public function withBody(StreamInterface $stream)
+    {
+        if ($stream === $this->bodyStream) {
             return $this;
         }
         $result = clone $this;
-        $result->bodyStream = $body;
+        $result->setBody($stream);
         return $result;
     }
 
