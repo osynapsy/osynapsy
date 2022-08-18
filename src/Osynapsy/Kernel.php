@@ -12,6 +12,7 @@
 namespace Osynapsy;
 
 use Osynapsy\Http\Request;
+use Osynapsy\Psr\Http\ServerRequest as PsrRequest;
 use Osynapsy\Kernel\Loader;
 use Osynapsy\Kernel\Router;
 use Osynapsy\Kernel\KernelException;
@@ -32,6 +33,7 @@ class Kernel
 
     public $router;
     public $request;
+    public $psrRequest;
     private $loader;
 
     /**
@@ -54,6 +56,7 @@ class Kernel
     {
         try {
             $this->request = $this->requestFactory();
+            $this->psrRequest = $this->psr7RequestFactory();
             $requestUri = $this->requestUriFactory();
             $router = $this->routerFactory($this->getRequest(), $requestUri);
             $applications = $this->getLoader()->get('app');
@@ -84,6 +87,13 @@ class Kernel
         return $request;
     }
 
+    private  function psr7RequestFactory()
+    {
+        $psrRequest = PsrRequest::fromGlobals();
+        $this->getRequest()->set('psr7Request', $psrRequest);
+        return $psrRequest;
+    }
+
     private function loadConfig($dictionaryDataPath, $fielId, $fieldValue = null)
     {
         $rawdata = $this->getLoader()->search($dictionaryDataPath);
@@ -103,7 +113,7 @@ class Kernel
 
     private function requestUriFactory()
     {
-        return strtok(filter_input(INPUT_SERVER, 'REQUEST_URI'), '?');
+        return $this->getPsrRequest()->getUri()->getPath();
     }
 
     /**
@@ -164,6 +174,11 @@ class Kernel
     public function getLoader()
     {
         return $this->loader;
+    }
+
+    public function getPsrRequest()
+    {
+        return $this->psrRequest;
     }
 
     public function getRequest()
