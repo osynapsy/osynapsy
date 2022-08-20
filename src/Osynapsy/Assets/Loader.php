@@ -30,7 +30,7 @@ class Loader extends Controller
         return $this->getFile($this->basePath . $this->path);
     }
 
-    private function getFile($filename)
+    protected function getFile($filename)
     {
         if (!is_file($filename)) {
             throw new KernelException('Page not found', 404);
