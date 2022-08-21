@@ -145,7 +145,40 @@ class Component extends Tag
         \Osynapsy\Event\Dispatcher::addListener($listener, [$eventId]);
     }
 
-    private static function requireFile($file, $type)
+    /**
+     * Append required js file to list of required file
+     *
+     * @param $file web path of file;
+     * @return void
+     */
+    public function requireJs($file)
+    {
+        self::requireFile($this, $file, 'js');
+    }
+
+    /**
+     * Append required js code to list of required initialization
+     *
+     * @param $code js code to append at html page;
+     * @return void
+     */
+    public function requireJsCode($code)
+    {
+        self::requireFile($this, $code, 'jscode');
+    }
+
+    /**
+     * Append required css to list of required File
+     *
+     * @param $file web path of css file;
+     * @return void
+     */
+    public function requireCss($file)
+    {
+        self::requireFile($this, $file, 'css');
+    }
+
+    protected static function requireFile($object, $file, $type)
     {
         if (!array_key_exists($type, self::$require)) {
             self::$require[$type] = [];
@@ -156,45 +189,29 @@ class Component extends Tag
             self::$require[$type][] = $file;
             return;
         }
-        self::$require[$type][] = self::buildScriptWebPath($file);
-    }
-
-    /**
-     * Append required js file to list of required file
-     *
-     * @param $file web path of file;
-     * @return void
-     */
-    public static function requireJs($file)
-    {
-        self::requireFile($file, 'js');
-    }
-
-    /**
-     * Append required js code to list of required initialization
-     *
-     * @param $code js code to append at html page;
-     * @return void
-     */
-    public static function requireJsCode($code)
-    {
-        self::requireFile($code, 'jscode');
-    }
-
-    /**
-     * Append required css to list of required File
-     *
-     * @param $file web path of css file;
-     * @return void
-     */
-    public static function requireCss($file)
-    {
-        self::requireFile($file, 'css');
+        self::$require[$type][] = self::buildScriptWebPathWithComposer($object, $file);
     }
 
     protected static function buildScriptWebPath($file)
     {
         return in_array($file[0], ['/','h']) ? $file : '/assets/osynapsy/'.Kernel::VERSION.'/'.$file;
+    }
+
+    protected static function buildScriptWebPathWithComposer($object, $file)
+    {
+        $class = new \ReflectionClass($object);
+        $packageName = self::getComposerPackageName($class->getNamespaceName(), pathinfo($class->getFileName())['dirname']);
+        return sprintf('/assets/osynapsy/external/%s/%s', sha1($packageName) , $file);
+    }
+
+    protected static function getComposerPackageName($namespace, $classpath)
+    {
+        $composerPath = realpath(str_replace(array_map(function ($elem) { return '/'.$elem;}, explode('\\',$namespace)), '', $classpath).'/../composer.json');
+        if (!file_exists($composerPath)) {
+            throw new \Exception(sprintf('Composer file not found in %s', $composerPath));
+        }
+        $composerParams = json_decode(file_get_contents($composerPath), true);
+        return key($composerParams['autoload']['psr-4']);
     }
 
     /**
