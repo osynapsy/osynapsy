@@ -137,7 +137,7 @@ class TextBox extends OclTextBox
 
     public function setMaskRaw($maskraw)
     {
-        $this->requireJs('Lib/inputmask-5.0.0-beta/dist/jquery.inputmask.js');
+        $this->requireJs('assets/Lib/inputmask-5.0.0-beta/dist/jquery.inputmask.js');
         $this->requireJsCode("$(':input').inputmask();");
         $this->att('data-inputmask', $maskraw);
         return $this;
@@ -149,12 +149,12 @@ class TextBox extends OclTextBox
             throw new \Exception("TextBox {$this->id} : iMask format {$iMaskId} not regnized");
         }
         $mask = $this->imask[$iMaskId];
-        $this->requireJs('Lib/imask-6.0.5/imask.js');
-        $this->requireJs('Bcl/InputMask/script.js');
+        $this->requireJs('assets/Lib/imask-6.0.5/imask.js');
+        $this->requireJs('assets/Bcl/InputMask/script.js');
         $this->setClass(trim('input-mask '.$mask['class']));
         $this->att('data-imask', $mask['id']);
     }
-    
+
     public function setSmallSize()
     {
         $this->setClass('form-control-sm');

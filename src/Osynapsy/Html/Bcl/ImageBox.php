@@ -40,10 +40,10 @@ class ImageBox extends Component
     public function __construct($id)
     {
         $this->rawId = $id;
-        $this->requireCss('Lib/rcrop/style.css');
-        $this->requireJs('Lib/rcrop/script.js');
-        $this->requireCss('Bcl/ImageBox/style.css');
-        $this->requireJs('Bcl/ImageBox/script.js');
+        $this->requireCss('assets/Lib/rcrop/style.css');
+        $this->requireJs('assets/Lib/rcrop/script.js');
+        $this->requireCss('assets/Bcl/ImageBox/style.css');
+        $this->requireJs('assets/Bcl/ImageBox/script.js');
         parent::__construct('div', $id.'_box');
         $this->att('class','osy-imagebox-bcl text-center')->att('data-action', 'upload');
         $this->att('data-preserve-aspect-ratio', 0);

@@ -22,12 +22,12 @@ class Select extends ComboBox
 {
     //put your code here
     public function __construct($name, $multiple = false, $title = null)
-    {        
+    {
         parent::__construct($name);
         $this->class = 'osy-select';
-        $this->requireCss('Lib/bootstrap-select-1.10.0/bootstrap-select.css');
-        $this->requireJs('Lib/bootstrap-select-1.10.0/bootstrap-select.js');
-        $this->requireJs('Bcl/Select/script.js');
+        $this->requireCss('assets/Lib/bootstrap-select-1.10.0/bootstrap-select.css');
+        $this->requireJs('assets/Lib/bootstrap-select-1.10.0/bootstrap-select.js');
+        $this->requireJs('assets/Bcl/Select/script.js');
         //$this->setParameter('option-select-disable',false);
         if ($multiple) {
             $this->setMultiSelect();
@@ -36,7 +36,7 @@ class Select extends ComboBox
             $this->title = $title;
         }
     }
-    
+
     public function setMultiSelect()
     {
         $this->att('multiple','multiple');

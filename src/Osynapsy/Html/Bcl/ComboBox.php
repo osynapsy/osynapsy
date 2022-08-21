@@ -25,10 +25,10 @@ class ComboBox extends OclComboBox
     {
         $this->addClass('selectpicker');
         $this->att('data-live-search', 'true');
-        $this->requireCss('Bcl/ComboBox/bootstrap-select.css');
-        $this->requireJs('Bcl/ComboBox/bootstrap-select.js');
+        $this->requireCss('assets/Bcl/ComboBox/bootstrap-select.css');
+        $this->requireJs('assets/Bcl/ComboBox/bootstrap-select.js');
     }
-    
+
     public function setSmallSize()
     {
         $this->setClass('form-control-sm');

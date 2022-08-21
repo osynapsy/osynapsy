@@ -28,8 +28,8 @@ class Tags extends Component
     {
         parent::__construct('div', $name);
         $this->hidden = $this->add(new HiddenBox($name));
-        $this->requireJs('Bcl/Tags/script.js');
-        $this->requireCss('Bcl/Tags/style.css');
+        $this->requireJs('assets/Bcl/Tags/script.js');
+        $this->requireCss('assets/Bcl/Tags/style.css');
         $this->labelClass = $class;
     }
 

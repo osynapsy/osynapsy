@@ -13,7 +13,7 @@ namespace Osynapsy\Html\Bcl;
 
 use Osynapsy\Html\Tag;
 
-class ListTree extends ListBox 
+class ListTree extends ListBox
 {
     private $groups = array();
     public $data = array();
@@ -25,17 +25,17 @@ class ListTree extends ListBox
     public function __construct($id)
     {
         parent::__construct($id);
-        $this->requireJs('Bcl/ListBox/script.js');
-        $this->requireCss('Bcl/ListBox/style.css');
+        $this->requireJs('assets/Bcl/ListBox/script.js');
+        $this->requireCss('assets/Bcl/ListBox/style.css');
     }
-    
+
     protected function __build_extra__()
     {
         $this->request = empty($_REQUEST[$this->id]) ? null : $_REQUEST[$this->id];
         array_unshift($this->data,array('','- seleziona -'));
         $this->add($this->buildBranch($this->data));
     }
-    
+
     private function buildBranch($branch, $class='listbox-list')
     {
         if (!$branch) {
@@ -43,7 +43,7 @@ class ListTree extends ListBox
         }
         $ul = new Tag('ul');
         $ul->att('class',$class);
-        
+
         foreach ($branch as $rec) {
             $hasSublist = array_key_exists($rec[0], $this->groups);
             $li = $ul->add(new Tag('li'));
@@ -59,7 +59,7 @@ class ListTree extends ListBox
         }
         return $ul;
     }
-    
+
     public function SetData($rawData)
     {
         $this->data = array();

@@ -15,7 +15,7 @@ use Osynapsy\Html\Ocl\CheckList as OclCheckList;
 
 /**
  * Build a list of check
- * 
+ *
  */
 class CheckList extends OclCheckList
 {
@@ -26,6 +26,6 @@ class CheckList extends OclCheckList
     public function __construct($name)
     {
         parent::__construct($name);
-        $this->requireCss('Bcl/CheckList/style.css');
+        $this->requireCss('assets/Bcl/CheckList/style.css');
     }
 }

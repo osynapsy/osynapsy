@@ -18,7 +18,7 @@ class DataGrid extends Component
 {
     const BORDER_FULL = 'full';
     const BORDER_HORIZONTAL = 'horizontal';
-    
+
     private $columns = [];
     private $emptyMessage = 'No data found';
     private $pagination;
@@ -37,8 +37,8 @@ class DataGrid extends Component
     {
         parent::__construct('div', $name);
         $this->setClass('bcl-datagrid');
-        $this->requireCss('Bcl/DataGrid/style.css');
-        $this->requireJs('Bcl/DataGrid/script.js');
+        $this->requireCss('assets/Bcl/DataGrid/style.css');
+        $this->requireJs('assets/Bcl/DataGrid/script.js');
     }
 
     /**
@@ -187,7 +187,7 @@ class DataGrid extends Component
         foreach ($this->columns as $column) {
             $cell = $column->buildTd($tr, $record ?? []);
             if ($column->type !== DataGridColumn::FIELD_TYPE_COMMAND) {
-                $tr->add($cell);                
+                $tr->add($cell);
                 continue;
             }
             $commands[] = $cell;
@@ -200,7 +200,7 @@ class DataGrid extends Component
         }
         return $tr;
     }
-    
+
     protected function buildCellCommands($commands)
     {
         $cell = null;
@@ -208,7 +208,7 @@ class DataGrid extends Component
             if (empty($i)) {
                 $cell = $command;
                 continue;
-            }            
+            }
             $cell->add($command->child(0));
         }
         return $cell;

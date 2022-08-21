@@ -64,7 +64,7 @@ class Pagination extends Component
         if (!empty($infiniteContainer)) {
             $this->setInfiniteScroll($infiniteContainer);
         }
-        $this->requireJs('Bcl/Pagination/script.js');
+        $this->requireJs('assets/Bcl/Pagination/script.js');
         $this->setClass('BclPagination');
         if ($tag == 'form') {
             $this->att('method','post');

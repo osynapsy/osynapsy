@@ -21,17 +21,17 @@ class SortableList extends ListUnordered
     private $labelColor;
     private $classType = 'sortable-list-destination';
     private $ListConnected;
-    
+
     public function __construct($name)
     {
         parent::__construct($name);
-        
-        $this->requireCss('Bcl/SortableList/style.css');
-        $this->requireJs('Bcl/SortableList/jquery.sortable.js');
-        $this->requireJs('Bcl/SortableList/script.js');        
+
+        $this->requireCss('assets/Bcl/SortableList/style.css');
+        $this->requireJs('assets/Bcl/SortableList/jquery.sortable.js');
+        $this->requireJs('assets/Bcl/SortableList/script.js');
         $this->att('class','sortable-list');
     }
-    
+
     public function __build_extra__()
     {
         $this->att('class', $this->classType, true);
@@ -47,14 +47,14 @@ class SortableList extends ListUnordered
             $li->add('<span class="sortable-list-item-minus glyphicon glyphicon-minus"></span>');
         }
     }
-    
+
     public function connectTo(SortableList $list)
     {
         $this->ListConnected = $list;
         $this->att('data-connected',$this->ListConnected->id);
         return $this;
     }
-    
+
     public function setLabel($label, $colorClass = 'label-default')
     {
         $this->label = $label;
