@@ -17,47 +17,47 @@ use Osynapsy\Html\Bcl\Link;
 
 /**
  * Build a Bootstrap NavBar
- * 
+ *
  */
 class NavBar extends Component
-{        
+{
     /**
      * Constructor require dom id of component
-     * 
+     *
      * @param string $id
      */
     public function __construct($id)
     {
         parent::__construct('nav', $id);
         $this->setData([],[]);
-        $this->requireCss('Bcl4/NavBar/style.css');
+        $this->requireCss('assets/Bcl4/NavBar/style.css');
     }
-    
+
     /**
      * Main builder of navbar
-     * 
+     *
      */
     public function __build_extra__()
     {
-        $this->setClass('osy-bcl4-navbar navbar navbar-expand-sm');                
-        $this->buildHeader();   
+        $this->setClass('osy-bcl4-navbar navbar navbar-expand-sm');
+        $this->buildHeader();
         $collapsable = $this->add(new Tag('div', $this->id.'Content', 'collapse navbar-collapse'));
-        $collapsable->add($this->buildUlMenu($this->data['primary'])->att('class','mr-auto', true)); 
+        $collapsable->add($this->buildUlMenu($this->data['primary'])->att('class','mr-auto', true));
         $collapsable->add($this->buildUlMenu($this->data['secondary'])->att('class','float-right', true));
     }
-    
+
     /**
      * Internal method for build header part of navbar
-     * 
+     *
      * @param type $container
      * @return type
      */
     private function buildHeader()
-    {                        
+    {
         $brand = $this->getParameter('brand');
         if (!empty($brand)) {
             $this->add(new Tag('a', null, 'navbar-brand'))
-                 ->att('href', $brand[1])               
+                 ->att('href', $brand[1])
                  ->add($brand[0]);
         }
         $this->add(new Tag('button'))->att([
@@ -70,12 +70,12 @@ class NavBar extends Component
             'aria-label' => "Toggle navigation"
         ])->add('<span class="navbar-toggler-icon fa fa-bars"></span>');
     }
-    
+
     /**
      * Internal method for build a unordered list menù (recursive)
-     * 
+     *
      * @param object $container of ul
-     * @param array $data 
+     * @param array $data
      * @param int $level
      * @return type
      */
@@ -84,27 +84,27 @@ class NavBar extends Component
         $ul = new Tag('ul', null, 'navbar-nav');
         if (empty($data) || !is_array($data)) {
             return $ul;
-        }               
+        }
         foreach($data as $label => $menu){
             $li = $ul->add(new Tag('li', null, 'nav-item'));
-            if (is_array($menu)) {                
+            if (is_array($menu)) {
                 $li->att('class','dropdown',true)->add(
                     $this->buildSubMenu($li, $label, $menu)
                 );
                 continue;
-            }            
+            }
             $li->add(new Tag('a', null, 'nav-link'))
-               ->att('href',$menu)->add($label);            
+               ->att('href',$menu)->add($label);
         }
         return $ul;
     }
-    
-    private function buildSubMenu($container, $label, array $data, $level = 0) 
+
+    private function buildSubMenu($container, $label, array $data, $level = 0)
     {
         $labelClass = (($level > 0) ? 'dropdown-item' : 'nav-link dropdown-toggle');
         $a = $container->add(new Tag('a', null, $labelClass))->att([
-            'href' => '#', 
-            'data-toggle' => 'dropdown',                
+            'href' => '#',
+            'data-toggle' => 'dropdown',
             'aria-expanded' => 'false',
             'aria-haspopup' => 'true'
         ]);
@@ -125,14 +125,14 @@ class NavBar extends Component
             }
             $menu->add(new Tag('a', null, 'dropdown-item'))
                  ->att('href', is_array($link) ? '#' : $link)
-                 ->add($label);            
+                 ->add($label);
         }
     }
-    
+
     /**
      * Decide if use fluid (true) or static container (false)
-     * 
-     * @param type $bool 
+     *
+     * @param type $bool
      * @return $this
      */
     public function setContainerFluid($bool = true)
@@ -140,10 +140,10 @@ class NavBar extends Component
         $this->setParameter('containerClass','container'.($bool ? '-fluid' : ''));
         return $this;
     }
-    
+
     /**
-     * Set brand identity (logo, promo etc) to start menù    
-     * 
+     * Set brand identity (logo, promo etc) to start menù
+     *
      * @param string $label is visual part of brand
      * @param string $href is url where user will be send if click brand
      * @return $this
@@ -153,11 +153,11 @@ class NavBar extends Component
         $this->setParameter('brand', [$label, $href]);
         return $this;
     }
-    
+
     /**
-     * Set data necessary for build NavBar.     
-     * 
-     * @param array $primary set main menu data (near brand) 
+     * Set data necessary for build NavBar.
+     *
+     * @param array $primary set main menu data (near brand)
      * @param array $secondary set second menù aligned to right
      * @return $this Navbar component
      */
@@ -167,10 +167,10 @@ class NavBar extends Component
         $this->data['secondary'] = $secondary;
         return $this;
     }
-    
+
     /**
      * Fix navigation bar on the top of page (navbar-fixed-top class on main div)
-     * 
+     *
      * @return $this
      */
     public function setFixedOnTop()

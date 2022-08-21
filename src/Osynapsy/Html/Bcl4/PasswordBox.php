@@ -9,11 +9,11 @@ use Osynapsy\Html\Bcl\TextBox;
  * @author Pietro
  */
 class PasswordBox extends TextBox
-{        
+{
     public function __construct($name)
     {
         parent::__construct($name);
         $this->setClass('text-security');
-        $this->requireCss('Bcl4/PasswordBox/text-security.css');
-    }    
+        $this->requireCss('assets/Bcl4/PasswordBox/text-security.css');
+    }
 }

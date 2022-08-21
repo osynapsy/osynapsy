@@ -20,28 +20,28 @@ use Osynapsy\Html\Tag;
 class Accordion extends Component
 {
     private $panels = array();
-    private $defaultOpen  = 0; 
-    
+    private $defaultOpen  = 0;
+
     public function __construct($id, $defaultOpen = 0)
     {
         parent::__construct('div', $id);
-        $this->requireCss('Bcl4/Accordion/style.css');
+        $this->requireCss('assets/Bcl4/Accordion/style.css');
         $this->att('class','accordion osy-panel-accordion')
              ->att('role','tablist');
-        $this->requireCss('Bcl/PanelAccordion/style.css');
+        $this->requireCss('assets/Bcl/PanelAccordion/style.css');
         //$this->requireJs('Bcl/PanelAccordion/script.js');
         $memoryOpen = filter_input(\INPUT_POST, $this->id);
         $this->defaultOpen = is_null($memoryOpen) ? $defaultOpen : $memoryOpen;
     }
-    
+
     public function __build_extra__()
     {
         $this->add(new HiddenBox($this->id));
         foreach($this->panels as $panel) {
             $this->add($panel);
-        }        
+        }
     }
-    
+
     public function addPanel($title, $commands = [])
     {
         $panelIdx = count($this->panels);
@@ -60,19 +60,19 @@ class Accordion extends Component
         $panel->addCommands($commands)->getBody()->att([
             'id' => $panelId.'_body',
             'data-parent' => '#'.$this->id
-        ]);        
+        ]);
         $this->panels[] = $panel;
         return $this->panels[$panelIdx];
     }
-    
+
     private function buildHeader($title, $targetId, $open)
-    {        
+    {
         $span = new Tag('span', null, 'c-pointer');
         $span->att([
             //'type' => 'button',
             'data-toggle' => 'collapse',
             'role' => 'button',
-            'data-target' => '#'.$targetId, 
+            'data-target' => '#'.$targetId,
             'aria-expanded' => empty($open) ? 'false' : 'true',
             'aria-controls' => $targetId
         ])->add($title);

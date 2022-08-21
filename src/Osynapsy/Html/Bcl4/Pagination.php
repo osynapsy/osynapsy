@@ -55,7 +55,7 @@ class Pagination extends Component implements IPagination
     {
         parent::__construct($tag, $id);
         $this->setClass('BclPagination');
-        $this->requireJs('Bcl/Pagination/script.js');
+        $this->requireJs('assets/Bcl/Pagination/script.js');
         $this->setPaginator($paginator);
         if ($tag == 'form') {
             $this->att('method','post');

@@ -20,8 +20,8 @@ class Tags extends Component
         $this->hiddenId = $id;
         $this->labelClass = $labelClass;
         $this->setClass('bcl4-tags form-control');
-        $this->requireJs('Bcl4/Tags/script.js');
-        $this->requireCss('Bcl4/Tags/style.css');
+        $this->requireJs('assets/Bcl4/Tags/script.js');
+        $this->requireCss('assets/Bcl4/Tags/style.css');
     }
 
     protected function __build_extra__(): void

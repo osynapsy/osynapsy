@@ -26,7 +26,7 @@ class DatePicker extends Component
     public function __construct($id)
     {
         $this->datePickerId = $id;
-        $this->pushRequirement();
+        $this->pushRequirement($this);
         parent::__construct('div', $id.'_datepicker');
         $this->att(['class' => 'input-group date date-picker' , 'data-target-input'=> 'nearest']);
         $this->fieldDateBoxFactory();
@@ -49,12 +49,12 @@ class DatePicker extends Component
         ]);
     }
 
-    public static function pushRequirement()
+    public static function pushRequirement($object)
     {
-        self::requireCss('Lib/tempusdominus-5.38.0/style.css');
-        self::requireJs('Lib/momentjs-2.17.1/moment.js');
-        self::requireJs('Lib/tempusdominus-5.38.0/script.js');
-        self::requireJs('Bcl4/DatePicker/script.js');
+        self::requireFile($object, 'assets/Lib/tempusdominus-5.38.0/style.css', 'css');
+        self::requireFile($object, 'assets/Lib/momentjs-2.17.1/moment.js', 'js');
+        self::requireFile($object, 'assets/Lib/tempusdominus-5.38.0/script.js', 'js');
+        self::requireFile($object, 'assets/Bcl4/DatePicker/script.js', 'js');
     }
 
     protected function __build_extra__()

@@ -18,8 +18,8 @@ class Sidebar extends Component
     {
         parent::__construct('dummy', 'dummy'.$id);
         $this->setClass('sidebar');
-        $this->requireCss('Bcl4/Sidebar/style.css');
-        $this->requireJs('Bcl4/Sidebar/script.js');
+        $this->requireCss('assets/Bcl4/Sidebar/style.css');
+        $this->requireJs('assets/Bcl4/Sidebar/script.js');
         $this->button = $this->buttonOpenSidebarFactory($id);
         $this->sidebar = parent::add($this->sidebarFactory($id));
     }
