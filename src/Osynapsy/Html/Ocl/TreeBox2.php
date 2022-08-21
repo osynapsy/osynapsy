@@ -22,32 +22,32 @@ use Osynapsy\Data\Tree;
  * @author Pietro Celeste <p.celeste@osynapsy.org>
  */
 class TreeBox2 extends Component
-{    
-    private $nodeOpenIds = [];    
+{
+    private $nodeOpenIds = [];
     private $dataTree;
-    
+
     const CLASS_SELECTED_LABEL = 'osy-treebox-label-selected';
     const ICON_NODE_CONNECTOR_EMPTY = '<span class="tree tree-null">&nbsp;</span>';
-    const ICON_NODE_CONNECTOR_LINE = '<span class="tree tree-con-4">&nbsp;</span>';    
+    const ICON_NODE_CONNECTOR_LINE = '<span class="tree tree-con-4">&nbsp;</span>';
     const ROOT_ID = 0;
-    
+
     public function __construct($id)
     {
         parent::__construct('div', $id);
         $this->add(new HiddenBox("{$id}_sel"))->setClass('selectedNode');
         $this->add(new HiddenBox("{$id}_opn"))->setClass('openNodes');
         $this->setClass('osy-treebox');
-        $this->requireJs('Ocl/TreeBox/script.js');
-        $this->requireCss('Ocl/TreeBox/style2.css');        
+        $this->requireJs('assets/Ocl/TreeBox/script.js');
+        $this->requireCss('assets/Ocl/TreeBox/style2.css');
     }
-    
+
     protected function __build_extra__(): void
-    {       
-        foreach ($this->dataTree->get() as $node) {            
+    {
+        foreach ($this->dataTree->get() as $node) {
             $this->add($this->node($node));
         }
-    }        
-            
+    }
+
     protected function branch($item, $icons) : Tag
     {
         $branch = new Tag('div', null, 'osy-treebox-branch');
@@ -57,7 +57,7 @@ class TreeBox2 extends Component
              ->add($item[1]);
         $branchBody = $branch->add(
             new Tag('div', null, 'osy-treebox-branch-body')
-        );        
+        );
         if (!in_array($item[0], $this->nodeOpenIds) && ($item[3] != '1')) {
             $branchBody->addClass('d-none');
         }
@@ -66,7 +66,7 @@ class TreeBox2 extends Component
         }
         return $branch;
     }
-    
+
     protected function leaf($item, $icons) : Tag
     {
        $leaf = new Tag('div', null, 'osy-treebox-leaf');
@@ -76,33 +76,33 @@ class TreeBox2 extends Component
     }
 
     protected function node($item, $icons = []) : Tag
-    {        
+    {
         if ($item['_level'] > -1){
-            $icons[$item['_level']] = $item['_position'] === Tree::POSITION_END ? self::ICON_NODE_CONNECTOR_EMPTY: self::ICON_NODE_CONNECTOR_LINE;        
-        }        
+            $icons[$item['_level']] = $item['_position'] === Tree::POSITION_END ? self::ICON_NODE_CONNECTOR_EMPTY: self::ICON_NODE_CONNECTOR_LINE;
+        }
         return empty($item['_childrens']) ? $this->leaf($item, $icons) : $this->branch($item, $icons);
     }
-    
+
     private function icon($node, $icons = [])
-    {        
+    {
         $class = "osy-treebox-branch-command tree-plus-".(!empty($node['_level']) && $node['_position'] === Tree::POSITION_BEGIN ? Tree::POSITION_BETWEEN : $node['_position']);
-        if (empty($node['_childrens'])){ 
-            $class = "tree-con-{$node['_position']}";    
+        if (empty($node['_childrens'])){
+            $class = "tree-con-{$node['_position']}";
         } elseif (in_array($node[0], $this->nodeOpenIds) || !empty($node[3])) { //If node is open load minus icon
             $class .= ' minus';
         }
-        //Sovrascrivo l'ultima icona con il l'icona/segmento corrispondente al comando / posizione        
-        $icons[$node['_level']] = sprintf('<span class="tree %s">&nbsp;</span>', $class);        
+        //Sovrascrivo l'ultima icona con il l'icona/segmento corrispondente al comando / posizione
+        $icons[$node['_level']] = sprintf('<span class="tree %s">&nbsp;</span>', $class);
         return implode('',$icons);
     }
-            
+
     public function setData($data, $keyId = 0, $keyParentId = 2, $keyIsOpen = 3)
     {
         parent::setData($data);
         if (empty($this->data)){
             return $this;
         }
-        $this->dataTree = new Tree($keyId, $keyParentId, $keyIsOpen, $this->getData());         
+        $this->dataTree = new Tree($keyId, $keyParentId, $keyIsOpen, $this->getData());
         return $this;
-    }        
+    }
 }

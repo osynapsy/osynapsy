@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
  * This file is part of the Osynapsy package.
@@ -13,15 +13,15 @@ namespace Osynapsy\Html\Ocl;
 
 use Osynapsy\Html\Component;
 
-class Slider extends Component 
+class Slider extends Component
 {
 	public function __construct($id)
     {
         parent::__construct('div', $id);
 		$this->att('class', 'osy-slider');
-		$this->requireJs('Ocl/Slider/script.js');
+		$this->requireJs('assets/Ocl/Slider/script.js');
     }
-	
+
 	protected function __build_extra__()
     {
 		if ($range = $this->getParameter('slider-range')){
@@ -36,17 +36,17 @@ class Slider extends Component
 		$div_min_max->att('class','osy-slider-min-max');
 		$div_min_max->add('&nbsp');
 		if ($min == '0' or !empty($min)){
-			if ($min[0] == '$'){ eval('$min = '.$min.';'); } 
-			$div_min_max->add('<span class="lbl-min">'.$min.'</span>'); 
+			if ($min[0] == '$'){ eval('$min = '.$min.';'); }
+			$div_min_max->add('<span class="lbl-min">'.$min.'</span>');
 			$this->att('data-min',$min);
 		}
 		$bar = $this->add(tag::create('div'))->att('class','osy-slider-bar');
 		if ($max = $this->getParameter('max')){
-			if ($max[0] == '$'){ eval('$max = '.$max.';'); } 
-			$div_min_max->add('<span class="lbl-max">'.$max.'</span>'); 
+			if ($max[0] == '$'){ eval('$max = '.$max.';'); }
+			$div_min_max->add('<span class="lbl-max">'.$max.'</span>');
 			$this->att('data-max',$max);
 		}
-		if (!empty($_REQUEST[$this->id.'_min']) && 
+		if (!empty($_REQUEST[$this->id.'_min']) &&
 			!empty($_REQUEST[$this->id.'_max'])){
 		    $this->att('data-values',$_REQUEST[$this->id.'_min'].','.$_REQUEST[$this->id.'_max']);
 		}

@@ -19,9 +19,9 @@ class TagList extends Component
     {
         parent::__construct('div',$id);
         $this->class = 'osy-taglist';
-        $this->requireJs('Ocl/TagList/script.js');
+        $this->requireJs('assets/Ocl/TagList/script.js');
     }
-    
+
 	protected function __build_extra__()
     {
 		$this->add(new hidden_box($this->id));
@@ -48,7 +48,7 @@ class TagList extends Component
 				$datalist->add(tag::create('option'))->add($rec[1]);
         	}
 		}
-		
+
         if(!$build_tag_from_datasource && !empty($_REQUEST[$this->id]))
 		{
 			$item_list = explode(',',$_REQUEST[$this->id]);
@@ -66,7 +66,7 @@ class TagList extends Component
 			$txt->att('list',$this->id.'_data');
 		}
 		$ul->add('<br style="clear: both">');
-		
+
     }
 
 	protected function __ajax_exec__(){
@@ -100,24 +100,24 @@ class TagList extends Component
 		$rsp = null;
 		if (!array_key_exists($_REQUEST['tag'],$tag_lst)){
 			die("Tag {$_REQUEST['tag']} don't exists in datalist");//.print_r($_REQUEST['tag'])."\n".print_r($tag_lst,true));
-		} 
+		}
 		//Prendo il tag ID e lo aggiungo ai parametri sql per l'inserimento in tabella.
 		$sql_par[$tagfld] = $tag_lst[$_REQUEST['tag']];
 		switch($_POST['ajax-cmd'])
 		{
 		  case 'add':
 		                /*
-						$tid = kkernel::$dba->exec_unique("SELECT id as tid 
+						$tid = kkernel::$dba->exec_unique("SELECT id as tid
 		                                               FROM {$table}
-		                                            WHERE {$fkey} = ? 
+		                                            WHERE {$fkey} = ?
 		                                              AND t = ?",array(UID,$_POST['tag']));
 		                if (empty($tid)){
-		                    kkernel::$dba->exec_cmd("INSERT INTO tbl_adb_tag 
-		                                        (id_ana,tag,dat_ins) 
-		                                       VALUES 
+		                    kkernel::$dba->exec_cmd("INSERT INTO tbl_adb_tag
+		                                        (id_ana,tag,dat_ins)
+		                                       VALUES
 		                                        (?,?,NOW())",array(UID,$_POST['tag']));
 		                    $tid = kkernel::$dba->lastInsertId();
-		                } 
+		                }
 						*/
 		                kkernel::$dba->insert($table,$sql_par);
 		                $rsp = 'OK';

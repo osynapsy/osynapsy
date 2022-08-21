@@ -32,20 +32,20 @@ class ChartEJS extends Component
         parent::__construct('div', $id);
         $this->att('class','OclChartEJS')
              ->att('style','width: '.$width.'px; height: '.$height.'px');
-        $this->requireCss('Lib/ejscharts-2.1.3/EJSChart.css');
-        $this->requireJs('Lib/ejscharts-2.1.3/EJSChart.min.js');        
+        $this->requireCss('assets/Lib/ejscharts-2.1.3/EJSChart.css');
+        $this->requireJs('assets/Lib/ejscharts-2.1.3/EJSChart.min.js');
     }
-    
+
     public function __build_extra__()
     {
         $options = $this->buildJsObject($this->option);
         $script = $this->add(new Tag('script'));
         $script->add("document.addEventListener('DOMContentLoaded',function() {".PHP_EOL);
         $script->add('var chart'.$this->id.' = new EJSC.Chart("'.$this->id.'",'.$options.');'.PHP_EOL);
-        $script->add('chart'.$this->id.'.addSeries(new EJSC.BarSeries(new EJSC.ArrayDataHandler([[1,6],[2,2],[3,3],[4,2],[5,3]])));'.PHP_EOL);      
+        $script->add('chart'.$this->id.'.addSeries(new EJSC.BarSeries(new EJSC.ArrayDataHandler([[1,6],[2,2],[3,3],[4,2],[5,3]])));'.PHP_EOL);
         $script->add("});".PHP_EOL);
     }
-    
+
     private function buildJsObject(array $array)
     {
         $properties = array();
@@ -54,16 +54,16 @@ class ChartEJS extends Component
         }
         return '{'.implode(','.PHP_EOL,$properties).'}';
     }
-    
+
     public function addSerie(array $serie)
-    {            
+    {
         $strSerie = array();
         foreach ($serie as $key => $value) {
             $strSerie[] = "['$key',$value]";
         }
         $this->series[] = '['.implode(',',$serie).']';
     }
-    
+
     public function setOption($key, $value)
     {
         $this->option[$key] = $value;

@@ -11,19 +11,19 @@
 
 namespace Osynapsy\Html\Ocl;
 
-use Osynapsy\Html\Component; 
+use Osynapsy\Html\Component;
 
 class MapGoogleBox extends Component
 {
     private $map;
-    
+
     public function __construct($name)
     {
         parent::__construct('dummy',$name);
-        $this->requireCss('Ocl/GMapBox/style.css');
+        $this->requireCss('assets/Ocl/GMapBox/style.css');
         $this->requireJs('//maps.google.com/maps/api/js?sensor=false&amp;language=en&libraries=drawing');
-        $this->requireJs('Lib/gmap3-6.0.0/gmap3.min.js');
-        $this->requireJs('Ocl/GMapBox/script.js');
+        $this->requireJs('assets/Lib/gmap3-6.0.0/gmap3.min.js');
+        $this->requireJs('assets/Ocl/GMapBox/script.js');
         $this->map = $this->add(new Tag('div'))->att('class','osy-mapgrid');
         $this->add(new HiddenBox($this->id.'_ne_lat'));
         $this->add(new HiddenBox($this->id.'_ne_lng'));
@@ -34,7 +34,7 @@ class MapGoogleBox extends Component
         $this->add(new HiddenBox($this->id.'_zoom'));
         $this->add(new HiddenBox($this->id.'_refresh_bounds_blocked'));
     }
-    
+
     public function __build_extra__()
     {
         foreach ($this->get_att() as $k => $v) {

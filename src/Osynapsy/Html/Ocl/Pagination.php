@@ -62,7 +62,7 @@ class Pagination extends Component
         if (!empty($infiniteContainer)) {
             $this->setInfiniteScroll($infiniteContainer);
         }
-        $this->requireJs('Bcl/Pagination/script.js');
+        $this->requireJs('assets/Bcl/Pagination/script.js');
         $this->setClass('BclPagination');
         if ($tag == 'form') {
             $this->att('method','post');
@@ -324,8 +324,8 @@ class Pagination extends Component
 
     public function setInfiniteScroll($container)
     {
-        $this->requireJs('Lib/imagesLoaded-4.1.1/imagesloaded.js');
-        $this->requireJs('Lib/wookmark-2.1.2/wookmark.js');
+        $this->requireJs('assets/Lib/imagesLoaded-4.1.1/imagesloaded.js');
+        $this->requireJs('assets/Lib/wookmark-2.1.2/wookmark.js');
         $this->att('class','infinitescroll',true)->att('style','display: none');
         if ($container[0] != '#' ||  $container[0] != '#') {
             $container = '#'.$container;

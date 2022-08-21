@@ -23,37 +23,37 @@ use Opensymap\Ocl\Component\TextArea;
 use Opensymap\Ocl\Component\Button;
 
 class Social extends Component
-{    
+{
     public function __construct($name)
     {
         parent::__construct('div',$name);
         $this->att('class','osy-social');
-        $this->RequireCss('Ocl/Component/Social/style.css');
-        $this->RequireJs('Ocl/Component/Social/controller.js');
+        $this->RequireCss('assets/Ocl/Component/Social/style.css');
+        $this->RequireJs('assets/Ocl/Component/Social/controller.js');
         $pst = $this->add(new Tag('div'))->att('class','osy-social-post');
         $pst->add(new TextArea($name.'_post'))->att('class','osy-social-post');
         $pst->add(new Tag('div'))->att('class','osy-social-post-canvas');
-        $pst->add(new Button($name.'send'))->att('class','osy-social-send-post')->att('label','Post');        
-        $this->add(new Tag('div'))->att('class','osy-social-body')                          
+        $pst->add(new Button($name.'send'))->att('class','osy-social-send-post')->att('label','Post');
+        $this->add(new Tag('div'))->att('class','osy-social-body')
                                  ->add('<ul class="notify">'.$this->printPostList($_REQUEST['_uid']).'</ul>');
-    }  
-    
+    }
+
     protected function build()
-    {       
-        if ($_POST['ajax']==$this->id){             
+    {
+        if ($_POST['ajax']==$this->id){
             $this->execAction();
             return;
         }
-    }            
-    
+    }
+
     private function execAction()
     {
         //ob_clean();
         $resp = '';
         switch($_POST['ajax-command']) {
             case 'post':
-                $_POST['tid'] = ($_POST['ajax-command'] == 'comment') ? 2 : 1;                               
-                Osy::$dbo->exec_cmd('INSERT INTO osy_pst 
+                $_POST['tid'] = ($_POST['ajax-command'] == 'comment') ? 2 : 1;
+                Osy::$dbo->exec_cmd('INSERT INTO osy_pst
                                         (id_typ,id_usr,id_par,dat_ins,cnt)
                                       VALUES
                                         (?,?,?,NOW(),?)',array($_POST['tid'],$_REQUEST['_uid'],$_POST['pid'],$_POST['pst']));
@@ -85,20 +85,20 @@ class Social extends Component
         }
         die($resp);
     }
-    
+
     function printPostList($uid, $pid=null, $s=0, $l=10)
     {
         /*if (!empty($_POST['user-diary'])){
             //qui va messo il controllo privacy
-            $aid = Osy::$dba->exec_unique("SELECT id 
-                                           FROM osy_user 
+            $aid = Osy::$dba->exec_unique("SELECT id
+                                           FROM osy_user
                                            WHERE lgn = ?",array($_POST['user-diary']));
            if (!empty($aid)){ $uid = $aid; }
-        } */   
+        } */
         $par = array($uid);
         $sql = "SELECT distinct a.id
                    FROM (SELECT p.id,p.dat_ins
-                         FROM osy_pst p 
+                         FROM osy_pst p
                          INNER JOIN (SELECT ? as id_ana\n";
         if (empty($aid)) {
              $sql .= "UNION
@@ -130,7 +130,7 @@ class Social extends Component
             $lPid[] = $v['id'];
         }
         if (count($lPid) > 0) {
-          $sql = "SELECT 
+          $sql = "SELECT
                             DATE_FORMAT(dat_ins,'%d %M %Y %H:%i') as dat_ins,
                             p.*
                      FROM (SELECT p.id as pid,
@@ -140,7 +140,7 @@ class Social extends Component
                                   p.dat_ins,
                                   if (p.id_usr = ?,'1','0') as pst_own,
                                   get_time_stamp(p.dat_ins) tim,
-                                  m.o_lbl as mit, 
+                                  m.o_lbl as mit,
                                   null as img,
                                   pa.cnt     as cmt_msg,
                                   pa.dat_ins as cmt_dat,
@@ -160,7 +160,7 @@ class Social extends Component
                              AND  p.id_typ = 1
                              AND  p.id in (".(implode(',',$lPid)).")
                            ORDER BY p.dat_ins desc
-                          ) p";                    
+                          ) p";
             $rawPst = Osy::$dbo->exec_query($sql,array($uid,$uid,$uid,$uid));
             $i = $pid = 0;
             foreach($rawPst as $k => $v) {
@@ -177,7 +177,7 @@ class Social extends Component
                       $lPst[$i]['cmt'][] = $r;
                   }
             }
-            if (is_array($lPst)) {              
+            if (is_array($lPst)) {
                 $list = '';
                 foreach($lPst as $kpst => $pst) {
                     $list .= '<li class="clearfix">';
@@ -187,7 +187,7 @@ class Social extends Component
                     $list .= $pst['cnt'];
                     $list .= '<div>';
                     $list .= '<span class="cmd" onclick="$(this).parent().next().toggle()">Commenta </span> <span>&middot;</span> <abbr title="'.$pst['dat_ins'].'" class="timestamp">'.$pst['tim'].'</abbr>';
-                    $list .= '</div>';     
+                    $list .= '</div>';
                     $list .= '<div class="clearfix" style="padding: 3px; width: 400px; '.(!is_array($pst['cmt']) ? 'display: none;' : '').'">';
                     if (is_array($pst['cmt'])){
                         $ncmt = count($pst['cmt']);
@@ -205,16 +205,16 @@ class Social extends Component
                     $list .= '<textarea class="comment" rows="1" style="width: 335px;"></textarea><br/>';
                     $list .= '<span>Premi il tasto Invio per pubblicare il commento</span>';
                     $list .= '           </div>';
-                    $list .= '       </div>';       
-                    $list .= '   </div>   ';            
-                    $list .= '</li>';      
+                    $list .= '       </div>';
+                    $list .= '   </div>   ';
+                    $list .= '</li>';
                 }
                 return $list;
-            } 
+            }
         }
-        
+
     }
-    
+
     private function printComment($cmt,$hdn=false){
         $msg = '<div class="cmt clearfix'.($hdn ? ' hdn' : '').'">';
         $msg .= '<img src="'.$cmt['cmt_img'].'">';
@@ -228,7 +228,7 @@ class Social extends Component
         $msg .= '</div>';
         return $msg;
     }
-    
+
     private function grabWebPage($url)
     {
         $fld = array('og:image'=>'','og:title'=>'','og:description'=>'');
