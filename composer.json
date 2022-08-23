@@ -20,7 +20,6 @@
     },
     "require": {
         "php": ">=7.2.0",        
-        "osynapsy.net/osynapsy-psr7" : "@stable",
-        "osynapsy.net/osynapsy-html" : "@stable"
+        "osynapsy.net/osynapsy-psr7" : "dev-master"
     }    
 }
