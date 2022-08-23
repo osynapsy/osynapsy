@@ -153,7 +153,7 @@ class Dispatcher
     {
         ob_clean();
         $comments = [];
-        if (empty($this->request->get('env.instance.debug'))) {
+        if (!empty($this->request) && empty($this->request->get('env.instance.debug'))) {
             $comments[] = trim($message).PHP_EOL;
             foreach ($trace as $step) {
                 $comment = '';
