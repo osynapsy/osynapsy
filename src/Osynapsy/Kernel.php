@@ -27,13 +27,14 @@ use Osynapsy\Kernel\Error\Dispatcher as ErrorDispatcher;
  */
 class Kernel
 {
-    const VERSION = '0.8.6-DEV';
+    const VERSION = '0.8.7-DEV';
     const DEFAULT_APP_CONTROLLER = '\\Osynapsy\\Mvc\\Application\\BaseApplication';
     const DEFAULT_ASSET_CONTROLLER = 'Osynapsy\\Assets\\Loader';
 
     public $router;
     public $request;
     public $psrRequest;
+    public $composer;
     private $loader;
 
     /**
@@ -42,9 +43,10 @@ class Kernel
      * @param string $instanceConfigurationFile path of the instance configuration file
      * @param object $composer Instance of composer loader
      */
-    public function __construct($instanceConfigurationFile)
+    public function __construct($instanceConfigurationFile, $composer = null)
     {
         $this->loader = new Loader($instanceConfigurationFile);
+        $this->composer = $composer;
     }
 
     /**
@@ -66,7 +68,7 @@ class Kernel
             $this->loadApplicationRoutes($router, $applications);
             $route = $this->findRequestRoute($router, $requestUri);
             $this->validateRouteController($route);
-            return $this->runApplication($route, $this->getRequest());
+            return $this->runHypervisor($route, $this->getRequest());
         } catch (\Exception $exception) {
             $errorDispatcher = new ErrorDispatcher($this->getRequest());
             return $errorDispatcher->dispatchException($exception);
@@ -107,7 +109,7 @@ class Kernel
     private function routerFactory($request)
     {
         $router = new Router($request);
-        $router->addRoute('OsynapsyAssetsManager', '/assets/osynapsy/'.self::VERSION.'/{*}', self::DEFAULT_ASSET_CONTROLLER, '', 'Osynapsy');
+        $router->addRoute('OsynapsyAssetsManager', '/assets/{*}', self::DEFAULT_ASSET_CONTROLLER, '', 'Osynapsy');
         return $router;
     }
 
@@ -143,13 +145,14 @@ class Kernel
         return $route;
     }
 
-    private function runApplication($route, $request)
+    private function runHypervisor($route, $request)
     {
         $reqApp = $request->get(sprintf("env.app.%s.controller", $route->application));
         //If isn't configured an app controller for current instance load default App controller
-        $applicationClass = empty($reqApp) ? self::DEFAULT_APP_CONTROLLER : str_replace(':', '\\', $reqApp);
-        $application = new $applicationClass($route, $request);
-        return (string) $application->execute();
+        $hypervisorClass = empty($reqApp) ? self::DEFAULT_APP_CONTROLLER : str_replace(':', '\\', $reqApp);
+        $hypervisor = new $hypervisorClass($route, $request);
+        $hypervisor->setComposer($this->composer);
+        return (string) $hypervisor->execute();
     }
 
     private function validateRouteController($route)
