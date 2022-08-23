@@ -11,8 +11,6 @@
 
 namespace Osynapsy\Html;
 
-use Osynapsy\Kernel;
-
 /*
  * Master class component
  */
@@ -192,16 +190,11 @@ class Component extends Tag
         self::$require[$type][] = self::buildScriptWebPathWithComposer($object, $file);
     }
 
-    protected static function buildScriptWebPath($file)
-    {
-        return in_array($file[0], ['/','h']) ? $file : '/assets/osynapsy/'.Kernel::VERSION.'/'.$file;
-    }
-
     protected static function buildScriptWebPathWithComposer($object, $file)
     {
         $class = new \ReflectionClass($object);
         $packageName = self::getComposerPackageName($class->getNamespaceName(), pathinfo($class->getFileName())['dirname']);
-        return sprintf('/assets/osynapsy/external/%s/%s', sha1($packageName) , $file);
+        return sprintf('assets/%s/%s', sha1($packageName) , $file);
     }
 
     protected static function getComposerPackageName($namespace, $classpath)
