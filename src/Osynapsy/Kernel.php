@@ -12,7 +12,7 @@
 namespace Osynapsy;
 
 use Osynapsy\Http\Request;
-use Osynapsy\Psr\Http\ServerRequest as PsrRequest;
+use Osynapsy\Psr7\Http\ServerRequest as PsrRequest;
 use Osynapsy\Kernel\Loader;
 use Osynapsy\Kernel\Router;
 use Osynapsy\Kernel\KernelException;
