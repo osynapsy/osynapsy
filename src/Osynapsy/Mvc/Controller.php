@@ -16,7 +16,7 @@ use Osynapsy\Event\Event;
 use Osynapsy\Mvc\Application\InterfaceApplication;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response\Base as Response;
-use Osynapsy\Html\Template;
+use Osynapsy\Mvc\Template\Template;
 use Osynapsy\Observer\InterfaceSubject;
 use Osynapsy\Mvc\Action\InterfaceAction;
 
