@@ -32,6 +32,7 @@ class BaseApplication implements InterfaceApplication
     protected $db;
     protected $route;
     protected $request;
+    protected $composer;
     protected $response;
     protected $dbFactory;
     protected $exceptions = [];
@@ -109,6 +110,11 @@ class BaseApplication implements InterfaceApplication
         return $this->getDbFactory()->getConnection($key);
     }
 
+    public function getComposer()
+    {
+        return $this->composer;
+    }
+
     /**
      * Return DbFactory
      *
@@ -176,5 +182,10 @@ class BaseApplication implements InterfaceApplication
     public function setResponse(Response $response)
     {
         return $this->response = $response;
+    }
+
+    public function setComposer($composer)
+    {
+        $this->composer = $composer;
     }
 }

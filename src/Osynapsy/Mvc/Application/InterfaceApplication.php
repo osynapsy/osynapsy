@@ -20,6 +20,8 @@ interface InterfaceApplication
 {
     public function __construct(Route &$route, Request &$request);
 
+    public function getComposer();
+
     public function getDb(int $key = 0) : InterfaceDbo;
 
     public function getDbFactory() : \Osynapsy\Db\DbFactory;
@@ -31,6 +33,8 @@ interface InterfaceApplication
     public function getRoute() : Route;
 
     public function execute() : string;
+
+    public function setComposer($composer);
 
     public function setResponse(Response $response);
 }
