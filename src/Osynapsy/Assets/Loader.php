@@ -16,18 +16,42 @@ use Osynapsy\Kernel\KernelException;
 
 class Loader extends Controller
 {
-    protected $path;
-    protected $basePath;
+    protected $assetsPath;
 
     public function init()
     {
-        $this->path = $this->getParameter(0);
-        $this->basePath = __DIR__ . '/../../../assets/';
+        $assetsPathRequest = $this->getParameter(0);
+        $namespaceKeySearch = strtok($assetsPathRequest, '/');
+        $this->setAssetPath($namespaceKeySearch, $assetsPathRequest);
+    }
+
+    protected function setAssetPath($namespaceKeySearch, $assetsPathRequest)
+    {
+        $resNamespaces = $this->getPackagePathFromComposer($namespaceKeySearch);
+        if (empty($resNamespaces)) {
+            return;
+        }
+        $namespaceOfPackage = array_key_first($resNamespaces);
+        $rawPackagePath = $resNamespaces[$namespaceOfPackage][0];
+        strtok($rawPackagePath, '..'); //$composerPath
+        $rootPathSubPackage = strtok('../');
+        $packagePath = realpath(substr($rawPackagePath, 0, strpos($rawPackagePath, $rootPathSubPackage) + strlen($rootPathSubPackage)));
+        $files = glob($packagePath . str_replace($namespaceKeySearch, '/*', $assetsPathRequest));
+        $this->assetsPath = !empty($files) ? $files[0] : '';
+    }
+
+    protected function getPackagePathFromComposer($namespaceKeySearch)
+    {
+        return array_filter(
+            $this->getApp()->getComposer()->getPrefixesPsr4(),
+            function($namespace) use ($namespaceKeySearch) { return sha1($namespace) === $namespaceKeySearch;},
+            ARRAY_FILTER_USE_KEY
+        );
     }
 
     public function indexAction()
     {
-        return $this->getFile($this->basePath . $this->path);
+        return $this->getFile($this->assetsPath);
     }
 
     protected function getFile($filename)
