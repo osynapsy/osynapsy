@@ -33,8 +33,8 @@ class Loader extends Controller
         }
         $namespaceOfPackage = array_key_first($resNamespaces);
         $rawPackagePath = $resNamespaces[$namespaceOfPackage][0];
-        strtok($rawPackagePath, '..'); //$composerPath
-        $rootPathSubPackage = strtok('../');
+        strtok(str_replace('../','#',$rawPackagePath), '#'); //$composerPath
+        $rootPathSubPackage = strtok('#/');
         $packagePath = realpath(substr($rawPackagePath, 0, strpos($rawPackagePath, $rootPathSubPackage) + strlen($rootPathSubPackage)));
         $files = glob($packagePath . str_replace($namespaceKeySearch, '/*', $assetsPathRequest));
         $this->assetsPath = !empty($files) ? $files[0] : '';
