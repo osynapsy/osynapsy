@@ -194,7 +194,7 @@ class Component extends Tag
     {
         $class = new \ReflectionClass($object);
         $packageName = self::getComposerPackageName($class->getNamespaceName(), pathinfo($class->getFileName())['dirname']);
-        return sprintf('assets/%s/%s', sha1($packageName) , $file);
+        return sprintf('/assets/%s/%s', sha1($packageName) , $file);
     }
 
     protected static function getComposerPackageName($namespace, $classpath)
