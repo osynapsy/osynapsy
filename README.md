@@ -5,7 +5,7 @@ Osynapsy is a MVC php framework.
 It's recommended that you use [Composer](https://getcomposer.org/) to install Osynapsy.
 
 ```bash
-$ composer require osynapsy.net/osynapsy "^0.7.1"
+$ composer require osynapsy.net/osynapsy "^0.9.5"
 ```
 
 This install osynapsy and all required dependencies. Osynapsy require PHP 7.2.0 or newer.
