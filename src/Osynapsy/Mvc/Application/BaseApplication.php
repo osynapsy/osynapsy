@@ -17,7 +17,7 @@ use Osynapsy\Http\Response\Base as Response;
 use Osynapsy\Http\Response\JsonOsynapsy as JsonOsynapsyResponse;
 use Osynapsy\Http\Response\Html as HtmlResponse;
 use Osynapsy\Http\Response\Xml as XmlResponse;
-use Osynapsy\Db\DbFactory;
+use Osynapsy\Database\DboFactory;
 
 /**
  * Application controller is the main controller of app.
@@ -87,7 +87,7 @@ class BaseApplication implements InterfaceApplication
         $listDatasource = $this->getRequest()->search('db',
             "env.app.{$this->getRoute()->application}.datasources"
         );
-        $this->dbFactory = new DbFactory();
+        $this->dbFactory = new DboFactory();
         foreach ($listDatasource as $datasource) {
             $connectionString = $datasource['@value'];
             $this->dbFactory->createConnection($connectionString);
@@ -105,7 +105,7 @@ class BaseApplication implements InterfaceApplication
      * @param int $key
      * @return \Osynapsy\Db\Driver\InterfaceDbo
      */
-    public function getDb(int $key = 0) : \Osynapsy\Db\Driver\InterfaceDbo
+    public function getDb(int $key = 0) : \Osynapsy\Database\Driver\InterfaceDbo
     {
         return $this->getDbFactory()->getConnection($key);
     }
@@ -120,7 +120,7 @@ class BaseApplication implements InterfaceApplication
      *
      * @return DbFactory
      */
-    public function getDbFactory() : DbFactory
+    public function getDbFactory() : DboFactory
     {
         return $this->dbFactory;
     }

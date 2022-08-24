@@ -169,7 +169,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * @param int $key
      * @return Db
      */
-    public function getDb($key = 0) : \Osynapsy\Db\Driver\InterfaceDbo
+    public function getDb($key = 0) : \Osynapsy\Database\Driver\InterfaceDbo
     {
         return $this->getApp()->getDb($key);
     }

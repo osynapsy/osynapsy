@@ -14,7 +14,7 @@ namespace Osynapsy\Mvc;
 use Osynapsy\Http\Request;
 use Osynapsy\Mvc\Action\InterfaceAction;
 use Osynapsy\Mvc\Application\InterfaceApplication;
-use Osynapsy\Db\Driver\InterfaceDbo;
+use Osynapsy\Database\Driver\InterfaceDbo;
 
 interface InterfaceController
 {
