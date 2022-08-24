@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Kernel;
 
-use Osynapsy\Data\Dictionary;
+use Osynapsy\DataStructure\Dictionary;
 
 /**
  * This class is used from kernel to load xml configuration.

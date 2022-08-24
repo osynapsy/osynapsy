@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Http;
 
-use Osynapsy\Data\Dictionary;
+use Osynapsy\DataStructure\Dictionary;
 
 class Request extends Dictionary
 {

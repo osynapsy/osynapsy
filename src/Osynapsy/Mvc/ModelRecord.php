@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Mvc;
 
-use Osynapsy\Data\Dictionary;
+use Osynapsy\DataStructure\Dictionary;
 use Osynapsy\Mvc\Model\Field as ModelField;
 use Osynapsy\Helper\Net\UploadManager;
 
