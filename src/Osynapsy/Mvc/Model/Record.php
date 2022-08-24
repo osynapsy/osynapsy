@@ -114,7 +114,7 @@ abstract class Record implements InterfaceModel
         return $this->getRecord()->lastAutoincrementId;
     }
 
-    public function getRecord() : \Osynapsy\Db\Record\InterfaceRecord
+    public function getRecord() : \Osynapsy\Database\Record\InterfaceRecord
     {
         return $this->record;
     }

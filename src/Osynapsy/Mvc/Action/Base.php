@@ -12,7 +12,7 @@
 namespace Osynapsy\Mvc\Action;
 
 use Osynapsy\Mvc\Controller;
-use Osynapsy\Db\Driver\InterfaceDbo;
+use Osynapsy\Database\Driver\InterfaceDbo;
 use Osynapsy\Mvc\InterfaceApplication;
 use Osynapsy\Mvc\InterfaceController;
 use Osynapsy\Mvc\InterfaceModel;

@@ -103,7 +103,7 @@ class BaseApplication implements InterfaceApplication
      * Return db connection request
      *
      * @param int $key
-     * @return \Osynapsy\Db\Driver\InterfaceDbo
+     * @return \Osynapsy\Database\Driver\InterfaceDbo
      */
     public function getDb(int $key = 0) : \Osynapsy\Database\Driver\InterfaceDbo
     {

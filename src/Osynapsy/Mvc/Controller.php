@@ -179,7 +179,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      *
      * @return \Osynapsy\Db\DbFactory
      */
-    final public function getDbFactory() : \Osynapsy\Db\DbFactory
+    final public function getDbFactory() : \Osynapsy\Database\DboFactory
     {
         return $this->getApp()->getDbFactory();
     }

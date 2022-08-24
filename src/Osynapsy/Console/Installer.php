@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Console;
 
-use Osynapsy\Db\DbFactory;
+use Osynapsy\Database\DboFactory;
 use Osynapsy\Console\Terminal;
 
 class Installer
@@ -25,18 +25,18 @@ class Installer
         'dbuser' => "Digit db user : ",
         'dbpwd'  => "Digit db pass : "
     ];
-    
+
     public function __construct()
     {
         $this->terminal = new Terminal();
     }
-    
+
     public function run()
     {
         $this->configureDatabase();
         $this->finish();
     }
-    
+
     private function configureDatabase()
     {
         $i = 1;
@@ -47,33 +47,33 @@ class Installer
         }
         $this->testDatabaseConnection(implode(':',$this->answer));
     }
-    
+
     private function testDatabaseConnection($connectionString)
     {
-        try {            
+        try {
             $this->printLnMessage("Db Connetting test.....");
-            $DbFactory = new DbFactory();
+            $DbFactory = new DboFactory();
             $DbFactory->createConnection($connectionString);
             $this->printLnMessage('Connection ok');
         } catch (Exception $e) {
             $this->printMessage($e->getMessage());
             return;
         }
-        
+
     }
-    
+
     protected function printLnMessage($message)
     {
         print $message.PHP_EOL;
         sleep(1);
     }
-    
+
     private function printQuestion($section, $key, $question)
     {
         $answer = $this->terminal->input($question);
         $this->answer[$key] = trim($answer);
     }
-    
+
     private function finish()
     {
         file_put_contents('config.ini',implode(':',$this->answer));
