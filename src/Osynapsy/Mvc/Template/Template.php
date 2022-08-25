@@ -142,8 +142,8 @@ class Template
     {
         $sha1Namespace = sha1('Osynapsy\\');
         if ($appendFormController) {
-            $libraries['osynapsyjs'] = sprintf('assets/js/Osynapsy.js?ver=%s', Kernel::VERSION);
-            $libraries['osynapsycss'] =  sprintf('assets/css/style.css?ver=%s', Kernel::VERSION);
+            $libraries['osynapsyjs'] = sprintf('js/Osynapsy.js?ver=%s', Kernel::VERSION);
+            $libraries['osynapsycss'] =  sprintf('css/style.css?ver=%s', Kernel::VERSION);
         }
         foreach ($libraries as $libraryId =>$pathLibrary) {
             if (strpos($pathLibrary, '.css') !== false) {
