@@ -20,9 +20,9 @@
     },
     "require": {
         "php": ">=7.2.0",        
-        "osynapsy.net/osynapsy-psr7" : "@stable",
-        "osynapsy.net/osynapsy-html" : "@stable",
-        "osynapsy.net/osynapsy-datastructure" : "@stable",
-        "osynapsy.net/osynapsy-database" : "@stable"
+        "osynapsy/osynapsy-psr7" : "@stable",
+        "osynapsy/osynapsy-html" : "@stable",
+        "osynapsy/osynapsy-datastructure" : "@stable",
+        "osynapsy/osynapsy-database" : "@stable"
     }    
 }
