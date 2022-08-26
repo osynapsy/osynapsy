@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Mvc\Model\Action;
 
-use Osynapsy\Helper\Net\UploadManager;
+use Osynapsy\Mvc\Helper\UploadManager;
 use Osynapsy\Mvc\Model\ModelErrorException;
 use Osynapsy\Mvc\Action\Base;
 

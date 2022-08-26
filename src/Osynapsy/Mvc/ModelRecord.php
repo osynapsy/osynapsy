@@ -13,7 +13,7 @@ namespace Osynapsy\Mvc;
 
 use Osynapsy\DataStructure\Dictionary;
 use Osynapsy\Mvc\Model\Field as ModelField;
-use Osynapsy\Helper\Net\UploadManager;
+use Osynapsy\Mvc\Helper\UploadManager;
 
 abstract class ModelRecord implements InterfaceModel
 {

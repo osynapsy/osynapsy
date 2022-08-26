@@ -12,7 +12,7 @@
 namespace Osynapsy\Mvc;
 
 use Osynapsy\Mvc\Model\Field as ModelField;
-use Osynapsy\Helper\Net\UploadManager;
+use Osynapsy\Mvc\Helper\UploadManager;
 
 /**
  * The abstract class Model implement base methods for manage mapping
