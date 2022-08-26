@@ -3,7 +3,7 @@
 /*
  * This file is part of the Osynapsy package.
  *
- * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ * (c) Pietro Celeste <p.celeste@osynapsy.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -17,7 +17,7 @@ use Osynapsy\DataStructure\Dictionary;
  * This class is used from kernel to load xml configuration.
  * App configuration and Instance configuration.
  *
- * @author Pietro Celeste <p.celeste@osynapsy.org>
+ * @author Pietro Celeste <p.celeste@osynapsy.net>
  */
 class Loader
 {

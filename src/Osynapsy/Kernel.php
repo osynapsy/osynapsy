@@ -3,7 +3,7 @@
 /*
  * This file is part of the Osynapsy package.
  *
- * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ * (c) Pietro Celeste <p.celeste@osynapsy.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -23,7 +23,7 @@ use Osynapsy\Kernel\Error\Dispatcher as ErrorDispatcher;
  *
  * It init Http request e translate it in response
  *
- * @author Pietro Celeste <p.celeste@osynapsy.org>
+ * @author Pietro Celeste <p.celeste@osynapsy.net>
  */
 class Kernel
 {

@@ -3,7 +3,7 @@
 /*
  * This file is part of the Osynapsy package.
  *
- * (c) Pietro Celeste <p.celeste@osynapsy.org>
+ * (c) Pietro Celeste <p.celeste@osynapsy.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -25,7 +25,7 @@ use Osynapsy\Database\DboFactory;
  * Application controller analyze permessions and load route control or raise
  * exception if current user don't has access to request route.
  *
- * @author Pietro Celeste <p.celeste@osynapsy.org>
+ * @author Pietro Celeste <p.celeste@osynapsy.net>
  */
 class BaseApplication implements InterfaceApplication
 {
