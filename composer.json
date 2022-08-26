@@ -12,17 +12,18 @@
             "email": "p.celeste@osynapsy.net",
             "homepage": "https://github.com/osynapsy/osynapsy/wiki"
         }
-    ],
+    ],    
+    "require": {
+        "php": ">=7.2.0",        
+        "osynapsy/osynapsy-psr7" : "@stable",
+        "osynapsy/osynapsy-assert" : "@stable",
+        "osynapsy/osynapsy-datastructure" : "@stable",
+        "osynapsy/osynapsy-database" : "@stable",
+        "osynapsy/osynapsy-html" : "@stable"
+    },
     "autoload" : {
         "psr-4": {
             "Osynapsy\\": "src/Osynapsy/"
         }
-    },
-    "require": {
-        "php": ">=7.2.0",        
-        "osynapsy/osynapsy-psr7" : "@stable",
-        "osynapsy/osynapsy-html" : "@stable",
-        "osynapsy/osynapsy-datastructure" : "@stable",
-        "osynapsy/osynapsy-database" : "@stable"
-    }    
+    }
 }
