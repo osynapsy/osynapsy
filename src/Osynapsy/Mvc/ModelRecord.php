@@ -11,7 +11,6 @@
 
 namespace Osynapsy\Mvc;
 
-use Osynapsy\DataStructure\Dictionary;
 use Osynapsy\Mvc\Model\Field as ModelField;
 use Osynapsy\Mvc\Helper\UploadManager;
 
@@ -22,10 +21,12 @@ abstract class ModelRecord implements InterfaceModel
     const ACTION_AFTER_EXEC_NONE = false;
     const ACTION_AFTER_EXEC_REFRESH = 'refresh';
 
-    private $repo;
     private $record;
     private $controller = null;
     protected $db = null;
+    protected $actions = [];
+    protected $fields = [];
+
     protected $errorMessages = [
         'email' => 'Il campo <fieldname> non contiene un indirizzo mail valido.',
         'fixlength' => 'Il campo <fieldname> solo valori con lunghezza pari a ',
@@ -42,12 +43,7 @@ abstract class ModelRecord implements InterfaceModel
         $this->controller = $controller;
         $this->db = $this->controller->getDb();
         $this->record = $this->record();
-        $this->repo = new Dictionary();
-        $this->repo->set('actions.after-insert', $this->getController()->getRequest()->get('page.url'))
-                   ->set('actions.after-update', 'back')
-                   ->set('actions.after-delete', 'back')
-                   ->set('fields',[])
-                   ->set('values',[]);
+        $this->setAfterAction($this->getController()->getRequest()->get('page.url'), 'back', 'back');
         $this->init();
         $this->recordFill();
         $this->afterInit();
@@ -55,11 +51,6 @@ abstract class ModelRecord implements InterfaceModel
 
     protected function afterInit()
     {
-    }
-
-    public function get($key)
-    {
-        return $this->repo->get($key);
     }
 
     public function getDb()
@@ -72,9 +63,9 @@ abstract class ModelRecord implements InterfaceModel
         return $this->controller;
     }
 
-    public function getField($field)
+    public function getField($fieldId)
     {
-        return $this->get('fields.'.$field);
+        return $this->fields[$fieldId];
     }
 
     public function getRecord()
@@ -87,12 +78,6 @@ abstract class ModelRecord implements InterfaceModel
         return $this->getRecord()->getValue($key);
     }
 
-    public function set($key, $value)
-    {
-        $this->repo->set($key, $value);
-        return $this;
-    }
-
     public function delete()
     {
         if ($this->addAlert($this->beforeDelete())) {
@@ -100,16 +85,16 @@ abstract class ModelRecord implements InterfaceModel
         }
         $this->getRecord()->delete();
         $this->afterDelete();
-        if ($this->repo->get('actions.after-delete') === self::ACTION_AFTER_EXEC_NONE) {
+        if ($this->actions['after-delete'] === self::ACTION_AFTER_EXEC_NONE) {
             return;
         }
-        $this->getController()->getResponse()->go($this->repo->get('actions.after-delete'));
+        $this->getController()->getResponse()->go($this->actions['after-delete']);
     }
 
     private function recordFill()
     {
         $keys = [];
-        foreach($this->get('fields') as $field) {
+        foreach($this->fields as $field) {
             if ($field->isPkey()) {
                 $keys[$field->name] = $field->getDefaultValue();
             }
@@ -132,7 +117,7 @@ abstract class ModelRecord implements InterfaceModel
         if (empty($values)) {
             return;
         }
-        foreach($this->get('fields') as $field) {
+        foreach($this->fields as $field) {
             if (array_key_exists($field->html, $_REQUEST) || !array_key_exists($field->name, $values)) {
                 continue;
             }
@@ -145,12 +130,9 @@ abstract class ModelRecord implements InterfaceModel
         if ($this->addAlert($this->beforeInsert())) {
             return;
         }
-
         $lastId = $this->getRecord()->save();
-
         $this->afterInsert($lastId);
-
-        switch ($this->get('actions.after-insert')) {
+        switch ($this->actions['after-insert']) {
             case self::ACTION_AFTER_EXEC_NONE:
                 break;
             case self::ACTION_AFTER_INSERT_HISTORY_PUSH_STATE:
@@ -158,10 +140,10 @@ abstract class ModelRecord implements InterfaceModel
                 break;
             case self::ACTION_AFTER_EXEC_BACK:
             case self::ACTION_AFTER_EXEC_REFRESH:
-                $this->getController()->getResponse()->go($this->get('actions.after-insert'));
+                $this->getController()->getResponse()->go($this->actions['after-insert']);
                 break;
             default:
-                $this->getController()->getResponse()->go($this->get('actions.after-insert').$lastId);
+                $this->getController()->getResponse()->go($this->actions['after-insert'].$lastId);
                 break;
         }
     }
@@ -171,10 +153,10 @@ abstract class ModelRecord implements InterfaceModel
         $this->addAlert($this->beforeUpdate());
         $id = $this->getRecord()->save();
         $this->afterUpdate($id);
-        if ($this->repo->get('actions.after-update') === self::ACTION_AFTER_EXEC_NONE) {
+        if ($this->actions['after-update'] === self::ACTION_AFTER_EXEC_NONE) {
             return;
         }
-        $this->getController()->getResponse()->go($this->repo->get('actions.after-update'), false);
+        $this->getController()->getResponse()->go($this->actions['after-update'], false);
     }
 
     protected function addError($errorId, $field, $postfix = '')
@@ -201,7 +183,7 @@ abstract class ModelRecord implements InterfaceModel
         $formValue = isset($_REQUEST[$formField]) ? $_REQUEST[$formField] : null;
         $modelField = new ModelField($this, $dbField, $formField, $type, isset($_REQUEST[$formField]));
         $modelField->setValue($formValue, $defaultValue);
-        $this->set('fields.'.$modelField->html, $modelField);
+        $this->fields[$modelField->html] = $modelField;
         return $modelField;
     }
 
@@ -215,7 +197,7 @@ abstract class ModelRecord implements InterfaceModel
         $this->addAlert($this->beforeExec());
 
         //skim the field list for check value and build $values, $where and $key list
-        foreach ($this->repo->get('fields') as $field) {
+        foreach ($this->fields as $field) {
             //Check if value respect rule
             $value = $this->sanitizeFieldValue($field);
             //if field is readonly or don't have db field name skip other checks.
@@ -322,9 +304,11 @@ abstract class ModelRecord implements InterfaceModel
 
     protected function setAfterAction($insert, $update, $delete)
     {
-        $this->repo->set('actions.after-insert', $insert)
-                   ->set('actions.after-update', $update)
-                   ->set('actions.after-delete', $delete);
+        $this->actions = [
+            'after-insert' => $insert ?? $this->actions['after-insert'],
+            'after-update' => $update ?? $this->actions['after-update'],
+            'after-delete' => $delete ?? $this->actions['after-delete']
+        ];
     }
 
     public function setValue($field, $value, $defaultValue = null)
