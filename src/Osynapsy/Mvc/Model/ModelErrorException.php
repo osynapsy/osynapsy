@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Mvc\Model;
 
-use Osynapsy\Mvc\Model\Field;
+use Osynapsy\Mvc\Model\Field\Field;
 
 /**
  * Description of ModelErrorException
