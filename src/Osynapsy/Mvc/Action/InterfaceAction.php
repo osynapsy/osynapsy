@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Mvc\Action;
 
-use Osynapsy\Mvc\Controller;
+use Osynapsy\Mvc\Controller\Controller;
 
 /**
  * Description of Action

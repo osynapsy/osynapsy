@@ -11,11 +11,11 @@
 
 namespace Osynapsy\Mvc\Action;
 
-use Osynapsy\Mvc\Controller;
+use Osynapsy\Mvc\Controller\Controller;
 use Osynapsy\Database\Driver\InterfaceDbo;
-use Osynapsy\Mvc\InterfaceApplication;
-use Osynapsy\Mvc\InterfaceController;
-use Osynapsy\Mvc\InterfaceModel;
+use Osynapsy\Mvc\Application\InterfaceApplication;
+use Osynapsy\Mvc\Controller\InterfaceController;
+use Osynapsy\Mvc\Model\InterfaceModel;
 
 /**
  * Base class for implement an external action.
