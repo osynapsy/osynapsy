@@ -69,7 +69,7 @@ abstract class ModelRecord extends BaseModel
         }
     }
 
-    protected function insert($values)
+    protected function insert(array $values, $keys)
     {
         if ($this->addError($this->beforeInsert())) {
             return;
@@ -79,7 +79,7 @@ abstract class ModelRecord extends BaseModel
         $this->execAfterAction('after-insert', $lastId);
     }
 
-    protected function update($values)
+    protected function update(array $values, $where)
     {
         $this->addError($this->beforeUpdate());
         $id = $this->getRecord()->save($values);
