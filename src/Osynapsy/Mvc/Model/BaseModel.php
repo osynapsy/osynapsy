@@ -21,25 +21,25 @@ abstract class BaseModel implements InterfaceModel
     private $controller;
     protected $actions = [];
     protected $fields = [];
-    protected $errorMessages = [
-        'email' => 'Il campo <fieldname> non contiene un indirizzo mail valido.',
-        'fixlength' => 'Il campo <fieldname> solo valori con lunghezza pari a ',
-        'integer' => 'Il campo <fieldname> accetta solo numeri interi.',
-        'maxlength' => 'Il campo <fieldname> accetta massimo ',
-        'minlength' => 'Il campo <fieldname> accetta minimo ',
-        'notnull' => 'Il campo <fieldname> è obbligatorio.',
-        'numeric' => 'Il campo <fieldname> accetta solo valori numerici.',
-        'unique' => '<value> è già presente in archivio.'
-    ];
 
     public function __construct(InterfaceController $controller)
     {
         $this->controller = $controller;
-        $this->setAfterAction(
-            $this->getController()->getRequest()->get('page.url'),
-            self::ACTION_AFTER_EXEC_BACK,
-            self::ACTION_AFTER_EXEC_BACK
-        );
+        $currentPageUrl = $this->getController()->getRequest()->get('page.url');
+        $this->setAfterAction($currentPageUrl, self::ACTION_AFTER_EXEC_BACK, self::ACTION_AFTER_EXEC_BACK);
+    }
+
+    protected function addError($errorMessage, $target = 'alert')
+    {
+        if (!empty($errorMessage)) {
+            $this->getResponse()->error($target, $errorMessage);
+        }
+    }
+
+    protected function addFieldError($errorMessage, $field, $postfix = '')
+    {
+        $error = str_replace(['<fieldname>', '<value>'], ['<!--'.$field->html.'-->', $field->value], $errorMessage.$postfix);
+        $this->addError($error, $field->html);
     }
 
     public function getController() : InterfaceController
@@ -62,24 +62,6 @@ abstract class BaseModel implements InterfaceModel
         return $this->getController()->getResponse();
     }
 
-    protected function execAfterAction($actionId, $lastId = null)
-    {
-        switch ($this->actions[$actionId]) {
-            case self::ACTION_AFTER_EXEC_NONE:
-                break;
-            case self::ACTION_AFTER_INSERT_HISTORY_PUSH_STATE:
-                $this->getResponse()->js("history.pushState(null,null,'{$lastId}');");
-                break;
-            case self::ACTION_AFTER_EXEC_BACK:
-            case self::ACTION_AFTER_EXEC_REFRESH:
-                $this->getResponse()->go($this->actions[$actionId]);
-                break;
-            default:
-                $this->getResponse()->go($this->actions[$actionId].$lastId);
-                break;
-        }
-    }
-
     public function map($formField, $dbField = null, $defaultValue = null, $type = 'string')
     {
         $formValue = isset($_REQUEST[$formField]) ? $_REQUEST[$formField] : null;
@@ -87,19 +69,6 @@ abstract class BaseModel implements InterfaceModel
         $modelField->setValue($formValue, $defaultValue);
         $this->fields[$modelField->html] = $modelField;
         return $modelField;
-    }
-
-    protected function addFieldError($errorId, $field, $postfix = '')
-    {
-        $error = str_replace(['<fieldname>', '<value>'], ['<!--'.$field->html.'-->', $field->value], self::ERROR_MESSAGES[$errorId].$postfix);
-        $this->addError($error, $field->html);
-    }
-
-    protected function addError($errorMessage, $target = 'alert')
-    {
-        if (!empty($errorMessage)) {
-            $this->getResponse()->error($target, $errorMessage);
-        }
     }
 
     /**
@@ -113,10 +82,12 @@ abstract class BaseModel implements InterfaceModel
         //Init arrays
         $keys = $values = $where = [];
         //skim the field list for check value and build $values, $where and $key list
+        $validator = new Field\Validator($this);
         foreach ($this->fields as $field) {
-            $value = $field->value;
+            //$value = $field->value;
             //Check if value respect rule
-            $this->validateFieldValue($field, $value);
+            //$this->validateFieldValue($field, $value);
+             $value = $this->validateFieldValue($field, $validator);
             if (in_array($field->type, ['file', 'image'])) {
                 $value = $this->grabUploadedFile($field);
             }
@@ -149,6 +120,19 @@ abstract class BaseModel implements InterfaceModel
         $this->afterExec();
     }
 
+
+
+    protected function validateFieldValue(ModelField $field, Field\Validator $validator)
+    {
+        try {
+            $validator->validate($field);
+        } catch (\Exception $e) {
+            $this->addFieldError($e->getMessage(), $field);
+        } finally {
+            return $field->value;
+        }
+    }
+
     private function grabUploadedFile(&$field)
     {
         if (!is_array($_FILES) || !array_key_exists($field->html, $_FILES) || empty($_FILES[$field->html]['name'])) {
@@ -168,84 +152,27 @@ abstract class BaseModel implements InterfaceModel
         return $field->value;
     }
 
-    /**
-     * This method validate value of field.
-     *
-     * @param ModelField $field
-     * @param type $value
-     */
-    protected function validateFieldValue(ModelField $field, $value)
+    abstract protected function insert(array $values);
+
+    abstract protected function update(array $values);
+
+    abstract public function delete();
+
+    protected function execAfterAction($actionId, $lastId = null)
     {
-        if (!$field->isNullable()) {
-            $this->validateNotNullValue($field, $value);
-        }
-        if ($field->isUnique() && $value) {
-            $this->validateUniqueValue($field, $value);
-        }
-        $this->validateValueLength($field, $value);
-        switch ($field->type) {
-            case 'float':
-            case 'money':
-            case 'numeric':
-            case 'number':
-                $this->validateFloatValue($field, $value);
+        switch ($this->actions[$actionId]) {
+            case self::ACTION_AFTER_EXEC_NONE:
                 break;
-            case 'integer':
-            case 'int':
-                $this->validateIntegerValue($field, $value);
+            case self::ACTION_AFTER_INSERT_HISTORY_PUSH_STATE:
+                $this->getResponse()->js("history.pushState(null,null,'{$lastId}');");
                 break;
-            case 'email':
-                $this->validateEmailAddressValue($field, $value);
+            case self::ACTION_AFTER_EXEC_BACK:
+            case self::ACTION_AFTER_EXEC_REFRESH:
+                $this->getResponse()->go($this->actions[$actionId]);
                 break;
-        }
-    }
-
-    protected function validateNotNullValue(ModelField $field, $value)
-    {
-        if ($value !== '0' && empty($value)) {
-            $this->addFieldError('notnull', $field);
-        }
-    }
-
-    protected function validateUniqueValue(ModelField $field, $value)
-    {
-        $sql = sprintf("SELECT COUNT(*) FROM %s WHERE %s = ?", $this->table, $field->name);
-        $nOccurence = $this->getDb()->findOne($sql, [$value]);
-        if (!empty($nOccurence)) {
-            $this->addFieldError('unique', $field);
-        }
-    }
-
-    protected function validateValueLength(ModelField $field, $value)
-    {
-        //Controllo la lunghezza massima della stringa. Se impostata.
-        if ($field->maxlength && (strlen($value) > $field->maxlength)) {
-            $this->addFieldError('maxlength', $field, $field->maxlength.' caratteri');
-        } elseif ($field->minlength && (strlen($value) < $field->minlength)) {
-            $this->addFieldError('minlength', $field, $field->minlength.' caratteri');
-        } elseif ($field->fixlength && !in_array(strlen($value),$field->fixlength)) {
-            $this->addFieldError('fixlength', $field, implode(' o ',$field->fixlength).' caratteri');
-        }
-    }
-
-    protected function validateFloatValue(ModelField $field, $value)
-    {
-        if ($value && filter_var($value, \FILTER_VALIDATE_FLOAT) === false) {
-            $this->addFieldError('numeric', $field);
-        }
-    }
-
-    protected function validateIntegerValue(ModelField $field, $value)
-    {
-        if ($value && filter_var($value, \FILTER_VALIDATE_INT) === false) {
-            $this->addFieldError('integer', $field);
-        }
-    }
-
-    protected function validateEmailAddressValue(ModelField $field, $value)
-    {
-        if (!empty($value) && filter_var($value, \FILTER_VALIDATE_EMAIL) === false) {
-            $this->addFieldError('email', $field);
+            default:
+                $this->getResponse()->go($this->actions[$actionId].$lastId);
+                break;
         }
     }
 
@@ -260,13 +187,7 @@ abstract class BaseModel implements InterfaceModel
 
     abstract protected function init();
 
-    abstract protected function insert(array $values);
-
-    abstract protected function update(array $values);
-
     abstract public function find();
-
-    abstract public function delete();
 
     protected function afterInit()
     {
