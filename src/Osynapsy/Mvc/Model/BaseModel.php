@@ -120,8 +120,6 @@ abstract class BaseModel implements InterfaceModel
         $this->afterExec();
     }
 
-
-
     protected function validateFieldValue(ModelField $field, Field\Validator $validator)
     {
         try {

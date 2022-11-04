@@ -45,7 +45,7 @@ class Validator
     {
         $value = $field->value;
         if (!$field->isNullable() && $value !== '0' && empty($value)) {
-            throw new \Exception(self::ERROR_NOT_NULL);
+            $this->raiseException(self::ERROR_NOT_NULL);
         }
     }
 
@@ -61,28 +61,28 @@ class Validator
             [$value]
         );
         if (!empty($numberOfOccurences)) {
-            throw new \Exception(self::ERROR_NOT_UNIQUE);
+            $this->raiseException(self::ERROR_NOT_UNIQUE);
         }
     }
 
     public function isEmail($value)
     {
         if (!empty($value) && filter_var($value, \FILTER_VALIDATE_EMAIL) === false) {
-            throw new \Exception(self::ERROR_NOT_EMAIL);
+            $this->raiseException(self::ERROR_NOT_EMAIL);
         }
     }
 
     public function isFloat($value)
     {
         if ($value && filter_var($value, \FILTER_VALIDATE_FLOAT) === false) {
-            throw new \Exception(self::ERROR_NOT_NUMERIC);
+            $this->raiseException(self::ERROR_NOT_NUMERIC);
         }
     }
 
     public function isInteger($value)
     {
         if ($value && filter_var($value, \FILTER_VALIDATE_INT) === false) {
-            throw new \Exception(self::ERROR_NOT_INTEGER);
+            $this->raiseException(self::ERROR_NOT_INTEGER);
         }
     }
 
@@ -90,13 +90,13 @@ class Validator
     {
         //Controllo la lunghezza massima della stringa. Se impostata.
         if ($field->maxlength && (strlen($field->value) > $field->maxlength)) {
-            throw new \Exception(sprintf(self::ERROR_LENGTH_EXCEEDS, $field->maxlength));
+            $this->raiseException(sprintf(self::ERROR_LENGTH_EXCEEDS, $field->maxlength));
         }
         if ($field->minlength && (strlen($field->value) < $field->minlength)) {
-            throw new \Exception(sprintf(self::ERROR_LENGTH_MIN, $field->minlength));
+            $this->raiseException(sprintf(self::ERROR_LENGTH_MIN, $field->minlength));
         }
         if ($field->fixlength && !in_array(strlen($field->value), $field->fixlength)) {
-            throw new \Exception(sprintf(self::ERROR_LENGTH_FIX, implode(' o ',$field->fixlength)));
+            $this->raiseException(sprintf(self::ERROR_LENGTH_FIX, implode(' o ',$field->fixlength)));
         }
     }
 
@@ -127,5 +127,10 @@ class Validator
 
     public function extraChecks()
     {
+    }
+
+    protected function raiseException($message, $id = null)
+    {
+        throw new \Exception($message);
     }
 }
