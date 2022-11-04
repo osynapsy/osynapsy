@@ -1,10 +1,10 @@
 <?php
 namespace Osynapsy\Mvc\Model;
 
-use Osynapsy\Mvc\InterfaceController;
-use Osynapsy\Mvc\InterfaceModel;
+use Osynapsy\Mvc\Controller\InterfaceController;
+use Osynapsy\Mvc\Model\InterfaceModel;
 use Osynapsy\Mvc\Helper\UploadManager;
-use Osynapsy\Mvc\Model\Field as ModelField;
+use Osynapsy\Mvc\Model\Field\Field as ModelField;
 
 /**
  * Description of BaseModel

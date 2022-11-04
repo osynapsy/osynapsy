@@ -11,6 +11,7 @@
 
 namespace Osynapsy\Mvc\Model;
 
+use Osynapsy\Mvc\Controller\InterfaceController;
 use Osynapsy\Mvc\Model\BaseModel;
 
 abstract class ModelRecord extends BaseModel

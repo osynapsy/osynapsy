@@ -12,10 +12,10 @@
 namespace Osynapsy\Mvc\Model;
 
 use Osynapsy\Event\EventLocal;
-use Osynapsy\Mvc\Controller;
+use Osynapsy\Mvc\Controller\Controller;
 use Osynapsy\Mvc\Model\Field\Field;
 use Osynapsy\Mvc\Model\Field\Validator;
-use Osynapsy\Mvc\InterfaceModel;
+use Osynapsy\Mvc\Model\InterfaceModel;
 
 abstract class Record implements InterfaceModel
 {

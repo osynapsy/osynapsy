@@ -11,16 +11,16 @@
 
 namespace Osynapsy\Event;
 
-use Osynapsy\Mvc\Controller;
+use Osynapsy\Mvc\Controller\Controller;
 
 /**
  * Public method of listener
  *
  * @author pietr
  */
-interface InterfaceListener 
+interface InterfaceListener
 {
     public function __construct(Controller $controller);
-    
+
     public function trigger(Event $event);
 }
