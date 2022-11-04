@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Assets;
 
-use Osynapsy\Mvc\Controller;
+use Osynapsy\Mvc\Controller\Controller;
 use Osynapsy\Kernel\KernelException;
 
 class Loader extends Controller
