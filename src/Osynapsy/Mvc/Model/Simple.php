@@ -11,8 +11,8 @@
 
 namespace Osynapsy\Mvc\Model;
 
-use Osynapsy\Mvc\InterfaceModel;
-use Osynapsy\Mvc\Controller;
+use Osynapsy\Mvc\Model\InterfaceModel;
+use Osynapsy\Mvc\Controller\Controller;
 
 /**
  * Description of Simple
