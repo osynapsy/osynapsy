@@ -31,7 +31,6 @@ class Validator
 
     private $model;
     private $field;
-    private $value;
 
     public function __construct($model)
     {
