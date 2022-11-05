@@ -22,7 +22,7 @@ class Field
     const TYPE_NUMBER = 'numeric';
     const TYPE_STRING = 'string';
 
-    private $repo = array(
+    private $repo = [
         'existInForm' => true,
         'fixlength' => null,
         'is_pk' => false,
@@ -35,10 +35,11 @@ class Field
         'value' => null,
         'defaultValue' => null,
         'uploadDir' => '/upload'
-    );
-    public $value;
+    ];
     private $model;
+    public $value;
     public $type;
+
 
     public function __construct($model, $nameOnDb, $nameOnView, $type = 'string', $existInForm = true)
     {
