@@ -32,6 +32,11 @@ abstract class ModelRecord extends BaseModel
         return $this->record;
     }
 
+    public function getTable()
+    {
+        return $this->getRecord()->table();
+    }
+
     public function getValue($key)
     {
         return $this->getRecord()->getValue($key);
