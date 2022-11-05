@@ -30,6 +30,8 @@ class Validator
     const ERROR_LENGTH_FIX = 'Il campo <fieldname> accetta solo valori con una lunghezza pari a %s caratteri';
 
     private $model;
+    private $field;
+    private $value;
 
     public function __construct($model)
     {
@@ -55,7 +57,7 @@ class Validator
         if (!$field->isUnique() || empty($value)) {
             return;
         }
-        $table = $this->getModel()->getRecord()->table();
+        $table = $this->getModel()->getTable();
         $numberOfOccurences = $this->getModel()->getDb()->findOne(
             sprintf("SELECT COUNT(*) FROM %s WHERE %s = ?", $table, $field->name),
             [$value]
@@ -118,6 +120,7 @@ class Validator
 
     public function validate(Field $field)
     {
+        $this->field = $field;
         $this->isNotNull($field);
         $this->validateCharLength($field);
         $this->isUnique($field);
@@ -129,8 +132,12 @@ class Validator
     {
     }
 
-    protected function raiseException($message, $id = null)
+    protected function raiseException($rawErrorMessage)
     {
-        throw new \Exception($message);
+        throw new \Exception(str_replace(
+            ['<fieldname>', '<value>'],
+            ['<!--'.$this->field->html.'-->', $this->field->value],
+            $rawErrorMessage
+        ));
     }
 }
