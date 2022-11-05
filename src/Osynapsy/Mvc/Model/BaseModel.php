@@ -18,28 +18,22 @@ abstract class BaseModel implements InterfaceModel
     const ACTION_AFTER_EXEC_NONE = false;
     const ACTION_AFTER_EXEC_REFRESH = 'refresh';
 
-    private $controller;
+    protected $controller;
     protected $actions = [];
     protected $fields = [];
 
     public function __construct(InterfaceController $controller)
     {
-        $this->controller = $controller;
+        $this->setController($controller);
         $currentPageUrl = $this->getController()->getRequest()->get('page.url');
         $this->setAfterAction($currentPageUrl, self::ACTION_AFTER_EXEC_BACK, self::ACTION_AFTER_EXEC_BACK);
     }
 
-    protected function addError($errorMessage, $target = 'alert')
+    protected function addError($errorMessage, $target = 'alert', $postfix = '')
     {
         if (!empty($errorMessage)) {
-            $this->getResponse()->error($target, $errorMessage);
+            $this->getResponse()->error($target, $errorMessage . $postfix);
         }
-    }
-
-    protected function addFieldError($errorMessage, $field, $postfix = '')
-    {
-        $error = str_replace(['<fieldname>', '<value>'], ['<!--'.$field->html.'-->', $field->value], $errorMessage.$postfix);
-        $this->addError($error, $field->html);
     }
 
     public function getController() : InterfaceController
@@ -62,6 +56,8 @@ abstract class BaseModel implements InterfaceModel
         return $this->getController()->getResponse();
     }
 
+    abstract public function getTable();
+
     public function map($formField, $dbField = null, $defaultValue = null, $type = 'string')
     {
         $formValue = isset($_REQUEST[$formField]) ? $_REQUEST[$formField] : null;
@@ -78,7 +74,7 @@ abstract class BaseModel implements InterfaceModel
     public function save()
     {
         //Recall before exec method with arbirtary code
-        $this->addError($this->beforeExec());
+        $this->addError($this->beforeSave());
         //Init arrays
         $keys = $values = $where = [];
         //skim the field list for check value and build $values, $where and $key list
@@ -117,7 +113,7 @@ abstract class BaseModel implements InterfaceModel
             $this->update($values, $where);
         }
         //Recall after exec method with arbirtary code
-        $this->afterExec();
+        $this->afterSave();
     }
 
     protected function validateFieldValue(ModelField $field, Field\Validator $validator)
@@ -125,7 +121,7 @@ abstract class BaseModel implements InterfaceModel
         try {
             $validator->validate($field);
         } catch (\Exception $e) {
-            $this->addFieldError($e->getMessage(), $field);
+            $this->addError($e->getMessage(), $field->html);
         } finally {
             return $field->value;
         }
@@ -150,9 +146,9 @@ abstract class BaseModel implements InterfaceModel
         return $field->value;
     }
 
-    abstract protected function insert(array $values);
+    abstract protected function insert(array $values, $keys);
 
-    abstract protected function update(array $values);
+    abstract protected function update(array $values, $where);
 
     abstract public function delete();
 
@@ -183,6 +179,11 @@ abstract class BaseModel implements InterfaceModel
         ];
     }
 
+    protected function setController(InterfaceController $controller)
+    {
+        $this->controller = $controller;
+    }
+
     abstract protected function init();
 
     abstract public function find();
@@ -195,7 +196,7 @@ abstract class BaseModel implements InterfaceModel
     {
     }
 
-    protected function beforeExec()
+    protected function beforeSave()
     {
     }
 
@@ -211,7 +212,7 @@ abstract class BaseModel implements InterfaceModel
     {
     }
 
-    protected function afterExec()
+    protected function afterSave()
     {
     }
 
@@ -225,5 +226,10 @@ abstract class BaseModel implements InterfaceModel
 
     protected function afterDelete()
     {
+    }
+
+    protected function raiseException($errorMessage, $errorNum = 500)
+    {
+        throw new ModelException($errorMessage, $errorNum);
     }
 }
