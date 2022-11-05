@@ -110,6 +110,11 @@ abstract class Record implements InterfaceModel
         return $this->fields[$fieldId];
     }
 
+    public function getTable()
+    {
+        return $this->getRecord()->table();
+    }
+
     public function getLastId()
     {
         return $this->getRecord()->lastAutoincrementId;
