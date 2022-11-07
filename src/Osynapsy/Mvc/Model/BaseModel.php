@@ -122,7 +122,7 @@ abstract class BaseModel implements InterfaceModel
 
     abstract protected function init();
 
-    abstract protected function insert(array $values, $keys);
+    abstract protected function insert(array $values);
 
     public function map($formField, $dbField = null, $defaultValue = null, $type = 'string')
     {
@@ -168,7 +168,7 @@ abstract class BaseModel implements InterfaceModel
         $this->fileUploaded = $value;
     }
 
-    abstract protected function update(array $values, $where);
+    abstract protected function update(array $values);
 
     /**
      *

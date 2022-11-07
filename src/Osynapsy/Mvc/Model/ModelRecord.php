@@ -16,7 +16,8 @@ use Osynapsy\Mvc\Model\BaseModel;
 
 abstract class ModelRecord extends BaseModel
 {
-    private $record;
+    protected $record;
+    protected $softDelete = [];
 
     public function __construct(InterfaceController $controller)
     {
@@ -42,7 +43,7 @@ abstract class ModelRecord extends BaseModel
         return $this->getRecord()->getValue($key);
     }
 
-    private function recordFill()
+    protected function recordFill()
     {
         $keys = [];
         foreach($this->fields as $field) {
@@ -74,7 +75,7 @@ abstract class ModelRecord extends BaseModel
         }
     }
 
-    protected function insert(array $values, $keys)
+    protected function insert(array $values)
     {
         if ($this->addError($this->beforeInsert())) {
             return;
@@ -83,7 +84,7 @@ abstract class ModelRecord extends BaseModel
         $this->afterInsert($lastId);
     }
 
-    protected function update(array $values, $where)
+    protected function update(array $values)
     {
         $this->addError($this->beforeUpdate());
         $id = $this->getRecord()->save($values);
@@ -95,13 +96,22 @@ abstract class ModelRecord extends BaseModel
         if ($this->addError($this->beforeDelete())) {
             return;
         }
-        $this->getRecord()->delete();
+        if (empty($this->softDelete)) {
+            $this->getRecord()->delete();
+        } else {
+            $this->getRecord()->save($this->softDelete);
+        }
         $this->afterDelete();
     }
 
     public function setValue($fieldName, $value, $defaultValue = null)
     {
         $this->field[$fieldName]->setValue($value, $defaultValue);
+    }
+
+    protected function softDelete($field, $value)
+    {
+        $this->softDelete[$field] = $value;
     }
 
     abstract protected function record();
