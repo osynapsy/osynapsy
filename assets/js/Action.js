@@ -126,6 +126,7 @@ Osynapsy.action =
                 return true;
             }
             var component = document.getElementById(val[0]);
+            errors.push(self.showErrorOnLabel(component, val[1]));
             if (component.classList.contains('field-in-error')){
                 return true;
             }
@@ -133,7 +134,6 @@ Osynapsy.action =
             Osynapsy.element(component).on('change', null, function() {
                 this.classList.remove('field-in-error');
             });
-            errors.push(self.showErrorOnLabel(component, val[1]));
         });
         if (errors.length === 0) {
             return;
