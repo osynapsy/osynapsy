@@ -13,20 +13,13 @@ use Osynapsy\Mvc\Model\Field\Field as ModelField;
  */
 abstract class BaseModel implements InterfaceModel
 {
-    const ACTION_AFTER_INSERT_HISTORY_PUSH_STATE = 'historyPushState';
-    const ACTION_AFTER_EXEC_BACK = 'back';
-    const ACTION_AFTER_EXEC_NONE = false;
-    const ACTION_AFTER_EXEC_REFRESH = 'refresh';
-
     protected $controller;
-    protected $actions = [];
     protected $fields = [];
+    protected $fieldUploaded = false;
 
     public function __construct(InterfaceController $controller)
     {
         $this->setController($controller);
-        $currentPageUrl = $this->getController()->getRequest()->get('page.url');
-        $this->setAfterAction($currentPageUrl, self::ACTION_AFTER_EXEC_BACK, self::ACTION_AFTER_EXEC_BACK);
     }
 
     protected function addError($errorMessage, $target = 'alert', $postfix = '')
@@ -35,6 +28,65 @@ abstract class BaseModel implements InterfaceModel
             $this->getResponse()->error($target, $errorMessage . $postfix);
         }
     }
+
+    protected function afterInit()
+    {
+    }
+
+    protected function afterDelete()
+    {
+        $this->gotoPreviusPage();
+    }
+
+    protected function afterInsert($id)
+    {
+        $this->reloadCurrentPage($id);
+    }
+
+    protected function afterUpdate()
+    {
+        if ($this->fieldUploaded) {
+            $this->refreshCurrentPage();
+        } else {
+            $this->gotoPreviusPage();
+        }
+    }
+
+    protected function afterSave()
+    {
+    }
+
+    protected function afterUpload($filename, $field = null)
+    {
+    }
+
+    protected function beforeDelete()
+    {
+    }
+
+    protected function beforeInsert()
+    {
+    }
+
+    protected function beforeUpdate()
+    {
+    }
+
+    protected function beforeSave()
+    {
+    }
+
+    protected function closeModal(array $parentComponentRefresh = [], $modalId = 'amodal')
+    {
+        if (!empty($parentComponentRefresh)) {
+            $this->getResponse()->js("parent.Osynpasy.refreshComponents(['%']);", implode("','",$parentComponentRefresh));
+        }
+        $this->getResponse()->js("parent.$('#".$modalId.").modal('hide')");
+    }
+
+    abstract public function delete();
+
+    abstract public function find();
 
     public function getController() : InterfaceController
     {
@@ -58,6 +110,20 @@ abstract class BaseModel implements InterfaceModel
 
     abstract public function getTable();
 
+    protected function gotoPreviusPage()
+    {
+        $this->getResponse()->go('back');
+    }
+
+    protected function historyPushState($id)
+    {
+        $this->getResponse()->js("history.pushState(null,null,'{$id}');");
+    }
+
+    abstract protected function init();
+
+    abstract protected function insert(array $values, $keys);
+
     public function map($formField, $dbField = null, $defaultValue = null, $type = 'string')
     {
         $formValue = isset($_REQUEST[$formField]) ? $_REQUEST[$formField] : null;
@@ -66,6 +132,43 @@ abstract class BaseModel implements InterfaceModel
         $this->fields[$modelField->html] = $modelField;
         return $modelField;
     }
+
+    protected function raiseException($errorMessage, $errorNum = 500)
+    {
+        throw new ModelException($errorMessage, $errorNum);
+    }
+
+    protected function reloadCurrentPage($id = '')
+    {
+        $currentPageUrl = $this->getController()->getRequest()->get('page.url');
+        $this->getResponse()->go($currentPageUrl.$id);
+    }
+
+    protected function refreshCurrentPage()
+    {
+        $this->getResponse()->go('refresh');
+    }
+
+    protected function setAfterAction($insert, $update, $delete)
+    {
+        $this->actions = [
+            'after-insert' => $insert ?? $this->actions['after-insert'],
+            'after-update' => $update ?? $this->actions['after-update'],
+            'after-delete' => $delete ?? $this->actions['after-delete']
+        ];
+    }
+
+    protected function setController(InterfaceController $controller)
+    {
+        $this->controller = $controller;
+    }
+
+    protected function setFileUploaded($value)
+    {
+        $this->fileUploaded = $value;
+    }
+
+    abstract protected function update(array $values, $where);
 
     /**
      *
@@ -141,95 +244,8 @@ abstract class BaseModel implements InterfaceModel
             $this->addError($e->getMessage());
             $field->readonly = true;
         }
-        $this->actions['after-update'] = 'refresh';
+        $this->setFileUploaded(true);
         $this->afterUpload($field->value, $field);
         return $field->value;
-    }
-
-    abstract protected function insert(array $values, $keys);
-
-    abstract protected function update(array $values, $where);
-
-    abstract public function delete();
-
-    protected function execAfterAction($actionId, $lastId = null)
-    {
-        switch ($this->actions[$actionId]) {
-            case self::ACTION_AFTER_EXEC_NONE:
-                break;
-            case self::ACTION_AFTER_INSERT_HISTORY_PUSH_STATE:
-                $this->getResponse()->js("history.pushState(null,null,'{$lastId}');");
-                break;
-            case self::ACTION_AFTER_EXEC_BACK:
-            case self::ACTION_AFTER_EXEC_REFRESH:
-                $this->getResponse()->go($this->actions[$actionId]);
-                break;
-            default:
-                $this->getResponse()->go($this->actions[$actionId].$lastId);
-                break;
-        }
-    }
-
-    protected function setAfterAction($insert, $update, $delete)
-    {
-        $this->actions = [
-            'after-insert' => $insert ?? $this->actions['after-insert'],
-            'after-update' => $update ?? $this->actions['after-update'],
-            'after-delete' => $delete ?? $this->actions['after-delete']
-        ];
-    }
-
-    protected function setController(InterfaceController $controller)
-    {
-        $this->controller = $controller;
-    }
-
-    abstract protected function init();
-
-    abstract public function find();
-
-    protected function afterInit()
-    {
-    }
-
-    protected function afterUpload($filename, $field = null)
-    {
-    }
-
-    protected function beforeSave()
-    {
-    }
-
-    protected function beforeInsert()
-    {
-    }
-
-    protected function beforeUpdate()
-    {
-    }
-
-    protected function beforeDelete()
-    {
-    }
-
-    protected function afterSave()
-    {
-    }
-
-    protected function afterInsert($id)
-    {
-    }
-
-    protected function afterUpdate()
-    {
-    }
-
-    protected function afterDelete()
-    {
-    }
-
-    protected function raiseException($errorMessage, $errorNum = 500)
-    {
-        throw new ModelException($errorMessage, $errorNum);
     }
 }
