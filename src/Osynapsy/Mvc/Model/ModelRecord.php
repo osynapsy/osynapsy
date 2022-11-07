@@ -81,7 +81,6 @@ abstract class ModelRecord extends BaseModel
         }
         $lastId = $this->getRecord()->save($values);
         $this->afterInsert($lastId);
-        $this->execAfterAction('after-insert', $lastId);
     }
 
     protected function update(array $values, $where)
@@ -89,7 +88,6 @@ abstract class ModelRecord extends BaseModel
         $this->addError($this->beforeUpdate());
         $id = $this->getRecord()->save($values);
         $this->afterUpdate($id);
-        $this->execAfterAction('after-insert');
     }
 
     public function delete()
@@ -99,7 +97,6 @@ abstract class ModelRecord extends BaseModel
         }
         $this->getRecord()->delete();
         $this->afterDelete();
-        $this->execAfterAction('after-delete');
     }
 
     public function setValue($fieldName, $value, $defaultValue = null)
