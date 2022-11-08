@@ -81,20 +81,7 @@ abstract class ModelRecord extends BaseModel
         //Recall before exec method with arbirtary code
         $this->addError($this->beforeSave());
         //Init arrays
-        $values = [];
-        //skim the field list for check value and build $values, $where and $key list
-        $validator = new Field\Validator($this);
-        foreach ($this->fields as $field) {
-            //Check if value respect rule
-            $value = $this->validateFieldValue($field, $validator);
-            if (in_array($field->type, ['file', 'image'])) {
-                $value = $this->grabUploadedFile($field);
-            }
-            //If field isn't in readonly mode assign values to values list for store it in db
-            if (!$field->readonly) {
-                $values[$field->name] = $value;
-            }
-        }
+        $values = $this->valuesFactory();
         //If occurred some error stop db updating
         if ($this->getResponse()->error()) {
             return;
@@ -110,6 +97,28 @@ abstract class ModelRecord extends BaseModel
         }
         //Recall after exec method with arbirtary code
         $this->afterSave();
+    }
+
+    protected function valuesFactory()
+    {
+        $values = [];
+        //skim the field list for check value and build $values, $where and $key list
+        $validator = new Field\Validator($this);
+        foreach ($this->fields as $field) {
+            //Check if value respect rule
+            $value = $this->validateFieldValue($field, $validator);
+            if (in_array($field->type, ['file', 'image'])) {
+                $value = $this->grabUploadedFile($field);
+            }
+            if (!$field->existInForm() && !$field->getDefaultValue() && $this->getRecord()->getBehavior() != InterfaceRecord::BEHAVIOR_INSERT) {
+                continue;
+            }
+            //If field isn't in readonly mode assign values to values list for store it in db
+            if (!$field->readonly && $field->name) {
+                $values[$field->name] = $value;
+            }
+        }
+        return $values;
     }
 
     protected function insert(array $values)
