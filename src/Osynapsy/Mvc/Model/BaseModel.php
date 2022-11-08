@@ -79,9 +79,9 @@ abstract class BaseModel implements InterfaceModel
     protected function closeModal(array $parentComponentRefresh = [], $modalId = 'amodal')
     {
         if (!empty($parentComponentRefresh)) {
-            $this->getResponse()->js("parent.Osynpasy.refreshComponents(['%']);", implode("','",$parentComponentRefresh));
+            $this->getResponse()->js(sprintf("parent.Osynapsy.refreshComponents(['%s']);", implode("','",$parentComponentRefresh)));
         }
-        $this->getResponse()->js("parent.$('#".$modalId.").modal('hide')");
+        $this->getResponse()->js("parent.$('#".$modalId."').modal('hide')");
     }
 
     abstract public function delete();
@@ -147,15 +147,6 @@ abstract class BaseModel implements InterfaceModel
     protected function refreshCurrentPage()
     {
         $this->getResponse()->go('refresh');
-    }
-
-    protected function setAfterAction($insert, $update, $delete)
-    {
-        $this->actions = [
-            'after-insert' => $insert ?? $this->actions['after-insert'],
-            'after-update' => $update ?? $this->actions['after-update'],
-            'after-delete' => $delete ?? $this->actions['after-delete']
-        ];
     }
 
     protected function setController(InterfaceController $controller)
