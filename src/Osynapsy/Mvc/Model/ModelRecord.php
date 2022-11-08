@@ -13,6 +13,7 @@ namespace Osynapsy\Mvc\Model;
 
 use Osynapsy\Mvc\Controller\InterfaceController;
 use Osynapsy\Mvc\Model\BaseModel;
+use Osynapsy\Database\Record\InterfaceRecord;
 
 abstract class ModelRecord extends BaseModel
 {
@@ -28,7 +29,7 @@ abstract class ModelRecord extends BaseModel
         $this->afterInit();
     }
 
-    public function getRecord()
+    public function getRecord() : InterfaceRecord
     {
         return $this->record;
     }
@@ -75,6 +76,42 @@ abstract class ModelRecord extends BaseModel
         }
     }
 
+    public function save()
+    {
+        //Recall before exec method with arbirtary code
+        $this->addError($this->beforeSave());
+        //Init arrays
+        $values = [];
+        //skim the field list for check value and build $values, $where and $key list
+        $validator = new Field\Validator($this);
+        foreach ($this->fields as $field) {
+            //Check if value respect rule
+            $value = $this->validateFieldValue($field, $validator);
+            if (in_array($field->type, ['file', 'image'])) {
+                $value = $this->grabUploadedFile($field);
+            }
+            //If field isn't in readonly mode assign values to values list for store it in db
+            if (!$field->readonly) {
+                $values[$field->name] = $value;
+            }
+        }
+        //If occurred some error stop db updating
+        if ($this->getResponse()->error()) {
+            return;
+        }
+        //If behavior of the record is insert exec insert
+        switch ($this->getRecord()->getBehavior()) {
+            case InterfaceRecord::BEHAVIOR_INSERT:
+                $this->insert($values);
+                break;
+            case InterfaceRecord::BEHAVIOR_UPDATE:
+                $this->update($values);
+                break;
+        }
+        //Recall after exec method with arbirtary code
+        $this->afterSave();
+    }
+
     protected function insert(array $values)
     {
         if ($this->addError($this->beforeInsert())) {
@@ -86,7 +123,9 @@ abstract class ModelRecord extends BaseModel
 
     protected function update(array $values)
     {
-        $this->addError($this->beforeUpdate());
+        if ($this->addError($this->beforeUpdate())) {
+            return;
+        }
         $id = $this->getRecord()->save($values);
         $this->afterUpdate($id);
     }
