@@ -172,8 +172,9 @@ class Field
             return;
         }
         list($date, $time) = explode(' ', $this->value);
+        list($hour, $minute) = explode(':', $time);
         list($day, $month, $year) = explode('/', $date);
-        $this->value = sprintf("%s-%s-%s %s:00", $year, $month, $day, $time);
+        $this->value = sprintf("%s-%s-%s %s:%s", $year, $month, $day, $hour, $minute);
     }
 
     public function getValue()
