@@ -221,7 +221,7 @@ abstract class BaseModel implements InterfaceModel
         }
     }
 
-    private function grabUploadedFile(&$field)
+    protected function grabUploadedFile(&$field)
     {
         if (!is_array($_FILES) || !array_key_exists($field->html, $_FILES) || empty($_FILES[$field->html]['name'])) {
             $field->readonly = true;
