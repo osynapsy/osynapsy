@@ -18,9 +18,11 @@ use Osynapsy\Mvc\Controller\Controller;
  *
  * @author pietr
  */
-interface InterfaceAction
+interface ActionInterface
 {
     public function execute();
+
+    public function getApp();
 
     public function setController(Controller $controller);
 
