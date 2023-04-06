@@ -88,10 +88,10 @@ abstract class ModelRecord extends BaseModel
         }
         //If behavior of the record is insert exec insert
         switch ($this->getRecord()->getBehavior()) {
-            case InterfaceRecord::BEHAVIOR_INSERT:
+            case RecordInterface::BEHAVIOR_INSERT:
                 $this->insert($values);
                 break;
-            case InterfaceRecord::BEHAVIOR_UPDATE:
+            case RecordInterface::BEHAVIOR_UPDATE:
                 $this->update($values);
                 break;
         }
@@ -110,7 +110,7 @@ abstract class ModelRecord extends BaseModel
             if (in_array($field->type, ['file', 'image'])) {
                 $value = $this->grabUploadedFile($field);
             }
-            if (!$field->existInForm() && !$field->getDefaultValue() && $this->getRecord()->getBehavior() != InterfaceRecord::BEHAVIOR_INSERT) {
+            if (!$field->existInForm() && !$field->getDefaultValue() && $this->getRecord()->getBehavior() != RecordInterface::BEHAVIOR_INSERT) {
                 continue;
             }
             //If field isn't in readonly mode assign values to values list for store it in db
