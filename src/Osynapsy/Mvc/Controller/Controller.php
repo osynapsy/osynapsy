@@ -13,14 +13,13 @@ namespace Osynapsy\Mvc\Controller;
 
 use Osynapsy\Event\Dispatcher as EventDispatcher;
 use Osynapsy\Event\Event;
-
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response\Base as Response;
 use Osynapsy\Mvc\Template\Template;
 use Osynapsy\Mvc\Application\ApplicationInterface;
 use Osynapsy\Mvc\Action\ActionInterface;
 use Osynapsy\Mvc\Model\ModelInterface;
-use Osynapsy\Observer\InterfaceSubject;
+use Osynapsy\Observer\SubjectInterface;
 
 /**
  * Abstract Osynapsy controller.
@@ -30,7 +29,7 @@ use Osynapsy\Observer\InterfaceSubject;
  * from fronted.
  *
  */
-abstract class Controller implements ControllerInterface, InterfaceSubject
+abstract class Controller implements ControllerInterface, SubjectInterface
 {
     use \Osynapsy\Observer\Subject;
 
