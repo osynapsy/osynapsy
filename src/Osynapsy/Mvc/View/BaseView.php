@@ -12,14 +12,14 @@
 namespace Osynapsy\Mvc\View;
 
 use Osynapsy\Kernel;
-use Osynapsy\Mvc\Controller\InterfaceController;
+use Osynapsy\Mvc\Controller\ControllerInterface;
 
-abstract class BaseView implements InterfaceView
+abstract class BaseView implements ViewInterface
 {
     protected $components = array();
     private $controller;
 
-    public function __construct(InterfaceController $controller, $title = '')
+    public function __construct(ControllerInterface $controller, $title = '')
     {
         $this->controller = $controller;
         $this->setTitle($title);
@@ -75,7 +75,7 @@ abstract class BaseView implements InterfaceView
         return $this->init();
     }
 
-    public function getController()
+    public function getController() : ControllerInterface
     {
         return $this->controller;
     }
