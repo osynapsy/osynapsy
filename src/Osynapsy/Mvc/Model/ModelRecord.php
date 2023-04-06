@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Mvc\Model;
 
-use Osynapsy\Mvc\Controller\InterfaceController;
+use Osynapsy\Mvc\Controller\ControllerInterface;
 use Osynapsy\Mvc\Model\BaseModel;
 use Osynapsy\Database\Record\InterfaceRecord;
 
@@ -20,7 +20,7 @@ abstract class ModelRecord extends BaseModel
     protected $record;
     protected $softDelete = [];
 
-    public function __construct(InterfaceController $controller)
+    public function __construct(ControllerInterface $controller)
     {
         parent::__construct($controller);
         $this->record = $this->record();

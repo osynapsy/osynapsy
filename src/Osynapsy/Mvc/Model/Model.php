@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Mvc\Model;
 
-use Osynapsy\Mvc\Controller\InterfaceController;
+use Osynapsy\Mvc\Controller\ControllerInterface;
 use Osynapsy\Database\Record\Active;
 
 /**
@@ -26,7 +26,7 @@ abstract class Model extends ModelRecord
     protected $sequence;
     protected $softdelete;
 
-    public function __construct(InterfaceController $controller)
+    public function __construct(ControllerInterface $controller)
     {
         $this->setController($controller);
         $this->init();
@@ -44,7 +44,7 @@ abstract class Model extends ModelRecord
         return new class ($this->getDb()) extends Active
         {
             protected $table;
-            
+
             public function setTable($table)
             {
                 $this->table = $table;

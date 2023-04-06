@@ -12,12 +12,12 @@
 namespace Osynapsy\Mvc\Model;
 
 use Osynapsy\Event\EventLocal;
-use Osynapsy\Mvc\Controller\Controller;
+use Osynapsy\Mvc\Controller\ControllerInterface;
 use Osynapsy\Mvc\Model\Field\Field;
 use Osynapsy\Mvc\Model\Field\Validator;
-use Osynapsy\Mvc\Model\InterfaceModel;
+use Osynapsy\Mvc\Model\ModelInterface;
 
-abstract class Record implements InterfaceModel
+abstract class Record implements ModelInterface
 {
     const BEHAVIOR_INSERT = 'insert';
     const BEHAVIOR_UPDATE = 'update';

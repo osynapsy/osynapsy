@@ -11,25 +11,25 @@
 
 namespace Osynapsy\Mvc\Model;
 
-use Osynapsy\Mvc\Model\InterfaceModel;
-use Osynapsy\Mvc\Controller\InterfaceController;
+use Osynapsy\Mvc\Model\ModelInterface;
+use Osynapsy\Mvc\Controller\ControllerInterface;
 
 /**
  * Description of Simple
  *
  * @author Pietro
  */
-abstract class Simple implements InterfaceModel
+abstract class Simple implements ModelInterface
 {
     protected $controller;
 
-    public function __construct(InterfaceController $controller)
+    public function __construct(ControllerInterface $controller)
     {
         $this->controller = $controller;
         $this->init();
     }
 
-    public function getController() : InterfaceController
+    public function getController() : ControllerInterface
     {
         return $this->controller;
     }

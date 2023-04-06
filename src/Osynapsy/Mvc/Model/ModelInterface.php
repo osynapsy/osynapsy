@@ -11,11 +11,13 @@
 
 namespace Osynapsy\Mvc\Model;
 
-use Osynapsy\Mvc\Controller\InterfaceController;
+use Osynapsy\Mvc\Controller\ControllerInterface;
 
-interface InterfaceModel
+interface ModelInterface
 {
-    public function __construct(InterfaceController $controller);
+    public function __construct(ControllerInterface $controller);
+
+    public function getController() : ControllerInterface;
 
     public function find();
 

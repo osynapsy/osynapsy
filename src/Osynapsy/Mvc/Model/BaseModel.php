@@ -1,8 +1,8 @@
 <?php
 namespace Osynapsy\Mvc\Model;
 
-use Osynapsy\Mvc\Controller\InterfaceController;
-use Osynapsy\Mvc\Model\InterfaceModel;
+use Osynapsy\Mvc\Controller\ControllerInterface;
+use Osynapsy\Mvc\Model\ModelInterface;
 use Osynapsy\Mvc\Helper\UploadManager;
 use Osynapsy\Mvc\Model\Field\Field as ModelField;
 
@@ -11,13 +11,13 @@ use Osynapsy\Mvc\Model\Field\Field as ModelField;
  *
  * @author Pietro
  */
-abstract class BaseModel implements InterfaceModel
+abstract class BaseModel implements ModelInterface
 {
     protected $controller;
     protected $fields = [];
     protected $fieldUploaded = false;
 
-    public function __construct(InterfaceController $controller)
+    public function __construct(ControllerInterface $controller)
     {
         $this->setController($controller);
     }
@@ -88,7 +88,7 @@ abstract class BaseModel implements InterfaceModel
 
     abstract public function find();
 
-    public function getController() : InterfaceController
+    public function getController() : ControllerInterface
     {
         return $this->controller;
     }
