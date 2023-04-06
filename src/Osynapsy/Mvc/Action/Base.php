@@ -13,9 +13,9 @@ namespace Osynapsy\Mvc\Action;
 
 use Osynapsy\Mvc\Controller\Controller;
 use Osynapsy\Database\Driver\InterfaceDbo;
-use Osynapsy\Mvc\Application\InterfaceApplication;
-use Osynapsy\Mvc\Controller\InterfaceController;
-use Osynapsy\Mvc\Model\InterfaceModel;
+use Osynapsy\Mvc\Application\ApplicationInterface;
+use Osynapsy\Mvc\Controller\ControllerInterface;
+use Osynapsy\Mvc\Model\ModelInterface;
 
 /**
  * Base class for implement an external action.
@@ -48,7 +48,7 @@ abstract class Base implements ActionInterface
      *
      * @return InstanceApplication
      */
-    public final function getApp()
+    public final function getApp() : ApplicationInterface
     {
         return $this->getController()->getApp();
     }
@@ -58,7 +58,7 @@ abstract class Base implements ActionInterface
      *
      * @return Controller
      */
-    public final function getController() : InterfaceController
+    public final function getController() : ControllerInterface
     {
         return $this->controller;
     }
@@ -78,7 +78,7 @@ abstract class Base implements ActionInterface
      *
      * @return Model
      */
-    public function getModel() : InterfaceModel
+    public function getModel() : ModelInterface
     {
         return $this->getController()->getModel();
     }
@@ -109,7 +109,7 @@ abstract class Base implements ActionInterface
      *
      * @param Controller $controller
      */
-    public function setController(Controller $controller)
+    public function setController(ControllerInterface $controller)
     {
         $this->controller = $controller;
     }

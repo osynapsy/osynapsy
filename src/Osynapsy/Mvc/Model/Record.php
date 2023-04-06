@@ -92,7 +92,7 @@ abstract class Record implements ModelInterface
         return $this->getController()->getDb();
     }
 
-    protected function getController() : Controller
+    public function getController() : ControllerInterface
     {
         return $this->controller;
     }
