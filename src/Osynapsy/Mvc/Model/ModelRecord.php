@@ -13,7 +13,7 @@ namespace Osynapsy\Mvc\Model;
 
 use Osynapsy\Mvc\Controller\ControllerInterface;
 use Osynapsy\Mvc\Model\BaseModel;
-use Osynapsy\Database\Record\InterfaceRecord;
+use Osynapsy\Database\Record\RecordInterface;
 
 abstract class ModelRecord extends BaseModel
 {
@@ -29,7 +29,7 @@ abstract class ModelRecord extends BaseModel
         $this->afterInit();
     }
 
-    public function getRecord() : InterfaceRecord
+    public function getRecord() : RecordInterface
     {
         return $this->record;
     }
