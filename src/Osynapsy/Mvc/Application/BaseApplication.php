@@ -27,7 +27,7 @@ use Osynapsy\Database\DboFactory;
  *
  * @author Pietro Celeste <p.celeste@osynapsy.net>
  */
-class BaseApplication implements InterfaceApplication
+class BaseApplication implements ApplicationInterface
 {
     protected $db;
     protected $route;
