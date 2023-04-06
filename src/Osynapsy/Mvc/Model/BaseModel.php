@@ -149,7 +149,7 @@ abstract class BaseModel implements ModelInterface
         $this->getResponse()->go('refresh');
     }
 
-    protected function setController(InterfaceController $controller)
+    protected function setController(ControllerInterface $controller)
     {
         $this->controller = $controller;
     }
