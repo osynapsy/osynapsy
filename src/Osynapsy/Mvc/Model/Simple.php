@@ -13,6 +13,7 @@ namespace Osynapsy\Mvc\Model;
 
 use Osynapsy\Mvc\Model\ModelInterface;
 use Osynapsy\Mvc\Controller\ControllerInterface;
+use Osynapsy\Database\Driver\DboInterface;
 
 /**
  * Description of Simple
@@ -34,7 +35,7 @@ abstract class Simple implements ModelInterface
         return $this->controller;
     }
 
-    public function getDb()
+    public function getDb() : DboInterface
     {
         return $this->getController()->getDb();
     }

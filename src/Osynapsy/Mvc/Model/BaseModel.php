@@ -5,6 +5,7 @@ use Osynapsy\Mvc\Controller\ControllerInterface;
 use Osynapsy\Mvc\Model\ModelInterface;
 use Osynapsy\Mvc\Helper\UploadManager;
 use Osynapsy\Mvc\Model\Field\Field as ModelField;
+use Osynapsy\Database\Driver\DboInterface;
 
 /**
  * Description of BaseModel
@@ -93,7 +94,7 @@ abstract class BaseModel implements ModelInterface
         return $this->controller;
     }
 
-    public function getDb()
+    public function getDb() : DboInterface
     {
         return $this->getController()->getDb();
     }

@@ -15,7 +15,7 @@ use Osynapsy\Http\Request;
 use Osynapsy\Mvc\Action\ActionInterface;
 use Osynapsy\Mvc\Application\ApplicationInterface;
 use Osynapsy\Mvc\Model\ModelInterface;
-use Osynapsy\Database\Driver\InterfaceDbo;
+use Osynapsy\Database\Driver\DboInterface;
 
 /**
  * Controller Interface
@@ -28,7 +28,7 @@ interface ControllerInterface
 
     public function getApp() : ApplicationInterface;
 
-    public function getDb() : InterfaceDbo;
+    public function getDb() : DboInterface;
 
     public function getDispatcher();
 

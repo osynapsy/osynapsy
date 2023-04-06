@@ -12,12 +12,15 @@
 namespace Osynapsy\Mvc\Model;
 
 use Osynapsy\Mvc\Controller\ControllerInterface;
+use Osynapsy\Database\Driver\DboInterface;
 
 interface ModelInterface
 {
     public function __construct(ControllerInterface $controller);
 
     public function getController() : ControllerInterface;
+
+    public function getDb() : DboInterface;
 
     public function find();
 

@@ -18,6 +18,7 @@ use Osynapsy\Http\Response\JsonOsynapsy as JsonOsynapsyResponse;
 use Osynapsy\Http\Response\Html as HtmlResponse;
 use Osynapsy\Http\Response\Xml as XmlResponse;
 use Osynapsy\Database\DboFactory;
+use Osynapsy\Database\Driver\DboInterface;
 
 /**
  * Application controller is the main controller of app.
@@ -105,7 +106,7 @@ class BaseApplication implements ApplicationInterface
      * @param int $key
      * @return \Osynapsy\Database\Driver\InterfaceDbo
      */
-    public function getDb(int $key = 0) : \Osynapsy\Database\Driver\InterfaceDbo
+    public function getDb(int $key = 0) : DboInterface
     {
         return $this->getDbFactory()->getConnection($key);
     }

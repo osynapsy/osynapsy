@@ -16,6 +16,8 @@ use Osynapsy\Mvc\Controller\ControllerInterface;
 use Osynapsy\Mvc\Model\Field\Field;
 use Osynapsy\Mvc\Model\Field\Validator;
 use Osynapsy\Mvc\Model\ModelInterface;
+use Osynapsy\Database\Record\RecordInterface;
+use Osynapsy\Database\Driver\DboInterface;
 
 abstract class Record implements ModelInterface
 {
@@ -87,7 +89,7 @@ abstract class Record implements ModelInterface
         return $this->getRecord()->getBehavior();
     }
 
-    public function getDb()
+    public function getDb() : DboInterface
     {
         return $this->getController()->getDb();
     }
@@ -120,7 +122,7 @@ abstract class Record implements ModelInterface
         return $this->getRecord()->lastAutoincrementId;
     }
 
-    public function getRecord() : \Osynapsy\Database\Record\InterfaceRecord
+    public function getRecord() : RecordInterface
     {
         return $this->record;
     }

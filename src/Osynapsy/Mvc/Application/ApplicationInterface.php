@@ -14,6 +14,8 @@ namespace Osynapsy\Mvc\Application;
 use Osynapsy\Kernel\Route;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response\Base as Response;
+use Osynapsy\Database\Driver\DboInterface;
+use Osynapsy\Database\DboFactory;
 
 interface ApplicationInterface
 {
@@ -21,9 +23,9 @@ interface ApplicationInterface
 
     public function getComposer();
 
-    public function getDb(int $key = 0) : \Osynapsy\Database\Driver\InterfaceDbo;
+    public function getDb(int $key = 0) : DboInterface;
 
-    public function getDbFactory() : \Osynapsy\Database\DboFactory;
+    public function getDbFactory() : DboFactory;
 
     public function getRequest($key = null);
 

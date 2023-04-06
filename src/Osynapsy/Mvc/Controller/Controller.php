@@ -19,6 +19,7 @@ use Osynapsy\Mvc\Template\Template;
 use Osynapsy\Mvc\Application\ApplicationInterface;
 use Osynapsy\Mvc\Action\ActionInterface;
 use Osynapsy\Mvc\Model\ModelInterface;
+use Osynapsy\Database\Driver\DboInterface;
 use Osynapsy\Observer\SubjectInterface;
 
 /**
@@ -170,7 +171,7 @@ abstract class Controller implements ControllerInterface, SubjectInterface
      * @param int $key
      * @return Db
      */
-    public function getDb($key = 0) : \Osynapsy\Database\Driver\InterfaceDbo
+    public function getDb($key = 0) : DboInterface
     {
         return $this->getApp()->getDb($key);
     }
