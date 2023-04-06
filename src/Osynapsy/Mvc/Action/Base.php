@@ -12,7 +12,7 @@
 namespace Osynapsy\Mvc\Action;
 
 use Osynapsy\Mvc\Controller\Controller;
-use Osynapsy\Database\Driver\InterfaceDbo;
+use Osynapsy\Database\Driver\DboInterface;
 use Osynapsy\Mvc\Application\ApplicationInterface;
 use Osynapsy\Mvc\Controller\ControllerInterface;
 use Osynapsy\Mvc\Model\ModelInterface;
@@ -68,7 +68,7 @@ abstract class Base implements ActionInterface
      *
      * @return InterfaceDbo
      */
-    public function getDb() : InterfaceDbo
+    public function getDb() : DboInterface
     {
         return $this->controller->getDb();
     }
