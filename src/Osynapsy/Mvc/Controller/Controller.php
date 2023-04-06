@@ -17,9 +17,9 @@ use Osynapsy\Event\Event;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response\Base as Response;
 use Osynapsy\Mvc\Template\Template;
-use Osynapsy\Mvc\Application\InterfaceApplication;
-use Osynapsy\Mvc\Action\InterfaceAction;
-use Osynapsy\Mvc\Model\InterfaceModel;
+use Osynapsy\Mvc\Application\ApplicationInterface;
+use Osynapsy\Mvc\Action\ActionInterface;
+use Osynapsy\Mvc\Model\ModelInterface;
 use Osynapsy\Observer\InterfaceSubject;
 
 /**
@@ -30,7 +30,7 @@ use Osynapsy\Observer\InterfaceSubject;
  * from fronted.
  *
  */
-abstract class Controller implements InterfaceController, InterfaceSubject
+abstract class Controller implements ControllerInterface, InterfaceSubject
 {
     use \Osynapsy\Observer\Subject;
 
@@ -48,7 +48,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * @param Request $request
      * @param Application $application
      */
-    public function __construct(Request $request = null, InterfaceApplication $application = null)
+    public function __construct(Request $request = null, ApplicationInterface $application = null)
     {
         $this->application = $application;
         $this->parameters = $request->get('page.route')->parameters;
@@ -160,7 +160,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      *
      * @return \Osynapsy\Mvc\Application
      */
-    final public function getApp() : InterfaceApplication
+    final public function getApp() : ApplicationInterface
     {
         return $this->application;
     }
@@ -217,7 +217,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      *
      * @return Model
      */
-    final public function getModel() : InterfaceModel
+    final public function getModel() : ModelInterface
     {
         return $this->model;
     }
@@ -339,7 +339,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      * @param string $actionClass
      * @return void
      */
-    public function setExternalAction(string $actionId, InterfaceAction $actionClass) : void
+    public function setExternalAction(string $actionId, ActionInterface $actionClass) : void
     {
         $this->externalActions[$actionId] = $actionClass;
     }
@@ -349,7 +349,7 @@ abstract class Controller implements InterfaceController, InterfaceSubject
      *
      * @param InterfaceModel $model
      */
-    public function setModel(InterfaceModel $model)
+    public function setModel(ModelInterface $model)
     {
         $this->model = $model;
     }
