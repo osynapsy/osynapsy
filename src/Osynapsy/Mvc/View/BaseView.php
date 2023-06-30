@@ -62,7 +62,7 @@ abstract class BaseView implements ViewInterface
     public function addMeta($property ,$content)
     {
         $meta = new \Osynapsy\Html\Tag('meta');
-        $meta->att(['property' => $property, 'content' => $content]);
+        $meta->attributes(['property' => $property, 'content' => $content]);
         $this->getTemplate()->add($meta, 'meta');
     }
 
