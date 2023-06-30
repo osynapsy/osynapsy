@@ -250,7 +250,7 @@ abstract class BaseModel implements ModelInterface
         if (!array_key_exists($fieldId, $this->fields)) {
             return null;
         }
-        $dbFieldName = $this->field[$fieldId]->name;
+        $dbFieldName = $this->fields[$fieldId]->name;
         return $this->getValue($dbFieldName);
     }
 }

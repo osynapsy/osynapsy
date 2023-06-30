@@ -137,7 +137,7 @@ abstract class Record implements ModelInterface
 
     public function getValue($key)
     {
-        return $this->getRecord()->getValue($key);
+        return $this->record->get($key);
     }
 
     public function find()
@@ -274,4 +274,17 @@ abstract class Record implements ModelInterface
     abstract protected function init();
 
     abstract protected function record();
+
+    public function getFieldValue($fieldId)
+    {
+        $valueInRequest = filter_input(\INPUT_POST, $fieldId);
+        if ($valueInRequest) {
+            return $valueInRequest;
+        }
+        if (!array_key_exists($fieldId, $this->fields)) {
+            return null;
+        }
+        $dbFieldName = $this->fields[$fieldId]->name;
+        return $dbFieldName ? $this->getValue($dbFieldName) : null;
+    }
 }

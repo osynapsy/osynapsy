@@ -219,7 +219,7 @@ abstract class Controller implements ControllerInterface, SubjectInterface
      */
     final public function getModel() : ModelInterface
     {
-        return $this->model;
+        return $this->model ?? new class ($this) extends \Osynapsy\Mvc\Model\Simple {};
     }
 
     /**

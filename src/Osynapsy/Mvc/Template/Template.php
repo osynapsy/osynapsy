@@ -2,7 +2,7 @@
 namespace Osynapsy\Mvc\Template;
 
 use Osynapsy\Html\Tag;
-use Osynapsy\Html\Component;
+use Osynapsy\Html\DOM;
 use Osynapsy\Kernel;
 
 /**
@@ -78,7 +78,7 @@ class Template
     {
         $response = new Tag('div','response');
         foreach($componentIDs as $componentID) {
-            $response->add(Component::getById($componentID));
+            $response->add(DOM::getById($componentID));
         }
         return $response->get();
     }
@@ -86,8 +86,8 @@ class Template
     protected function buildFullTemplate()
     {
         $template = $this->template;
-        foreach (Component::getRequire() as $type => $urls) {
-            $this->addComponentRequirement($type, $urls);
+        foreach (DOM::getRequire() as $require) {
+            $this->addComponentRequirement($require[1], $require[2] ?? $require[0]);
         }
         foreach($this->parts as $id => $parts) {
             $template = str_replace(sprintf('<!--%s-->', $id), implode(PHP_EOL, $parts), $template);
@@ -95,12 +95,10 @@ class Template
         return $template;
     }
 
-    private function addComponentRequirement($type, $urls)
+    private function addComponentRequirement($type, $url)
     {
-        foreach ($urls as $url) {
-            $method = sprintf('add%s', $type);
-            $this->{$method}($url);
-        }
+        $method = sprintf('add%s', $type);
+        $this->{$method}($url);
     }
 
     public function addCss($cssWebPath)
@@ -118,7 +116,7 @@ class Template
         $this->addIfNoDuplicate(sprintf('<script src="%s"%s></script>', $jsWebPath, empty($scriptId) ? '' : " id=\"$scriptId\""), self::JS_PART_ID);
     }
 
-    public function addJsCode($code)
+    public function addScript($code)
     {
         $this->addIfNoDuplicate('<script>'.PHP_EOL.$code.PHP_EOL.'</script>', self::JS_PART_ID);
     }

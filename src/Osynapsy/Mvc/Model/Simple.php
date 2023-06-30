@@ -55,4 +55,8 @@ abstract class Simple implements ModelInterface
     public function delete()
     {
     }
+
+    public function getFieldValue($fieldId)
+    {
+    }
 }
