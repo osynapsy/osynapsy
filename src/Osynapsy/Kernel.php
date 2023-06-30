@@ -57,7 +57,7 @@ class Kernel
     public function run()
     {
         try {
-            $this->request = $this->requestFactory();
+            $this->request = $this->requestFactory();            
             $this->psrRequest = $this->psr7RequestFactory();
             $requestUri = $this->requestUriFactory();
             $router = $this->routerFactory($this->getRequest(), $requestUri);
@@ -66,7 +66,7 @@ class Kernel
                 throw $this->raiseException(1001, 'No app configuration found');
             }
             $this->loadApplicationRoutes($router, $applications);
-            $route = $this->findRequestRoute($router, $requestUri);
+            $route = $this->findRequestRoute($router, $requestUri);            
             $this->validateRouteController($route);
             return $this->runHypervisor($route, $this->getRequest());
         } catch (\Exception $exception) {
