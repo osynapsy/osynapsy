@@ -240,4 +240,17 @@ abstract class BaseModel implements ModelInterface
         $this->afterUpload($field->value, $field);
         return $field->value;
     }
+
+    public function getFieldValue($fieldId)
+    {
+        $valueInRequest = filter_input(\INPUT_POST, $fieldId);
+        if ($valueInRequest) {
+            return $valueInRequest;
+        }
+        if (!array_key_exists($fieldId, $this->fields)) {
+            return null;
+        }
+        $dbFieldName = $this->field[$fieldId]->name;
+        return $this->getValue($dbFieldName);
+    }
 }

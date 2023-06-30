@@ -109,7 +109,7 @@ final class TemplateTest extends TestCase
     {
         $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS'] = 'testGrid';
         $DataGrid = new DataGrid('testGrid');
-        $DataGrid->setData([['prova' => '1']]);
+        $DataGrid->setDataset([['prova' => '1']]);
         $regexPattern = '/testGrid/';
         $template = $this->template(self::VALID_TEMPLATE_PATH);
         $this->assertMatchesRegularExpression($regexPattern, $template->get());

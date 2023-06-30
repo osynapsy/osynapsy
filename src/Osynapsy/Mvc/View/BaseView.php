@@ -13,6 +13,7 @@ namespace Osynapsy\Mvc\View;
 
 use Osynapsy\Kernel;
 use Osynapsy\Mvc\Controller\ControllerInterface;
+use Osynapsy\Html\DOM;
 
 abstract class BaseView implements ViewInterface
 {
@@ -48,9 +49,9 @@ abstract class BaseView implements ViewInterface
         $this->getTemplate()->addJs($path);
     }
 
-    public function addJsCode($code)
+    public function addScript($code)
     {
-        $this->getTemplate()->addJsCode($code);
+        $this->getTemplate()->addScript($code);
     }
 
     public function addJsLibrary($path)
@@ -72,7 +73,23 @@ abstract class BaseView implements ViewInterface
 
     public function get()
     {
-        return $this->init();
+        $view = $this->init();
+        if (!empty($this->getModel())) {
+            $this->initComponentValues();
+        }
+        return $view;
+    }
+
+    protected function initComponentValues()
+    {
+        $Components = DOM::getAllComponents() ?? [];
+        foreach ($Components as $component) {
+            if (!method_exists($component, 'setValue')) {
+                continue;
+            }
+            $componentId = $component->getAttribute('id');
+            $component->setValue($_REQUEST[$componentId] ?? $this->getModel()->getFieldValue($componentId));
+        }
     }
 
     public function getController() : ControllerInterface

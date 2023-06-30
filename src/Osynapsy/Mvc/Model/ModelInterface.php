@@ -22,6 +22,8 @@ interface ModelInterface
 
     public function getDb() : DboInterface;
 
+    public function getFieldValue($fieldId);
+
     public function find();
 
     public function save();
