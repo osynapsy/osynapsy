@@ -112,7 +112,7 @@ abstract class Controller implements ControllerInterface, SubjectInterface
         }
         $response = $this->indexAction();
         if ($response) {
-            $this->getTemplate()->add($response);
+            $this->getTemplate()->add((string) $response);
         }
         $this->getResponse()->addContent($this->getTemplate()->get());
         return $this->getResponse();
