@@ -17,7 +17,7 @@ use Osynapsy\Mvc\View\RefreshComponentsView;
 use Osynapsy\Mvc\View\AbstractView;
 
 /**
- * Description of ActionRunner
+ * Execute request action. If no action is requested exec controller indexAction
  *
  * @author Pietro Celeste <pietro.celeste@gmail.com>
  */
@@ -25,12 +25,21 @@ class ActionRunner
 {
     protected $controller;
 
+    /**
+     *
+     * @param ControllerInterface $controller
+     */
     public function __construct(ControllerInterface $controller)
     {
         $this->controller = $controller;
     }
 
-    public function getController()
+    /**
+     * Return current controller
+     *
+     * @return ControllerInterface
+     */
+    public function getController() : ControllerInterface
     {
         return $this->controller;
     }
@@ -57,9 +66,9 @@ class ActionRunner
     }
 
     /**
-     * Recall index action (default action)
+     * Execute default controller action (default action)
      *
-     * @return \Osynapsy\Http\Response
+     * @return \Osynapsy\Http\ResponseInterface
      */
     private function execDefaultAction() : ResponseInterface
     {
@@ -73,7 +82,13 @@ class ActionRunner
             $this->execRefreshComponentsAction($response, $requestComponentIDs);
     }
 
-    protected function execIndexAction($response)
+    /**
+     * Execute default method of controller
+     *
+     * @param mixed $response
+     * @return \Osynapsy\Http\ResponseInterface
+     */
+    protected function execIndexAction($response) : ResponseInterface
     {
         $this->getController()->getTemplate()->add($response);
         $this->getResponse()->addContent($this->getController()->getTemplate()->get());
@@ -127,6 +142,11 @@ class ActionRunner
         return $this->getResponse();
     }
 
+    /**
+     * Return current response
+     *
+     * @return ResponseInterface
+     */
     protected function getResponse() : ResponseInterface
     {
         return $this->getController()->getResponse();
