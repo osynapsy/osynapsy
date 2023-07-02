@@ -11,18 +11,18 @@
 
 namespace Osynapsy\Assets;
 
-use Osynapsy\Mvc\Controller\Controller;
+use Osynapsy\Mvc\Controller\AbstractController;
 use Osynapsy\Kernel\KernelException;
 
-class Loader extends Controller
+class Loader extends AbstractController
 {
     protected $assetsPath;
 
     public function init()
     {
-        $assetsPathRequest = $this->getParameter(0);        
+        $assetsPathRequest = $this->getParameter(0);
         $namespaceKeySearch = strtok($assetsPathRequest, '/');
-        $this->setAssetPath($namespaceKeySearch, $assetsPathRequest);        
+        $this->setAssetPath($namespaceKeySearch, $assetsPathRequest);
     }
 
     protected function setAssetPath($namespaceKeySearch, $assetsPathRequest)
