@@ -13,14 +13,14 @@ namespace Osynapsy\Mvc\Model\Action;
 
 use Osynapsy\Mvc\Helper\UploadManager;
 use Osynapsy\Mvc\Model\ModelErrorException;
-use Osynapsy\Mvc\Action\Base;
+use Osynapsy\Mvc\Action\AbstractAction;
 
 /**
  * Description of Upload
  *
  * @author pietr
  */
-class Upload extends Base
+class Upload extends AbstractAction
 {
     protected $uploadSuccessful = 0;
     protected $uploadManager;

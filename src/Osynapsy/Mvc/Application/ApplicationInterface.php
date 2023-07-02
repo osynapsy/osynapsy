@@ -13,7 +13,7 @@ namespace Osynapsy\Mvc\Application;
 
 use Osynapsy\Kernel\Route;
 use Osynapsy\Http\Request;
-use Osynapsy\Http\Response\Base as Response;
+use Osynapsy\Http\Response\ResponseInterface;
 use Osynapsy\Database\Driver\DboInterface;
 use Osynapsy\Database\DboFactory;
 
@@ -29,7 +29,7 @@ interface ApplicationInterface
 
     public function getRequest($key = null);
 
-    public function getResponse() : Response;
+    public function getResponse() : ResponseInterface;
 
     public function getRoute() : Route;
 
@@ -37,5 +37,5 @@ interface ApplicationInterface
 
     public function setComposer($composer);
 
-    public function setResponse(Response $response);
+    public function setResponse(ResponseInterface $response);
 }

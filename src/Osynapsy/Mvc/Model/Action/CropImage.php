@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Mvc\Model\Action;
 
-use Osynapsy\Mvc\Action\Base;
+use Osynapsy\Mvc\Action\AbstractAction;
 use Osynapsy\Helper\ImageProcessing\Image;
 
 /**
@@ -19,7 +19,7 @@ use Osynapsy\Helper\ImageProcessing\Image;
  *
  * @author Pietro Celeste
  */
-class CropImage extends Base
+class CropImage extends AbstractAction
 {
     protected $documentRoot;
     protected $fieldModel;

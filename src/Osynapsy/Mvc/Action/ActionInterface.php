@@ -11,12 +11,12 @@
 
 namespace Osynapsy\Mvc\Action;
 
-use Osynapsy\Mvc\Controller\Controller;
+use Osynapsy\Mvc\Controller\ControllerInterface;
 
 /**
  * Description of Action
  *
- * @author pietr
+ * @author Pietro Celeste
  */
 interface ActionInterface
 {
@@ -24,7 +24,7 @@ interface ActionInterface
 
     public function getApp();
 
-    public function setController(Controller $controller);
+    public function setController(ControllerInterface $controller);
 
     public function setParameters(array $parameters);
 }

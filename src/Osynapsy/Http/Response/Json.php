@@ -16,7 +16,7 @@ namespace Osynapsy\Http\Response;
  *
  * @author Pietro Celeste <p.celeste@spinit.it>
  */
-class Json extends Base
+class Json extends AbstractResponse
 {
     public function __construct()
     {

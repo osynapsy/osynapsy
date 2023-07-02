@@ -14,7 +14,7 @@ namespace Osynapsy\Http\Response;
 /**
  * Abstract Response
  */
-abstract class Base
+abstract class AbstractResponse implements ResponseInterface
 {
     protected $headers = [];
     protected $headerNames = [];

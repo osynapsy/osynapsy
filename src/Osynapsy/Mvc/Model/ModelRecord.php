@@ -12,10 +12,9 @@
 namespace Osynapsy\Mvc\Model;
 
 use Osynapsy\Mvc\Controller\ControllerInterface;
-use Osynapsy\Mvc\Model\BaseModel;
 use Osynapsy\Database\Record\RecordInterface;
 
-abstract class ModelRecord extends BaseModel
+abstract class ModelRecord extends AbstractModel
 {
     protected $record;
     protected $softDelete = [];

@@ -22,9 +22,7 @@ interface ViewInterface
 {
     public function __construct(ControllerInterface $controller, $title = '');
 
-    public function init();
-
-    public function get();
+    public function init();    
 
     public function getController() : ControllerInterface;
 }

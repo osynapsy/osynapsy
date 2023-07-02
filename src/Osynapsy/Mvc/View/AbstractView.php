@@ -14,25 +14,22 @@ namespace Osynapsy\Mvc\View;
 use Osynapsy\Kernel;
 use Osynapsy\Mvc\Controller\ControllerInterface;
 use Osynapsy\Html\DOM;
+use Osynapsy\Html\Tag;
 
-abstract class BaseView implements ViewInterface
+abstract class AbstractView implements ViewInterface
 {
     protected $components = array();
     private $controller;
+    private $view;
 
     public function __construct(ControllerInterface $controller, $title = '')
     {
         $this->controller = $controller;
         $this->setTitle($title);
+        $this->view = $this->init();
     }
 
-    protected function add($part)
-    {
-        $this->getTemplate()->add($part);
-        if (is_object($part)) {
-            return $part;
-        }
-    }
+    abstract public function init();
 
     public function addCss($path)
     {
@@ -47,7 +44,7 @@ abstract class BaseView implements ViewInterface
     public function addJs($path)
     {
         $this->getTemplate()->addJs($path);
-    }
+        }
 
     public function addScript($code)
     {
@@ -69,27 +66,6 @@ abstract class BaseView implements ViewInterface
     public function addStyle($style)
     {
         $this->getTemplate()->addStyle($style);
-    }
-
-    public function get()
-    {
-        $view = $this->init();
-        if (!empty($this->getModel())) {
-            $this->initComponentValues();
-        }
-        return $view;
-    }
-
-    protected function initComponentValues()
-    {
-        $Components = DOM::getAllComponents() ?? [];
-        foreach ($Components as $component) {
-            if (!method_exists($component, 'setValue')) {
-                continue;
-            }
-            $componentId = $component->getAttribute('id');
-            $component->setValue($_REQUEST[$componentId] ?? $this->getModel()->getFieldValue($componentId));
-        }
     }
 
     public function getController() : ControllerInterface
@@ -119,8 +95,29 @@ abstract class BaseView implements ViewInterface
 
     public function __toString()
     {
-        return $this->get().'';
+        if (!empty($this->getModel())) {
+            $this->setComponentValues(DOM::getAllComponents() ?? []);
+        }
+        $componentIDs = empty($_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']) ? [] : explode(';', $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']);
+        return (string) empty($componentIDs) ? $this->view : $this->renderOnlyRequestedComponents($componentIDs);
     }
 
-    abstract public function init();
+    protected function renderOnlyRequestedComponents($componentIDs)
+    {
+        $response = new Tag('div','response');
+        foreach($componentIDs as $componentID) {
+            $response->add(DOM::getById($componentID));
+        }
+        return $response->get();
+    }
+
+    protected function setComponentValues($components)
+    {
+        array_walk($components, function ($component) {
+            if (method_exists($component, 'setValue')) {
+                $componentId = $component->getAttribute('id');
+                $component->setValue($_REQUEST[$componentId] ?? $this->getModel()->getFieldValue($componentId));
+            }
+        });
+    }
 }

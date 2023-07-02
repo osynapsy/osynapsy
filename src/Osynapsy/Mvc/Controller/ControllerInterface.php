@@ -44,5 +44,7 @@ interface ControllerInterface
 
     public function setView(InterfaceView $view);
 
-    public function run($action, $parameters = []);
+    public function hasExternalAction($actionId);
+
+    public function hasModel();
 }

@@ -11,14 +11,14 @@
 
 namespace Osynapsy\Mvc\Model\Action;
 
-use Osynapsy\Mvc\Action\Base;
+use Osynapsy\Mvc\Action\AbstractAction;
 
 /**
  * Description of ImageDelete
  *
  * @author Pietro Celeste
  */
-class DeleteFile extends Base
+class DeleteFile extends AbstractAction
 {
     private $documentRoot;
     private $fieldModel;

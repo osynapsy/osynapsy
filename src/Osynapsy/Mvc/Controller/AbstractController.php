@@ -14,7 +14,7 @@ namespace Osynapsy\Mvc\Controller;
 use Osynapsy\Event\Dispatcher as EventDispatcher;
 use Osynapsy\Event\Event;
 use Osynapsy\Http\Request;
-use Osynapsy\Http\Response\Base as Response;
+use Osynapsy\Http\Response\ResponseInterface;
 use Osynapsy\Mvc\Template\Template;
 use Osynapsy\Mvc\Application\ApplicationInterface;
 use Osynapsy\Mvc\Action\ActionInterface;
@@ -30,7 +30,7 @@ use Osynapsy\Observer\SubjectInterface;
  * from fronted.
  *
  */
-abstract class Controller implements ControllerInterface, SubjectInterface
+abstract class AbstractController implements ControllerInterface, SubjectInterface
 {
     use \Osynapsy\Observer\Subject;
 
@@ -53,10 +53,8 @@ abstract class Controller implements ControllerInterface, SubjectInterface
         $this->application = $application;
         $this->parameters = $request->get('page.route')->parameters;
         $this->loadObserver();
-        $this->setState('beforeInit');
         $this->init();
         $this->initTemplate();
-        $this->setState('afterInit');
     }
 
     /**
@@ -69,27 +67,6 @@ abstract class Controller implements ControllerInterface, SubjectInterface
         }
     }
 
-    /**
-     * Recall and execute an external action class
-     *
-     * @param string $action
-     * @param array $parameters
-     * @return \Osynapsy\Http\Response
-     */
-    public function execExternalAction(string $action, array $parameters = []) : Response
-    {
-        $this->setState('beforeAction'.ucfirst($action));
-        $actionInstance = $this->externalActions[$action];
-        $actionInstance->setController($this);
-        $actionInstance->setParameters($parameters);
-        $message = $actionInstance->execute();
-        if (!empty($message)) {
-            $this->getResponse()->alertJs($message);
-        }
-        $this->setState('afterAction'.ucfirst($action));
-        return $this->getResponse();
-    }
-
     public function dispatchLocalEventAction($eventId)
     {
         if ($this->model) {
@@ -98,24 +75,6 @@ abstract class Controller implements ControllerInterface, SubjectInterface
         //Call indexAction for load component html and theirs listeners
         $this->indexAction();
         $this->getDispatcher()->dispatch(new Event($eventId, $this));
-    }
-
-    /**
-     * Recall index action (default action)
-     *
-     * @return \Osynapsy\Http\Response
-     */
-    private function execIndexAction() : Response
-    {
-        if ($this->model) {
-            $this->model->find();
-        }
-        $response = $this->indexAction();
-        if ($response) {
-            $this->getTemplate()->add((string) $response);
-        }
-        $this->getResponse()->addContent($this->getTemplate()->get());
-        return $this->getResponse();
     }
 
     /**
@@ -133,26 +92,6 @@ abstract class Controller implements ControllerInterface, SubjectInterface
         if (!empty($template) && !empty($template['path'])) {
             $this->template->setPath($template['path']);
         }
-    }
-
-    /**
-     * Recall internal method action of controller
-     *
-     * @param string $action
-     * @param array $parameters
-     * @return \Osynapsy\Http\Response
-     */
-    private function execInternalAction(string $action, array $parameters) : Response
-    {
-        $this->setState('beforeAction'.ucfirst($action));
-        $response = !empty($parameters)
-                  ? call_user_func_array( [$this, $action.'Action'], $parameters)
-                  : $this->{$action.'Action'}();
-        $this->setState('afterAction'.ucfirst($action));
-        if (!empty($response) && is_string($response)) {
-            $this->getResponse()->alertJs($response);
-        }
-        return $this->getResponse();
     }
 
     /**
@@ -247,7 +186,7 @@ abstract class Controller implements ControllerInterface, SubjectInterface
      *
      * @return \Osynapsy\Http\Response
      */
-    public function getResponse() : Response
+    public function getResponse() : ResponseInterface
     {
         return $this->getApp()->getResponse();
     }
@@ -272,6 +211,16 @@ abstract class Controller implements ControllerInterface, SubjectInterface
         return $this->template;
     }
 
+    public function hasModel()
+    {
+        return !empty($this->model);
+    }
+
+    public function hasExternalAction($actionId)
+    {
+        return array_key_exists($actionId, $this->externalActions);
+    }
+
     /**
      * Child class must implement default Action indexAction.
      */
@@ -294,27 +243,6 @@ abstract class Controller implements ControllerInterface, SubjectInterface
     {
         $view = $this->getTemplate()->include($path);
         $this->getTemplate()->add($view);
-    }
-
-    /**
-     * Run controller and execute request action
-     *
-     * @param string $action
-     * @param array $parameters
-     * @return \Osynapsy\Http\Response
-     */
-    public function run($action, $parameters = [])
-    {
-        if (empty($action)) {
-            return $this->execIndexAction();
-        }
-        if (array_key_exists($action, $this->externalActions)) {
-            return $this->execExternalAction($action, $parameters);
-        }
-        if (method_exists($this, $action.'Action')) {
-            return $this->execInternalAction($action, $parameters);
-        }
-        return $this->getResponse()->alertJs('No action '.$action.' exist in '.get_class($this));
     }
 
     /**
@@ -360,7 +288,7 @@ abstract class Controller implements ControllerInterface, SubjectInterface
      * @param Response $response
      * @return Response
      */
-    public function setResponse(Response $response) : Response
+    public function setResponse(ResponseInterface $response) : ResponseInterface
     {
         return $response;
     }

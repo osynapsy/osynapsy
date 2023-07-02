@@ -70,8 +70,13 @@ class Template
 
     public function get()
     {
-        $componentIDs = empty($_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']) ? [] : explode(';', $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']);
-        return !empty($componentIDs) ? $this->buildRequestedComponents($componentIDs) : $this->buildFullTemplate();
+        //$componentIDs = empty($_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']) ? [] : explode(';', $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']);
+        return $this->buildFullTemplate();
+    }
+
+    public function getDomComponents() : array
+    {
+        return DOM::getAllComponents() ?? [];
     }
 
     protected function buildRequestedComponents($componentIDs)

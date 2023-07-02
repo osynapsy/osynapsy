@@ -12,7 +12,7 @@ use Osynapsy\Database\Driver\DboInterface;
  *
  * @author Pietro
  */
-abstract class BaseModel implements ModelInterface
+abstract class AbstractModel implements ModelInterface
 {
     protected $controller;
     protected $fields = [];

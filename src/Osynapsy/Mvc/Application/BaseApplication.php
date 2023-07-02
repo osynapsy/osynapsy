@@ -13,7 +13,7 @@ namespace Osynapsy\Mvc\Application;
 
 use Osynapsy\Kernel\Route;
 use Osynapsy\Http\Request;
-use Osynapsy\Http\Response\Base as Response;
+use Osynapsy\Http\Response\ResponseInterface;
 use Osynapsy\Http\Response\JsonOsynapsy as JsonOsynapsyResponse;
 use Osynapsy\Http\Response\Html as HtmlResponse;
 use Osynapsy\Http\Response\Xml as XmlResponse;
@@ -141,7 +141,7 @@ class BaseApplication implements ApplicationInterface
      *
      * @return Response
      */
-    public function getResponse() : Response
+    public function getResponse() : ResponseInterface
     {
         return $this->response;
     }
@@ -167,12 +167,21 @@ class BaseApplication implements ApplicationInterface
         if (empty($this->route) || !$this->route->controller) {
             throw new \Osynapsy\Kernel\KernelException('Route not found', 404);
         }
-        $classController = $this->route->controller;
-        $controller = new $classController($this->getRequest(), $this);
-        return (string) $controller->run(
-            filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION'),
-            filter_input(\INPUT_POST , 'actionParameters', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []
-        );
+        $controller = $this->controllerFactory($this->route->controller);
+        $actionId =  filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION');
+        $actionParams = filter_input(\INPUT_POST , 'actionParameters', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        return (string) $this->runAction($controller, $actionId, $actionParams);
+    }
+
+    protected function controllerFactory($classController)
+    {
+        return new $classController($this->getRequest(), $this);
+    }
+
+    protected function runAction($controller, $actionId, array $actionParams)
+    {
+        $actionRunnerHandle = new ActionRunner($controller);
+        return $actionRunnerHandle->run($actionId, $actionParams);
     }
 
     /**
@@ -180,7 +189,7 @@ class BaseApplication implements ApplicationInterface
      *
      * @return Response
      */
-    public function setResponse(Response $response)
+    public function setResponse(ResponseInterface $response)
     {
         return $this->response = $response;
     }

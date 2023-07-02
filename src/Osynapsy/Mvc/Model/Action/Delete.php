@@ -11,14 +11,14 @@
 
 namespace Osynapsy\Mvc\Model\Action;
 
-use Osynapsy\Mvc\Action\Base;
+use Osynapsy\Mvc\Action\AbstractAction;
 
 /**
  * Description of ModelDelete action;
  *
  * @author Pietro
  */
-class Delete extends Base
+class Delete extends AbstractAction
 {
     public function __construct()
     {

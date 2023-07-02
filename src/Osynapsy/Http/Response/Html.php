@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Http\Response;
 
-class Html extends Base
+class Html extends AbstractResponse
 {
     public function __construct()
     {

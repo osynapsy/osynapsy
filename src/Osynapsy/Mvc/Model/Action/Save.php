@@ -12,14 +12,14 @@
 namespace Osynapsy\Mvc\Model\Action;
 
 use Osynapsy\Mvc\Model\ModelErrorException;
-use Osynapsy\Mvc\Action\Base;
+use Osynapsy\Mvc\Action\AbstractAction;
 
 /**
  * Description of Save
  *
  * @author Pietro
  */
-class Save extends Base
+class Save extends AbstractAction
 {
     const EVENT_AFTER_EXECUTE = 'afterExecute';
     const EVENT_AFTER_INSERT = 'afterInsert';

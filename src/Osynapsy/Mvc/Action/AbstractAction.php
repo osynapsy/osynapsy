@@ -24,7 +24,7 @@ use Osynapsy\Mvc\Model\ModelInterface;
  *
  * @author Pietro Celeste <p.celeste@osynapsy.net>
  */
-abstract class Base implements ActionInterface
+abstract class AbstractAction implements ActionInterface
 {
     private $controller;
     private $parameters = [];
