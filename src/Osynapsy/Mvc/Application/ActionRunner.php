@@ -1,8 +1,12 @@
 <?php
 
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/PHPClass.php to edit this template
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Osynapsy\Mvc\Application;
@@ -10,6 +14,7 @@ namespace Osynapsy\Mvc\Application;
 use Osynapsy\Mvc\Controller\ControllerInterface;
 use Osynapsy\Http\Response\ResponseInterface;
 use Osynapsy\Mvc\View\RefreshComponentsView;
+use Osynapsy\Mvc\View\AbstractView;
 
 /**
  * Description of ActionRunner
@@ -58,14 +63,14 @@ class ActionRunner
      */
     private function execDefaultAction() : ResponseInterface
     {
-        $requestComponentIDs = $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS'] ?? [];
+        $requestComponentIDs = empty($_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']) ? [] : explode(';', $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']);
         if ($this->getController()->hasModel()) {
             $this->getController()->getModel()->find();
         }
         $response = $this->getController()->indexAction();
         return empty($requestComponentIDs) ?
             $this->execIndexAction($response) :
-            $this->execRefreshComponentsAction($requestComponentIDs);
+            $this->execRefreshComponentsAction($response, $requestComponentIDs);
     }
 
     protected function execIndexAction($response)
@@ -75,9 +80,13 @@ class ActionRunner
         return $this->getResponse();
     }
 
-    protected function execRefreshComponentsAction($requestComponentIDs)
+    protected function execRefreshComponentsAction($masterView, $requestComponentIDs)
     {
-        $this->getResponse()->addContent(new RefreshComponentsView($this->getController(), $requestComponentIDs));
+        if ($masterView instanceof AbstractView) {
+            $masterView->init();
+        }
+        $refreshView = new RefreshComponentsView($this->getController(), $requestComponentIDs);
+        $this->getResponse()->addContent($refreshView);
         return $this->getResponse();
     }
 
@@ -90,7 +99,7 @@ class ActionRunner
      */
     public function execExternalAction(string $actionId, array $parameters = []) : ResponseInterface
     {
-        $actionHandle = $this->getController()->getExternalActions($actionId);
+        $actionHandle = $this->getController()->getExternalAction($actionId);
         $actionHandle->setController($this->getController());
         $actionHandle->setParameters($parameters);
         $message = $actionHandle->execute();
