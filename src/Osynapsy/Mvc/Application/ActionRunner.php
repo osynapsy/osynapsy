@@ -115,8 +115,8 @@ class ActionRunner
     private function execInternalAction(string $action, array $parameters) : ResponseInterface
     {
         $response = !empty($parameters)
-                  ? call_user_func_array( [$this, $action.'Action'], $parameters)
-                  : $this->{$action.'Action'}();
+                  ? call_user_func_array([$this, $action.'Action'], $parameters)
+                  : $this->getController()->{$action.'Action'}();
         if (!empty($response) && is_string($response)) {
             $this->getResponse()->alertJs($response);
         }
