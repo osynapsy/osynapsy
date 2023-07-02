@@ -22,10 +22,9 @@ abstract class AbstractView implements ViewInterface
     private $controller;
     private $view;
 
-    public function __construct(ControllerInterface $controller, $title = '')
+    public function __construct(ControllerInterface $controller)
     {
         $this->controller = $controller;
-        $this->setTitle($title);
         $this->view = $this->init();
     }
 
@@ -44,7 +43,7 @@ abstract class AbstractView implements ViewInterface
     public function addJs($path)
     {
         $this->getTemplate()->addJs($path);
-        }
+    }
 
     public function addScript($code)
     {
