@@ -18,14 +18,11 @@ use Osynapsy\Html\Tag;
 
 abstract class AbstractView implements ViewInterface
 {
-    protected $components = array();
     private $controller;
-    private $view;
 
     public function __construct(ControllerInterface $controller)
     {
         $this->controller = $controller;
-        $this->view = $this->init();
     }
 
     abstract public function init();
@@ -57,7 +54,7 @@ abstract class AbstractView implements ViewInterface
 
     public function addMeta($property ,$content)
     {
-        $meta = new \Osynapsy\Html\Tag('meta');
+        $meta = new Tag('meta');
         $meta->attributes(['property' => $property, 'content' => $content]);
         $this->getTemplate()->add($meta, 'meta');
     }
@@ -94,20 +91,12 @@ abstract class AbstractView implements ViewInterface
 
     public function __toString()
     {
+        $requestComponentIDs = empty($_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']) ? [] : explode(';', $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']);
+        $view = $this->init();
         if (!empty($this->getModel())) {
-            $this->setComponentValues(DOM::getAllComponents() ?? []);
+            $this->setComponentValues(DOM::getAllComponents());
         }
-        $componentIDs = empty($_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']) ? [] : explode(';', $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']);
-        return (string) empty($componentIDs) ? $this->view : $this->renderOnlyRequestedComponents($componentIDs);
-    }
-
-    protected function renderOnlyRequestedComponents($componentIDs)
-    {
-        $response = new Tag('div','response');
-        foreach($componentIDs as $componentID) {
-            $response->add(DOM::getById($componentID));
-        }
-        return $response->get();
+        return (string) empty($requestComponentIDs) ? $view : $this->refreshComponentsViewFactory($requestComponentIDs);
     }
 
     protected function setComponentValues($components)
@@ -118,5 +107,14 @@ abstract class AbstractView implements ViewInterface
                 $component->setValue($_REQUEST[$componentId] ?? $this->getModel()->getFieldValue($componentId));
             }
         });
+    }
+
+    protected function refreshComponentsViewFactory($componentIDs)
+    {
+        $response = new Tag('div', 'response');
+        foreach($componentIDs as $componentId) {
+            $response->add(DOM::getById($componentId));
+        }
+        return $response;
     }
 }

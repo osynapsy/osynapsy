@@ -18,7 +18,7 @@ class Template
 
     protected $controller;
     protected $path;
-    protected $parts = [];
+    protected $parts = [self::BODY_PART_ID => []];
     protected $template = '<!--main-->';
 
     public function init()
@@ -68,24 +68,14 @@ class Template
         return $this->template;
     }
 
-    public function get()
-    {
-        //$componentIDs = empty($_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']) ? [] : explode(';', $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']);
-        return $this->buildFullTemplate();
-    }
-
     public function getDomComponents() : array
     {
         return DOM::getAllComponents() ?? [];
     }
 
-    protected function buildRequestedComponents($componentIDs)
+    public function get()
     {
-        $response = new Tag('div','response');
-        foreach($componentIDs as $componentID) {
-            $response->add(DOM::getById($componentID));
-        }
-        return $response->get();
+        return $this->buildFullTemplate();
     }
 
     protected function buildFullTemplate()
@@ -138,7 +128,8 @@ class Template
         if (!array_key_exists($partId, $this->parts)) {
             $this->parts[$partId] = [];
         }
-        $this->parts[$partId][] = $content;
+        $this->parts[$partId][] = (string) $content;
+        return $this;
     }
 
     public function appendLibrary(array $libraries = [], $appendFormController = true)

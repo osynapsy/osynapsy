@@ -54,7 +54,7 @@ class ActionRunner
     public function run($actionId, $parameters = [])
     {
         if (empty($actionId)) {
-            return $this->execDefaultAction();
+            return $this->execIndexAction();
         }
         if ($this->getController()->hasExternalAction($actionId)) {
             return $this->execExternalAction($actionId, $parameters);
@@ -70,38 +70,19 @@ class ActionRunner
      *
      * @return \Osynapsy\Http\ResponseInterface
      */
-    private function execDefaultAction() : ResponseInterface
+    private function execIndexAction() : ResponseInterface
     {
-        $requestComponentIDs = empty($_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']) ? [] : explode(';', $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']);
+        $refreshRequested = $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS'] ?? null;
         if ($this->getController()->hasModel()) {
             $this->getController()->getModel()->find();
         }
         $response = $this->getController()->indexAction();
-        return empty($requestComponentIDs) ?
-            $this->execIndexAction($response) :
-            $this->execRefreshComponentsAction($response, $requestComponentIDs);
-    }
-
-    /**
-     * Execute default method of controller
-     *
-     * @param mixed $response
-     * @return \Osynapsy\Http\ResponseInterface
-     */
-    protected function execIndexAction($response) : ResponseInterface
-    {
-        $this->getController()->getTemplate()->add($response);
-        $this->getResponse()->addContent($this->getController()->getTemplate()->get());
-        return $this->getResponse();
-    }
-
-    protected function execRefreshComponentsAction($masterView, $requestComponentIDs)
-    {
-        if ($masterView instanceof AbstractView) {
-            $masterView->init();
+        if (!empty($refreshRequested)) {
+            $this->getResponse()->addContent($response);
+        } else {
+            $this->getController()->getTemplate()->add($response);
+            $this->getResponse()->addContent($this->getController()->getTemplate()->get());
         }
-        $refreshView = new RefreshComponentsView($this->getController(), $requestComponentIDs);
-        $this->getResponse()->addContent($refreshView);
         return $this->getResponse();
     }
 
