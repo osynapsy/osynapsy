@@ -9,6 +9,7 @@ namespace Osynapsy\Mvc\Application;
 
 use Osynapsy\Mvc\Controller\ControllerInterface;
 use Osynapsy\Http\Response\ResponseInterface;
+use Osynapsy\Mvc\View\RefreshComponentsView;
 
 /**
  * Description of ActionRunner
@@ -57,14 +58,26 @@ class ActionRunner
      */
     private function execDefaultAction() : ResponseInterface
     {
+        $requestComponentIDs = $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS'] ?? [];
         if ($this->getController()->hasModel()) {
             $this->getController()->getModel()->find();
         }
         $response = $this->getController()->indexAction();
-        if ($response) {
-            $this->getController()->getTemplate()->add($response);
-        }
+        return empty($requestComponentIDs) ?
+            $this->execIndexAction($response) :
+            $this->execRefreshComponentsAction($requestComponentIDs);
+    }
+
+    protected function execIndexAction($response)
+    {
+        $this->getController()->getTemplate()->add($response);
         $this->getResponse()->addContent($this->getController()->getTemplate()->get());
+        return $this->getResponse();
+    }
+
+    protected function execRefreshComponentsAction($requestComponentIDs)
+    {
+        $this->getResponse()->addContent(new RefreshComponentsView($this->getController(), $requestComponentIDs));
         return $this->getResponse();
     }
 
