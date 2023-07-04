@@ -104,6 +104,11 @@ abstract class AbstractModel implements ModelInterface
         return $this->fields[$fieldId];
     }
 
+    public function getRequest()
+    {
+        return $this->getController()->getRequest();
+    }
+
     public function getResponse()
     {
         return $this->getController()->getResponse();
