@@ -13,6 +13,7 @@ namespace Osynapsy\Mvc\Model;
 
 use Osynapsy\Mvc\Controller\ControllerInterface;
 use Osynapsy\Database\Record\RecordInterface;
+use Osynapsy\Html\DOM;
 
 abstract class ModelRecord extends AbstractModel
 {
@@ -72,6 +73,7 @@ abstract class ModelRecord extends AbstractModel
             if (!array_key_exists($field->html, $_REQUEST) && array_key_exists($field->name, $values)) {
                 $_REQUEST[$field->html] = $values[$field->name];
             }
+            DOM::setValue($field->html, $values[$field->name]);
         }
     }
 

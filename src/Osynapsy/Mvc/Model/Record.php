@@ -18,6 +18,7 @@ use Osynapsy\Mvc\Model\Field\Validator;
 use Osynapsy\Mvc\Model\ModelInterface;
 use Osynapsy\Database\Record\RecordInterface;
 use Osynapsy\Database\Driver\DboInterface;
+use Osynapsy\Html\DOM;
 
 abstract class Record implements ModelInterface
 {
@@ -159,6 +160,7 @@ abstract class Record implements ModelInterface
             if (array_key_exists($field->name, $values)) {
                 $_REQUEST[$field->html] = $values[$field->name];
                 $this->getController()->getRequest()->set('post.'.$field->html, $values[$field->name]);
+                DOM::setValue($field->html, $values[$field->name]);
             }
         }
     }
