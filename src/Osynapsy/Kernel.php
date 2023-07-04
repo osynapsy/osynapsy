@@ -1,5 +1,5 @@
 <?php
-
+namespace Osynapsy;
 /*
  * This file is part of the Osynapsy package.
  *
@@ -9,33 +9,35 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy;
-
 use Osynapsy\Http\Request;
 use Osynapsy\Psr7\Http\ServerRequest as PsrRequest;
-use Osynapsy\Kernel\Loader;
+use Osynapsy\Kernel\ConfigLoader;
 use Osynapsy\Kernel\Router;
 use Osynapsy\Kernel\KernelException;
 use Osynapsy\Kernel\Error\Dispatcher as ErrorDispatcher;
+use Osynapsy\Mvc\Application\BaseApplication;
+use Osynapsy\Helper\AssetLoader\AssetLoader;
 
 /**
- * The Kernel is the core of Osynapsy
- *
- * It init Http request e translate it in response
- *
- * @author Pietro Celeste <p.celeste@osynapsy.net>
- */
+* The Kernel is the core of Osynapsy
+*
+* It init Http request e translate it in response
+*
+* @author Pietro Celeste <p.celeste@osynapsy.net>
+*/
+
 class Kernel
 {
     const VERSION = '0.8.7-DEV';
-    const DEFAULT_APP_CONTROLLER = '\\Osynapsy\\Mvc\\Application\\BaseApplication';
-    const DEFAULT_ASSET_CONTROLLER = 'Osynapsy\\Assets\\Loader';
+    const DEFAULT_APP_CONTROLLER = BaseApplication::class;
+    const DEFAULT_ASSET_CONTROLLER = AssetLoader::class;
 
     public $router;
-    public $request;
+    public static $request;
     public $psrRequest;
     public $composer;
     private $loader;
+    public $route;
 
     /**
      * Kernel costructor
@@ -45,7 +47,7 @@ class Kernel
      */
     public function __construct($instanceConfigurationFile, $composer = null)
     {
-        $this->loader = new Loader($instanceConfigurationFile);
+        $this->loader = new ConfigLoader($instanceConfigurationFile);
         $this->composer = $composer;
     }
 
@@ -57,7 +59,7 @@ class Kernel
     public function run()
     {
         try {
-            $this->request = $this->requestFactory();            
+            self::$request = $this->requestFactory();
             $this->psrRequest = $this->psr7RequestFactory();
             $requestUri = $this->requestUriFactory();
             $router = $this->routerFactory($this->getRequest(), $requestUri);
@@ -66,9 +68,9 @@ class Kernel
                 throw $this->raiseException(1001, 'No app configuration found');
             }
             $this->loadApplicationRoutes($router, $applications);
-            $route = $this->findRequestRoute($router, $requestUri);            
-            $this->validateRouteController($route);
-            return $this->runHypervisor($route, $this->getRequest());
+            $this->route = $this->findRequestRoute($router, $requestUri);
+            $this->validateRouteController($this->route);
+            return $this->runHypervisor($this->route, $this->getRequest());
         } catch (\Exception $exception) {
             $errorDispatcher = new ErrorDispatcher($this->getRequest());
             return $errorDispatcher->dispatchException($exception);
@@ -92,8 +94,13 @@ class Kernel
     private  function psr7RequestFactory()
     {
         $psrRequest = PsrRequest::fromGlobals();
-        $this->getRequest()->set('psr7Request', $psrRequest);
+        self::$request->set('psr7Request', $psrRequest);
         return $psrRequest;
+    }
+
+    private function requestUriFactory()
+    {
+        return $this->getPsrRequest()->getUri()->getPath();
     }
 
     private function loadConfig($dictionaryDataPath, $fielId, $fieldValue = null)
@@ -111,11 +118,6 @@ class Kernel
         $router = new Router($request);
         $router->addRoute('OsynapsyAssetsManager', '/assets/{*}', self::DEFAULT_ASSET_CONTROLLER, '', 'Osynapsy');
         return $router;
-    }
-
-    private function requestUriFactory()
-    {
-        return $this->getPsrRequest()->getUri()->getPath();
     }
 
     /**
@@ -141,7 +143,7 @@ class Kernel
     private function findRequestRoute($router, $requestUri)
     {
         $route = $router->dispatchRoute($requestUri);
-        $this->getRequest()->set('page.route', $route);
+        self::$request->set('route', $route);
         return $route;
     }
 
@@ -186,7 +188,7 @@ class Kernel
 
     public function getRequest()
     {
-        return $this->request;
+        return self::$request;
     }
 
     public function getRouter()

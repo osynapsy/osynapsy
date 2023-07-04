@@ -9,18 +9,18 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\Assets;
+namespace Osynapsy\Helper\AssetLoader;
 
 use Osynapsy\Mvc\Controller\AbstractController;
 use Osynapsy\Kernel\KernelException;
 
-class Loader extends AbstractController
+class AssetLoader extends AbstractController
 {
     protected $assetsPath;
 
     public function init()
     {
-        $assetsPathRequest = $this->getParameter(0);
+        $assetsPathRequest = route()->getParameter(0);
         $namespaceKeySearch = strtok($assetsPathRequest, '/');
         $this->setAssetPath($namespaceKeySearch, $assetsPathRequest);
     }

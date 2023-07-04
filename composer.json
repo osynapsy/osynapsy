@@ -24,6 +24,9 @@
     "autoload" : {
         "psr-4": {
             "Osynapsy\\": "src/Osynapsy/"
-        }
+        },
+        "files": [
+            "src/Osynapsy/Helper/Functions.php"
+        ]
     }
 }

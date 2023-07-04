@@ -39,24 +39,20 @@ class Route
         $this->setAcceptedMethods($this->methods);
     }
 
-    public function __get($key)
+    
+    public function getParameter($key)
     {
-        return array_key_exists($key, $this->route) ? $this->route[$key] : null;
+        return $this->parameters[$key] ?? null;
     }
-
-    public function __set($key, $value)
+    
+    public function getUrl(array $params = [])
     {
-        $this->route[$key] = $value;
-    }
-
-    public function __toString()
-    {
-        return $this->id;
-    }
-
-    public function setController($controller)
-    {
-        $this->controller = trim(str_replace(':','\\',$controller));
+        $output = $result = [];
+        preg_match_all('/{.+?}/', $this->uri, $output);
+        if (count($output[0]) > count($params)) {
+            throw new \Exception('Number of parameters don\'t match uri params');
+        }
+        return str_replace($output[0], $params, $this->uri);
     }
 
     public function setAcceptedMethods($methods)
@@ -73,4 +69,30 @@ class Route
                 break;
         }
     }
+
+    public function setController($controller)
+    {
+        $this->controller = trim(str_replace(':','\\',$controller));
+    }
+
+    public static function createFromArray($route)
+    {
+        return new Route($route['id'], $route['path'], null, $route['@value'], $route['template'], $route);
+    }
+
+    public function __get($key)
+    {
+        return array_key_exists($key, $this->route) ? $this->route[$key] : null;
+    }
+
+    public function __set($key, $value)
+    {
+        $this->route[$key] = $value;
+    }
+
+    public function __toString()
+    {
+        return $this->getUrl();
+    }
+
 }

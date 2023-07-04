@@ -19,8 +19,7 @@ namespace Osynapsy\Kernel;
  */
 class Router
 {
-    private $routes;
-    private $requestRoute;
+    private $routes;    
     private $matchedRoute;
 
     //Rispettare l'ordine
@@ -82,7 +81,7 @@ class Router
      */
     public function dispatchRoute($uriToMatch)
     {
-        $this->requestRoute = empty($uriToMatch) ? '/' : $uriToMatch;
+        $requestRoute = empty($uriToMatch) ? '/' : $uriToMatch;
         $routes = $this->routes->get('routes');
         if (!is_array($routes)) {
             return false;
@@ -95,8 +94,8 @@ class Router
                continue;
             }
             //Check if current route match request uri;
-            $matchedRoute = $this->matchRoute($route);
-            //If don't match (return value is false) jump next route;
+            $matchedRoute = $this->matchRoute($route, $requestRoute);
+            //If don't match (returned route is false) jump next route;
             if ($matchedRoute === false) {
                 continue;
             }
@@ -120,16 +119,33 @@ class Router
      * @param type $route
      * @return mixed return false if ruote passed don't match the request uri then return the matched ruote;
      */
-    private function matchRoute($route)
+    private function matchRoute($route, $requestRoute)
     {
-        if (!substr_count($route->uri, '{')){
-            return $route->uri === $this->requestRoute ? $route : false;
+        if (!substr_count($route->uri, '{')) {
+            return $route->uri === $requestRoute ? $route : false;
         }
-        $output = $result = [];
+        $patternParams = $this->extractRouteParameterPatterns($route);
+        $patternRoute = $this->patternRouteFactory($route, $patternParams, $this->patternPlaceholder);        
+        $ruoteParameters = $this->extractParametersFromRuote($patternRoute, $requestRoute);
+        if (empty($ruoteParameters)) {
+            return false;
+        }
+        array_shift($ruoteParameters);
+        $route->parameters = $ruoteParameters;
+        $route->weight = count($ruoteParameters);
+        return $route;
+    }
+
+    protected function extractRouteParameterPatterns($route)
+    {        
         preg_match_all('/{.+?}/', $route->uri, $output);
-        $braceParameters = array_merge(['/' => null] ,  array_flip($output[0]));
-        array_walk(
-            $braceParameters,
+        return array_merge(['/' => null] ,  array_flip($output[0]));
+    }
+
+    protected function patternRouteFactory($route, $patternParams, $patternPlaceholder)
+    {
+        /*array_walk(
+            $patternParams,
             function(&$value, $key, $placeholder) {
                 if (array_key_exists($key, $placeholder)) {
                     $value = $placeholder[$key];
@@ -137,21 +153,25 @@ class Router
                 }
                 $value = str_replace(['{','}'],['(',')'], $key);
             },
-            $this->patternPlaceholder
+            $patternPlaceholder
         );
-        $pattern = str_replace(
-            array_keys($braceParameters),
-            array_values($braceParameters),
-            $route->uri
-        );
-        preg_match('/^'.$pattern.'$/', $this->requestRoute, $result);
-        if (empty($result)) {
-            return false;
+        return str_replace(array_keys($patternParams), array_values($patternParams), $route->uri);
+         *          */
+        $result = [];
+        foreach(array_keys($patternParams) as $patternParam) {
+            if (array_key_exists($patternParam, $patternPlaceholder)) {
+                $result[$patternParam] = $patternPlaceholder[$patternParam];
+                continue;
+            }
+            $result[$patternParam] = str_replace(['{','}'],['(',')'], $patternParam);
         }
-        array_shift($result);
-        $route->parameters = $result;
-        $route->weight = count($result);
-        return $route;
+        return str_replace(array_keys($result), array_values($result), $route->uri);
+    }
+
+    protected function extractParametersFromRuote($patternRoute, $requestRoute)
+    {        
+        preg_match('/^'.$patternRoute.'$/', $requestRoute, $result);
+        return $result;
     }
 
     /**
@@ -164,3 +184,43 @@ class Router
         return $this->matchedRoute;
     }
 }
+
+/**
+ * <?php
+$patternPlaceholder = [
+        '/'  => '\\/',
+        //number
+        '{i}' => '([\\d]+){1}',
+        //Number option
+        '{i*}' => '([\\d]*){1}',
+        //word
+        '{w}'=> '([\\w\-\.,]+){1}',
+        //word
+        '{w*}' => '([\\w\-\.,]*){1}',
+        //all
+        '{*}' => '(.*){1}',
+        //all after /
+        '{?}' => '([^\/]*)',
+        //?????
+        '{.}' => '([.]+){1}'
+    ];
+
+$uri = '/pippo/{id}/test/{pid:i}';
+$output = [];
+preg_match_all('/{.+?}/', $uri, $output);
+$braceParameters = array_merge(['/' => null] ,  array_flip($output[0]));
+var_dump($braceParameters);
+$patterns = [];
+foreach( $braceParameters as $key => $value) {
+	    if(!str_contains( $key, '{')) {
+	    	$patterns[] = $key;
+	    	continue;
+	    }
+	    $app = str_replace(['{','}'],'', $key);
+    	$pattern = strstr($app, ':') ?: 'w';
+    	$name = strstr($app, ':', true) ?: $app;
+    	$patterns[$name] = sprintf('(%s)', $pattern);
+}
+$pattern = str_replace(array_keys($braceParameters),  $patterns, $uri);
+var_dump($pattern, $patterns);
+ */

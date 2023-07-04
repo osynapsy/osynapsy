@@ -19,7 +19,7 @@ use Osynapsy\DataStructure\Dictionary;
  *
  * @author Pietro Celeste <p.celeste@osynapsy.net>
  */
-class Loader
+class ConfigLoader
 {
     private $repo;
     private $path;

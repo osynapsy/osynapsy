@@ -12,6 +12,7 @@
 namespace Osynapsy\Mvc\Controller;
 
 use Osynapsy\Http\Request;
+use Osynapsy\Http\Response\ResponseInterface;
 use Osynapsy\Mvc\Action\ActionInterface;
 use Osynapsy\Mvc\Application\ApplicationInterface;
 use Osynapsy\Mvc\Model\ModelInterface;
@@ -34,9 +35,9 @@ interface ControllerInterface
 
     public function getModel() : ModelInterface;
 
-    public function getResponse();
+    public function getResponse() : ResponseInterface;
 
-    public function getRequest();
+    public function getRequest() : Request;
 
     public function setExternalAction(string $actionId, ActionInterface $actionClass) : void;
 

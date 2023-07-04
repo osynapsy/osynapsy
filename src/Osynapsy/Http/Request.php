@@ -12,6 +12,7 @@
 namespace Osynapsy\Http;
 
 use Osynapsy\DataStructure\Dictionary;
+use Osynapsy\Kernel\Route;
 
 class Request extends Dictionary
 {
@@ -55,9 +56,19 @@ class Request extends Dictionary
         return $this->get('client.accept');
     }
 
-    public function getRoute()
+    public function getRoute($routeId = null)
     {
-        return $this->get('page.route');
+        return is_null($routeId) ? $this->get('route') : Route::createFromArray($this->findRuote($routeId));
+    }   
+
+    protected function findRuote($routeId)
+    {
+        $routes = $this->search('route', 'env.app');
+        $result = array_search($routeId, array_column($routes, 'id'));
+        if ($result !== false) {
+            return $routes[$result];
+        }
+        throw new \Exception(sprintf('Route %s not found', $routeId));        
     }
 
     public function getTemplate($id)

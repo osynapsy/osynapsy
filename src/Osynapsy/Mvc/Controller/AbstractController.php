@@ -33,13 +33,13 @@ use Osynapsy\Observer\SubjectInterface;
 abstract class AbstractController implements ControllerInterface, SubjectInterface
 {
     use \Osynapsy\Observer\Subject;
-
-    private $parameters;
+    
     private $dispatcher;
     private $application;
     private $template;
     private $externalActions = [];
     private $model;
+    private $request;
     protected $view;
 
     /**
@@ -50,12 +50,12 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      */
     public function __construct(Request $request = null, ApplicationInterface $application = null)
     {
+        $this->request = $request;
         $this->application = $application;
-        $this->parameters = $request->get('page.route')->parameters;
         $this->loadObserver();
         $this->init();
-        $this->initTemplate();
-    }
+        $this->initTemplate();        
+    }   
 
     /**
      * Default deleteAction recall delete method of model if exists
@@ -84,7 +84,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      * @return void
      */
     private function initTemplate()
-    {
+    {        
         $templateId = $this->getRequest()->getRoute()->template;
         $template = $this->getRequest()->getTemplate($templateId);
         $this->template = empty($template['@value']) ? new Template() : new $template['@value'];
@@ -162,26 +162,6 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
     }
 
     /**
-     * Return request $key url parameter
-     *
-     * @param int $key
-     * @return string
-     */
-    public function getParameter($key)
-    {
-        if (!is_array($this->parameters)) {
-            return null;
-        }
-        if (!array_key_exists($key, $this->parameters)) {
-            return null;
-        }
-        if ($this->parameters[$key] === '') {
-            return null;
-        }
-        return $this->parameters[$key];
-    }
-
-    /**
      * Return current controller response
      *
      * @return \Osynapsy\Http\Response
@@ -196,9 +176,9 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      *
      * @return \Osynapsy\Kernel\Request
      */
-    public function getRequest($key = null)
+    public function getRequest() : Request
     {
-        return $this->getApp()->getRequest($key);
+        return $this->request;
     }
 
     /**
@@ -211,11 +191,22 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
         return $this->template;
     }
 
+    /**
+     * Check if controller has a valid Model
+     *
+     * @return boolean
+     */
     public function hasModel()
     {
         return !empty($this->model);
     }
 
+    /**
+     * Check if external action $actionId is presente
+     *
+     * @param string $actionId
+     * @return boolean
+     */
     public function hasExternalAction($actionId)
     {
         return array_key_exists($actionId, $this->externalActions);

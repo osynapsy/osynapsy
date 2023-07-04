@@ -74,6 +74,11 @@ abstract class AbstractView implements ViewInterface
         return $this->getController()->getModel();
     }
 
+    public function getRequest()
+    {
+        return $this->getController()->getRequest();
+    }
+
     public function getTemplate()
     {
         return $this->getController()->getTemplate();
