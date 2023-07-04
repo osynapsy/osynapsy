@@ -98,21 +98,8 @@ abstract class AbstractView implements ViewInterface
     {
         $requestComponentIDs = empty($_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']) ? [] : explode(';', $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']);
         $view = $this->init();
-        if (!empty($this->getModel())) {
-            //$this->setComponentValues(DOM::getAllComponents());
-        }
         return (string) empty($requestComponentIDs) ? $view : $this->refreshComponentsViewFactory($requestComponentIDs);
-    }
-
-    protected function setComponentValues($components)
-    {
-        array_walk($components, function ($component) {
-            if (method_exists($component, 'setValue')) {
-                $componentId = $component->getAttribute('id');
-                $component->setValue($_REQUEST[$componentId] ?? $this->getModel()->getFieldValue($componentId));
-            }
-        });
-    }
+    }   
 
     protected function refreshComponentsViewFactory($componentIDs)
     {
