@@ -1,12 +1,25 @@
 <?php
 use Osynapsy\Kernel;
 
-
-function request()
+/**
+ * If $elementPath is null return request Object else return required element of request
+ *
+ * @param string $elementPath
+ * @return mixed
+ */
+function request($elementPath = null)
 {
-    return Kernel::$request;
+    return is_null($elementPath) ? Kernel::$request : Kernel::$request->get($elementPath);
 }
 
+/**
+ * if routeId parameter is null return current route else return ruote with routeId.
+ * If array parameters is passed build relative url of the specified route
+ * 
+ * @param string $routeId
+ * @param array|null $parameters
+ * @return mixed
+ */
 function route($routeId = null, ?array $parameters = null)
 {
     $route = request()->getRoute($routeId);

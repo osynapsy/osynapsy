@@ -22,7 +22,7 @@ abstract class AbstractView implements ViewInterface
 
     public function __construct(ControllerInterface $controller)
     {
-        $this->controller = $controller;
+        $this->setController($controller);
     }
 
     abstract public function init();
@@ -87,6 +87,11 @@ abstract class AbstractView implements ViewInterface
     public function getDb()
     {
         return $this->getController()->getDb();
+    }
+
+    public function setController(ControllerInterface $controller)
+    {
+        $this->controller = $controller;
     }
 
     public function setTitle($title)

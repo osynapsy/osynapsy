@@ -20,9 +20,9 @@ use Osynapsy\Mvc\Controller\ControllerInterface;
  */
 interface ViewInterface
 {
-    public function __construct(ControllerInterface $controller);
-
     public function init();
 
     public function getController() : ControllerInterface;
+
+    public function setController(ControllerInterface $controller);
 }

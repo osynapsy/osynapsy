@@ -33,7 +33,7 @@ use Osynapsy\Observer\SubjectInterface;
 abstract class AbstractController implements ControllerInterface, SubjectInterface
 {
     use \Osynapsy\Observer\Subject;
-    
+
     private $dispatcher;
     private $application;
     private $template;
@@ -53,9 +53,8 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
         $this->request = $request;
         $this->application = $application;
         $this->loadObserver();
-        $this->init();
-        $this->initTemplate();        
-    }   
+        $this->initTemplate();
+    }
 
     /**
      * Default deleteAction recall delete method of model if exists
@@ -84,7 +83,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      * @return void
      */
     private function initTemplate()
-    {        
+    {
         $templateId = $this->getRequest()->getRoute()->template;
         $template = $this->getRequest()->getTemplate($templateId);
         $this->template = empty($template['@value']) ? new Template() : new $template['@value'];
@@ -215,7 +214,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
     /**
      * Child class must implement default Action indexAction.
      */
-    abstract public function indexAction();
+    //abstract public function indexAction();
 
     /**
      * Child class must implement init method

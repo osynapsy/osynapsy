@@ -13,8 +13,6 @@ namespace Osynapsy\Mvc\Application;
 
 use Osynapsy\Mvc\Controller\ControllerInterface;
 use Osynapsy\Http\Response\ResponseInterface;
-use Osynapsy\Mvc\View\RefreshComponentsView;
-use Osynapsy\Mvc\View\AbstractView;
 
 /**
  * Execute request action. If no action is requested exec controller indexAction
@@ -24,6 +22,7 @@ use Osynapsy\Mvc\View\AbstractView;
 class ActionRunner
 {
     protected $controller;
+    protected $autowiring;
 
     /**
      *
@@ -32,6 +31,17 @@ class ActionRunner
     public function __construct(ControllerInterface $controller)
     {
         $this->controller = $controller;
+        $this->autowiring = $this->autoWiringFactory($controller);
+    }
+
+    protected function autoWiringFactory($controller)
+    {
+        $autowiring = new AutoWiring();
+        $autowiring->addHandle(get_class($controller), $controller);
+        $autowiring->addHandle(get_class($controller->getDb()), $controller->getDb());
+        $autowiring->addHandle(get_class($controller->getApp()), $controller->getApp());
+        $autowiring->addHandle(get_class($controller->getRequest()), $controller->getRequest());
+        return $autowiring;
     }
 
     /**
@@ -47,12 +57,13 @@ class ActionRunner
     /**
      * Run controller and execute request action
      *
-     * @param string $action
+     * @param string $actionId
      * @param array $parameters
      * @return \Osynapsy\Http\Response
      */
     public function run($actionId, $parameters = [])
     {
+        $this->autowiring->execute($this->getController(), 'init');
         if (empty($actionId)) {
             return $this->execIndexAction();
         }
@@ -76,7 +87,11 @@ class ActionRunner
         if ($this->getController()->hasModel()) {
             $this->getController()->getModel()->find();
         }
-        $response = $this->getController()->indexAction();
+        //$response = $this->getController()->indexAction();
+        $response = $this->autowiring->execute($this->getController(), 'indexAction');
+        if (is_object($response) && method_exists($response, 'setController')) {
+            $response->setController($this->getController());
+        }
         if (!empty($refreshRequested)) {
             $this->getResponse()->addContent($response);
         } else {
@@ -89,7 +104,7 @@ class ActionRunner
     /**
      * Recall and execute an external action class
      *
-     * @param string $action
+     * @param string $actionId
      * @param array $parameters
      * @return \Osynapsy\Http\Response
      */
