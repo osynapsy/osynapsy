@@ -34,10 +34,11 @@ class ActionRunner
         $this->autowiring = autowiring([
             $controller,
             $controller->getApp(),
+            $controller->getDb(),
             $controller->getRequest(),
-            $controller->getDb()
+            $controller->getRequest()->getRoute()
         ]);
-    }   
+    }
 
     /**
      * Return current controller
@@ -58,7 +59,9 @@ class ActionRunner
      */
     public function run($actionId, $parameters = [])
     {
-        $this->autowiring->execute($this->getController(), 'init');
+        if (method_exists($this->getController(), 'init')) {
+            $this->autowiring->execute($this->getController(), 'init');
+        }
         if (empty($actionId)) {
             return $this->execIndexAction();
         }

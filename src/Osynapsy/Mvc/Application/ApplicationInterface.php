@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Mvc\Application;
 
-use Osynapsy\Kernel\Route;
+use Osynapsy\Routing\Route;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response\ResponseInterface;
 use Osynapsy\Database\Driver\DboInterface;
