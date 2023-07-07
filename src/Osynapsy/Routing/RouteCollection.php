@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\Kernel;
+namespace Osynapsy\Routing;
 
 use Osynapsy\DataStructure\Dictionary;
 

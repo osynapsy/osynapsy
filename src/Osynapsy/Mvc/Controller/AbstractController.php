@@ -50,7 +50,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      */
     public function __construct(Request $request, ApplicationInterface $application)
     {
-        $this->request = $request;        
+        $this->request = $request;
         $this->application = $application;
         $this->loadObserver();
         $this->initTemplate();
@@ -84,7 +84,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      */
     private function initTemplate()
     {
-        $templateId = $this->getRequest()->getRoute()->template;        
+        $templateId = $this->getRequest()->getRoute()->template;
         $template = $this->getRequest()->getTemplate($templateId);
         $this->template = empty($template['@value']) ? new Template() : new $template['@value'];
         $this->template->setController($this);
@@ -220,16 +220,6 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
     {
         return array_key_exists($actionId, $this->externalActions);
     }
-
-    /**
-     * Child class must implement default Action indexAction.
-     */
-    //abstract public function indexAction();
-
-    /**
-     * Child class must implement init method
-     */
-    abstract public function init();
 
     /**
      * Load html file view in current response

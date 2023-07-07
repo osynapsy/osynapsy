@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy;
+
 /*
  * This file is part of the Osynapsy package.
  *
@@ -9,10 +9,12 @@ namespace Osynapsy;
  * file that was distributed with this source code.
  */
 
+namespace Osynapsy;
+
 use Osynapsy\Http\Request;
 use Osynapsy\Psr7\Http\ServerRequest as PsrRequest;
 use Osynapsy\Kernel\ConfigLoader;
-use Osynapsy\Kernel\Router;
+use Osynapsy\Routing\Router;
 use Osynapsy\Kernel\KernelException;
 use Osynapsy\Kernel\Error\Dispatcher as ErrorDispatcher;
 use Osynapsy\Mvc\Application\BaseApplication;
@@ -28,7 +30,7 @@ use Osynapsy\Helper\AssetLoader\AssetLoader;
 
 class Kernel
 {
-    const VERSION = '0.8.7-DEV';
+    const VERSION = '0.9-DEV';
     const DEFAULT_APP_CONTROLLER = BaseApplication::class;
     const DEFAULT_ASSET_CONTROLLER = AssetLoader::class;
 

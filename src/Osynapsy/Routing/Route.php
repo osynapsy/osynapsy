@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\Kernel;
+namespace Osynapsy\Routing;
 
 /**
  * Description of Route
@@ -39,12 +39,12 @@ class Route
         $this->setAcceptedMethods($this->methods);
     }
 
-    
+
     public function getParameter($key)
     {
         return $this->parameters[$key] ?? null;
     }
-    
+
     public function getUrl(array $params = [])
     {
         $output = $result = [];

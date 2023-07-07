@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\Kernel;
+namespace Osynapsy\Routing;
 
 /**
  * The router class process all ruotes of the application and search the route
@@ -19,7 +19,7 @@ namespace Osynapsy\Kernel;
  */
 class Router
 {
-    private $routes;    
+    private $routes;
     private $matchedRoute;
 
     //Rispettare l'ordine
@@ -125,7 +125,7 @@ class Router
             return $route->uri === $requestRoute ? $route : false;
         }
         $patternParams = $this->extractRouteParameterPatterns($route);
-        $patternRoute = $this->patternRouteFactory($route, $patternParams, $this->patternPlaceholder);        
+        $patternRoute = $this->patternRouteFactory($route, $patternParams, $this->patternPlaceholder);
         $ruoteParameters = $this->extractParametersFromRuote($patternRoute, $requestRoute);
         if (empty($ruoteParameters)) {
             return false;
@@ -137,7 +137,7 @@ class Router
     }
 
     protected function extractRouteParameterPatterns($route)
-    {        
+    {
         preg_match_all('/{.+?}/', $route->uri, $output);
         return array_merge(['/' => null] ,  array_flip($output[0]));
     }
@@ -169,7 +169,7 @@ class Router
     }
 
     protected function extractParametersFromRuote($patternRoute, $requestRoute)
-    {        
+    {
         preg_match('/^'.$patternRoute.'$/', $requestRoute, $result);
         return $result;
     }
