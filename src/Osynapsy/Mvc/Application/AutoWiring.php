@@ -46,17 +46,21 @@ class AutoWiring
 
     protected function autoWiringClass($className)
     {
-        $ref = new \ReflectionClass($className);
+        $ref = new \ReflectionClass($className);        
         $dependences = $this->getMethodDependences($className, '__construct');
         return empty($dependences) ? $ref->newInstance() : $ref->newInstanceArgs($dependences);
     }
 
-    public function addHandle($class, $istance)
+    public function addHandle($handle, $class = null)
     {
-        $this->handles[$class] = $istance;
-        $interfaces = class_implements($istance) ?: [];
+        if (!is_object($handle)) {
+            return;
+        }
+        $handleId = empty($class) ? get_class($handle) : $class;
+        $this->handles[$handleId] = $handle;
+        $interfaces = class_implements($handle) ?: [];
         foreach($interfaces as $interface) {
-            $this->handles[$interface] = $istance;
+            $this->handles[$interface] = $handle;
         }
     }
 }

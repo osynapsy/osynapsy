@@ -31,18 +31,13 @@ class ActionRunner
     public function __construct(ControllerInterface $controller)
     {
         $this->controller = $controller;
-        $this->autowiring = $this->autoWiringFactory($controller);
-    }
-
-    protected function autoWiringFactory($controller)
-    {
-        $autowiring = new AutoWiring();
-        $autowiring->addHandle($controller);
-        $autowiring->addHandle($controller->getApp());
-        $autowiring->addHandle($controller->getRequest());
-        $autowiring->addHandle($controller->getDb());
-        return $autowiring;
-    }
+        $this->autowiring = autowiring([
+            $controller,
+            $controller->getApp(),
+            $controller->getRequest(),
+            $controller->getDb()
+        ]);
+    }   
 
     /**
      * Return current controller

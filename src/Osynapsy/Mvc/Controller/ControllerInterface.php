@@ -25,11 +25,11 @@ use Osynapsy\Database\Driver\DboInterface;
  */
 interface ControllerInterface
 {
-    public function __construct(Request $request = null, ApplicationInterface $application = null);
+    public function __construct(Request $request, ApplicationInterface $application);
 
     public function getApp() : ApplicationInterface;
 
-    public function getDb() : DboInterface;
+    public function getDb() : ?DboInterface;
 
     public function getDispatcher();
 
@@ -39,13 +39,13 @@ interface ControllerInterface
 
     public function getRequest() : Request;
 
+    public function hasExternalAction($actionId) : bool;
+
+    public function hasDb() : bool;
+
+    public function hasModel() : bool;
+
     public function setExternalAction(string $actionId, ActionInterface $actionClass) : void;
 
     public function setModel(ModelInterface $model);
-
-    public function setView(InterfaceView $view);
-
-    public function hasExternalAction($actionId);
-
-    public function hasModel();
 }

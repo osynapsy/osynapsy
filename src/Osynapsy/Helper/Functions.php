@@ -25,3 +25,12 @@ function route($routeId = null, ?array $parameters = null)
     $route = request()->getRoute($routeId);
     return is_null($parameters) ? $route : $route->getUrl($parameters);
 }
+
+function autowiring(array $handles = [])
+{
+    $autowiring = new Osynapsy\Mvc\Application\AutoWiring();
+    foreach($handles as $handle) {
+        $autowiring->addHandle($handle);
+    }
+    return $autowiring;
+}

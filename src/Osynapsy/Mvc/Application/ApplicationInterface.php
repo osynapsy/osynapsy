@@ -23,7 +23,7 @@ interface ApplicationInterface
 
     public function getComposer();
 
-    public function getDb(int $key = 0) : DboInterface;
+    public function getDb(int $key = 0) : ?DboInterface;
 
     public function getDbFactory() : DboFactory;
 

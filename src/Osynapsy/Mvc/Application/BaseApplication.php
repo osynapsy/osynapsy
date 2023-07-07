@@ -106,7 +106,7 @@ class BaseApplication implements ApplicationInterface
      * @param int $key
      * @return \Osynapsy\Database\Driver\InterfaceDbo
      */
-    public function getDb(int $key = 0) : DboInterface
+    public function getDb(int $key = 0) : ?DboInterface
     {
         return $this->getDbFactory()->getConnection($key);
     }
@@ -167,21 +167,20 @@ class BaseApplication implements ApplicationInterface
         if (empty($this->route) || !$this->route->controller) {
             throw new \Osynapsy\Kernel\KernelException('Route not found', 404);
         }
-        $controller = $this->controllerFactory($this->route->controller);
+        $controller = $this->controllerFactory($this->route->controller, $this);
         $actionId =  filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION');
         $actionParams = filter_input(\INPUT_POST , 'actionParameters', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
         return (string) $this->runAction($controller, $actionId, $actionParams);
     }
 
-    protected function controllerFactory($classController)
+    protected function controllerFactory($classController, $appController)
     {
-        return new $classController($this->getRequest(), $this);
+        return new $classController($this->getRequest(), $appController);
     }
 
     protected function runAction($controller, $actionId, array $actionParams)
     {
-        $actionRunnerHandle = new ActionRunner($controller);
-        return $actionRunnerHandle->run($actionId, $actionParams);
+        return (new ActionRunner($controller))->run($actionId, $actionParams);
     }
 
     /**

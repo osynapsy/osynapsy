@@ -48,9 +48,9 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      * @param Request $request
      * @param Application $application
      */
-    public function __construct(Request $request = null, ApplicationInterface $application = null)
+    public function __construct(Request $request, ApplicationInterface $application)
     {
-        $this->request = $request;
+        $this->request = $request;        
         $this->application = $application;
         $this->loadObserver();
         $this->initTemplate();
@@ -84,7 +84,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      */
     private function initTemplate()
     {
-        $templateId = $this->getRequest()->getRoute()->template;
+        $templateId = $this->getRequest()->getRoute()->template;        
         $template = $this->getRequest()->getTemplate($templateId);
         $this->template = empty($template['@value']) ? new Template() : new $template['@value'];
         $this->template->setController($this);
@@ -109,7 +109,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      * @param int $key
      * @return Db
      */
-    public function getDb($key = 0) : DboInterface
+    public function getDb($key = 0) : ?DboInterface
     {
         return $this->getApp()->getDb($key);
     }
@@ -191,11 +191,21 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
     }
 
     /**
+     * Return true if  if controller has a valid Model
+     *
+     * @return boolean
+     */
+    public function hasDb() : bool
+    {
+        return !empty($this->getDb());
+    }
+
+    /**
      * Check if controller has a valid Model
      *
      * @return boolean
      */
-    public function hasModel()
+    public function hasModel() : bool
     {
         return !empty($this->model);
     }
@@ -206,7 +216,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      * @param string $actionId
      * @return boolean
      */
-    public function hasExternalAction($actionId)
+    public function hasExternalAction($actionId) : bool
     {
         return array_key_exists($actionId, $this->externalActions);
     }
@@ -270,26 +280,5 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
     public function setModel(ModelInterface $model)
     {
         $this->model = $model;
-    }
-
-    /**
-     * Set response for current controller
-     *
-     * @param Response $response
-     * @return Response
-     */
-    public function setResponse(ResponseInterface $response) : ResponseInterface
-    {
-        return $response;
-    }
-
-    /**
-     * Set view for controller
-     *
-     * @param InterfaceModel $view
-     */
-    public function setView(InterfaceView $view)
-    {
-        $this->view = $view;
     }
 }
