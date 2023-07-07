@@ -37,10 +37,10 @@ class ActionRunner
     protected function autoWiringFactory($controller)
     {
         $autowiring = new AutoWiring();
-        $autowiring->addHandle(get_class($controller), $controller);
-        $autowiring->addHandle(get_class($controller->getDb()), $controller->getDb());
-        $autowiring->addHandle(get_class($controller->getApp()), $controller->getApp());
-        $autowiring->addHandle(get_class($controller->getRequest()), $controller->getRequest());
+        $autowiring->addHandle($controller);
+        $autowiring->addHandle($controller->getApp());
+        $autowiring->addHandle($controller->getRequest());
+        $autowiring->addHandle($controller->getDb());
         return $autowiring;
     }
 
@@ -130,7 +130,7 @@ class ActionRunner
     private function execInternalAction(string $action, array $parameters) : ResponseInterface
     {
         $response = !empty($parameters)
-                  ? call_user_func_array([$this, $action.'Action'], $parameters)
+                  ? call_user_func_array([$this->getController(), $action.'Action'], $parameters)
                   : $this->getController()->{$action.'Action'}();
         if (!empty($response) && is_string($response)) {
             $this->getResponse()->alertJs($response);
