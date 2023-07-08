@@ -72,7 +72,14 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
             $this->model->find();
         }
         //Call indexAction for load component html and theirs listeners
-        $this->indexAction();
+        $autowiring = autowiring([
+            $this,
+            $this->getApp(),
+            $this->getDb(),
+            $this->getRequest(),
+            $this->getRequest()->getRoute()
+        ]);
+        strval($autowiring->execute($this, 'indexAction'));
         $this->getDispatcher()->dispatch(new Event($eventId, $this));
     }
 

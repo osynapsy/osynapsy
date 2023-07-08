@@ -69,7 +69,7 @@ class ActionRunner
             return $this->execExternalAction($actionId, $parameters);
         }
         if (method_exists($this->getController(), $actionId.'Action')) {
-            return $this->execInternalAction($actionId, $parameters);
+            return $this->execInternalAction($actionId.'Action', $parameters);
         }
         return $this->getResponse()->alertJs(sprintf('No action %s exist in %s', $actionId, get_class($this->controller)));
     }
@@ -126,11 +126,9 @@ class ActionRunner
      * @param array $parameters
      * @return \Osynapsy\Http\Response
      */
-    private function execInternalAction(string $action, array $parameters) : ResponseInterface
+    private function execInternalAction(string $action, array $parameters = []) : ResponseInterface
     {
-        $response = !empty($parameters)
-                  ? call_user_func_array([$this->getController(), $action.'Action'], $parameters)
-                  : $this->getController()->{$action.'Action'}();
+        $response = $this->autowiring->execute($this->getController(), $action, $parameters);
         if (!empty($response) && is_string($response)) {
             $this->getResponse()->alertJs($response);
         }
