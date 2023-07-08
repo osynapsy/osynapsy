@@ -11,6 +11,8 @@
 
 namespace Osynapsy\Event;
 
+use Osynapsy\Mvc\Controller\ControllerInterface;
+
 /**
  * Description of Dispatcher
  *
@@ -21,7 +23,7 @@ class Dispatcher
     private static $controller;
     public static $listeners = [];
 
-    public function __construct($controller)
+    public function __construct(ControllerInterface $controller)
     {
         self::$controller = $controller;
     }
