@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\Mvc\Application;
+namespace Osynapsy\Mvc\Action;
 
 use Osynapsy\Mvc\Controller\ControllerInterface;
 use Osynapsy\Http\Response\ResponseInterface;
@@ -108,10 +108,11 @@ class ActionRunner
      */
     public function execExternalAction(string $actionId, array $parameters = []) : ResponseInterface
     {
-        $actionHandle = $this->getController()->getExternalAction($actionId);
+        $actionClass = $this->getController()->getExternalAction($actionId);
+        $actionHandle = new $actionClass;
         $actionHandle->setController($this->getController());
         $actionHandle->setParameters($parameters);
-        $message = $actionHandle->execute();
+        $message = $this->autowiring->execute($actionHandle, 'execute', $parameters ?? []);
         if (!empty($message)) {
             $this->getResponse()->alertJs($message);
         }

@@ -20,9 +20,9 @@ abstract class ModelRecord extends AbstractModel
     protected $record;
     protected $softDelete = [];
 
-    public function __construct(ControllerInterface $controller)
+    public function __construct(ControllerInterface $controller, ...$argv)
     {
-        parent::__construct($controller);
+        parent::__construct($controller, $argv);
         $this->record = $this->record();
         $this->init();
         $this->recordFill();

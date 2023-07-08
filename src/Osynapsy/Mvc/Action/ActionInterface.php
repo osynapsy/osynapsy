@@ -20,8 +20,6 @@ use Osynapsy\Mvc\Controller\ControllerInterface;
  */
 interface ActionInterface
 {
-    public function execute();
-
     public function getApp();
 
     public function setController(ControllerInterface $controller);

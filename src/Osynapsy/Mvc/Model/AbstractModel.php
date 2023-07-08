@@ -18,7 +18,7 @@ abstract class AbstractModel implements ModelInterface
     protected $fields = [];
     protected $fieldUploaded = false;
 
-    public function __construct(ControllerInterface $controller)
+    public function __construct(ControllerInterface $controller, ...$args)
     {
         $this->setController($controller);
     }

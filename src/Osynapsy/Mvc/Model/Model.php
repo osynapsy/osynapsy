@@ -26,7 +26,7 @@ abstract class Model extends ModelRecord
     protected $sequence;
     protected $softdelete;
 
-    public function __construct(ControllerInterface $controller)
+    public function __construct(ControllerInterface $controller, ...$args)
     {
         $this->setController($controller);
         $this->init();

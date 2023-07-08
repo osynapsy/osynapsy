@@ -45,7 +45,7 @@ interface ControllerInterface
 
     public function hasModel() : bool;
 
-    public function setExternalAction(string $actionId, ActionInterface $actionClass) : void;
+    public function setExternalAction(string $actionClass) : void;
 
     public function setModel(ModelInterface $model);
 }

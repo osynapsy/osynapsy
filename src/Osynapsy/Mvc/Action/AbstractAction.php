@@ -30,11 +30,6 @@ abstract class AbstractAction implements ActionInterface
     private $parameters = [];
     protected $triggers = [];
 
-    /**
-     * Main method which controller recall when Frontend action is recalled.
-     */
-    abstract public function execute();
-
     protected function executeTrigger($eventId)
     {
         if (empty($this->triggers[$eventId])) {

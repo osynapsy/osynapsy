@@ -16,7 +16,7 @@ use Osynapsy\Database\Driver\DboInterface;
 
 interface ModelInterface
 {
-    public function __construct(ControllerInterface $controller);
+    //public function __construct(ControllerInterface $controller);
 
     public function getController() : ControllerInterface;
 

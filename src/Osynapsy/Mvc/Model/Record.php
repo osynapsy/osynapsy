@@ -45,7 +45,7 @@ abstract class Record implements ModelInterface
     public $uploadOccurred = false;
     public $behavior;
 
-    public function __construct($controller)
+    public function __construct(ControllerInterface $controller, ...$args)
     {
         $this->controller = $controller;
         $this->record = $this->record();
@@ -78,11 +78,11 @@ abstract class Record implements ModelInterface
 
     protected function initExternalAction()
     {
-        $this->getController()->setExternalAction('save', new \Osynapsy\Mvc\Model\Action\Save());
-        $this->getController()->setExternalAction('delete', new \Osynapsy\Mvc\Model\Action\Delete());
-        $this->getController()->setExternalAction('upload', new \Osynapsy\Mvc\Model\Action\Upload());
-        $this->getController()->setExternalAction('deleteFile', new \Osynapsy\Mvc\Model\Action\DeleteFile());
-        $this->getController()->setExternalAction('cropImage', new \Osynapsy\Mvc\Model\Action\CropImage());
+        $this->getController()->setExternalAction(Action\Save::class);
+        $this->getController()->setExternalAction(Action\Delete::class);
+        $this->getController()->setExternalAction(Action\Upload::class);
+        $this->getController()->setExternalAction(Action\DeleteFile::class);
+        $this->getController()->setExternalAction(Action\CropImage::class);
     }
 
     public function getBehavior()

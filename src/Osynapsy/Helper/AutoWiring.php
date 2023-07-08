@@ -1,5 +1,5 @@
 <?php
-namespace Osynapsy\Mvc\Application;
+namespace Osynapsy\Helper;
 
 /**
  * Description of AutoWiring
@@ -19,24 +19,39 @@ class AutoWiring
 
     protected $handles = [];
 
-    public function execute($object, $method)
+    public function __construct(array $handles = [])
     {
-        $dependences = $this->getMethodDependences($object, $method);
+        array_walk($handles, function($handle) { $this->addHandle($handle); });
+    }
+
+    public function execute($object, $method, $parameters = [])
+    {
+        $dependences = $this->getMethodDependences($object, $method, $parameters);
         return (new \ReflectionMethod($object, $method))->invokeArgs($object, $dependences);
     }
 
-    protected function getMethodDependences($object, string $method)
+    protected function getMethodDependences($object, string $method, array $externalParameters = [])
     {
         $ref = new \ReflectionMethod($object, $method);
         $dependences = [];
+        $externalParameterIdx = 0;
         foreach ($ref->getParameters() as $parameter) {
             $parameterType = str_replace('?', '', (string) $parameter->getType());
-            if (empty($parameterType) || in_array($parameterType, array_keys(self::SCALAR_TYPE))){
+            if (array_key_exists($parameterType, $this->handles)) {
+                $dependences[] = $this->handles[$parameterType];
+                continue;
+            }
+            if (!class_exists($parameterType ?? 'dummy') && array_key_exists($externalParameterIdx, $externalParameters)) {
+                $dependences[] = $externalParameters[$externalParameterIdx++];
+                continue;
+            }
+            if ($parameter->isDefaultValueAvailable()) {
                 $dependences[] = $parameter->getDefaultValue();
                 continue;
             }
-            if (array_key_exists($parameterType, $this->handles)) {
-                $dependences[] = $this->handles[$parameterType];
+            if (empty($parameterType) || in_array($parameterType, array_keys(self::SCALAR_TYPE))) {
+                //var_dump($object, $parameterType, $method, $parameter);
+                //exit;
                 continue;
             }
             $dependences[] = $this->autoWiringClass($parameterType);
@@ -46,7 +61,7 @@ class AutoWiring
 
     protected function autoWiringClass($className)
     {
-        $ref = new \ReflectionClass($className);        
+        $ref = new \ReflectionClass($className);
         $dependences = $this->getMethodDependences($className, '__construct');
         return empty($dependences) ? $ref->newInstance() : $ref->newInstanceArgs($dependences);
     }

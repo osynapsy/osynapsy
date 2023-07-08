@@ -1,5 +1,6 @@
 <?php
 use Osynapsy\Kernel;
+use Osynapsy\Helper\AutoWiring;
 
 /**
  * If $elementPath is null return request Object else return required element of request
@@ -15,7 +16,7 @@ function request($elementPath = null)
 /**
  * if routeId parameter is null return current route else return ruote with routeId.
  * If array parameters is passed build relative url of the specified route
- * 
+ *
  * @param string $routeId
  * @param array|null $parameters
  * @return mixed
@@ -28,9 +29,7 @@ function route($routeId = null, ?array $parameters = null)
 
 function autowiring(array $handles = [])
 {
-    $autowiring = new Osynapsy\Mvc\Application\AutoWiring();
-    foreach($handles as $handle) {
-        $autowiring->addHandle($handle);
-    }
+    static $autowiring;
+    $autowiring = new AutoWiring($handles);
     return $autowiring;
 }

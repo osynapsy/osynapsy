@@ -142,8 +142,11 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      *
      * @return mixed
      */
-    final public function getExternalAction($actionId)
+    final public function getExternalAction(string $actionId)
     {
+        if (class_exists($actionId)) {
+            $actionId = sha1($actionId);
+        }
         if (!array_key_exists($actionId, $this->externalActions) ){
             throw new \Exception(sprintf("No external action %s exists", $actionId));
         }
@@ -253,13 +256,19 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
     /**
      * Set external class action for manage action
      *
-     * @param string $actionId
-     * @param string $actionClass
+     * @param string $actionClass namespace of class to execute
+     * @param string $actionId id used to retrive the class
      * @return void
      */
-    public function setExternalAction(string $actionId, ActionInterface $actionClass) : void
+    public function setExternalAction(string $actionClass, string $actionId = null) : void
     {
-        $this->externalActions[$actionId] = $actionClass;
+        if (!in_array(ActionInterface::class, class_implements($actionClass) ?: [])) {
+            throw new \Exception(sprintf("Class %s must implement %s", $actionClass, ActionInterface::class));
+        }
+        if (!method_exists($actionClass, 'execute')) {
+            throw new \Exception(sprintf("External action class \"%s\" must implement execute method", $actionClass));
+        }
+        $this->externalActions[$actionId ?? sha1($actionClass)] = $actionClass;
     }
 
     /**
