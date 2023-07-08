@@ -103,7 +103,7 @@ abstract class AbstractView implements ViewInterface
     {
         $requestComponentIDs = empty($_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']) ? [] : explode(';', $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']);
         $view = $this->init();
-        return (string) empty($requestComponentIDs) ? $view : $this->refreshComponentsViewFactory($requestComponentIDs);
+        return empty($requestComponentIDs) ? strval($view) : $this->refreshComponentsViewFactory($requestComponentIDs);
     }   
 
     protected function refreshComponentsViewFactory($componentIDs)
@@ -112,6 +112,6 @@ abstract class AbstractView implements ViewInterface
         foreach($componentIDs as $componentId) {
             $response->add(DOM::getById($componentId));
         }
-        return $response;
+        return strval($response);
     }
 }
