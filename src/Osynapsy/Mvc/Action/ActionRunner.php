@@ -22,7 +22,7 @@ use Osynapsy\Http\Response\ResponseInterface;
 class ActionRunner
 {
     protected $controller;
-    protected $autowiring;
+    protected $autowire;
 
     /**
      *
@@ -31,12 +31,13 @@ class ActionRunner
     public function __construct(ControllerInterface $controller)
     {
         $this->controller = $controller;
-        $this->autowiring = autowiring([
+        $this->autowire = autowire([
             $controller,
             $controller->getApp(),
             $controller->getDb(),
             $controller->getRequest(),
-            $controller->getRequest()->getRoute()
+            $controller->getRequest()->getRoute(),
+            $controller->getModel()
         ]);
     }
 
@@ -60,7 +61,7 @@ class ActionRunner
     public function run($actionId, $parameters = [])
     {
         if (method_exists($this->getController(), 'init')) {
-            $this->autowiring->execute($this->getController(), 'init');
+            $this->autowire->execute($this->getController(), 'init');
         }
         if (empty($actionId)) {
             return $this->execIndexAction();
@@ -86,7 +87,7 @@ class ActionRunner
             $this->getController()->getModel()->find();
         }
         //$response = $this->getController()->indexAction();
-        $response = $this->autowiring->execute($this->getController(), 'indexAction');
+        $response = $this->autowire->execute($this->getController(), 'indexAction');
         if (is_object($response) && method_exists($response, 'setController')) {
             $response->setController($this->getController());
         }
@@ -112,7 +113,7 @@ class ActionRunner
         $actionHandle = new $actionClass;
         $actionHandle->setController($this->getController());
         $actionHandle->setParameters($parameters);
-        $message = $this->autowiring->execute($actionHandle, 'execute', $parameters ?? []);
+        $message = $this->autowire->execute($actionHandle, 'execute', $parameters ?? []);
         if (!empty($message)) {
             $this->getResponse()->alertJs($message);
         }
@@ -128,7 +129,7 @@ class ActionRunner
      */
     private function execInternalAction(string $action, array $parameters = []) : ResponseInterface
     {
-        $response = $this->autowiring->execute($this->getController(), $action, $parameters);
+        $response = $this->autowire->execute($this->getController(), $action, $parameters);
         if (!empty($response) && is_string($response)) {
             $this->getResponse()->alertJs($response);
         }

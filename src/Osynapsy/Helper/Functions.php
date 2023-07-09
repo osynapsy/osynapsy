@@ -1,6 +1,6 @@
 <?php
 use Osynapsy\Kernel;
-use Osynapsy\Helper\AutoWiring;
+use Osynapsy\Helper\AutoWire;
 
 /**
  * If $elementPath is null return request Object else return required element of request
@@ -27,7 +27,7 @@ function route($routeId = null, ?array $parameters = null)
     return is_null($parameters) ? $route : $route->getUrl($parameters);
 }
 
-function autowiring(array $handles = [])
+function autowire(array $handles = [])
 {
-    return new AutoWiring($handles);
+    return new AutoWire($handles);
 }

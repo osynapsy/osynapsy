@@ -6,7 +6,7 @@ namespace Osynapsy\Helper;
  *
  * @author peter
  */
-class AutoWiring
+class AutoWire
 {
     const SCALAR_TYPE = [
         'string' => '',
@@ -17,31 +17,38 @@ class AutoWiring
         'object|string' => null
     ];
 
-    protected $handles = [];
+    protected static $handles = [];
 
     public function __construct(array $handles = [])
     {
         array_walk($handles, function($handle) { $this->addHandle($handle); });
     }
 
-    public function execute($object, $method, $parameters = [])
+    public function execFunction($function, array $parameters = [])
     {
-        $dependences = $this->getMethodDependences($object, $method, $parameters);
-        return (new \ReflectionMethod($object, $method))->invokeArgs($object, $dependences);
+        $reflectionFunction = new \ReflectionFunction($function);
+        $dependences = $this->getDependences($reflectionFunction, $parameters);
+        return $reflectionFunction->invokeArgs($dependences);
     }
 
-    protected function getMethodDependences($object, string $method, array $externalParameters = [])
+    public function execute($object, $method, array $parameters = [])
     {
-        $ref = new \ReflectionMethod($object, $method);
+        $reflectionMethod = new \ReflectionMethod($object, $method);
+        $dependences = $this->getDependences($reflectionMethod, $parameters);
+        return $reflectionMethod->invokeArgs($object, $dependences);
+    }
+
+    protected function getDependences($reflectionObject, array $externalParameters = [])
+    {
         $dependences = [];
         $externalParameterIdx = 0;
-        foreach ($ref->getParameters() as $parameter) {
+        foreach ($reflectionObject->getParameters() as $parameter) {
             $parameterType = str_replace('?', '', (string) $parameter->getType());
-            if (array_key_exists($parameterType, $this->handles)) {
-                $dependences[] = $this->handles[$parameterType];
+            if (array_key_exists($parameterType, self::$handles)) {
+                $dependences[] = self::$handles[$parameterType];
                 continue;
             }
-            if (!class_exists($parameterType ?? 'dummy') && array_key_exists($externalParameterIdx, $externalParameters)) {
+            if (!class_exists($parameterType ?? '__dummy__') && array_key_exists($externalParameterIdx, $externalParameters)) {
                 $dependences[] = $externalParameters[$externalParameterIdx++];
                 continue;
             }
@@ -54,15 +61,15 @@ class AutoWiring
                 //exit;
                 continue;
             }
-            $dependences[] = $this->autoWiringClass($parameterType);
+            $dependences[] = $this->getInstance($parameterType);
         }
         return $dependences;
     }
 
-    protected function autoWiringClass($className)
+    public function getInstance($className)
     {
         $ref = new \ReflectionClass($className);
-        $dependences = $this->getMethodDependences($className, '__construct');
+        $dependences = $this->getDependences($ref->getConstructor());
         return empty($dependences) ? $ref->newInstance() : $ref->newInstanceArgs($dependences);
     }
 
@@ -72,10 +79,10 @@ class AutoWiring
             return;
         }
         $handleId = empty($class) ? get_class($handle) : $class;
-        $this->handles[$handleId] = $handle;
+        self::$handles[$handleId] = $handle;
         $interfaces = class_implements($handle) ?: [];
         foreach($interfaces as $interface) {
-            $this->handles[$interface] = $handle;
+            self::$handles[$interface] = $handle;
         }
     }
 }

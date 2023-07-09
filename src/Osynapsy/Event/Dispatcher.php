@@ -86,7 +86,7 @@ class Dispatcher
 
             public function trigger(Event $event)
             {
-                autowiring()->execFunction($this->trigger, [$event]);
+                autowire()->execFunction($this->trigger, [$event]);
             }
         };
         $listener->setTrigger($trigger);
