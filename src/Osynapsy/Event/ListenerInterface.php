@@ -16,9 +16,9 @@ use Osynapsy\Mvc\Controller\AbstractController;
 /**
  * Public method of listener
  *
- * @author pietr
+ * @author Pietro Celeste <p.celeste@osynapsy.net>
  */
-interface InterfaceListener
+interface ListenerInterface
 {
     public function __construct(AbstractController $controller);
 

@@ -69,7 +69,7 @@ class Dispatcher
 
     public static function addListener(callable $trigger, array $eventIDs)
     {
-        $listener = new class(self::$controller) implements InterfaceListener
+        $listener = new class(self::$controller) implements ListenerInterface
         {
             private $controller;
             private $trigger;
