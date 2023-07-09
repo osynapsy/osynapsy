@@ -27,6 +27,12 @@ function route($routeId = null, ?array $parameters = null)
     return is_null($parameters) ? $route : $route->getUrl($parameters);
 }
 
+/**
+ * Return an instance of AutoWire class
+ *
+ * @param array $handles array of object instanced used how handles from autowire
+ * @return AutoWire
+ */
 function autowire(array $handles = [])
 {
     return new AutoWire($handles);
