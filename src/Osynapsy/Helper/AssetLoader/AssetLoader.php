@@ -13,14 +13,15 @@ namespace Osynapsy\Helper\AssetLoader;
 
 use Osynapsy\Controller\AbstractController;
 use Osynapsy\Kernel\KernelException;
+use Osynapsy\Routing\Route;
 
 class AssetLoader extends AbstractController
 {
     protected $assetsPath;
 
-    public function init()
+    public function init(Route $route)
     {
-        $assetsPathRequest = route()->getParameter(0);
+        $assetsPathRequest = $route->getParameter(0);
         $namespaceKeySearch = strtok($assetsPathRequest, '/');
         $this->setAssetPath($namespaceKeySearch, $assetsPathRequest);
     }
