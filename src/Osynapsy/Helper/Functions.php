@@ -29,7 +29,5 @@ function route($routeId = null, ?array $parameters = null)
 
 function autowiring(array $handles = [])
 {
-    static $autowiring;
-    $autowiring = new AutoWiring($handles);
-    return $autowiring;
+    return new AutoWiring($handles);
 }
