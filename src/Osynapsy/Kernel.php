@@ -17,7 +17,7 @@ use Osynapsy\Kernel\ConfigLoader;
 use Osynapsy\Routing\Router;
 use Osynapsy\Kernel\KernelException;
 use Osynapsy\Kernel\Error\Dispatcher as ErrorDispatcher;
-use Osynapsy\Mvc\Application\BaseApplication;
+use Osynapsy\Application\BaseApplication;
 use Osynapsy\Helper\AssetLoader\AssetLoader;
 
 /**
