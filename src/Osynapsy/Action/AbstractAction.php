@@ -15,7 +15,7 @@ use Osynapsy\Controller\Controller;
 use Osynapsy\Database\Driver\DboInterface;
 use Osynapsy\Application\ApplicationInterface;
 use Osynapsy\Controller\ControllerInterface;
-use Osynapsy\Mvc\Model\ModelInterface;
+use Osynapsy\ViewModel\ModelInterface;
 
 /**
  * Base class for implement an external action.
