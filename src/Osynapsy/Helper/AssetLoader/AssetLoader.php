@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Helper\AssetLoader;
 
-use Osynapsy\Mvc\Controller\AbstractController;
+use Osynapsy\Controller\AbstractController;
 use Osynapsy\Kernel\KernelException;
 
 class AssetLoader extends AbstractController
