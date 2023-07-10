@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Event;
 
-use Osynapsy\Mvc\Controller\AbstractController;
+use Osynapsy\Controller\AbstractController;
 
 /**
  * Public method of listener
