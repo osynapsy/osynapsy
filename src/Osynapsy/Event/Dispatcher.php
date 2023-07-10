@@ -11,7 +11,7 @@
 
 namespace Osynapsy\Event;
 
-use Osynapsy\Mvc\Controller\ControllerInterface;
+use Osynapsy\Controller\ControllerInterface;
 
 /**
  * Description of Dispatcher
