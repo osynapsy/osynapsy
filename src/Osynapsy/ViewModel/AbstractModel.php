@@ -14,13 +14,11 @@ use Osynapsy\Helper\UploadManager;
  */
 abstract class AbstractModel implements ModelInterface
 {
-    use ViewModelTrait;
-
     protected $controller;
     protected $fields = [];
     protected $fieldUploaded = false;
 
-    public function __construct(ControllerInterface $controller, ...$args)
+    public function __construct(ControllerInterface $controller)
     {
         $this->setController($controller);
     }

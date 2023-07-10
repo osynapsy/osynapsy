@@ -13,7 +13,6 @@ namespace Osynapsy\Controller;
 
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response\ResponseInterface;
-use Osynapsy\Action\ActionInterface;
 use Osynapsy\Application\ApplicationInterface;
 use Osynapsy\ViewModel\ModelInterface;
 use Osynapsy\Database\Driver\DboInterface;
@@ -35,7 +34,7 @@ interface ControllerInterface
 
     public function getModel() : ModelInterface;
 
-    public function getExternalAction(string $actionId) : ActionInterface;
+    public function getExternalAction(string $actionId) : string;
 
     public function getResponse() : ResponseInterface;
 

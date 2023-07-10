@@ -145,7 +145,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      *
      * @return mixed
      */
-    final public function getExternalAction(string $actionId) : ActionInterface
+    final public function getExternalAction(string $actionId) : string
     {
         if (class_exists($actionId)) {
             $actionId = sha1($actionId);
