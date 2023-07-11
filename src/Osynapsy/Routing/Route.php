@@ -72,7 +72,7 @@ class Route
 
     public function setController($controller)
     {
-        $this->controller = trim(str_replace(':','\\',$controller));
+        $this->controller = trim($controller);
     }
 
     public static function createFromArray($route)

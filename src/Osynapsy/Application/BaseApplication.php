@@ -31,6 +31,8 @@ use Osynapsy\Action\ActionRunner;
  */
 class BaseApplication implements ApplicationInterface
 {
+    const DEFAULT_CONTROLLER_METHOD = 'index';
+
     protected $db;
     protected $route;
     protected $request;
@@ -168,20 +170,22 @@ class BaseApplication implements ApplicationInterface
         if (empty($this->route) || !$this->route->controller) {
             throw new \Osynapsy\Kernel\KernelException('Route not found', 404);
         }
-        $controller = $this->controllerFactory($this->route->controller, $this);
-        $actionId =  filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION');
-        $actionParams = filter_input(\INPUT_POST , 'actionParameters', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
-        return (string) $this->runAction($controller, $actionId, $actionParams ?? []);
+        $actionId = filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION');
+        $actionParameters = filter_input(\INPUT_POST , 'actionParameters', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        list($controller, $defaultAction) = $this->controllerFactory($this->route->controller, $this);
+        return (string) $this->runAction($controller, $defaultAction, $actionId, $actionParameters ?? []);
     }
 
     protected function controllerFactory($classController, $appController)
     {
-        return new $classController($this->getRequest(), $appController);
+        $rawClass = strpos($classController, '::') === false ? $classController.'::'.self::DEFAULT_CONTROLLER_METHOD : $classController;
+        list($class, $defaultAction) = explode('::', $rawClass, 2);
+        return [new $class($this->getRequest(), $appController), $defaultAction ?? self::DEFAULT_CONTROLLER_METHOD];
     }
 
-    protected function runAction($controller, $actionId, array $actionParams)
+    protected function runAction($controller, $defaultAction, $actionId, array $actionParams)
     {
-        return (new ActionRunner($controller))->run($actionId, $actionParams);
+        return (new ActionRunner($controller))->run($defaultAction, $actionId, $actionParams);
     }
 
     /**

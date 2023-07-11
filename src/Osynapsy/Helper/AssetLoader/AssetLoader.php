@@ -50,7 +50,7 @@ class AssetLoader extends AbstractController
         );
     }
 
-    public function indexAction()
+    public function index()
     {
         return $this->getFile($this->assetsPath);
     }

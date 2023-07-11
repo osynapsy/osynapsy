@@ -58,13 +58,13 @@ class ActionRunner
      * @param array $parameters
      * @return \Osynapsy\Http\Response
      */
-    public function run($actionId, $parameters = [])
+    public function run($defaultAction, $actionId, $parameters = [])
     {
         if (method_exists($this->getController(), 'init')) {
             $this->autowire->execute($this->getController(), 'init');
         }
         if (empty($actionId)) {
-            return $this->execIndexAction();
+            return $this->execDefaultAction($defaultAction);
         }
         if ($this->getController()->hasExternalAction($actionId)) {
             return $this->execExternalAction($actionId, $parameters);
@@ -80,14 +80,13 @@ class ActionRunner
      *
      * @return \Osynapsy\Http\ResponseInterface
      */
-    private function execIndexAction() : ResponseInterface
+    private function execDefaultAction($defaultAction) : ResponseInterface
     {
         $refreshRequested = $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS'] ?? null;
         if ($this->getController()->hasModel()) {
             $this->getController()->getModel()->find();
         }
-        //$response = $this->getController()->indexAction();
-        $response = $this->autowire->execute($this->getController(), 'indexAction');
+        $response = $this->autowire->execute($this->getController(), $defaultAction);
         if (is_object($response) && method_exists($response, 'setController')) {
             $response->setController($this->getController());
         }
