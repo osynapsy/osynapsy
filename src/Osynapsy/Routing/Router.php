@@ -99,6 +99,7 @@ class Router
             if ($matchedRoute === false) {
                 continue;
             }
+            $matchedRoute->requestUrl = $requestRoute;
             //If weight is_null requested uri is exactly current uri. Don't search more.
             if (is_null($matchedRoute->weight)) {
                 $this->matchedRoute = $matchedRoute;
@@ -133,7 +134,6 @@ class Router
         array_shift($ruoteParameters);
         $route->parameters = $ruoteParameters;
         $route->weight = count($ruoteParameters);
-        $route->requestUrl = $requestRoute;
         return $route;
     }
 
