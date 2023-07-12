@@ -133,6 +133,7 @@ class Router
         array_shift($ruoteParameters);
         $route->parameters = $ruoteParameters;
         $route->weight = count($ruoteParameters);
+        $route->requestUrl = $requestRoute;
         return $route;
     }
 
