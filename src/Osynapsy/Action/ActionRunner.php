@@ -37,6 +37,7 @@ class ActionRunner
             $controller->getDb(),
             $controller->getRequest(),
             $controller->getRequest()->getRoute(),
+            $controller->getResponse(),
             $controller->getModel()
         ]);
     }
