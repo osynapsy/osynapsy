@@ -95,4 +95,9 @@ class Route
         return $this->getUrl();
     }
 
+    public function getSegment(int $index)
+    {
+        $segments = explode('/', $this->requestUrl ?? '');
+        return $segments[$index] ?? null;
+    }
 }
