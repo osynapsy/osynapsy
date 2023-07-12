@@ -20,9 +20,10 @@ abstract class AbstractView implements ViewInterface
 {
     private $controller;
 
-    public function __construct(ControllerInterface $controller)
+    public function __construct(ControllerInterface $controller, array $properties = [])
     {
         $this->setController($controller);
+        $this->setProperties($properties);
     }
 
     abstract public function init();
@@ -92,6 +93,14 @@ abstract class AbstractView implements ViewInterface
     public function setController(ControllerInterface $controller)
     {
         $this->controller = $controller;
+    }
+
+    public function setProperties(array $properties = [])
+    {
+        foreach ($properties as $id => $value) {
+            $this->{$id} = $value;
+        }
+        return $this;
     }
 
     public function setTitle($title)
