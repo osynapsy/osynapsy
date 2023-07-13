@@ -22,8 +22,6 @@ use Osynapsy\Html\DOM;
 
 abstract class Record implements ModelInterface
 {
-    use ViewModelTrait;
-
     const BEHAVIOR_INSERT = 'insert';
     const BEHAVIOR_UPDATE = 'update';
     const BEHAVIOR_DELETE = 'delete';
@@ -52,7 +50,9 @@ abstract class Record implements ModelInterface
         $this->controller = $controller;
         $this->record = $this->record();
         $this->initExternalAction();
-        $this->init();
+        if (method_exists($this, 'init')) {
+            autowire()->execute($this, 'init');
+        }
         $this->initRecord();
     }
 
