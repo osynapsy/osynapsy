@@ -78,11 +78,9 @@ class AutoWire
         if (!is_object($handle)) {
             return;
         }
-        $handleId = empty($class) ? get_class($handle) : $class;
-        self::$handles[$handleId] = $handle;
-        $interfaces = class_implements($handle) ?: [];
-        foreach($interfaces as $interface) {
-            self::$handles[$interface] = $handle;
+        $dummies = [$class ?: get_class($handle)] + (class_implements($handle) ?: []) + (class_parents($handle) ?: []);
+        foreach($dummies as $id) {
+            self::$handles[$id] = $handle;
         }
     }
 }
