@@ -22,7 +22,7 @@ abstract class ModelRecord extends AbstractModel
 
     public function __construct(ControllerInterface $controller, ...$argv)
     {
-        parent::__construct($controller, $argv);
+        parent::__construct($controller);
         $this->record = $this->record();
         autowire()->execute($this, 'init');
         $this->recordFill();
