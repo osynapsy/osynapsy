@@ -48,33 +48,31 @@ class JsonOsynapsy extends Json
         $this->message('command','execCode', str_replace(PHP_EOL,'\n',$cmd));
     }
 
-    public function showModalAlertOnView($message, $title = 'Alert')
+    public function modalAlert($message, $title = 'Alert')
     {
         $this->js(sprintf("Osynapsy.modal.alert('%s','%s')", $title, $message));
     }
 
-    public function showModalConfirmOnView($message, $actionOnConfirm, $title = 'Confirm')
+    public function modalConfirm($message, $actionOnConfirm, $title = 'Confirm')
     {
         $this->js(sprintf("Osynapsy.modal.confirm('%s','%s','%s')", $title, $message, $actionOnConfirm));
     }
 
-    public function showModalWindowOnView($title, $url, $width = '640px', $height = '480px')
+    public function modalWindow($title, $url, $width = '640px', $height = '480px')
     {
         $this->js(sprintf("Osynapsy.modal.window('%s','%s','%s','%s')", $title, $url, $width, $height));
     }
 
-    public function jsRefreshComponentOnView(array $components)
+    public function refreshComponents(array $components)
     {
-        if (empty($components)) {
-            return;
+        if (!empty($components)) {
+            $this->js(sprintf("parent.Osynapsy.refreshComponents(['%s'])", implode("','", $components)));
         }
-        $strComponents = implode("','", $components);
-        $this->js(sprintf("parent.Osynapsy.refreshComponents(['%s'])", $strComponents));
     }
 
-    public function jsCloseModal()
+    public function closeModal($modalId = 'amodal')
     {
-        $this->js("parent.$('#amodal').modal('hide');");
+        $this->js(sprintf("parent.$('#%s').modal('hide');", $modalId));
     }
 
     public function pageBack()
