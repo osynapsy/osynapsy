@@ -12,10 +12,10 @@
 namespace Osynapsy\ViewModel;
 
 use Osynapsy\Event\EventLocal;
-use Osynapsy\Mvc\Controller\ControllerInterface;
-use Osynapsy\Mvc\Model\Field\Field;
-use Osynapsy\Mvc\Model\Field\Validator;
-use Osynapsy\Mvc\Model\ModelInterface;
+use Osynapsy\Controller\ControllerInterface;
+use Osynapsy\ViewModel\Field\Field;
+use Osynapsy\ViewModel\Field\Validator;
+use Osynapsy\ViewModel\ModelInterface;
 use Osynapsy\Database\Record\RecordInterface;
 use Osynapsy\Database\Driver\DboInterface;
 use Osynapsy\Html\DOM;
