@@ -27,7 +27,9 @@ abstract class Simple implements ModelInterface
     public function __construct(ControllerInterface $controller)
     {
         $this->controller = $controller;
-        $this->init();
+        if (method_exists($this, 'init')) {
+            autowire()->execute($this, 'init');
+        }
     }
 
     public function getController() : ControllerInterface
@@ -45,10 +47,6 @@ abstract class Simple implements ModelInterface
     }
 
     public function save()
-    {
-    }
-
-    public function init()
     {
     }
 
