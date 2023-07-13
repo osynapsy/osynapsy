@@ -48,6 +48,12 @@ class JsonOsynapsy extends Json
         $this->message('command','execCode', str_replace(PHP_EOL,'\n',$cmd));
     }
 
+    /**
+     * Open a modal alert (bs modal) with message (and title) passed how arguments
+     *
+     * string $message is the message to show at the user (it will print on the body (Center) of window)
+     * string $title Title of modal window
+     */
     public function modalAlert($message, $title = 'Alert')
     {
         $this->js(sprintf("Osynapsy.modal.alert('%s','%s')", $title, $message));
