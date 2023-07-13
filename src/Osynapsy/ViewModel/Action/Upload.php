@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\ViewModelAction;
+namespace Osynapsy\ViewModel\Action;
 
 use Osynapsy\Helper\UploadManager;
-use Osynapsy\ViewModelModelErrorException;
+use Osynapsy\ViewModel\ModelErrorException;
 use Osynapsy\Action\AbstractAction;
 
 /**
