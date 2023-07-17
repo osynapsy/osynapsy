@@ -1,6 +1,7 @@
 <?php
 use Osynapsy\Kernel;
 use Osynapsy\Helper\AutoWire;
+use Osynapsy\Application\ApplicationInterface;
 
 /**
  * If $elementPath is null return request Object else return required element of request
@@ -36,4 +37,9 @@ function route($routeId = null, ?array $parameters = null)
 function autowire(array $handles = [])
 {
     return new AutoWire($handles);
+}
+
+function app()
+{
+    return AutoWire::getHandle(ApplicationInterface::class);
 }

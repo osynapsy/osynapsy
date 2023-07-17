@@ -73,7 +73,7 @@ class AutoWire
         return empty($dependences) ? $ref->newInstance() : $ref->newInstanceArgs($dependences);
     }
 
-    public function addHandle($handle, $class = null)
+    public static function addHandle($handle, $class = null)
     {
         if (!is_object($handle)) {
             return;
@@ -82,5 +82,10 @@ class AutoWire
         foreach($dummies as $id) {
             self::$handles[$id] = $handle;
         }
+    }
+
+    public static function getHandle($handleId)
+    {
+        return self::$handles[$handleId];
     }
 }
