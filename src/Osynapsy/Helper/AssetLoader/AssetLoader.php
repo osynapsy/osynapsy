@@ -21,7 +21,7 @@ class AssetLoader extends AbstractController
 
     public function init(Route $route)
     {
-        $assetsPathRequest = $route->getParameter(0);
+        $assetsPathRequest = $route->getParameter('path');        
         $namespaceKeySearch = strtok($assetsPathRequest, '/');
         $this->setAssetPath($namespaceKeySearch, $assetsPathRequest);
     }
