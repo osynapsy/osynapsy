@@ -18,6 +18,25 @@ namespace Osynapsy\Routing;
  */
 class Route
 {
+    //Rispettare l'ordine
+    const PATTERN_MAP = [
+        '/'  => '\\/',
+        //number
+        'i' => '([\\d]+){1}',
+        //Number option
+        'i*' => '([\\d]*){1}',
+        //word
+        'w'=> '([\\w\-\.,]+){1}',
+        //word
+        'w*' => '([\\w\-\.,]*){1}',
+        //all
+        '*' => '(.*){1}',
+        //all after /
+        '?' => '([^\/]*)',
+        //?????
+        '.' => '([.]+){1}'
+    ];
+    
     private $route = [
         'id' => null,
         'uri' => null,
@@ -25,9 +44,11 @@ class Route
         'controller' => null,
         'template' => null,
         'weight' => null,
-        'acceptedMethods' => null
+        'acceptedMethods' => null,        
     ];
 
+    protected $parameters = [];
+    
     public function __construct($id = '', $uri = '', $application = '', $controller = '', $template = '', array $attributes = [])
     {
         $this->id = empty($id) ? sha1($uri) : $id;
@@ -37,12 +58,42 @@ class Route
         $this->template = $template;
         $this->route += $attributes;
         $this->setAcceptedMethods($this->methods);
+        $this->initParameters($uri);
     }
-
-
+    
+    protected function initParameters($uri)
+    {
+        //   ----- {(.+?)(}|:(.*?)}) ---- Prende i segnaposti in 0 i nome delle variabili in 1 e le espressioni regolari in 3 /order/{sectionid:i}/{id}/{ciao:pippo|pluto}
+        //preg_match_all('/{.+?}/', $route->uri, $output);
+        preg_match_all('/{(.+?)(:([^}]*))?}/', $uri, $output);
+        if (empty($output) || empty($output[0])) {
+            return;
+        }
+        foreach($output[0] as $i => $placeholder) {
+            $parameterId = $output[1][$i];            
+            $ruleId = array_key_exists($output[3][$i], self::PATTERN_MAP) ? $output[3][$i] : '?';
+            $parameterRule = self::PATTERN_MAP[$ruleId];
+            $this->parameters[$parameterId] = [
+                'id' => $parameterId, 
+                'rule' => $ruleId, 
+                'placeholder' => $placeholder, 
+                'pattern' => $parameterRule,
+                'value' => null
+            ];
+        }          
+    }
+    
     public function getParameter($key)
     {
-        return $this->parameters[$key] ?? null;
+        if (is_int($key)) {
+            return array_column($this->parameters, 'value')[$key] ?? null;
+        }
+        return $this->parameters[$key]['value'] ?? null;
+    }
+    
+    public function getParameters()
+    {
+        return $this->parameters;
     }
 
     public function getUrl(array $params = [])
@@ -53,6 +104,17 @@ class Route
             throw new \Exception('Number of parameters don\'t match uri params');
         }
         return str_replace($output[0], $params, $this->uri);
+    }
+    
+    public function getSegment(int $index)
+    {
+        $segments = explode('/', $this->requestUrl ?? '');
+        return $segments[$index] ?? null;
+    }
+
+    public function setController($controller)
+    {
+        $this->controller = trim($controller);
     }
 
     public function setAcceptedMethods($methods)
@@ -69,17 +131,20 @@ class Route
                 break;
         }
     }
-
-    public function setController($controller)
-    {
-        $this->controller = trim($controller);
-    }
-
+    
     public static function createFromArray($route)
     {
         return new Route($route['id'], $route['path'], null, $route['@value'], $route['template'], $route);
     }
-
+    
+    public function setParameterValues(array $values = [])
+    {        
+        foreach(array_values($this->parameters) as $idx => $par) {
+            $this->parameters[$par['id']]['value'] = $values[$idx] ?? null;
+        }        
+        $this->weight = count($values);
+    }
+    
     public function __get($key)
     {
         return array_key_exists($key, $this->route) ? $this->route[$key] : null;
@@ -93,11 +158,5 @@ class Route
     public function __toString()
     {
         return $this->getUrl();
-    }
-
-    public function getSegment(int $index)
-    {
-        $segments = explode('/', $this->requestUrl ?? '');
-        return $segments[$index] ?? null;
     }
 }
