@@ -118,7 +118,7 @@ class Kernel
     private function routerFactory($request)
     {
         $router = new Router($request);
-        $router->addRoute('OsynapsyAssetsManager', '/assets/{*}', self::DEFAULT_ASSET_CONTROLLER, '', 'Osynapsy');
+        $router->addRoute('OsynapsyAssetsManager', '/assets/{path:*}', self::DEFAULT_ASSET_CONTROLLER, '', 'Osynapsy');
         return $router;
     }
 
