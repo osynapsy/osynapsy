@@ -37,8 +37,7 @@ class ActionRunner
             $controller->getDb(),
             $controller->getRequest(),
             $controller->getRequest()->getRoute(),
-            $controller->getResponse(),
-            $controller->getModel()
+            $controller->getResponse()
         ]);
     }
 
@@ -62,8 +61,9 @@ class ActionRunner
     public function run($defaultAction, $actionId, $parameters = [])
     {
         if (method_exists($this->getController(), 'init')) {
-            $this->autowire->execute($this->getController(), 'init');
+            $this->autowire->execute($this->getController(), 'init');            
         }
+        $this->autowire->addHandle($this->getController()->getModel());
         if (empty($actionId)) {
             return $this->execDefaultAction($defaultAction);
         }
