@@ -11,7 +11,7 @@
 
 namespace Osynapsy\View;
 
-use Osynapsy\Controller\ControllerInterface;
+use Osynapsy\ViewModel\ModelInterface;
 
 /**
  * Description of InterfaceView
@@ -20,9 +20,11 @@ use Osynapsy\Controller\ControllerInterface;
  */
 interface ViewInterface
 {
-    public function init();
+    public function factory();
 
-    public function getController() : ControllerInterface;
+    public function getModel() : ModelInterface;
 
-    public function setController(ControllerInterface $controller);
+    public function getTitle() : string;
+
+    public function setModel(ModelInterface $model);
 }

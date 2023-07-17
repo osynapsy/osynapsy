@@ -12,87 +12,81 @@
 namespace Osynapsy\View;
 
 use Osynapsy\Kernel;
-use Osynapsy\Controller\ControllerInterface;
+use Osynapsy\ViewModel\ModelInterface;
 use Osynapsy\Html\DOM;
 use Osynapsy\Html\Tag;
 
 abstract class AbstractView implements ViewInterface
 {
-    private $controller;
+    protected $title;
+    protected $model;
+    protected $meta = [];
 
-    public function __construct(ControllerInterface $controller, array $properties = [])
+    public function __construct(?ModelInterface $model, array $properties = [])
     {
-        $this->setController($controller);
+        if (!is_null($model)) {
+            $this->setModel($model);
+        }
         $this->setProperties($properties);
     }
 
-    abstract public function init();
+    abstract public function factory();
 
     public function addCss($path)
     {
-        $this->getTemplate()->addCss($path);
+        DOM::addCss($path);
     }
 
     public function addCssLibrary($path)
     {
-        $this->addCss(sprintf('/assets/osynapsy/%s/%s', Kernel::VERSION, $path));
+        DOM::addCss(sprintf('/assets/osynapsy/%s/%s', Kernel::VERSION, $path));
     }
 
     public function addJs($path)
     {
-        $this->getTemplate()->addJs($path);
+        DOM::requireJs($path);
     }
 
     public function addScript($code)
     {
-        $this->getTemplate()->addScript($code);
+        DOM::requireScript($code);
     }
 
     public function addJsLibrary($path)
     {
-        $this->addJs(sprintf('/assets/osynapsy/%s/%s', Kernel::VERSION, $path));
+        DOM::requireJs(sprintf('/assets/osynapsy/%s/%s', Kernel::VERSION, $path));
     }
 
     public function addMeta($property ,$content)
     {
         $meta = new Tag('meta');
         $meta->attributes(['property' => $property, 'content' => $content]);
-        $this->getTemplate()->add($meta, 'meta');
+        $this->meta[] = $meta;
     }
 
     public function addStyle($style)
     {
-        $this->getTemplate()->addStyle($style);
+        DOM::requireStyle($style);
     }
 
-    public function getController() : ControllerInterface
+    public function getModel() : ModelInterface
     {
-        return $this->controller;
-    }
-
-    public function getModel()
-    {
-        return $this->getController()->getModel();
-    }
-
-    public function getRequest()
-    {
-        return $this->getController()->getRequest();
-    }
-
-    public function getTemplate()
-    {
-        return $this->getController()->getTemplate();
+        return $this->model;
     }
 
     public function getDb()
     {
-        return $this->getController()->getDb();
+        return $this->getModel()->getDb();
     }
 
-    public function setController(ControllerInterface $controller)
+    public function getTitle() : string
     {
-        $this->controller = $controller;
+        return DOM::getTitle();
+    }
+
+    public function setModel(ModelInterface $model)
+    {
+        $this->model = $model;
     }
 
     public function setProperties(array $properties = [])
@@ -103,15 +97,15 @@ abstract class AbstractView implements ViewInterface
         return $this;
     }
 
-    public function setTitle($title)
+    public function setTitle(string $title)
     {
-        $this->getTemplate()->add($title, 'title');
+        DOM::setTitle($title);
     }
 
     public function __toString()
     {
         $requestComponentIDs = empty($_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']) ? [] : explode(';', $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']);
-        $view = $this->init();
+        $view = $this->factory();
         return empty($requestComponentIDs) ? strval($view) : $this->refreshComponentsViewFactory($requestComponentIDs);
     }
 
