@@ -61,7 +61,7 @@ class ActionRunner
     public function run($defaultAction, $actionId, $parameters = [])
     {
         if (method_exists($this->getController(), 'init')) {
-            $this->autowire->execute($this->getController(), 'init');            
+            $this->autowire->execute($this->getController(), 'init');
         }
         $this->autowire->addHandle($this->getController()->getModel());
         if (empty($actionId)) {
@@ -82,21 +82,9 @@ class ActionRunner
      * @return \Osynapsy\Http\ResponseInterface
      */
     private function execDefaultAction($defaultAction) : ResponseInterface
-    {
-        $refreshRequested = $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS'] ?? null;
-        if ($this->getController()->hasModel()) {
-            $this->getController()->getModel()->find();
-        }
-        $response = $this->autowire->execute($this->getController(), $defaultAction);
-        if (is_object($response) && method_exists($response, 'setController')) {
-            $response->setController($this->getController());
-        }
-        if (!empty($refreshRequested)) {
-            $this->getResponse()->addContent($response);
-        } else {
-            $this->getController()->getTemplate()->add($response);
-            $this->getResponse()->addContent($this->getController()->getTemplate()->get());
-        }
+    {        
+        $response = $this->autowire->execute($this->getController(), $defaultAction);        
+        $this->getResponse()->add($response);        
         return $this->getResponse();
     }
 
