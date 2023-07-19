@@ -30,10 +30,6 @@ abstract class AbstractModel implements ModelInterface
         }
     }
 
-    protected function afterInit()
-    {
-    }
-
     protected function afterDelete()
     {
         $this->gotoPreviusPage();
@@ -54,6 +50,10 @@ abstract class AbstractModel implements ModelInterface
     }
 
     protected function afterSave()
+    {
+    }
+
+    protected function afterExec()
     {
     }
 
