@@ -18,16 +18,7 @@ class Cookie
     public function __construct()
     {
         $this->expiry = time() + (86400 * 365);
-    }
-
-    /**
-     *
-     * @param unixdatetime $expiry
-     */
-    protected function setExpiry(int $expiry)
-    {
-        $this->expiry = $expiry;
-    }
+    }    
 
     /**
      * Send cookie
@@ -35,13 +26,10 @@ class Cookie
      * @param string $valueId
      * @param string $value
      */
-    public function send($valueId, $value, $excludeThirdLevel = false)
+    public function send($valueId, $value, $expiry = null, $excludeThirdLevel = false)
     {
-        if (headers_sent()) {
-           return false;
-        }
-        $domain = $excludeThirdLevel ? $this->getDomain() : $this->getServerName();
-        return setcookie($valueId, $value, $this->expiry, "/", $domain);
+        $domain = $excludeThirdLevel ? $this->getDomain() : $this->getServerName();                
+        return headers_sent() ? false : setcookie($valueId, $value, $expiry ?? $this->expiry, "/", $domain);
     }
 
     private function getDomain()
