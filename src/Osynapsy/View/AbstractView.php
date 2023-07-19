@@ -13,6 +13,7 @@ namespace Osynapsy\View;
 
 use Osynapsy\Kernel;
 use Osynapsy\ViewModel\ModelInterface;
+use Osynapsy\View\Template\Template;
 use Osynapsy\Html\DOM;
 use Osynapsy\Html\Tag;
 
@@ -20,14 +21,12 @@ abstract class AbstractView implements ViewInterface
 {
     protected $title;
     protected $model;
+    protected $template;
     protected $meta = [];
 
-    public function __construct(?ModelInterface $model, array $properties = [])
+    public function __construct(...$args)
     {
-        if (!is_null($model)) {
-            $this->setModel($model);
-        }
-        $this->setProperties($properties);
+        $this->setArgs($args);
     }
 
     abstract public function factory();
@@ -84,15 +83,23 @@ abstract class AbstractView implements ViewInterface
         return DOM::getTitle();
     }
 
+    public function getTemplate()
+    {
+        return $this->template;
+    }
+
     public function setModel(ModelInterface $model)
     {
         $this->model = $model;
+        $this->model->find();
     }
 
     public function setProperties(array $properties = [])
     {
         foreach ($properties as $id => $value) {
-            $this->{$id} = $value;
+            if (is_string($id)) {
+                $this->{$id} = $value;
+            }
         }
         return $this;
     }
@@ -104,17 +111,23 @@ abstract class AbstractView implements ViewInterface
 
     public function __toString()
     {
-        $requestComponentIDs = empty($_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']) ? [] : explode(';', $_SERVER['HTTP_OSYNAPSY_HTML_COMPONENTS']);
-        $view = $this->factory();
-        return empty($requestComponentIDs) ? strval($view) : $this->refreshComponentsViewFactory($requestComponentIDs);
+        return (new ViewBuilder())->build($this);
     }
 
-    protected function refreshComponentsViewFactory($componentIDs)
+    public function __invoke(...$args)
     {
-        $response = new Tag('div', 'response');
-        foreach($componentIDs as $componentId) {
-            $response->add(DOM::getById($componentId));
+        return $this->setArgs($args);
+    }
+
+    protected function setArgs(array $args)
+    {
+        foreach($args as $arg) {
+            if (is_array($arg)) {
+                $this->setProperties($arg);
+            } elseif (is_object($arg) && in_array(ModelInterface::class, class_implements($arg))) {
+                $this->setModel($arg);
+            }
         }
-        return strval($response);
+        return $this;
     }
 }
