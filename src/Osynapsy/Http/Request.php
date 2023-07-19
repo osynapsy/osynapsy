@@ -75,4 +75,9 @@ class Request extends Dictionary
     {
         return empty($id) ? [] : $this->get(sprintf('app.templates.%s', $id));
     }
+    
+    public function __invoke($key)
+    {
+        return $this->get($key);
+    }
 }
