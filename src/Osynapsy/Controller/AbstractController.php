@@ -15,7 +15,6 @@ use Osynapsy\Event\Dispatcher as EventDispatcher;
 use Osynapsy\Event\Event;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response\ResponseInterface;
-use Osynapsy\Template\Template;
 use Osynapsy\Application\ApplicationInterface;
 use Osynapsy\Action\ActionInterface;
 use Osynapsy\ViewModel\ModelInterface;
@@ -36,11 +35,9 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
 
     private $dispatcher;
     private $application;
-    private $template;
     private $externalActions = [];
     private $model;
     private $request;
-    protected $view;
 
     /**
      * Contructor of controller,
@@ -53,17 +50,6 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
         $this->request = $request;
         $this->application = $application;
         $this->loadObserver();
-        $this->initTemplate();
-    }
-
-    /**
-     * Default deleteAction recall delete method of model if exists
-     */
-    public function deleteAction()
-    {
-        if ($this->model) {
-            $this->model->delete();
-        }
     }
 
     public function dispatchLocalEventAction($eventId)
@@ -77,23 +63,6 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
             $result->init();
         }
         $this->getDispatcher()->dispatch(new Event($eventId, $this));
-    }
-
-    /**
-     * Load html file template
-     *
-     * @param string $templateId of template
-     * @return void
-     */
-    private function initTemplate()
-    {
-        $templateId = $this->getRequest()->getRoute()->template;
-        $template = $this->getRequest()->getTemplate($templateId);
-        $this->template = empty($template['@value']) ? new Template() : new $template['@value'];
-        $this->template->setController($this);
-        if (!empty($template) && !empty($template['path'])) {
-            $this->template->setPath($template['path']);
-        }
     }
 
     /**
@@ -187,16 +156,6 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
     }
 
     /**
-     * Return current template object
-     *
-     * @return \Osynapsy\Html\Template
-     */
-    public function getTemplate()
-    {
-        return $this->template;
-    }
-
-    /**
      * Return true if  if controller has a valid Model
      *
      * @return boolean
@@ -239,21 +198,6 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
     {
         $view = $this->getTemplate()->include($path);
         $this->getTemplate()->add($view);
-    }
-
-    /**
-     * Execute default saveAction (recall save class of model if exists)
-     */
-    public function saveAction()
-    {
-        if ($this->model) {
-            $this->model->save();
-        }
-    }
-
-    public function uploadAction()
-    {
-        $this->saveAction();
     }
 
     /**
