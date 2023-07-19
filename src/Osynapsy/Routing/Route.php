@@ -164,4 +164,9 @@ class Route
     {
         return $this->getParameter($key);
     }
+    
+    public function getTemplate()
+    {        
+        return request()->getTemplate($this->template);
+    }
 }
