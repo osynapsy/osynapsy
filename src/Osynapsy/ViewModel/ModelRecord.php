@@ -26,7 +26,6 @@ abstract class ModelRecord extends AbstractModel
         $this->record = $this->record();
         autowire()->execute($this, 'init');
         $this->recordFill();
-        $this->afterInit();
     }
 
     public function getRecord() : RecordInterface
@@ -65,16 +64,13 @@ abstract class ModelRecord extends AbstractModel
 
     public function loadRecordValuesInRequest()
     {
-        $values = $this->getRecord()->get();
-        if (empty($values)) {
-            return;
-        }
+        $values = $this->getRecord()->get() ?? [];
         foreach($this->fields as $field) {
             if (!array_key_exists($field->html, $_REQUEST) && array_key_exists($field->name, $values)) {
                 $_REQUEST[$field->html] = $values[$field->name];
             }
-            if (array_key_exists($field->name, $values)) {
-                DOM::setValue($field->html, $values[$field->name]);
+            if (array_key_exists($field->html, $_REQUEST)) {
+                DOM::setValue($field->html, $_REQUEST[$field->html]);
             }
         }
     }
@@ -100,6 +96,7 @@ abstract class ModelRecord extends AbstractModel
         }
         //Recall after exec method with arbirtary code
         $this->afterSave();
+        $this->afterExec();
     }
 
     protected function valuesFactory()
@@ -153,6 +150,7 @@ abstract class ModelRecord extends AbstractModel
             $this->getRecord()->save($this->softDelete);
         }
         $this->afterDelete();
+        $this->afterExec();
     }
 
     public function setValue($fieldName, $value, $defaultValue = null)
