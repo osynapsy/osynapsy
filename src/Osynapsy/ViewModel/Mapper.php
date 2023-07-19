@@ -14,7 +14,7 @@ namespace Osynapsy\ViewModel;
 /**
  * Description of Mapper
  *
- * @author pietr
+ * @author Pietro Celeste <p.celeste@osynapsy.net>
  */
 class Mapper
 {
