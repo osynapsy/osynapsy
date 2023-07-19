@@ -55,7 +55,7 @@ class Route
         $this->uri = $uri;
         $this->application = trim($application);
         $this->setController($controller);
-        $this->template = $template;
+        $this->template = $template;      
         $this->route += $attributes;
         $this->setAcceptedMethods($this->methods);
         $this->initParameters($uri);
@@ -158,5 +158,10 @@ class Route
     public function __toString()
     {
         return $this->getUrl();
+    }
+    
+    public function __invoke($key)
+    {
+        return $this->getParameter($key);
     }
 }
