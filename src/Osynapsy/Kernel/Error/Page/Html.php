@@ -78,15 +78,17 @@ PAGE;
         $trace .= '<tr>';
         $trace .= '<th>Class</th>';
         $trace .= '<th>Function</th>';
+        $trace .= '<th>Args</th>';
         $trace .= '<th>File</th>';
         $trace .= '<th>Line</th>';
-        $trace .= '</tr>';
+        $trace .= '</tr>';        
         foreach ($this->trace as $step) {
             $trace .= '<tr>';
-            $trace .= '<td>'.(!empty($step['class']) ? $step['class'] : '&nbsp;').'</td>';
-            $trace .= '<td>'.(!empty($step['function']) ? $step['function'] : '&nbsp;').'</td>';
-            $trace .= '<td>'.(!empty($step['file']) ? $step['file'] : '&nbsp;').'</td>';
-            $trace .= '<td>'.(!empty($step['line']) ? $step['line'] : '&nbsp;').'</td>';
+            $trace .= '<td>'.($step['class'] ?? '&nbsp;').'</td>';
+            $trace .= '<td>'.($step['function'] ?? '&nbsp;').'</td>';
+            $trace .= '<td>'.(!empty($step['args']) ? print_r($step['args'], true) : '&nbsp;').'</td>';
+            $trace .= '<td>'.($step['file'] ?? '&nbsp;').'</td>';
+            $trace .= '<td>'.($step['line'] ?? '&nbsp;').'</td>';
             $trace .= '</tr>';
         }
         $trace .= '</table>';
