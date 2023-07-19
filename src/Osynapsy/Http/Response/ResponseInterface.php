@@ -1,8 +1,12 @@
 <?php
 
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/PHPClass.php to edit this template
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Osynapsy\Http\Response;
@@ -14,7 +18,7 @@ namespace Osynapsy\Http\Response;
  */
 interface ResponseInterface
 {
-    public function addContent($content, $partId, $checkUnique = false);
+    public function add($content);
 
     public function __toString();
 }

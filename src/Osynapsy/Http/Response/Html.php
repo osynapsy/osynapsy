@@ -40,6 +40,22 @@ class Html extends AbstractResponse
         return $buffer;
     }
 
+    /**
+     * Method that add body to the response
+     *
+     * @param mixed $body
+     * @param mixed $partId
+     * @param bool $checkUnique
+     * @return mixed
+     */
+    public function add($body, $partId = 'main')
+    {
+        if (!array_key_exists($partId, $this->body)) {
+            $this->body[$partId] = [];
+        }
+        $this->body[$partId][] = $body;
+    }
+    
     public function __toString()
     {
         $this->sendHeader();

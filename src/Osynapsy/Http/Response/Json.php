@@ -18,6 +18,8 @@ namespace Osynapsy\Http\Response;
  */
 class Json extends AbstractResponse
 {
+    protected $body;
+
     public function __construct()
     {
         parent::__construct('application/json; charset=utf-8');
@@ -33,12 +35,6 @@ class Json extends AbstractResponse
         return json_encode($this->body);
     }
 
-    public function debug($msg)
-    {
-        $this->message('errors','alert',$msg);
-        $this->dispatch();
-    }
-
     /**
      * Dispatch immediatly response
      */
@@ -49,18 +45,8 @@ class Json extends AbstractResponse
         die(json_encode($this->body));
     }
 
-    /**
-     * Append a generic messagge to the response
-     *
-     * @param string $typ
-     * @param string $act
-     * @param string $val
-     */
-    public function message($typ, $act, $val)
+    public function add($body)
     {
-        if (!array_key_exists($typ, $this->body)){
-            $this->body[$typ] = [];
-        }
-        $this->body[$typ][] = [$act, $val];
+        $this->body = $body;
     }
 }

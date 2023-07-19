@@ -33,20 +33,12 @@ abstract class AbstractResponse implements ResponseInterface
     /**
      * Method that add body to the response
      *
-     * @param mixed $body
-     * @param mixed $part
-     * @param bool $checkUnique
-     * @return mixed
+     * @param mixed $content
+     * @return void
      */
-    public function addContent($body, $part = 'main', $checkUnique = false)
+    public function add($content)
     {
-        if ($checkUnique && !empty($this->body[$part]) && in_array($body, $this->body[$part])) {
-            return;
-        }
-        if (!array_key_exists($part, $this->body)) {
-            $this->body[$part] = [];
-        }
-        $this->body[$part][] = $body;
+        $this->body[] = $content;
     }
 
     public function clearCache()
@@ -84,9 +76,9 @@ abstract class AbstractResponse implements ResponseInterface
      *
      * @param mixed $part
      */
-    public function resetContent($part = 'main')
+    public function resetContent()
     {
-        $this->body[$part] = [];
+        $this->body = [];
     }
 
     /**
@@ -157,39 +149,6 @@ abstract class AbstractResponse implements ResponseInterface
     public function getHeader($key)
     {
         return $this->hasHeader($key) ? explode(', ',$this->headers[$key]) : [];
-    }
-
-    /**
-     * Set cookie
-     *
-     * @param string $valueId
-     * @param string $value
-     * @param unixdatetime $expiry
-     */
-    public static function cookie($valueId, $value, $expiry = null, $excludeThirdLevel = false)
-    {
-        if (headers_sent()) {
-           return false;
-        }
-        $domain = $excludeThirdLevel ? self::getDomain() : self::getServerName();
-        if (empty($expiry)) {
-            $expiry = time() + (86400 * 365);
-        }
-        return setcookie($valueId, $value, $expiry, "/", $domain);
-    }
-
-    private static function getDomain()
-    {
-        $domainPart = explode('.', self::getServerName());
-        if (count($domainPart) > 2){
-           unset($domainPart[0]);
-        }
-        return '.'.implode('.', $domainPart);
-    }
-
-    private static function getServerName()
-    {
-        return filter_input(\INPUT_SERVER, 'SERVER_NAME');
     }
 
     /**

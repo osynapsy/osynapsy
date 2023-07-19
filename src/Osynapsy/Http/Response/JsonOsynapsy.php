@@ -20,6 +20,15 @@ use Osynapsy\Html\Helper\JQuery;
  */
 class JsonOsynapsy extends Json
 {
+    public $body = [];
+    
+    public function add($content, $part = 'main')
+    {
+        if (!array_key_exists($part, $this->body)) {
+            $this->body[$part] = [];
+        }
+        $this->body[$part][] = $content;
+    }
     /**
      * Store a error message alias
      *
@@ -151,6 +160,21 @@ class JsonOsynapsy extends Json
         if ($immediate) {
             $this->dispatch();
         }
+    }
+
+    /**
+     * Append a generic messagge to the response
+     *
+     * @param string $typ
+     * @param string $act
+     * @param string $val
+     */
+    public function message($typ, $act, $val)
+    {
+        if (!array_key_exists($typ, $this->body)){
+            $this->body[$typ] = [];
+        }
+        $this->body[$typ][] = [$act, $val];
     }
 
     /**
