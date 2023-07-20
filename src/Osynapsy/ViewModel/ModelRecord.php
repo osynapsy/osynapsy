@@ -13,7 +13,6 @@ namespace Osynapsy\ViewModel;
 
 use Osynapsy\Controller\ControllerInterface;
 use Osynapsy\Database\Record\RecordInterface;
-use Osynapsy\Html\DOM;
 
 abstract class ModelRecord extends AbstractModel
 {
@@ -25,25 +24,15 @@ abstract class ModelRecord extends AbstractModel
         parent::__construct($controller);
         $this->record = $this->record();
         autowire()->execute($this, 'init');
-        $this->recordFill();
+        $this->fillRecord();
     }
-
+        
     public function getRecord() : RecordInterface
     {
         return $this->record;
     }
-
-    public function getTable()
-    {
-        return $this->getRecord()->table();
-    }
-
-    public function getValue($key)
-    {
-        return $this->getRecord()->get($key);
-    }
-
-    protected function recordFill()
+    
+    protected function fillRecord()
     {
         $keys = [];
         foreach($this->fields as $field) {
@@ -56,21 +45,28 @@ abstract class ModelRecord extends AbstractModel
         }
     }
 
+    public function getTable()
+    {
+        return $this->getRecord()->table();
+    }
+
+    public function getValue($key)
+    {
+        return $this->getRecord()->get($key);
+    }
+
     public function find()
     {
-        $this->loadRecordValuesInRequest();
+        $this->initRequestValues();
         return $this->getRecord();
     }
 
-    public function loadRecordValuesInRequest()
+    public function initRequestValues()
     {
         $values = $this->getRecord()->get() ?? [];
         foreach($this->fields as $field) {
             if (!array_key_exists($field->html, $_REQUEST) && array_key_exists($field->name, $values)) {
                 $_REQUEST[$field->html] = $values[$field->name];
-            }
-            if (array_key_exists($field->html, $_REQUEST)) {
-                DOM::setValue($field->html, $_REQUEST[$field->html]);
             }
         }
     }
