@@ -40,6 +40,6 @@ function autowire(array $handles = [])
 }
 
 function app()
-{
+{    
     return AutoWire::getHandle(ApplicationInterface::class);
 }

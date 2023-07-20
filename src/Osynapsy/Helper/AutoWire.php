@@ -17,7 +17,7 @@ class AutoWire
         'object|string' => null
     ];
 
-    protected static $handles = [];
+    public static $handles = [];
 
     public function __construct(array $handles = [])
     {
