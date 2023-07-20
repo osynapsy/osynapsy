@@ -13,24 +13,32 @@ use Osynapsy\View\Template\Template;
 class ViewBuilder
 {
     const HEADER_REFRESH_COMPONENT_REQUEST_KEY = 'HTTP_OSYNAPSY_HTML_COMPONENTS';
-
-    public function build(ViewInterface $handle)
+    
+    protected $viewHandle;
+    protected $view;
+    
+    public function __construct(ViewInterface $handle)
+    {        
+        $this->viewHandle = $handle;       
+        $this->view = $handle->factory();
+    }
+    
+    public function __toString()
     {
-        $requestComponentIDs = $this->getListOfComponentsToRefresh();
-        $view = $handle->factory();
+        $requestComponentIDs = $this->getListOfComponentsToRefresh();        
         if (!empty($requestComponentIDs)) {
             return $this->refreshComponentsViewFactory($requestComponentIDs);
         }
-        $template = $this->templateFactory();
-        $template->add(strval($view));
+        $template = $this->templateFactory($this->viewHandle->getTitle(), route()->getTemplate());        
+        $template->add(strval($this->view));
         return $template->get();
     }
 
-    public function templateFactory()
-    {
-        $template = route()->getTemplate();
+    public function templateFactory($pageTitle, $template)
+    {        
         $templateClass = empty($template['@value']) ? Template::class : $template['@value'];
         $templateHandle = new $templateClass;
+        $templateHandle->setTitle($pageTitle);
         $templateHandle->init();
         if (!empty($template) && !empty($template['path'])) {
             $templateHandle->setPath($template['path']);

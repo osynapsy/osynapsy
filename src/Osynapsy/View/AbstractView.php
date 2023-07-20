@@ -26,9 +26,31 @@ abstract class AbstractView implements ViewInterface
 
     public function __construct(...$args)
     {
-        $this->setArgs($args);
+        $this->__processArgs($args);
     }
 
+    public function __invoke(...$args)
+    {
+        $this->__processArgs($args);
+        return $this;
+    }
+    
+    protected function __processArgs(array $args)
+    {
+        foreach($args as $arg) {
+            if (is_array($arg)) {
+                $this->setProperties($arg);
+            } elseif (is_object($arg) && in_array(ModelInterface::class, class_implements($arg))) {
+                $this->setModel($arg);
+            }
+        }
+    }
+    
+    public function __toString()
+    {
+        return strval(new ViewBuilder($this));
+    }
+    
     abstract public function factory();
 
     public function addCss($path)
@@ -78,14 +100,14 @@ abstract class AbstractView implements ViewInterface
         return $this->getModel()->getDb();
     }
 
-    public function getTitle() : string
-    {
-        return DOM::getTitle();
-    }
-
     public function getTemplate()
     {
         return $this->template;
+    }
+    
+    public function getTitle() : string
+    {
+        return $this->title ?? '';
     }
 
     public function setModel(ModelInterface $model)
@@ -104,30 +126,13 @@ abstract class AbstractView implements ViewInterface
         return $this;
     }
 
+    public function setTemplate($template)
+    {
+        $this->template = $template;
+    }
+    
     public function setTitle(string $title)
     {
-        DOM::setTitle($title);
-    }
-
-    public function __toString()
-    {
-        return (new ViewBuilder())->build($this);
-    }
-
-    public function __invoke(...$args)
-    {
-        return $this->setArgs($args);
-    }
-
-    protected function setArgs(array $args)
-    {
-        foreach($args as $arg) {
-            if (is_array($arg)) {
-                $this->setProperties($arg);
-            } elseif (is_object($arg) && in_array(ModelInterface::class, class_implements($arg))) {
-                $this->setModel($arg);
-            }
-        }
-        return $this;
+        $this->title = $title;
     }
 }

@@ -18,6 +18,7 @@ class Template
 
     protected $controller;
     protected $path;
+    protected $title;
     protected $parts = [self::BODY_PART_ID => []];
     protected $template = '<!--main-->';
 
@@ -81,7 +82,7 @@ class Template
     protected function buildFullTemplate()
     {
         $template = $this->template;
-        $this->add(DOM::getTitle(), 'title');
+        $this->add($this->title, 'title');
         foreach (DOM::getRequire() as $require) {
             $this->addComponentRequirement($require[1], $require[2] ?? $require[0]);
         }
@@ -147,5 +148,10 @@ class Template
                 $this->addJs(sprintf('/assets/%s/%s', $sha1Namespace, $pathLibrary), is_string($libraryId) ? $libraryId : null);
             }
         }
+    }
+    
+    public function setTitle($title)
+    {
+        $this->title = $title;
     }
 }
