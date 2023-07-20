@@ -120,12 +120,16 @@ Osynapsy.action =
     {
         var errors = [];
         var self = this;
-        response.errors.forEach(function(val, idx){
+        response.errors.forEach(function(val, idx){            
             if (val[0] === 'alert'){
                 alert(val[1]);
                 return true;
             }
-            var component = document.getElementById(val[0]);
+            let component = document.getElementById(val[0]);
+            if (!component) {
+                console.log('No component '+val[0]+ ' - ' + val[1]);
+                return true;
+            }
             errors.push(self.showErrorOnLabel(component, val[1]));
             if (component.classList.contains('field-in-error')){
                 return true;
