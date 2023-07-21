@@ -17,6 +17,7 @@ abstract class AbstractModel implements ModelInterface
     protected $controller;
     protected $fields = [];
     protected $fieldUploaded = false;
+    protected $redirect;
 
     public function __construct(ControllerInterface $controller)
     {
@@ -32,21 +33,19 @@ abstract class AbstractModel implements ModelInterface
 
     protected function afterDelete()
     {
-        $this->gotoPreviusPage();
+        $this->redirect = [$this,  'gotoPreviusPage'];
     }
 
     protected function afterInsert($id)
     {
-        $this->reloadCurrentPage($id);
+        $this->redirect = function() use ($id) {
+            $this->reloadCurrentPage($id);
+        };
     }
 
     protected function afterUpdate()
     {
-        if ($this->fieldUploaded) {
-            $this->refreshCurrentPage();
-        } else {
-            $this->gotoPreviusPage();
-        }
+        $this->redirect = $this->fieldUploaded ? [$this, 'refreshCurrentPage'] : [$this, 'gotoPreviusPage'];
     }
 
     protected function afterSave()
@@ -55,6 +54,8 @@ abstract class AbstractModel implements ModelInterface
 
     protected function afterExec()
     {
+        $redirect = $this->redirect;
+        $redirect();
     }
 
     protected function afterUpload($filename, $field = null)
@@ -212,6 +213,7 @@ abstract class AbstractModel implements ModelInterface
         }
         //Recall after exec method with arbirtary code
         $this->afterSave();
+        $this->afterExec();
     }
 
     protected function validateFieldValue(ModelField $field, Field\Validator $validator)
