@@ -55,7 +55,9 @@ abstract class AbstractModel implements ModelInterface
     protected function afterExec()
     {
         $redirect = $this->redirect;
-        $redirect();
+        if (!empty($redirect) && is_callable($redirect)) {            
+            $redirect();
+        }
     }
 
     protected function afterUpload($filename, $field = null)
