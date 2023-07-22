@@ -31,14 +31,7 @@ class ActionRunner
     public function __construct(ControllerInterface $controller)
     {
         $this->controller = $controller;
-        $this->autowire = autowire([
-            $controller,
-            $controller->getApp(),
-            $controller->getDb(),
-            $controller->getRequest(),
-            $controller->getRequest()->getRoute(),
-            $controller->getResponse()
-        ]);
+        $this->autowire = autowire([$controller, $controller->getResponse()]);
     }
 
     /**
@@ -82,9 +75,9 @@ class ActionRunner
      * @return \Osynapsy\Http\ResponseInterface
      */
     private function execDefaultAction($defaultAction) : ResponseInterface
-    {        
-        $response = $this->autowire->execute($this->getController(), $defaultAction);        
-        $this->getResponse()->add($response);        
+    {
+        $response = $this->autowire->execute($this->getController(), $defaultAction);
+        $this->getResponse()->add($response);
         return $this->getResponse();
     }
 
