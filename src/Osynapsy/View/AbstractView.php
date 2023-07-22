@@ -34,7 +34,7 @@ abstract class AbstractView implements ViewInterface
         $this->__processArgs($args);
         return $this;
     }
-    
+
     protected function __processArgs(array $args)
     {
         foreach($args as $arg) {
@@ -45,12 +45,12 @@ abstract class AbstractView implements ViewInterface
             }
         }
     }
-    
+
     public function __toString()
     {
         return strval(new ViewBuilder($this));
     }
-    
+
     abstract public function factory();
 
     public function addCss($path)
@@ -104,7 +104,7 @@ abstract class AbstractView implements ViewInterface
     {
         return $this->template;
     }
-    
+
     public function getTitle() : string
     {
         return $this->title ?? '';
@@ -113,7 +113,7 @@ abstract class AbstractView implements ViewInterface
     public function setModel(ModelInterface $model)
     {
         $this->model = $model;
-        $this->model->find();
+        $this->model->loadValues();
     }
 
     public function setProperties(array $properties = [])
@@ -130,7 +130,7 @@ abstract class AbstractView implements ViewInterface
     {
         $this->template = $template;
     }
-    
+
     public function setTitle(string $title)
     {
         $this->title = $title;
