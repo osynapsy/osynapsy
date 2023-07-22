@@ -69,10 +69,13 @@ class Route
         if (empty($output) || empty($output[0])) {
             return;
         }
-        foreach($output[0] as $i => $placeholder) {
-            $parameterId = $output[1][$i];            
-            $ruleId = array_key_exists($output[3][$i], self::PATTERN_MAP) ? $output[3][$i] : '?';
-            $parameterRule = self::PATTERN_MAP[$ruleId];
+        $placeholders = $output[0];
+        $parameterIds = $output[1];
+        $parameterRules = $output[3];
+        foreach($placeholders as $i => $placeholder) {
+            $parameterId = $parameterIds[$i];            
+            $ruleId = $parameterRules[$i] ?: '?';
+            $parameterRule = self::PATTERN_MAP[$ruleId] ?? $ruleId;
             $this->parameters[$parameterId] = [
                 'id' => $parameterId, 
                 'rule' => $ruleId, 
