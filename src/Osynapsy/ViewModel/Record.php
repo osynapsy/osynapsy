@@ -75,7 +75,7 @@ abstract class Record implements ModelInterface
                 $keys[$field->name] = $field->getDefaultValue();
             }
         }
-        $this->getRecord()->findByAttributes($keys);
+        $this->getRecord()->where($keys);
     }
 
     protected function initExternalAction()
@@ -162,7 +162,6 @@ abstract class Record implements ModelInterface
             if (array_key_exists($field->name, $values)) {
                 $_REQUEST[$field->html] = $values[$field->name];
                 $this->getController()->getRequest()->set('post.'.$field->html, $values[$field->name]);
-                DOM::setValue($field->html, $values[$field->name]);
             }
         }
     }
