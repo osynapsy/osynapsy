@@ -30,6 +30,7 @@ abstract class Model extends ModelRecord
     {
         $this->setController($controller);
         autowire()->execute($this, 'init');
+        $this->mapFactory();
         if (empty($this->table)) {
             throw new \Exception('Model table is empty');
         }
@@ -40,7 +41,7 @@ abstract class Model extends ModelRecord
 
     protected function record()
     {
-        return new class ($this->getDb()) extends Active
+        return new class () extends Active
         {
             protected $table;
 

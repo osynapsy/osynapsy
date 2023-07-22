@@ -23,7 +23,10 @@ abstract class ModelRecord extends AbstractModel
     {
         parent::__construct($controller);
         $this->record = $this->record();
-        autowire()->execute($this, 'init');
+        if (method_exists($this, 'init')) {
+            autowire()->execute($this, 'init');
+        }
+        $this->mapFactory();
         $this->fillRecord();
     }
 
@@ -39,7 +42,7 @@ abstract class ModelRecord extends AbstractModel
             if ($field->isPkey()) {
                 $keys[$field->name] = $field->getDefaultValue();
             }
-        }
+        }        
         if (!empty($keys)) {
             $this->getRecord()->where($keys);
         }
@@ -160,4 +163,6 @@ abstract class ModelRecord extends AbstractModel
     }
 
     abstract protected function record();
+    
+    abstract protected function mapFactory();
 }

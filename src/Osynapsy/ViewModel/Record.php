@@ -53,6 +53,7 @@ abstract class Record implements ModelInterface
         if (method_exists($this, 'init')) {
             autowire()->execute($this, 'init');
         }
+        $this->mapFactory();
         $this->initRecord();
     }
 
@@ -274,6 +275,8 @@ abstract class Record implements ModelInterface
     }
 
     abstract protected function record();
+    
+    abstract protected function mapFactory();
 
     public function getFieldValue($fieldId)
     {
