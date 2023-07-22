@@ -17,6 +17,7 @@ use Osynapsy\Http\Response\ResponseInterface;
 use Osynapsy\Http\Response\JsonOsynapsy as JsonOsynapsyResponse;
 use Osynapsy\Http\Response\Html as HtmlResponse;
 use Osynapsy\Http\Response\Xml as XmlResponse;
+use Osynapsy\Helper\AutoWire;
 use Osynapsy\Database\DboFactory;
 use Osynapsy\Database\Driver\DboInterface;
 use Osynapsy\Action\ActionRunner;
@@ -49,9 +50,11 @@ class BaseApplication implements ApplicationInterface
      */
     public final function __construct(Route &$route, Request &$request)
     {
-        $this->route = $route;
-        $this->request = $request;
-        $this->initDatasources();
+        AutoWire::addHandle($this);
+        $this->dbFactory = new DboFactory();
+        $this->route = AutoWire::addHandle($route);
+        $this->request = AutoWire::addHandle($request);
+        $this->db = AutoWire::addHandle($this->initDatasources($this->dbFactory, $this->request, $this->route));
         $this->initResponse();
         $this->init();
     }
@@ -62,10 +65,7 @@ class BaseApplication implements ApplicationInterface
      */
     protected function initResponse()
     {
-        $accept = $this->getRequest()->getAcceptedContentType();
-        if (empty($accept)) {
-            $accept = ['text/html'];
-        }
+        $accept = $this->getRequest()->getAcceptedContentType() ?: ['text/html'];
         switch($accept[0]) {
             case 'text/json':
             case 'application/json':
@@ -86,22 +86,17 @@ class BaseApplication implements ApplicationInterface
     /**
      * Init datasources configurated in instance configuration file
      */
-    protected function initDatasources()
+    protected function initDatasources($dbFactory, $request, $route)
     {
-        $listDatasource = $this->getRequest()->search('db',
-            "env.app.{$this->getRoute()->application}.datasources"
-        );
-        $this->dbFactory = new DboFactory();
+        $listDatasource = $request->search('db', sprintf("env.app.%s.datasources", $route->application));
         foreach ($listDatasource as $datasource) {
             $connectionString = $datasource['@value'];
-            $this->dbFactory->createConnection($connectionString);
+            $dbFactory->createConnection($connectionString);
         }
-        $this->db = $this->dbFactory->getConnection(0);
+        return $dbFactory->getConnection(0);
     }
 
-    protected function init()
-    {
-    }
+    protected function init(){}
 
     /**
      * Return db connection request
