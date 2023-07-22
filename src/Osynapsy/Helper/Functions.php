@@ -2,6 +2,7 @@
 use Osynapsy\Kernel;
 use Osynapsy\Helper\AutoWire;
 use Osynapsy\Application\ApplicationInterface;
+use Osynapsy\Database\Driver\DboInterface;
 
 /**
  * If $elementPath is null return request Object else return required element of request
@@ -39,7 +40,22 @@ function autowire(array $handles = [])
     return new AutoWire($handles);
 }
 
+/**
+ * Return an instance of App class
+ *
+ * @return Dbo
+ */
 function app()
 {    
     return AutoWire::getHandle(ApplicationInterface::class);
+}
+
+/**
+ * Return an instance of Dbo class
+ *
+ * @return Dbo
+ */
+function dbo()
+{
+    return AutoWire::getHandle(DboInterface::class);
 }
