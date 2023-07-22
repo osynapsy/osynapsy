@@ -82,6 +82,7 @@ class AutoWire
         foreach($dummies as $id) {
             self::$handles[$id] = $handle;
         }
+        return $handle;
     }
 
     public static function getHandle($handleId)
