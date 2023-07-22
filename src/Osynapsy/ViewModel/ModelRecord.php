@@ -26,12 +26,12 @@ abstract class ModelRecord extends AbstractModel
         autowire()->execute($this, 'init');
         $this->fillRecord();
     }
-        
+
     public function getRecord() : RecordInterface
     {
         return $this->record;
     }
-    
+
     protected function fillRecord()
     {
         $keys = [];
@@ -41,7 +41,7 @@ abstract class ModelRecord extends AbstractModel
             }
         }
         if (!empty($keys)) {
-            $this->getRecord()->findByAttributes($keys);
+            $this->getRecord()->where($keys);
         }
     }
 
@@ -55,13 +55,13 @@ abstract class ModelRecord extends AbstractModel
         return $this->getRecord()->get($key);
     }
 
-    public function find()
+    public function loadValues()
     {
-        $this->initRequestValues();
+        $this->LoadValuesInRequest();
         return $this->getRecord();
     }
 
-    public function initRequestValues()
+    public function LoadValuesInRequest()
     {
         $values = $this->getRecord()->get() ?? [];
         foreach($this->fields as $field) {

@@ -24,7 +24,7 @@ interface ModelInterface
 
     public function getFieldValue($fieldId);
 
-    public function find();
+    public function loadValues();
 
     public function save();
 

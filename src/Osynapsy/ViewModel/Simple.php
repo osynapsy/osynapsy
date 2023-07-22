@@ -42,7 +42,7 @@ abstract class Simple implements ModelInterface
         return $this->getController()->getDb();
     }
 
-    public function find()
+    public function loadValues()
     {
     }
 

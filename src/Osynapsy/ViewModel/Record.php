@@ -143,18 +143,17 @@ abstract class Record implements ModelInterface
         return $this->record->get($key);
     }
 
-    public function find()
+    public function loadValues()
     {
         $values = $this->getRecord()->get();
-        $this->loadValuesInRequest($values);
+        if (!empty($values)) {
+            $this->loadValuesInRequest($values);
+        }
         return $this->getRecord();
     }
 
-    public function loadValuesInRequest($values)
+    public function loadValuesInRequest(array $values)
     {
-        if (empty($values)) {
-            return;
-        }
         foreach($this->fields as $field) {
             if (array_key_exists($field->html, $_REQUEST)) {
                 continue;

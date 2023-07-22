@@ -55,7 +55,7 @@ abstract class AbstractModel implements ModelInterface
     protected function afterExec()
     {
         $redirect = $this->redirect;
-        if (!empty($redirect) && is_callable($redirect)) {            
+        if (!empty($redirect) && is_callable($redirect)) {
             $redirect();
         }
     }
@@ -89,8 +89,6 @@ abstract class AbstractModel implements ModelInterface
     }
 
     abstract public function delete();
-
-    abstract public function find();
 
     public function getController() : ControllerInterface
     {
