@@ -26,7 +26,7 @@ class Cookie
      * @param string $valueId
      * @param string $value
      */
-    public function send($valueId, $value, $expiry = null, $excludeThirdLevel = false)
+    public function __invoke($valueId, $value, $expiry = null, $excludeThirdLevel = false)
     {
         $domain = $excludeThirdLevel ? $this->getDomain() : $this->getServerName();                
         return headers_sent() ? false : setcookie($valueId, $value, $expiry ?? $this->expiry, "/", $domain);
