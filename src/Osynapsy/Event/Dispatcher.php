@@ -97,4 +97,9 @@ class Dispatcher
             self::$listeners[$eventId][] = $listener;
         }
     }
+    
+    public function __invoke(Event $event)
+    {
+        $this->dispatch($event);
+    }
 }
