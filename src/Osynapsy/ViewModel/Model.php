@@ -35,7 +35,7 @@ abstract class Model extends ModelRecord
         }
         $this->record = $this->record();
         $this->initRecord($this->record);
-        $this->recordFill();
+        $this->fillRecord();
     }
 
     protected function record()
