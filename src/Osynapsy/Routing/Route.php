@@ -141,9 +141,11 @@ class Route
     }
     
     public function setParameterValues(array $values = [])
-    {        
+    {                
         foreach(array_values($this->parameters) as $idx => $par) {
-            $this->parameters[$par['id']]['value'] = $values[$idx] ?? null;
+            if (array_key_exists($idx, $values) && $values[$idx] !== '') {
+                $this->parameters[$par['id']]['value'] = $values[$idx];
+            }
         }        
         $this->weight = count($values);
     }
