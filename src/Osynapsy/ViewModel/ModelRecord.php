@@ -96,6 +96,7 @@ abstract class ModelRecord extends AbstractModel
         //Recall after exec method with arbirtary code
         $this->afterSave();
         $this->afterExec();
+        return $this;
     }
 
     protected function valuesFactory()
