@@ -431,6 +431,19 @@ var Osynapsy = new (function(){
         }
     };
 
+    pub.showSystemMsg = function(msg, timeout = 2000)
+    {
+        if (document.getElementById('systemMsg')) {
+            document.getElementById('systemMsg').remove();
+        }
+        let sysMsgContainer = document.createElement('div');        
+        sysMsgContainer.setAttribute('id', 'systemMsg');
+        sysMsgContainer.classList.add('osy-system-message');
+        sysMsgContainer.innerText = msg;
+        document.body.append(sysMsgContainer);
+        setTimeout(function(){ sysMsgContainer.remove(); }, timeout);        
+    };
+
     return pub;
 });
 

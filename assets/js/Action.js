@@ -120,6 +120,7 @@ Osynapsy.action =
     {
         var errors = [];
         var self = this;
+        let nocomponents = [];
         response.errors.forEach(function(val, idx){            
             if (val[0] === 'alert'){
                 alert(val[1]);
@@ -127,7 +128,7 @@ Osynapsy.action =
             }
             let component = document.getElementById(val[0]);
             if (!component) {
-                console.log('No component '+val[0]+ ' - ' + val[1]);
+                nocomponents.push(val['1']);
                 return true;
             }
             errors.push(self.showErrorOnLabel(component, val[1]));
@@ -139,6 +140,9 @@ Osynapsy.action =
                 this.classList.remove('field-in-error');
             });
         });
+        if (nocomponents.length > 0) {
+            Osynapsy.showSystemMsg(nocomponents.join('\n'));
+        }
         if (errors.length === 0) {
             return;
         }

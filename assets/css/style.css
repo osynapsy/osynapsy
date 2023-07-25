@@ -215,3 +215,19 @@ input[type="text"].field-in-error, textarea.field-in-error {
     bottom: 0px;
     width: 100%;
 }
+
+.osy-system-message {
+    position: fixed; 
+    bottom: 60px; 
+    padding: 5px 10px; 
+    font-size: 11px; 
+    color: #fefefe; 
+    right:10px; 
+    background-color: #F31B28;
+    border: 1px solid brown;
+    border-radius: 5px;
+    opacity: 0.8;
+}
+.osy-system-message.removing {
+    transition: margin-right 2s;
+}
