@@ -21,7 +21,7 @@ use Osynapsy\Html\Helper\JQuery;
 class JsonOsynapsy extends Json
 {
     public $body = [];
-    
+
     public function add($content, $part = 'main')
     {
         if (!array_key_exists($part, $this->body)) {
@@ -78,10 +78,10 @@ class JsonOsynapsy extends Json
         $this->js(sprintf("Osynapsy.modal.window('%s','%s','%s','%s')", $title, $url, $width, $height));
     }
 
-    public function refreshComponents(array $components)
+    public function refreshComponents(array $components, $jsExecOnSuccess = "function() { console.log('refresh ok') }")
     {
         if (!empty($components)) {
-            $this->js(sprintf("parent.Osynapsy.refreshComponents(['%s'])", implode("','", $components)));
+            $this->js(sprintf("parent.Osynapsy.refreshComponents(['%s'], %s)", implode("','", $components), $jsExecOnSuccess));
         }
     }
 
