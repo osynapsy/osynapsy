@@ -34,7 +34,6 @@ abstract class Record implements ModelInterface
     const EVENT_AFTER_INSERT = 'afterInsert';
     const EVENT_AFTER_UPDATE = 'afterUpdate';
     const EVENT_AFTER_DELETE = 'afterDelete';
-    const EVENT_AFTER_UPLOAD = 'afterUpload';
 
     private $fields = [];
     private $record;
@@ -42,7 +41,6 @@ abstract class Record implements ModelInterface
     private $controller;
     private $validator;
     protected $softDelete;
-    public $uploadOccurred = false;
     public $behavior;
 
     public function __construct(ControllerInterface $controller, ...$args)
@@ -83,7 +81,6 @@ abstract class Record implements ModelInterface
     {
         $this->getController()->setExternalAction(Action\Save::class);
         $this->getController()->setExternalAction(Action\Delete::class);
-        $this->getController()->setExternalAction(Action\Upload::class);
         $this->getController()->setExternalAction(Action\DeleteFile::class);
         $this->getController()->setExternalAction(Action\CropImage::class);
     }
@@ -275,7 +272,7 @@ abstract class Record implements ModelInterface
     }
 
     abstract protected function record();
-    
+
     abstract protected function mapFactory();
 
     public function getFieldValue($fieldId)

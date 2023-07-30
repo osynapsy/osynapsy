@@ -42,7 +42,7 @@ abstract class ModelRecord extends AbstractModel
             if ($field->isPkey()) {
                 $keys[$field->name] = $field->getDefaultValue();
             }
-        }        
+        }
         if (!empty($keys)) {
             $this->getRecord()->where($keys);
         }
@@ -107,9 +107,6 @@ abstract class ModelRecord extends AbstractModel
         foreach ($this->fields as $field) {
             //Check if value respect rule
             $value = $this->validateFieldValue($field, $validator);
-            if (in_array($field->type, ['file', 'image'])) {
-                $value = $this->grabUploadedFile($field);
-            }
             if (!$field->existInForm() && !$field->getDefaultValue() && $this->getRecord()->getBehavior() != RecordInterface::BEHAVIOR_INSERT) {
                 continue;
             }
@@ -164,6 +161,6 @@ abstract class ModelRecord extends AbstractModel
     }
 
     abstract protected function record();
-    
+
     abstract protected function mapFactory();
 }

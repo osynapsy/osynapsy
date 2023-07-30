@@ -5,7 +5,6 @@ use Osynapsy\Controller\ControllerInterface;
 use Osynapsy\ViewModel\ModelInterface;
 use Osynapsy\ViewModel\Field\Field as ModelField;
 use Osynapsy\Database\Driver\DboInterface;
-use Osynapsy\Helper\UploadManager;
 
 /**
  * Description of BaseModel
@@ -16,7 +15,6 @@ abstract class AbstractModel implements ModelInterface
 {
     protected $controller;
     protected $fields = [];
-    protected $fieldUploaded = false;
     protected $redirect;
 
     public function __construct(ControllerInterface $controller)
@@ -45,7 +43,7 @@ abstract class AbstractModel implements ModelInterface
 
     protected function afterUpdate()
     {
-        $this->redirect = $this->fieldUploaded ? [$this, 'refreshCurrentPage'] : [$this, 'gotoPreviusPage'];
+        $this->redirect = [$this, 'gotoPreviusPage'];
     }
 
     protected function afterSave()
@@ -58,10 +56,6 @@ abstract class AbstractModel implements ModelInterface
         if (!empty($redirect) && is_callable($redirect)) {
             $redirect();
         }
-    }
-
-    protected function afterUpload($filename, $field = null)
-    {
     }
 
     protected function beforeDelete()
@@ -182,10 +176,7 @@ abstract class AbstractModel implements ModelInterface
             //$value = $field->value;
             //Check if value respect rule
             //$this->validateFieldValue($field, $value);
-             $value = $this->validateFieldValue($field, $validator);
-            if (in_array($field->type, ['file', 'image'])) {
-                $value = $this->grabUploadedFile($field);
-            }
+            $value = $this->validateFieldValue($field, $validator);
             //If field isn't in readonly mode assign values to values list for store it in db
             if (!$field->readonly) {
                 $values[$field->name] = $value;
@@ -225,25 +216,6 @@ abstract class AbstractModel implements ModelInterface
         } finally {
             return $field->value;
         }
-    }
-
-    protected function grabUploadedFile(&$field)
-    {
-        if (!is_array($_FILES) || !array_key_exists($field->html, $_FILES) || empty($_FILES[$field->html]['name'])) {
-            $field->readonly = true;
-            return $field->value;
-        }
-        $upload = new UploadManager();
-        try {
-            $field->value = $upload->saveFile($field->html, $field->uploadDir);
-            $field->readonly = false;
-        } catch(\Exception $e) {
-            $this->addError($e->getMessage());
-            $field->readonly = true;
-        }
-        $this->setFileUploaded(true);
-        $this->afterUpload($field->value, $field);
-        return $field->value;
     }
 
     public function getFieldValue($fieldId)
