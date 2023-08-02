@@ -96,7 +96,11 @@ abstract class AbstractModel implements ModelInterface
 
     public function getField($fieldId)
     {
+        if (!array_key_exists($fieldId, $this->fields)) {
+            throw new \Exception(sprintf('Field %s do not exists in fieldmap', $fieldId));
+        }
         return $this->fields[$fieldId];
+
     }
 
     public function getRequest()
