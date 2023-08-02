@@ -114,6 +114,7 @@ abstract class AbstractView implements ViewInterface
     {
         $this->model = $model;
         $this->model->loadValues();
+        $this->setProperties(get_object_vars($this->model));
     }
 
     public function setProperties(array $properties = [])
