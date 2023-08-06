@@ -41,6 +41,9 @@ class AutoWire
     protected function getDependences($reflectionObject, array $externalParameters = [])
     {
         $dependences = [];
+        if (empty($reflectionObject)) {
+            return $dependences;
+        }
         $externalParameterIdx = 0;
         foreach ($reflectionObject->getParameters() as $parameter) {
             $parameterType = str_replace('?', '', (string) $parameter->getType());
@@ -69,7 +72,7 @@ class AutoWire
     public function getInstance($className)
     {
         $ref = new \ReflectionClass($className);
-        $dependences = $this->getDependences($ref->getConstructor());
+        $dependences = $this->getDependences($ref->getConstructor()) ?? [];
         return empty($dependences) ? $ref->newInstance() : $ref->newInstanceArgs($dependences);
     }
 
