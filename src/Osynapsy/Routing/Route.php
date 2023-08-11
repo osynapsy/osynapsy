@@ -99,14 +99,17 @@ class Route
         return $this->parameters;
     }
 
-    public function getUrl(array $params = [])
+    public function getUrl(array $segmentParams = [], array $getParams = [])
     {
         $output = $result = [];
         preg_match_all('/{.+?}/', $this->uri, $output);
-        if (count($output[0]) > count($params)) {
+        if (count($output[0]) > count($segmentParams)) {
             throw new \Exception('Number of parameters don\'t match uri params');
         }
-        return str_replace($output[0], $params, $this->uri);
+        $url = str_replace($output[0], $segmentParams, $this->uri);
+        $url .= !empty($getParams) ? '?' : '';
+        $url .= http_build_query($getParams);
+        return $url;
     }
     
     public function getSegment(int $index)

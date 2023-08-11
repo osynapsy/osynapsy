@@ -23,10 +23,10 @@ function request($elementPath = null)
  * @param array|null $parameters
  * @return mixed
  */
-function route($routeId = null, ?array $parameters = null)
+function route($routeId = null, ?array $parameters = null, ?array $getParams = [])
 {
     $route = request()->getRoute($routeId);
-    return is_null($parameters) ? $route : $route->getUrl($parameters);
+    return is_null($parameters) ? $route : $route->getUrl($parameters, $getParams);
 }
 
 /**
