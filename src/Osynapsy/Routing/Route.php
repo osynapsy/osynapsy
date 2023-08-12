@@ -75,7 +75,7 @@ class Route
         foreach($placeholders as $i => $placeholder) {
             $parameterId = $parameterIds[$i];            
             $ruleId = $parameterRules[$i] ?: '?';
-            $parameterRule = self::PATTERN_MAP[$ruleId] ?? $ruleId;
+            $parameterRule = self::PATTERN_MAP[$ruleId] ?? sprintf('(%s)', $ruleId);
             $this->parameters[$parameterId] = [
                 'id' => $parameterId, 
                 'rule' => $ruleId, 
