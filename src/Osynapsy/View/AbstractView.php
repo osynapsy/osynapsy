@@ -136,4 +136,18 @@ abstract class AbstractView implements ViewInterface
     {
         $this->title = $title;
     }
+
+    public static function include($path, $parameters = [])
+    {
+        if (!is_file($path)) {
+            throw new \Exception(sprintf('Path %s not exists', $path), 404);
+        }
+        if (!empty($parameters)) {
+            extract($parameters);
+        }
+        include($path);
+        $content = ob_get_contents();
+        ob_clean();
+        return $content;
+    }
 }
