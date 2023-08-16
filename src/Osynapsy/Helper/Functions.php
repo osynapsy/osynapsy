@@ -46,7 +46,7 @@ function autowire(array $handles = [])
  * @return Dbo
  */
 function app()
-{    
+{
     return AutoWire::getHandle(ApplicationInterface::class);
 }
 
@@ -58,4 +58,19 @@ function app()
 function dbo()
 {
     return AutoWire::getHandle(DboInterface::class);
+}
+
+/**
+ * Redirect client browser to $rawdirection url
+ * if first character of $rawdestination is a '#' build a route.
+ *
+ * @param string $rawdestination
+ * @param array $getParams
+ * @param array $routeParams
+ */
+function redirect(string $rawdestination, array $getParams = [], array $routeParams = [])
+{
+    $destination = ($rawdestination[0] === '#') ? route($rawdestination, $routeParams) : $rawdestination;
+    $destination .= !empty($getParams) ? '?' . http_build_query($getParams) : '';
+    header('Location: '.$destination);
 }
