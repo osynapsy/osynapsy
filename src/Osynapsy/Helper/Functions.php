@@ -70,7 +70,6 @@ function dbo()
  */
 function redirect(string $rawdestination, array $getParams = [], array $routeParams = [])
 {
-    $destination = ($rawdestination[0] === '#') ? route($rawdestination, $routeParams) : $rawdestination;
-    $destination .= !empty($getParams) ? '?' . http_build_query($getParams) : '';
-    header('Location: '.$destination);
+    $destination = ($rawdestination[0] === '#') ? route(ltrim($rawdestination, '#'), $routeParams) : $rawdestination;    
+    header(sprintf('Location: %s%s', $destination, !empty($getParams) ? '?' . http_build_query($getParams) : ''));
 }
