@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Osynapsy\Mvc\Application;
+namespace Osynapsy\Http\Middleware;
 
 use Osynapsy\Kernel\Route;
 use Osynapsy\Http\Request;
@@ -17,7 +17,7 @@ use Osynapsy\Http\Response\Base as Response;
 use Osynapsy\Database\Driver\DboInterface;
 use Osynapsy\Database\DboFactory;
 
-interface ApplicationInterface
+interface MiddlewareInterface
 {
     public function __construct(Route &$route, Request &$request);
 
