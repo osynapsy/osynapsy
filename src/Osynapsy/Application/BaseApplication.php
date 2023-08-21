@@ -35,8 +35,10 @@ class BaseApplication implements ApplicationInterface
     const DEFAULT_CONTROLLER_METHOD = 'index';
 
     protected $db;
+    protected $autowire;
     protected $route;
     protected $request;
+    protected $session;
     protected $composer;
     protected $response;
     protected $dbFactory;
@@ -50,22 +52,24 @@ class BaseApplication implements ApplicationInterface
      */
     public final function __construct(Route &$route, Request &$request)
     {
-        AutoWire::addHandle($this);
+        $autowire = new AutoWire([$this]);
         $this->dbFactory = new DboFactory();
-        $this->route = AutoWire::addHandle($route);
-        $this->request = AutoWire::addHandle($request);
-        $this->db = AutoWire::addHandle($this->initDatasources($this->dbFactory, $this->request, $this->route));
-        $this->initResponse();
-        $this->init();
+        $this->route = $autowire->addHandle($route);
+        $this->request = $autowire->addHandle($request);
+        $this->session = $autowire->addHandle(new Session);
+        $this->db = $autowire->addHandle($this->initDatasources($this->dbFactory, $this->request, $this->route));
+        $this->initResponse($this->request);
+        $autowire->execute($this, 'init');
+        $this->autowire = $autowire;
     }
 
     /**
      * Initialize response according with request contentType.
      *
      */
-    protected function initResponse()
+    protected function initResponse($request)
     {
-        $accept = $this->getRequest()->getAcceptedContentType() ?: ['text/html'];
+        $accept = $request->getAcceptedContentType() ?: ['text/html'];
         switch($accept[0]) {
             case 'text/json':
             case 'application/json':
@@ -112,6 +116,11 @@ class BaseApplication implements ApplicationInterface
     public function getComposer()
     {
         return $this->composer;
+    }
+
+    public function getSession()
+    {
+        return $this->session;
     }
 
     /**
@@ -162,11 +171,8 @@ class BaseApplication implements ApplicationInterface
      */
     public function execute() : string
     {
-        if (empty($this->route) || !$this->route->controller) {
-            throw new \Osynapsy\Kernel\KernelException('Route not found', 404);
-        }
-        $actionId = filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION');
-        $actionParameters = filter_input(\INPUT_POST , 'actionParameters', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        $actionId = $this->getRequest()->get('header.X-Osynapsy-Action');
+        $actionParameters = $this->getRequest()->get('post.actionParameters'); //filter_input(\INPUT_POST , 'actionParameters', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
         list($controller, $defaultAction) = $this->controllerFactory($this->route->controller, $this);
         return (string) $this->runAction($controller, $defaultAction, $actionId, $actionParameters ?? []);
     }
