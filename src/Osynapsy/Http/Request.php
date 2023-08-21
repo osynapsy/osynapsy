@@ -49,6 +49,24 @@ class Request extends Dictionary
         if (!empty($server['HTTP_ACCEPT'])) {
             $this->set('client.accept', explode(',', $server['HTTP_ACCEPT']));
         }
+        $this->headerFactory($server);
+    }
+
+    protected function headerFactory($server)
+    {
+        $header = [];
+        foreach ($server as $key => $headerValue) {
+            if (preg_match('/^HTTP_/', $key)) {
+                $httpHeaderKey = strtr(ucwords(strtolower(strtr(substr($key,5), '_', ' '))),' ','-');
+                $header[$httpHeaderKey] = $headerValue;
+            }
+        }
+        $this->set('header', $header);
+    }
+
+    public function hasHeader($headerId)
+    {
+        return $this->keyExists('header.'.$headerId);
     }
 
     public function getAcceptedContentType()
@@ -75,7 +93,7 @@ class Request extends Dictionary
     {
         return empty($id) ? [] : $this->get(sprintf('app.templates.%s', $id));
     }
-    
+
     public function __invoke($key)
     {
         return $this->get($key);
