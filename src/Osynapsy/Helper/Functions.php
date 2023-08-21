@@ -2,6 +2,7 @@
 use Osynapsy\Kernel;
 use Osynapsy\Helper\AutoWire;
 use Osynapsy\Application\ApplicationInterface;
+use Osynapsy\Application\Session as AppSession;
 use Osynapsy\Database\Driver\DboInterface;
 
 /**
@@ -13,6 +14,11 @@ use Osynapsy\Database\Driver\DboInterface;
 function request($elementPath = null)
 {
     return is_null($elementPath) ? Kernel::$request : Kernel::$request->get($elementPath);
+}
+
+function response()
+{
+    return AutoWire::getHandle(Osynapsy\Http\Response\ResponseInterface::class);
 }
 
 /**
@@ -70,6 +76,36 @@ function dbo()
  */
 function redirect(string $rawdestination, array $getParams = [], array $routeParams = [])
 {
-    $destination = ($rawdestination[0] === '#') ? route(ltrim($rawdestination, '#'), $routeParams) : $rawdestination;    
-    header(sprintf('Location: %s%s', $destination, !empty($getParams) ? '?' . http_build_query($getParams) : ''));
+    $destination = ($rawdestination[0] === '#') ? route(ltrim($rawdestination, '#'), $routeParams) : $rawdestination;
+    $url = sprintf('%s%s', $destination, !empty($getParams) ? '?' . http_build_query($getParams) : '');
+    if (request()->hasHeader("Osynapsy-Action")) {
+        response()->go($url);
+        return;
+    }
+    header('Location: '.$url);
+}
+
+/**
+ * Return session object or session value key
+ *
+ * @param string $key
+ * @return mixed
+ */
+function session(string $key = null)
+{
+    $session = AutoWire::getHandle(AppSession::class);
+    return is_null($key) ? $session : $session($key);
+}
+
+function debug($value = null, $backtraceLevel = 2)
+{
+    $backtrace = debug_backtrace(\DEBUG_BACKTRACE_PROVIDE_OBJECT, $backtraceLevel);
+    $class = $backtrace[1]['class'] ?? "No class";
+    $function = $backtrace[1]['function'] ?? "No function";
+    $line =  $backtrace[1]['line'] ?? 'no line number';
+    $debug = [
+        sprintf('%s - %s', date('Y-m-d H:i:s') , sprintf('%s->%s line %s', $class , $function, $line)),
+        sprintf('%s - %s', date('Y-m-d H:i:s') , is_string($value) ? $value :  str_replace(PHP_EOL, '\\n', print_r($value, true)))
+    ];
+    header('X-Console-Debug: ' .implode("\\n", $debug));
 }
