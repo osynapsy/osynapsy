@@ -72,7 +72,7 @@ class Kernel
             $this->loadApplicationRoutes($router, $applications);
             $this->route = $this->findRequestRoute($router, $requestUri);
             $this->validateRouteController($this->route);
-            return $this->runHypervisor($this->route, $this->getRequest());
+            return $this->runApplication($this->route, $this->getRequest());
         } catch (\Exception $exception) {
             $errorDispatcher = new ErrorDispatcher($this->getRequest());
             return $errorDispatcher->dispatchException($exception);
@@ -149,7 +149,7 @@ class Kernel
         return $route;
     }
 
-    private function runHypervisor($route, $request)
+    private function runApplication($route, $request)
     {
         $reqApp = $request->get(sprintf("env.app.%s.controller", $route->application));
         //If isn't configured an app controller for current instance load default App controller
@@ -161,10 +161,10 @@ class Kernel
 
     private function validateRouteController($route)
     {
-        if (empty($route)) {
-            throw $this->raiseException(404, "Page not found", sprintf(
+        if (empty($route) || !$route->controller) {
+            throw $this->raiseException(404, "Route not found", sprintf(
                 'THE REQUEST PAGE NOT EXIST ON THIS SERVER <br><br> %s',
-                $this->request->get('server.REQUEST_URI')
+                $this->getRequest()->get('server.REQUEST_URI') . print_r($route, true)
             ));
         }
     }
