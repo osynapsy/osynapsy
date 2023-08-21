@@ -21,7 +21,7 @@ class RequestRaw
     public function get()
     {
         $srv = $_SERVER ?? ['REQUEST_METHOD' => 'GET', 'REQUEST_URI' => '/', 'SERVER_PROTOCOL' => 'HTTP/1.0'];
-        $req = sprintf("%s %s %s\n", $srv['REQUEST_METHOD'], $srv['REQUEST_URI'], $srv['SERVER_PROTOCOL']);        
+        $req = sprintf("%s %s %s\n", $srv['REQUEST_METHOD'], $srv['REQUEST_URI'], $srv['SERVER_PROTOCOL']);
         $req .= $this->httpBuildHeader($srv)."\n";
         $req .= !empty($_POST) ? http_build_query($_POST) : '';
         return $req;
@@ -29,9 +29,9 @@ class RequestRaw
 
     private function httpBuildHeader(array $server)
     {
-	$headerList = [];
+        $headerList = [];
         foreach ($server as $key => $value) {
-            if (preg_match('/^HTTP_/', $key)) {                
+            if (preg_match('/^HTTP_/', $key)) {
                 $headerList[] = sprintf('%s: %s', $this->convertHeaderKey($key), $value);
             }
         }
