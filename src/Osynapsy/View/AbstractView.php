@@ -48,12 +48,12 @@ abstract class AbstractView implements ViewInterface
 
     public function __call($name, $args)
     {
-        if (!empty($this->model) && method_exists($this->model, $name)) {            
+        if (!empty($this->model) && method_exists($this->model, $name)) {
             return call_user_func_array([$this->model, $name], $args);
         }
-        throw \Exception(sprintf('No method %s exists', $name));
+        throw new \Exception(sprintf('No method %s exists', $name));
     }
-    
+
     public function __toString()
     {
         return strval(new ViewBuilder($this));
