@@ -172,9 +172,9 @@ class BaseApplication implements ApplicationInterface
     public function execute() : string
     {
         $actionId = $this->getRequest()->get('header.X-Osynapsy-Action');
-        $actionParameters = $this->getRequest()->get('post.actionParameters'); //filter_input(\INPUT_POST , 'actionParameters', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
-        list($controller, $defaultAction) = $this->controllerFactory($this->route->controller, $this);
-        return (string) $this->runAction($controller, $defaultAction, $actionId, $actionParameters ?? []);
+        $actionParameters = $this->getRequest()->get('post.actionParameters');
+        list($controllerHandle, $defaultAction) = $this->controllerFactory($this->route->controller, $this);
+        return (string) $this->runAction($controllerHandle, $defaultAction, $actionId, $actionParameters ?? []);
     }
 
     protected function controllerFactory($classController, $appController)
