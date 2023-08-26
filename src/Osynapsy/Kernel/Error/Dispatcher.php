@@ -11,8 +11,9 @@
 
 namespace Osynapsy\Kernel\Error;
 
+use Osynapsy\Kernel;
 use Osynapsy\Kernel\Error\Page\Html as PageHtml;
-use Osynapsy\Kernel\KernelException;
+
 
 /**
  * Description of ErrorDispatcher
@@ -167,7 +168,7 @@ class Dispatcher
             $message = "<div>Internal server error</div>";
             $trace = [];
         }
-        if (filter_input(\INPUT_SERVER, 'HTTP_X_OSYNAPSY_ACTION')) {
+        if (filter_input(\INPUT_SERVER, Kernel::ACTION_HEADER_KEY)) {
             $this->pageTraceErrorText($message, $trace);
             return;
         }
