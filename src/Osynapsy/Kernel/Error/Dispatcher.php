@@ -167,8 +167,8 @@ class Dispatcher
             $message = "<div>Internal server error</div>";
             $trace = [];
         }
-        if (filter_input(\INPUT_SERVER, 'HTTP_OSYNAPSY_ACTION')) {
-             $this->pageTraceErrorText($message, $trace);
+        if (filter_input(\INPUT_SERVER, 'HTTP_X_OSYNAPSY_ACTION')) {
+            $this->pageTraceErrorText($message, $trace);
             return;
         }
         $pageError = $this->htmlPageFactory();
