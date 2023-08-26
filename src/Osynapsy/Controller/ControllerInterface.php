@@ -14,7 +14,6 @@ namespace Osynapsy\Controller;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response\ResponseInterface;
 use Osynapsy\Application\ApplicationInterface;
-use Osynapsy\ViewModel\ModelInterface;
 use Osynapsy\Database\Driver\DboInterface;
 
 /**
@@ -32,8 +31,6 @@ interface ControllerInterface
 
     public function getDispatcher();
 
-    public function getModel() : ModelInterface;
-
     public function getExternalAction(string $actionId) : string;
 
     public function getResponse() : ResponseInterface;
@@ -42,11 +39,7 @@ interface ControllerInterface
 
     public function hasExternalAction($actionId) : bool;
 
-    public function hasDb() : bool;
+    public function hasDb() : bool;    
 
-    public function hasModel() : bool;
-
-    public function setExternalAction(string $actionClass) : void;
-
-    public function setModel(ModelInterface $model);
+    public function setExternalAction(string $actionClass) : void;    
 }

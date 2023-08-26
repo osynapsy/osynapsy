@@ -17,7 +17,6 @@ use Osynapsy\Http\Request;
 use Osynapsy\Http\Response\ResponseInterface;
 use Osynapsy\Application\ApplicationInterface;
 use Osynapsy\Action\ActionInterface;
-use Osynapsy\ViewModel\ModelInterface;
 use Osynapsy\Database\Driver\DboInterface;
 use Osynapsy\Observer\SubjectInterface;
 
@@ -125,16 +124,6 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
         return $this->externalActions[$actionId];
     }
 
-     /**
-     * Return model instance
-     *
-     * @return Model
-     */
-    final public function getModel() : ModelInterface
-    {
-        return $this->model ?? new class ($this) extends \Osynapsy\ViewModel\Simple {};
-    }
-
     /**
      * Return current controller response
      *
@@ -163,16 +152,6 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
     public function hasDb() : bool
     {
         return !empty($this->getDb());
-    }
-
-    /**
-     * Check if controller has a valid Model
-     *
-     * @return boolean
-     */
-    public function hasModel() : bool
-    {
-        return !empty($this->model);
     }
 
     /**
@@ -216,15 +195,5 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
             throw new \Exception(sprintf("External action class \"%s\" must implement execute method", $actionClass));
         }
         $this->externalActions[$actionId ?? sha1($actionClass)] = $actionClass;
-    }
-
-    /**
-     * Set model for controller
-     *
-     * @param InterfaceModel $model
-     */
-    public function setModel(ModelInterface $model)
-    {
-        $this->model = $model;
     }
 }

@@ -56,7 +56,6 @@ class ActionRunner
         if (method_exists($this->getController(), 'init')) {
             $this->autowire->execute($this->getController(), 'init');
         }
-        $this->autowire->addHandle($this->getController()->getModel());
         if (empty($actionId)) {
             return $this->execDefaultAction($defaultAction);
         }
