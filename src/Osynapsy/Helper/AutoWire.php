@@ -2,6 +2,7 @@
 namespace Osynapsy\Helper;
 
 use Osynapsy\Routing\Route;
+use Osynapsy\Application\Session;
 
 /**
  * Description of AutoWiring
@@ -50,6 +51,10 @@ class AutoWire
                 $dependences[] = self::$handles[$parameterType];
                 continue;
             }
+            if (self::hasHandle(Session::class) && self::getHandle(session::class)->keyExists($parameter->getName())) {
+                $dependences[] = self::getHandle(Session::class)->get($parameter->getName());
+                continue;
+            }
             if (self::hasHandle(Route::class) && self::getHandle(Route::class)->hasParameter($parameter->getName())) {
                 $dependences[] = self::getHandle(Route::class)->getParameter($parameter->getName());
                 continue;
@@ -57,7 +62,7 @@ class AutoWire
             if (!class_exists($parameterType ?? '__dummy__') && array_key_exists($externalParameterIdx, $externalParameters)) {
                 $dependences[] = $externalParameters[$externalParameterIdx++];
                 continue;
-            }            
+            }
             if ($parameter->isDefaultValueAvailable()) {
                 $dependences[] = $parameter->getDefaultValue();
                 continue;
@@ -94,7 +99,7 @@ class AutoWire
     {
         return self::$handles[$handleId];
     }
-    
+
     public static function hasHandle($handleId)
     {
         return array_key_exists($handleId, self::$handles);
