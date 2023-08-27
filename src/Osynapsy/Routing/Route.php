@@ -86,6 +86,11 @@ class Route
         }          
     }
     
+    public function hasParameter($key)
+    {
+        return array_key_exists($key, $this->parameters);
+    }
+
     public function getParameter($key)
     {
         if (is_int($key)) {
