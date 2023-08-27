@@ -21,4 +21,3 @@ require $composerAutoloadPath;
 
 $cron = new \Osynapsy\Console\Cron($argv);
 echo $cron->run();
-
