@@ -201,7 +201,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      */
     public function go($url)
     {
-        $this->response->message('command', 'goto', $url);
+        $this->getResponse()->message('command', 'goto', $url);
     }
 
     /**
@@ -248,6 +248,6 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      */
     public function js($jscode)
     {
-        $this->response->message('command', 'execCode', str_replace(PHP_EOL,'\n', $jscode));
+        $this->getResponse()->message('command', 'execCode', str_replace(PHP_EOL,'\n', $jscode));
     }
 }
