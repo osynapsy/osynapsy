@@ -166,20 +166,6 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
     }
 
     /**
-     * Load html file view in current response
-     *
-     * @param string $path
-     * @param array $params
-     * @param bool $return
-     * @return void
-     */
-    public function loadView(string $path)
-    {
-        $view = $this->getTemplate()->include($path);
-        $this->getTemplate()->add($view);
-    }
-
-    /**
      * Set external class action for manage action
      *
      * @param string $actionClass namespace of class to execute
