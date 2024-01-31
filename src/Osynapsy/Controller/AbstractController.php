@@ -196,4 +196,72 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
         }
         $this->externalActions[$actionId ?? sha1($actionClass)] = $actionClass;
     }
+
+    /**
+     * Open javascript alert on the view
+     *
+     * @param string $message to show
+     *
+     */
+    public function alert($message)
+    {
+        $this->js(sprintf("alert(['%s'])", addslashes($message)));
+    }
+
+    /**
+     * Redirect browser to location in $url parameter indicate
+     *
+     * @param string $url
+     */
+    public function go($url)
+    {
+        $this->response->message('command', 'goto', $url);
+    }
+
+    /**
+     * Refresh component ids on the view
+     *
+     * @param array $components
+     */
+    public function refreshComponents(array $components)
+    {
+        $this->js(sprintf("Osynapsy.refreshComponents(['%s'])", implode("','", $components)));
+    }
+
+    /**
+     * Refresh component ids on the parent view
+     *
+     * @param array $components
+     */
+    public function refreshParentComponents(array $components)
+    {
+        $this->js(sprintf("parent.Osynapsy.refreshComponents(['%s'])", implode("','", $components)));
+    }
+
+    /**
+     * Hide modal $modalId on view
+     *
+     * @param string $modalId id of the modal to hide
+     *
+     */
+    public function closeModal()
+    {
+        $this->js(sprintf("parent.$('#%s').modal('hide')", 'amodal'));
+    }
+
+    public function historyPushState($id)
+    {
+        $this->js(sprintf("history.pushState(null,null,'%s');", $id));
+    }
+
+    /**
+     * Send js code to eval and execute on view
+     *
+     * @param string $jscode code javascript
+     *
+     */
+    public function js($jscode)
+    {
+        $this->response->message('command', 'execCode', str_replace(PHP_EOL,'\n', $jscode));
+    }
 }
