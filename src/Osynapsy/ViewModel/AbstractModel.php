@@ -117,12 +117,12 @@ abstract class AbstractModel implements ModelInterface
 
     protected function gotoPreviusPage()
     {
-        $this->getResponse()->go('back');
+        $this->getController()->go('back');
     }
 
     protected function historyPushState($id)
     {
-        $this->getResponse()->js("history.pushState(null,null,'{$id}');");
+        $this->getController()->js("history.pushState(null,null,'{$id}');");
     }
 
     abstract protected function insert(array $values);
