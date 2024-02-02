@@ -11,7 +11,6 @@
 
 namespace Osynapsy\Http\Response;
 
-use Osynapsy\Html\Helper\JQuery;
 
 /**
  * Description of JsonOsynapsy
@@ -29,85 +28,7 @@ class JsonOsynapsy extends Json
         }
         $this->body[$part][] = $content;
     }
-    /**
-     * Store a error message alias
-     *
-     * If recall without parameter return if errors exists.
-     * If recall with only $oid parameter return if error $oid exists
-     * If recall it with $oid e $err parameter set error $err on key $oid.
-     *
-     * @param string $errorMessage
-     * @return type
-     */
-    public function alertJs($errorMessage)
-    {
-        if (!empty($errorMessage)) {
-            $this->error('alert', $errorMessage);
-        }
-        return $this;
-    }
-
-    public function jquery($selector)
-    {
-        return new JQuery($selector, $this);
-    }
-
-    public function js($cmd)
-    {
-        $this->message('command','execCode', str_replace(PHP_EOL,'\n',$cmd));
-    }
-
-    /**
-     * Open a modal alert (bs modal) with message (and title) passed how arguments
-     *
-     * string $message is the message to show at the user (it will print on the body (Center) of window)
-     * string $title Title of modal window
-     */
-    public function modalAlert($message, $title = 'Alert')
-    {
-        $this->js(sprintf("Osynapsy.modal.alert('%s','%s')", $title, $message));
-    }
-
-    public function modalConfirm($message, $actionOnConfirm, $title = 'Confirm')
-    {
-        $this->js(sprintf("Osynapsy.modal.confirm('%s','%s','%s')", $title, $message, $actionOnConfirm));
-    }
-
-    public function modalWindow($title, $url, $width = '640px', $height = '480px')
-    {
-        $this->js(sprintf("Osynapsy.modal.window('%s','%s','%s','%s')", $title, $url, $width, $height));
-    }
-
-    public function refreshComponents(array $components, $jsExecOnSuccess = "function() { console.log('refresh ok') }")
-    {
-        if (!empty($components)) {
-            $this->js(sprintf("parent.Osynapsy.refreshComponents(['%s'], %s)", implode("','", $components), $jsExecOnSuccess));
-        }
-    }
-
-    public function closeModal($modalId = 'amodal')
-    {
-        $this->js(sprintf("parent.$('#%s').modal('hide');", $modalId));
-    }
-
-    public function pageBack()
-    {
-        $this->go('back');
-    }
-
-    public function pageRefresh()
-    {
-        $this->go('refresh');
-    }
-
-    public function historyPushState($parameterToUrlAppend)
-    {
-        if (empty($parameterToUrlAppend)) {
-            return;
-        }
-        $this->js("history.pushState(null,null,'{$parameterToUrlAppend}');");
-    }
-
+    
     /**
      * Store a error message
      *
@@ -143,22 +64,6 @@ class JsonOsynapsy extends Json
     {
         foreach ($errorList as $error) {
             $this->error($error[0], $error[1]);
-        }
-    }
-
-    /**
-     * Prepare a goto message for FormController.js
-     *
-     * If $immediate = true dispatch of the response is immediate
-     *
-     * @param string $url
-     * @param bool $immediate
-     */
-    public function go($url, $immediate = true)
-    {
-        $this->message('command', 'goto', $url);
-        if ($immediate) {
-            $this->dispatch();
         }
     }
 
