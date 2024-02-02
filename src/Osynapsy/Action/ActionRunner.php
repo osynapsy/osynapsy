@@ -65,7 +65,7 @@ class ActionRunner
         if (method_exists($this->getController(), $actionId.'Action')) {
             return $this->execInternalAction($actionId.'Action', $parameters);
         }
-        return $this->getResponse()->alertJs(sprintf('No action %s exist in %s', $actionId, get_class($this->controller)));
+        return $this->getController()->alert(sprintf('No action %s exist in %s', $actionId, get_class($this->controller)));
     }
 
     /**
@@ -111,7 +111,7 @@ class ActionRunner
     {
         $response = $this->autowire->execute($this->getController(), $action, $parameters);
         if (!empty($response) && is_string($response)) {
-            $this->getResponse()->alertJs($response);
+            $this->getController()->alert($response);
         }
         return $this->getResponse();
     }
