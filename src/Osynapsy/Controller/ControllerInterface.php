@@ -39,7 +39,27 @@ interface ControllerInterface
 
     public function hasExternalAction($actionId) : bool;
 
-    public function hasDb() : bool;    
+    public function hasDb() : bool;
 
-    public function setExternalAction(string $actionClass) : void;    
+    public function setExternalAction(string $actionClass) : void;
+
+    public function alert($message) : void;
+
+    public function closeModal() : void;
+
+    public function modalWindow(string $title, string $url, string $width = '640px', string $height = '480px') : void;
+
+    public function modalConfirm(string $message, string $actionOnConfirm, string $title = 'Confirm') : void;
+
+    public function modalAlert(string $message, string $title = 'Alert') : void;
+
+    public function refreshComponents(array $componentIds) : void;
+
+    public function refreshParentComponents(array $componentIds) : void;
+
+    public function js($jscode) : void;
+
+    public function go($destination) : void;
+
+    public function historyPushState($id) : void;
 }

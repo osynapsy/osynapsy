@@ -27,6 +27,7 @@ use Osynapsy\Observer\SubjectInterface;
  * The default method is indexAction which is recall if not specific action is recall
  * from fronted.
  *
+ * @author Pietro Celeste <p.celeste@osynapsy.net>
  */
 abstract class AbstractController implements ControllerInterface, SubjectInterface
 {
@@ -189,7 +190,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      * @param string $message to show
      *
      */
-    public function alert($message)
+    public function alert($message) : void
     {
         $this->js(sprintf("alert(['%s'])", addslashes($message)));
     }
@@ -199,7 +200,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      *
      * @param string $url
      */
-    public function go($url)
+    public function go($url) : void
     {
         $this->getResponse()->message('command', 'goto', $url);
     }
@@ -209,7 +210,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      *
      * @param array $components
      */
-    public function refreshComponents(array $components)
+    public function refreshComponents(array $components) : void
     {
         $this->js(sprintf("Osynapsy.refreshComponents(['%s'])", implode("','", $components)));
     }
@@ -219,7 +220,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      *
      * @param array $components
      */
-    public function refreshParentComponents(array $components)
+    public function refreshParentComponents(array $components) : void
     {
         $this->js(sprintf("parent.Osynapsy.refreshComponents(['%s'])", implode("','", $components)));
     }
@@ -230,14 +231,35 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      * @param string $modalId id of the modal to hide
      *
      */
-    public function closeModal()
+    public function closeModal() : void
     {
         $this->js(sprintf("parent.$('#%s').modal('hide')", 'amodal'));
     }
 
-    public function historyPushState($id)
+    public function historyPushState($id) : void
     {
         $this->js(sprintf("history.pushState(null,null,'%s');", $id));
+    }
+
+    /**
+     * Open a modal alert (bs modal) with message (and title) passed how arguments
+     *
+     * string $message is the message to show at the user (it will print on the body (Center) of window)
+     * string $title Title of modal window
+     */
+    public function modalAlert(string $message, string $title = 'Alert') : void
+    {
+        $this->js(sprintf("Osynapsy.modal.alert('%s','%s')", $title, $message));
+    }
+
+    public function modalConfirm(string $message, string $actionOnConfirm, string $title = 'Confirm') : void
+    {
+        $this->js(sprintf("Osynapsy.modal.confirm('%s','%s','%s')", $title, $message, $actionOnConfirm));
+    }
+
+    public function modalWindow(string $title, string $url, string $width = '640px', string $height = '480px') : void
+    {
+        $this->js(sprintf("Osynapsy.modal.window('%s','%s','%s','%s')", $title, $url, $width, $height));
     }
 
     /**
@@ -246,8 +268,13 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      * @param string $jscode code javascript
      *
      */
-    public function js($jscode)
+    public function js($jscode) : void
     {
-        $this->getResponse()->message('command', 'execCode', str_replace(PHP_EOL,'\n', $jscode));
+        $this->getResponse()->message('command', 'execCode', str_replace(PHP_EOL,'\n', strval($jscode)));
+    }
+
+    public function jquery($selector)
+    {
+        return new \Osynapsy\Html\Helper\JQuery($selector, $this);
     }
 }
