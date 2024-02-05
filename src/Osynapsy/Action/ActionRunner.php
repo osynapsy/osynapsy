@@ -95,7 +95,7 @@ class ActionRunner
         $actionHandle->setParameters($parameters);
         $message = $this->autowire->execute($actionHandle, 'execute', $parameters ?? []);
         if (!empty($message)) {
-            $this->getResponse()->alertJs($message);
+            $this->getController()->alert($message);
         }
         return $this->getResponse();
     }
