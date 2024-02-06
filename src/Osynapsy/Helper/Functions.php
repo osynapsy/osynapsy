@@ -79,7 +79,7 @@ function redirect(string $rawdestination, array $getParams = [], array $routePar
     $destination = ($rawdestination[0] === '#') ? route(ltrim($rawdestination, '#'), $routeParams) : $rawdestination;
     $url = sprintf('%s%s', $destination, !empty($getParams) ? '?' . http_build_query($getParams) : '');
     if (request()->hasHeader("X-Osynapsy-Action")) {
-        response()->go($url);
+        response()->message('command', 'goto', $url);
         return;
     }
     header('Location: '.$url);
