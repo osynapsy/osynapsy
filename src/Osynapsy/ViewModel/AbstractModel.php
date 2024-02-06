@@ -117,7 +117,7 @@ abstract class AbstractModel implements ModelInterface
 
     protected function gotoPreviusPage()
     {
-        $this->getController()->go('back');
+        redirect('back');
     }
 
     protected function historyPushState($id)
