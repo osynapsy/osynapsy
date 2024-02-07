@@ -26,7 +26,7 @@ interface ModelInterface
 
     public function loadValues();
 
-    public function save();
+    public function save() : bool;
 
-    public function delete();
+    public function delete() : bool;
 }

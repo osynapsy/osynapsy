@@ -82,7 +82,7 @@ abstract class AbstractModel implements ModelInterface
         $this->getResponse()->js("parent.$('#".$modalId."').modal('hide')");
     }
 
-    abstract public function delete();
+    abstract public function delete() : bool;
 
     public function getController() : ControllerInterface
     {
@@ -166,9 +166,9 @@ abstract class AbstractModel implements ModelInterface
 
     /**
      *
-     * @return void
+     * @return bool
      */
-    public function save()
+    public function save() : bool
     {
         //Recall before exec method with arbirtary code
         $this->addError($this->beforeSave());
@@ -198,7 +198,7 @@ abstract class AbstractModel implements ModelInterface
         }
         //If occurred some error stop db updating
         if ($this->getResponse()->error()) {
-            return;
+            return false;
         }
         //If where condition is empty execute db insert else execute a db update
         if (empty($where)) {
@@ -209,6 +209,7 @@ abstract class AbstractModel implements ModelInterface
         //Recall after exec method with arbirtary code
         $this->afterSave();
         $this->afterExec();
+        return true;
     }
 
     protected function validateFieldValue(ModelField $field, Field\Validator $validator)

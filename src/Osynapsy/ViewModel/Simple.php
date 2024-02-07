@@ -46,12 +46,14 @@ abstract class Simple implements ModelInterface
     {
     }
 
-    public function save()
+    public function save() : bool
     {
+        return false;
     }
 
-    public function delete()
+    public function delete() : bool
     {
+        return false;
     }
 
     public function getFieldValue($fieldId)

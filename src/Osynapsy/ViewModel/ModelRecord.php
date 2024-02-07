@@ -74,7 +74,7 @@ abstract class ModelRecord extends AbstractModel
         }
     }
 
-    public function save()
+    public function save() : bool
     {
         //Recall before exec method with arbirtary code
         $this->addError($this->beforeSave());
@@ -82,7 +82,7 @@ abstract class ModelRecord extends AbstractModel
         $values = $this->valuesFactory();
         //If occurred some error stop db updating
         if ($this->getResponse()->error()) {
-            return;
+            return false;
         }
         //If behavior of the record is insert exec insert
         switch ($this->getRecord()->getBehavior()) {
@@ -96,7 +96,7 @@ abstract class ModelRecord extends AbstractModel
         //Recall after exec method with arbirtary code
         $this->afterSave();
         $this->afterExec();
-        return $this;
+        return true;
     }
 
     protected function valuesFactory()
@@ -136,10 +136,10 @@ abstract class ModelRecord extends AbstractModel
         $this->afterUpdate($id);
     }
 
-    public function delete()
+    public function delete() : bool
     {
         if ($this->addError($this->beforeDelete())) {
-            return;
+            return false;
         }
         if (empty($this->softDelete)) {
             $this->getRecord()->delete();
@@ -148,6 +148,7 @@ abstract class ModelRecord extends AbstractModel
         }
         $this->afterDelete();
         $this->afterExec();
+        return true;
     }
 
     public function setValue($fieldName, $value, $defaultValue = null)
