@@ -28,7 +28,7 @@ abstract class Model extends ModelRecord
 
     public function __construct(ControllerInterface $controller, ...$args)
     {
-        $this->setController($controller);
+        parent::__construct($controller);
         autowire()->execute($this, 'init');
         $this->mapFactory();
         if (empty($this->table)) {
