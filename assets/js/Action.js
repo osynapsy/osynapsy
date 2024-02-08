@@ -109,49 +109,38 @@ Osynapsy.action =
             console.log('Resp is not an object : ', response);
             return;
         }
-        if (('errors' in response)){
-            this.dispatchErrors(response);
+        if (('error' in response)){
+            this.dispatchError(response['error']);
         }
         if (('command' in response)) {
             this.executeCommands(response);
         }
     },
-    dispatchErrors : function(response)
+    dispatchError : function(rawMessage)
     {
-        var errors = [];
+        let regexp = /<!--.*?-->/gm;
+        let errorMsg = rawMessage[0];
         var self = this;
-        let nocomponents = [];
-        response.errors.forEach(function(val, idx){            
-            if (val[0] === 'alert'){
-                alert(val[1]);
-                return true;
-            }
-            let component = document.getElementById(val[0]);
-            if (!component) {
-                nocomponents.push(val['1']);
-                return true;
-            }
-            errors.push(self.showErrorOnLabel(component, val[1]));
-            if (component.classList.contains('field-in-error')){
-                return true;
-            }
-            component.classList.add('field-in-error');
-            Osynapsy.element(component).on('change', null, function() {
+        let fieldsInError = errorMsg.match(regexp, 'm');
+        if (!Array.isArray(fieldsInError) || fieldsInError.length === 0) {
+            console.log(rawMessage);
+            return;
+        }        
+        fieldsInError.forEach(function(rawId) {
+            let id = rawId.replace('<!--','').replace('-->','');
+            let elm = document.getElementById(id);
+            errorMsg = self.showErrorOnLabel(elm, errorMsg);
+            elm.classList.add('field-in-error');
+            Osynapsy.element(elm).on('change', null, function() {
                 this.classList.remove('field-in-error');
             });
         });
-        if (nocomponents.length > 0) {
-            Osynapsy.showSystemMsg(nocomponents.join('\n'));
-        }
-        if (errors.length === 0) {
-            return;
-        }
         if (typeof $().modal === 'function') {
-            Osynapsy.modal.alert('Si sono verificati i seguenti errori', '<ul><li>' + errors.join('</li><li>') +'</li></ul>');
+            Osynapsy.modal.alert('Alert', '<pre>' + errorMsg.trim() + '</pre>');
             return;
         }
-        alert('Si sono verificati i seguenti errori : \n' + errors.join("\n").replace(/(<([^>]+)>)/ig,""));
-    },
+        alert('Si sono verificati i seguenti errori : ' + errorMsg);
+    },    
     executeCommands : function(response)
     {
         let command;

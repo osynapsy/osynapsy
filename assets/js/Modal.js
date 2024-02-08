@@ -71,7 +71,7 @@ class Modal
             footContainer.appendChild(this.buttonFactory('Conferma', actionConfirm, 'btn-primary pull-right'));
         }
         if (actionCancel !== false) {
-            footContainer.appendChild(this.buttonFactory('Annulla', actionCancel, 'btn-secondary' + (!actionConfirm ? ' pull-right' : '')));
+            footContainer.appendChild(this.buttonFactory('Chiudi', actionCancel, 'btn-secondary' + (!actionConfirm ? ' pull-right' : '')));
         }
         return footContainer;
     }
