@@ -18,7 +18,7 @@ namespace Osynapsy\Http\Response;
  */
 interface ResponseInterface
 {
-    public function add($content);
+    public function writeStream($content);
 
     public function __toString();
 }

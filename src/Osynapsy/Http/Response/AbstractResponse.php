@@ -18,7 +18,7 @@ abstract class AbstractResponse implements ResponseInterface
 {
     protected $headers = [];
     protected $headerNames = [];
-    protected $body = [];
+    protected $streams = [];
 
     /**
      * Init response with the body type
@@ -36,9 +36,9 @@ abstract class AbstractResponse implements ResponseInterface
      * @param mixed $content
      * @return void
      */
-    public function add($content)
+    public function writeStream($content, $stremId = 'main')
     {
-        $this->body[] = $content;
+        $this->streams[$stremId] = $content;
     }
 
     public function clearCache()
@@ -50,15 +50,10 @@ abstract class AbstractResponse implements ResponseInterface
         $this->withHeader("Pragma", "no-cache");
     }
 
-    public function send($body, $part = 'main', $overwriteIfExists = false)
-    {
-        $this->addContent($body, $part, $overwriteIfExists);
-    }
-
     public function get()
     {
         $this->sendHeader();
-        return implode('',$this->body);
+        return implode('', $this->streams);
     }
 
     /**
@@ -72,13 +67,13 @@ abstract class AbstractResponse implements ResponseInterface
     }
 
     /**
-     * Reset body part.
+     * Reset streams.
      *
      * @param mixed $part
      */
-    public function resetContent()
+    public function resetStreams()
     {
-        $this->body = [];
+        $this->streams = [];
     }
 
     /**

@@ -16,16 +16,23 @@ abstract class AbstractModel implements ModelInterface
     protected $controller;
     protected $fields = [];
     protected $redirect;
+    protected $exception;
 
     public function __construct(ControllerInterface $controller)
     {
         $this->setController($controller);
+        $this->exception = new ModelErrorException;
     }
 
-    protected function addError($errorMessage, $target = 'alert', $postfix = '')
+    protected function addError($errorMessage, $target = null, $postfix = '')
     {
-        if (!empty($errorMessage)) {
-            $this->getResponse()->error($target, $errorMessage . $postfix);
+        if (empty($errorMessage)) {
+            return;
+        }
+        if(is_null($target)) {
+            $this->exception->addError($errorMessage . $postfix);
+        } else {
+            $this->exception->addErrorOnField($target, $errorMessage);
         }
     }
 
@@ -77,9 +84,9 @@ abstract class AbstractModel implements ModelInterface
     protected function closeModal(array $parentComponentRefresh = [], $modalId = 'amodal')
     {
         if (!empty($parentComponentRefresh)) {
-            $this->getResponse()->js(sprintf("parent.Osynapsy.refreshComponents(['%s']);", implode("','",$parentComponentRefresh)));
+            $this->getController()->refreshParentComponents($parentComponentRefresh);
         }
-        $this->getResponse()->js("parent.$('#".$modalId."').modal('hide')");
+        $this->getController()->closeModal();
     }
 
     abstract public function delete() : bool;
@@ -143,13 +150,12 @@ abstract class AbstractModel implements ModelInterface
 
     protected function reloadCurrentPage($id = '')
     {
-        $currentPageUrl = $this->getController()->getRequest()->get('page.url');
-        $this->getResponse()->go($currentPageUrl.$id);
+        redirect(request('page.url') . $id);
     }
 
     protected function refreshCurrentPage()
     {
-        $this->getResponse()->go('refresh');
+        redirect('refresh');
     }
 
     protected function setController(ControllerInterface $controller)
@@ -197,8 +203,8 @@ abstract class AbstractModel implements ModelInterface
             }
         }
         //If occurred some error stop db updating
-        if ($this->getResponse()->error()) {
-            return false;
+        if ($this->exception->hasErrors()) {
+            throw $this->exception;
         }
         //If where condition is empty execute db insert else execute a db update
         if (empty($where)) {

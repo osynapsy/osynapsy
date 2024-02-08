@@ -11,41 +11,39 @@
 
 namespace Osynapsy\ViewModel;
 
-use Osynapsy\ViewModel\Field\Field;
-
 /**
  * Description of ModelErrorException
  *
- * @author Pietro
+ * @author Pietro Celeste <p.celeste@osynapsy.net>
  */
 class ModelErrorException extends \Exception
 {
-    private $errors = [];
+    protected $errors = [];
 
-    public function setError($message)
+    public function addError($message)
     {
         $this->errors[] = $message;
         $this->appendToMessage($message);
     }
 
-    public function setErrorOnField(Field $field, $rawErrorMessage)
+    public function addErrorOnField($field, $errorMessage)
     {
-        $errorMessage = str_replace(
-            ['<fieldname>', '<value>'],
-            ['<!--'.$field->html.'-->', $field->value],
-            $rawErrorMessage
-        );
-        $this->errors[$field->html] = $errorMessage;
+        $this->errors[$field] = $errorMessage;
         $this->appendToMessage($errorMessage);
     }
 
-    public function getErrors()
+    public function getErrors() : array
     {
-        return $this->errors;
+        return array_filter($this->errors);
     }
 
-    public function appendToMessage($message)
+    public function hasErrors() : bool
     {
-        $this->message .= PHP_EOL.$message;
+        return !empty(array_filter($this->errors));
+    }
+
+    public function appendToMessage($message) : void
+    {
+        $this->message .= (!empty($this->message) ? PHP_EOL : '') . $message;
     }
 }

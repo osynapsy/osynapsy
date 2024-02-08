@@ -18,12 +18,11 @@ namespace Osynapsy\Http\Response;
  */
 class Json extends AbstractResponse
 {
-    protected $body;
-
     public function __construct()
     {
         parent::__construct('application/json; charset=utf-8');
     }
+    
     /**
      * Implements abstract method for build response
      *
@@ -32,21 +31,11 @@ class Json extends AbstractResponse
     public function __toString()
     {
         $this->sendHeader();
-        return json_encode($this->body);
+        return json_encode($this->streams);
     }
 
-    /**
-     * Dispatch immediatly response
-     */
-    public function dispatch()
+    public function writeStream($content, $id = 'main')
     {
-        ob_clean();
-        $this->sendHeader();
-        die(json_encode($this->body));
-    }
-
-    public function add($body)
-    {
-        $this->body = $body;
+        $this->streams[$id] = $content;
     }
 }

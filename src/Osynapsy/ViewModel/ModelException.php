@@ -14,7 +14,7 @@ namespace Osynapsy\ViewModel;
 /**
  * Description of KernelException
  *
- * @author Peter
+ * @author Pietro Celeste <p.celeste@qanda.cc>
  */
 class ModelException extends \Exception
 {

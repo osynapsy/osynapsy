@@ -76,7 +76,7 @@ class ActionRunner
     private function execDefaultAction($defaultAction) : ResponseInterface
     {
         $response = $this->autowire->execute($this->getController(), $defaultAction);
-        $this->getResponse()->add($response);
+        $this->getResponse()->writeStream($response);
         return $this->getResponse();
     }
 
@@ -93,9 +93,13 @@ class ActionRunner
         $actionHandle = new $actionClass;
         $actionHandle->setController($this->getController());
         $actionHandle->setParameters($parameters);
-        $message = $this->autowire->execute($actionHandle, 'execute', $parameters ?? []);
-        if (!empty($message)) {
-            $this->getController()->alert($message);
+        try {
+            $message = $this->autowire->execute($actionHandle, 'execute', $parameters ?? []);
+            if (!empty($message)) {
+                $this->getController()->alert($message);
+            }
+        } catch(\Exception $e) {
+            $this->getController()->error($e->getMessage());
         }
         return $this->getResponse();
     }
@@ -109,9 +113,13 @@ class ActionRunner
      */
     private function execInternalAction(string $action, array $parameters = []) : ResponseInterface
     {
-        $response = $this->autowire->execute($this->getController(), $action, $parameters);
-        if (!empty($response) && is_string($response)) {
-            $this->getController()->alert($response);
+        try {
+            $response = $this->autowire->execute($this->getController(), $action, $parameters);
+            if (!empty($response) && is_string($response)) {
+                $this->getController()->alert($response);
+            }
+        } catch(\Exception $e) {
+            $this->getController()->error($e->getMessage());
         }
         return $this->getResponse();
     }

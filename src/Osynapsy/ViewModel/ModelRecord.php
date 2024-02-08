@@ -81,8 +81,8 @@ abstract class ModelRecord extends AbstractModel
         //Init arrays
         $values = $this->valuesFactory();
         //If occurred some error stop db updating
-        if ($this->getResponse()->error()) {
-            return false;
+        if ($this->exception->haserrors()) {
+            throw $this->exception;
         }
         //If behavior of the record is insert exec insert
         switch ($this->getRecord()->getBehavior()) {

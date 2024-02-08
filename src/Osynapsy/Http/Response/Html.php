@@ -16,7 +16,7 @@ class Html extends AbstractResponse
     public function __construct()
     {
         parent::__construct('text/html');
-        $this->body = ['main' => []];
+        $this->streams = ['main' => []];
     }
 
        /**
@@ -48,20 +48,20 @@ class Html extends AbstractResponse
      * @param bool $checkUnique
      * @return mixed
      */
-    public function add($body, $partId = 'main')
+    public function writeStream($content, $id = 'main')
     {
-        if (!array_key_exists($partId, $this->body)) {
-            $this->body[$partId] = [];
+        if (!array_key_exists($id, $this->streams)) {
+            $this->streams[$id] = [];
         }
-        $this->body[$partId][] = $body;
+        $this->streams[$id][] = $content;
     }
-    
+
     public function __toString()
     {
         $this->sendHeader();
         $response = '';
-        foreach ($this->body as $content) {
-            $response .= is_array($content) ? implode('',$content) : $content;
+        foreach ($this->streams as $content) {
+            $response .= is_array($content) ? implode('', $content) : $content;
         }
         return $response;
     }

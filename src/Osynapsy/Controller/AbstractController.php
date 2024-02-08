@@ -249,7 +249,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      */
     public function modalAlert(string $message, string $title = 'Alert') : void
     {
-        $this->js(sprintf("Osynapsy.modal.alert('%s','%s')", $title, $message));
+        $this->js("Osynapsy.modal.alert('%s','%s')", $title, nl2br($message));
     }
 
     public function modalConfirm(string $message, string $actionOnConfirm, string $title = 'Confirm') : void
@@ -262,15 +262,39 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
         $this->js(sprintf("Osynapsy.modal.window('%s','%s','%s','%s')", $title, $url, $width, $height));
     }
 
+    public function error($message)
+    {
+        $this->getResponse()->writeStream($message, 'error');
+    }
+
+    /**
+     * Print on console log debug message
+     *
+     * @param string $message to print
+     */
+    public function debug($message)
+    {
+        $backtrace = debug_backtrace(\DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
+        $class = $backtrace[1]['class'] ?? "No class";
+        $function = $backtrace[1]['function'] ?? "No function";
+        $line =  $backtrace[1]['line'] ?? 'no line number';
+        $this->getResponse()->writeStream(date('Y-m-d H:i:s') , sprintf('%s->%s line %s', $class , $function, $line), 'command');
+        $this->getResponse()->writeStream(date('Y-m-d H:i:s') , is_string($message) ? $message : print_r($message, true), 'command');
+    }
+
     /**
      * Send js code to eval and execute on view
      *
      * @param string $jscode code javascript
      *
      */
-    public function js($jscode) : void
+    public function js(...$args) : void
     {
-        $this->getResponse()->message('command', 'execCode', str_replace(PHP_EOL,'\n', strval($jscode)));
+        $jscode = strval(array_shift($args));
+        if (!empty($argv)) {
+            $jscode = sprintf($jscode, ...$args);
+        }
+        $this->getResponse()->writeStream(['execCode', str_replace(PHP_EOL, '\n', $jscode)], 'command');
     }
 
     public function jquery($selector)
