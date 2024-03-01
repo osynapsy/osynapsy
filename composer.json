@@ -18,7 +18,7 @@
         "osynapsy/osynapsy-psr7" : "@stable",
         "osynapsy/osynapsy-assert" : "@stable",
         "osynapsy/osynapsy-datastructure" : "@stable",
-        "osynapsy/osynapsy-database" : "0.6",
+        "osynapsy/osynapsy-database" : "0.7",
         "osynapsy/osynapsy-html2" : "1.*"
     },
     "autoload" : {
