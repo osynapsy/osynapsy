@@ -134,10 +134,11 @@ abstract class AbstractModel implements ModelInterface
 
     abstract protected function insert(array $values);
 
-    public function map($formField, $dbField = null, $defaultValue = null, $type = 'string')
+    public function map($formField, $dbField = null, $defaultValue = null, $type = 'string', $existInForm = null)
     {
+        $fieldExistInForm = is_null($existInForm) ? isset($_REQUEST[$formField]) : true;
         $formValue = isset($_REQUEST[$formField]) ? $_REQUEST[$formField] : null;
-        $modelField = new ModelField($this, $dbField, $formField, $type, isset($_REQUEST[$formField]));
+        $modelField = new ModelField($this, $dbField, $formField, $type, $fieldExistInForm);
         $modelField->setValue($formValue, $defaultValue);
         $this->fields[$modelField->html] = $modelField;
         return $modelField;
