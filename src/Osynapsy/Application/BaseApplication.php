@@ -174,7 +174,7 @@ class BaseApplication implements ApplicationInterface
         $actionId = $this->getRequest()->get('header.X-Osynapsy-Action');
         $actionParameters = $this->getRequest()->get('post.actionParameters');
         list($controllerHandle, $defaultAction) = $this->controllerFactory($this->route->controller, $this);
-        return (string) $this->runAction($controllerHandle, $defaultAction, $actionId, $actionParameters ?? []);
+        return strval($this->runAction($controllerHandle, $defaultAction, $actionId, $actionParameters ?? []));
     }
 
     protected function controllerFactory($classController, $appController)
