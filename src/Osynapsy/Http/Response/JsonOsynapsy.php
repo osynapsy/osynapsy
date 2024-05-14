@@ -11,7 +11,6 @@
 
 namespace Osynapsy\Http\Response;
 
-
 /**
  * Description of JsonOsynapsy
  *
