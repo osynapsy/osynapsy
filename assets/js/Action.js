@@ -124,6 +124,7 @@ Osynapsy.action =
         let fieldsInError = errorMsg.match(regexp, 'm');
         if (!Array.isArray(fieldsInError) || fieldsInError.length === 0) {
             console.log(rawMessage);
+            alert(rawMessage);
             return;
         }        
         fieldsInError.forEach(function(rawId) {
