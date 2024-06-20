@@ -65,7 +65,8 @@ class ActionRunner
         if (method_exists($this->getController(), $actionId.'Action')) {
             return $this->execInternalAction($actionId.'Action', $parameters);
         }
-        return $this->getController()->alert(sprintf('No action %s exist in %s', $actionId, get_class($this->controller)));
+        $this->getController()->alert(sprintf('No action %s exist in %s', $actionId, get_class($this->controller)));
+        return $this->getResponse(); 
     }
 
     /**
