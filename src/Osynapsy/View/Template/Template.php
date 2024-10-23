@@ -100,22 +100,22 @@ class Template
 
     public function addCss($cssWebPath)
     {
-        $this->addIfNoDuplicate(sprintf('<link href="%s" rel="stylesheet" />', $cssWebPath), self::CSS_PART_ID);
+        $this->addIfNoDuplicate(sprintf('<link id="%s" href="%s" rel="stylesheet" />', sha1($cssWebPath), $cssWebPath), self::CSS_PART_ID);
     }
 
     public function addStyle($style)
     {
-        $this->addIfNoDuplicate('<style>'.PHP_EOL.$style.PHP_EOL.'</style>', self::CSS_PART_ID);
+        $this->addIfNoDuplicate(sprintf("<style id=\"%s\">\n%s\n</style>", sha1($style), $style), self::CSS_PART_ID);
     }
 
-    public function addJs($jsWebPath, $scriptId = '')
+    public function addJs($jsWebPath, $scriptId = null)
     {
-        $this->addIfNoDuplicate(sprintf('<script src="%s"%s></script>', $jsWebPath, empty($scriptId) ? '' : " id=\"$scriptId\""), self::JS_PART_ID);
+        $this->addIfNoDuplicate(sprintf('<script id="%s" src="%s"></script>', $scriptId ?? sha1($jsWebPath), $jsWebPath), self::JS_PART_ID);
     }
 
     public function addScript($code)
     {
-        $this->addIfNoDuplicate('<script>'.PHP_EOL.$code.PHP_EOL.'</script>', self::JS_PART_ID);
+        $this->addIfNoDuplicate(sprintf('<script id=\"%s\">\n%s\n</script>', sha1($code), $code), self::JS_PART_ID);
     }
 
     public function addIfNoDuplicate($content, $partId = self::BODY_PART_ID)
@@ -149,7 +149,7 @@ class Template
             }
         }
     }
-    
+
     public function setTitle($title)
     {
         $this->title = $title;
