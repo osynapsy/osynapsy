@@ -258,12 +258,12 @@ var Osynapsy = new (function(){
                     return false;
                 break;
             }
-        }).on('click change', '.dispatch-event', ev => {
+        }).on('click change', '.dispatch-event', function(ev) {
             let eventClass = 'dispatch-event-' + ev.type;
             if (this.classList.contains(eventClass)) {
                 Osynapsy.event.dispatch(this, event.type.charAt(0).toUpperCase() + event.type.slice(1));
             }
-        }).on('click', '.open-modal', e => {
+        }).on('click', '.open-modal', function(e) {
             e.preventDefault();
             Osynapsy.modal.window(
                 this.getAttribute('title'),
