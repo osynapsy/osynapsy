@@ -115,7 +115,7 @@ class Template
 
     public function addScript($code)
     {
-        $this->addIfNoDuplicate(sprintf('<script id=\"%s\">\n%s\n</script>', sha1($code), $code), self::JS_PART_ID);
+        $this->addIfNoDuplicate(sprintf('<script id="%s">%s</script>', sha1($code), $code), self::JS_PART_ID);
     }
 
     public function addIfNoDuplicate($content, $partId = self::BODY_PART_ID)
