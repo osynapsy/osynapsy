@@ -231,3 +231,14 @@ input[type="text"].field-in-error, textarea.field-in-error {
 .osy-system-message.removing {
     transition: margin-right 2s;
 }
+
+.osy-input-underline
+{    
+    border-left-color: transparent !important;
+    border-top-color: transparent !important;
+    border-right-color: transparent !important;
+    border-bottom: 1px solid #ddd !important;
+    border-radius: 0px;
+    padding-left: 1px;
+    margin-left: 0px;
+}
