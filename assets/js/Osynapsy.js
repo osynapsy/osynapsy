@@ -152,7 +152,7 @@ var Osynapsy = new (function(){
                     if (elementIncluded || parentElementIncluded) {
                         rawcallback.apply(event.target.closest(filter), [event]);
                     }
-                };
+                };                
                 event.trim().split(' ').forEach(function (evt) {
                     element.addEventListener(evt, callback);
                 });
