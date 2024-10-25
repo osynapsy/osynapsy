@@ -206,8 +206,7 @@ var Osynapsy = new (function(){
     pub.typingEvent = function(obj)
     {
         if (pub.typingTimeout !== undefined) {
-            clearTimeout(pub.typingTimeout);
-            console.log('not call');
+            clearTimeout(pub.typingTimeout);            
         }
         pub.typingTimeout = setTimeout(function(){
             var code = obj.getAttribute('ontyping');
@@ -225,9 +224,7 @@ var Osynapsy = new (function(){
                 location.reload(true);
                 break;
             case 'back' :
-                Osynapsy.include('History.js', function(){
-                    Osynapsy.History.back();
-                });
+                Osynapsy.include('History.js', () => Osynapsy.History.back());
                 break;
             default :
                 window.location = url;
@@ -248,11 +245,11 @@ var Osynapsy = new (function(){
             Osynapsy.include('History.js', function() { Osynapsy.History.back(); });
         }).on('blur','.blur-execute', function(){
             Osynapsy.action.execute(this);
-        }).on('change','.change-execute[data-action]', function(){
+        }).on('change','.change-execute[data-action]', function() {
             Osynapsy.action.execute(this);
         }).on('keyup', '.typing-execute', function(){
            Osynapsy.typingEvent(this);
-        }).on('keydown','.onenter-execute',function(event){
+        }).on('keydown','.onenter-execute', event => {
             event.stopPropagation();
             switch (event.keyCode) {
                 case 13 : //Enter
@@ -261,12 +258,12 @@ var Osynapsy = new (function(){
                     return false;
                 break;
             }
-        }).on('click change', '.dispatch-event', function(ev){
+        }).on('click change', '.dispatch-event', ev => {
             let eventClass = 'dispatch-event-' + ev.type;
             if (this.classList.contains(eventClass)) {
                 Osynapsy.event.dispatch(this, event.type.charAt(0).toUpperCase() + event.type.slice(1));
             }
-        }).on('click', '.open-modal', function(e) {
+        }).on('click', '.open-modal', e => {
             e.preventDefault();
             Osynapsy.modal.window(
                 this.getAttribute('title'),
@@ -280,7 +277,7 @@ var Osynapsy = new (function(){
 
     pub.post = function(url, values)
     {
-        var form = Osynapsy.createElement('form', {'action' : url, 'method' : 'post'});
+        let form = Osynapsy.createElement('form', {'action' : url, 'method' : 'post'});
         if (!Osynapsy.isEmpty(values)) {
             for (var idx in values) {
                 form.appendChild(Osynapsy.createElement('input', {
@@ -296,8 +293,8 @@ var Osynapsy = new (function(){
 
     pub.refreshComponents = function(components)
     {
-        var componentsIDs = Array.isArray(components) ? components : [components];
-        var execOnSuccess = arguments.length > 1 ? arguments[1] : null;
+        let componentsIDs = Array.isArray(components) ? components : [components];
+        let execOnSuccess = arguments.length > 1 ? arguments[1] : null;
         if (componentsIDs.length === 1 && document.getElementById(componentsIDs[0])) {
             Osynapsy.waitMask.show(document.getElementById(componentsIDs[0]));
         }
@@ -310,21 +307,37 @@ var Osynapsy = new (function(){
                 'Accept': 'text/html'
             }
         });
-        response.then(response => response.text()).then(function(strHtmlPage) {
+        response.then(response => response.text())
+                .then(strHtmlPage => {
             Osynapsy.waitMask.remove();
             let parser = new DOMParser();
-            let remoteDoc = parser.parseFromString(strHtmlPage, 'text/html');
-            for (var i in componentsIDs) {
-                let componentId = componentsIDs[i];
+            let remoteDoc = parser.parseFromString(strHtmlPage, 'text/html');            
+            componentsIDs.forEach(componentId => {                
                 let remoteComponent = remoteDoc.getElementById(componentId);
                 if (remoteComponent && document.getElementById(componentId)) {
                     document.getElementById(componentId).replaceWith(remoteComponent);
+                }
+            });
+            if (remoteDoc.getElementById('responseLibs')) {
+                let appended = 0;
+                Array.from(remoteDoc.getElementById('responseLibs').children).forEach(elm => {                    
+                    if (document.getElementById(elm.getAttribute('id'))) {                        
+                        return;
+                    }                    
+                    document.body.append(!elm.hasAttribute('src') ? elm : Osynapsy.createElement('script', { 
+                        'id' : elm.getAttribute('id'), 
+                        'src' : elm.getAttribute('src')
+                    }));
+                    appended++;
+                });
+                if (appended) {
+                    setTimeout(() => Osynapsy.plugin.init(), 500);
                 }
             }
             if (typeof execOnSuccess === 'function') {
                 execOnSuccess();
             }
-        }).catch(function(error){
+        }).catch(error => {
             Osynapsy.waitMask.remove();
             console.log(error);
         });
@@ -417,13 +430,18 @@ var Osynapsy = new (function(){
         repo : {},
         register : function(name, oninit)
         {
-            this.repo[name] = oninit;
+            this.repo[name] = [oninit, false];
+            console.log('Plugin ' + name + ' registered');
         },
         init : function()
-        {
-            for (let pluginId in this.repo) {
+        {            
+            for (let pid in this.repo) {                
                 try {
-                    this.repo[pluginId]();
+                    if (this.repo[pid][1]) {
+                       throw 'Plugin ' + pid + ' is already init';
+                    }
+                    this.repo[pid][0]();
+                    this.repo[pid][1] = true;
                 } catch (error) {
                     console.log(error);
                 }
