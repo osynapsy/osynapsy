@@ -2,6 +2,8 @@
 use Osynapsy\Kernel;
 use Osynapsy\Helper\AutoWire;
 use Osynapsy\Application\ApplicationInterface;
+use Osynapsy\Controller\ControllerInterface;
+use Osynapsy\Event\Dispatcher;
 use Osynapsy\Application\Session as AppSession;
 use Osynapsy\Database\Driver\DboInterface;
 
@@ -95,6 +97,22 @@ function session(string $key = null)
 {
     $session = AutoWire::getHandle(AppSession::class);
     return is_null($key) ? $session : $session($key);
+}
+
+/**
+ * Return session object or session value key
+ *
+ * @param string event
+ * @return mixed
+ */
+function dispatch(\Osynapsy\Event\Event $event)
+{
+    
+    $dispatcher = new Dispatcher(AutoWire::getHandle(ControllerInterface::class));
+    if ($event) {
+        $dispatcher->dispatch($event);
+    }
+    return $dispatcher;
 }
 
 function debug($value = null, $backtraceLevel = 2)
