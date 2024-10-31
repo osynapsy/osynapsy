@@ -105,13 +105,11 @@ function session(string $key = null)
  * @param string event
  * @return mixed
  */
-function dispatch(\Osynapsy\Event\Event $event)
+function dispatch(?\Osynapsy\Event\Event $event) : Dispatcher
 {
     
     $dispatcher = new Dispatcher(AutoWire::getHandle(ControllerInterface::class));
-    if ($event) {
-        $dispatcher->dispatch($event);
-    }
+    if ($event) { $dispatcher->dispatch($event); }
     return $dispatcher;
 }
 
