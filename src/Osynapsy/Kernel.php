@@ -12,6 +12,8 @@
 namespace Osynapsy;
 
 use Osynapsy\Http\Request;
+use Osynapsy\Http\Emitter;
+use Osynapsy\Http\Response\ResponseInterface;
 use Osynapsy\Psr7\Http\ServerRequest as PsrRequest;
 use Osynapsy\Kernel\ConfigLoader;
 use Osynapsy\Routing\Router;
@@ -30,7 +32,7 @@ use Osynapsy\Helper\AssetLoader\AssetLoader;
 
 class Kernel
 {
-    const VERSION = '0.9.9-DEV';
+    const VERSION = '0.9.10-DEV';
     const ACTION_HEADER_KEY = 'HTTP_X_OSYNAPSY_ACTION';
     const DEFAULT_APP_CONTROLLER = BaseApplication::class;
     const DEFAULT_ASSET_CONTROLLER = AssetLoader::class;
@@ -73,7 +75,8 @@ class Kernel
             $this->loadApplicationRoutes($router, $applications);
             $this->route = $this->findRequestRoute($router, $requestUri);
             $this->validateRouteController($this->route);
-            return $this->runApplication($this->route, $this->getRequest());
+            $response = $this->runApplication($this->route, $this->getRequest());
+            return (new Emitter($response))->emit();
         } catch (\Exception $exception) {
             $errorDispatcher = new ErrorDispatcher($this->getRequest());
             return $errorDispatcher->dispatchException($exception);
@@ -150,14 +153,14 @@ class Kernel
         return $route;
     }
 
-    private function runApplication($route, $request)
+    private function runApplication($route, $request) : ResponseInterface
     {
         $reqApp = $request->get(sprintf("env.app.%s.controller", $route->application));
         //If isn't configured an app controller for current instance load default App controller
         $hypervisorClass = empty($reqApp) ? self::DEFAULT_APP_CONTROLLER : str_replace(':', '\\', $reqApp);
         $hypervisor = new $hypervisorClass($route, $request);
         $hypervisor->setComposer($this->composer);
-        return (string) $hypervisor->execute();
+        return $hypervisor->execute();
     }
 
     private function validateRouteController($route)

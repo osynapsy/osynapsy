@@ -169,12 +169,12 @@ class BaseApplication implements ApplicationInterface
      * @return string
      * @throws \Osynapsy\Kernel\KernelException
      */
-    public function execute() : string
+    public function execute() : ResponseInterface
     {
         $actionId = $this->getRequest()->get('header.X-Osynapsy-Action');
         $actionParameters = $this->getRequest()->get('post.actionParameters');
         list($controllerHandle, $defaultAction) = $this->controllerFactory($this->route->controller, $this);
-        return strval($this->runAction($controllerHandle, $defaultAction, $actionId, $actionParameters ?? []));
+        return $this->runAction($controllerHandle, $defaultAction, $actionId, $actionParameters ?? []);
     }
 
     protected function controllerFactory($classController, $appController)

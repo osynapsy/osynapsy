@@ -22,15 +22,19 @@ class Json extends AbstractResponse
     {
         parent::__construct('application/json; charset=utf-8');
     }
-    
+
     /**
      * Implements abstract method for build response
      *
      * @return json string
      */
     public function __toString()
+    {        
+        return $this->getBody();
+    }
+
+    public function getBody()
     {
-        $this->sendHeader();
         return json_encode($this->streams);
     }
 

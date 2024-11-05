@@ -20,5 +20,9 @@ interface ResponseInterface
 {
     public function writeStream($content);
 
+    public function getHeaders();
+
+    public function getBody();
+
     public function __toString();
 }

@@ -57,12 +57,12 @@ class Html extends AbstractResponse
     }
 
     public function __toString()
+    {        
+        return $this->getBody();
+    }
+
+    public function getBody()
     {
-        $this->sendHeader();
-        $response = '';
-        foreach ($this->streams as $content) {
-            $response .= is_array($content) ? implode('', $content) : $content;
-        }
-        return $response;
+        return implode('', array_map(fn($cnt) => is_array($cnt) ? implode('', $cnt) : $cnt, $this->streams));
     }
 }

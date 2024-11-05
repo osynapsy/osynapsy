@@ -33,7 +33,7 @@ interface ApplicationInterface
 
     public function getRoute() : Route;
 
-    public function execute() : string;
+    public function execute() : ResponseInterface;
 
     public function setComposer($composer);
 

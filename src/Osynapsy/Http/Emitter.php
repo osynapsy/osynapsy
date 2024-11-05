@@ -11,12 +11,13 @@
 
 namespace Osynapsy\Http;
 
-use Psr\Http\Message\ResponseInterface;
+//use Psr\Http\Message\ResponseInterface;
+use Osynapsy\Http\Response\ResponseInterface;
 
 /**
  * Description of Emitter
  *
- * @author pietro
+ * @author Pietro Celeste <p.celeste@osynapsy.net>
  */
 class Emitter
 {
@@ -27,16 +28,18 @@ class Emitter
         $this->response = $response;
     }
 
-    public function get()
+    public function emit() : string
     {
-        foreach($this->response->getHeaders() as $headerName => $header) {
-            header(ucwords($headerName, '-'), implode(',', $header));
-        }
-        return $this->response->getBody()->getContents();
+        $this->emitHeaders($this->response->getHeaders());
+        return strval($this->response->getBody());
     }
 
-    public function __toString()
+    protected function emitHeaders($headers) : void
     {
-        return $this->get();
+        if (!headers_sent() && !empty($headers)) {
+            foreach ($headers as $key => $value) {
+               header($key.': '.(is_array($value) ? implode(', ', $value) : $value));
+            }
+        }
     }
 }

@@ -51,7 +51,7 @@ class ActionRunner
      * @param array $parameters
      * @return \Osynapsy\Http\Response
      */
-    public function run($defaultAction, $actionId, $parameters = [])
+    public function run($defaultAction, $actionId, $parameters = []) : ResponseInterface
     {
         if (method_exists($this->getController(), 'init')) {
             $this->autowire->execute($this->getController(), 'init');

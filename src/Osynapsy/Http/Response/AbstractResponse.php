@@ -137,9 +137,10 @@ abstract class AbstractResponse implements ResponseInterface
     }
 
     /**
+     *  return specific header values (in array) if exists else return empty array
      *
      * @param type $key
-     * @return type
+     * @return array
      */
     public function getHeader($key)
     {
@@ -147,15 +148,13 @@ abstract class AbstractResponse implements ResponseInterface
     }
 
     /**
-     * Send header buffer
+     * Return all headers
+     *
+     * @return array
      */
-    protected function sendHeader()
+    public function getHeaders()
     {
-        if (!headers_sent()) {
-            foreach ($this->headers as $key => $value) {
-               header($key.': '.$value);
-            }
-        }
+        return $this->headers;
     }
 
     /**
@@ -163,4 +162,6 @@ abstract class AbstractResponse implements ResponseInterface
      * @abstract
      */
     abstract public function __toString();
+
+    abstract public function getBody();
 }

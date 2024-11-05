@@ -22,14 +22,19 @@ class Xml extends AbstractResponse
     {
         parent::__construct('application/xml; charset=utf-8');
     }
+    
     /**
      * Implements abstract method for build response
      *
      * @return json string
      */
     public function __toString()
+    {        
+        return $this->getBody();
+    }
+
+    public function getBody()
     {
-        $this->sendHeader();
         return $this->body;
     }
 
