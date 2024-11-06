@@ -15,6 +15,7 @@ use Osynapsy\Http\Request;
 use Osynapsy\Http\Response\ResponseInterface;
 use Osynapsy\Application\ApplicationInterface;
 use Osynapsy\Database\Driver\DboInterface;
+use Osynapsy\Html\Helper\JQuery;
 
 /**
  * Controller Interface
@@ -58,6 +59,8 @@ interface ControllerInterface
     public function refreshParentComponents(array $componentIds) : void;
 
     public function js($jscode) : void;
+
+    public function jquery($jquerySelector) : JQuery;
 
     public function go($destination) : void;
 

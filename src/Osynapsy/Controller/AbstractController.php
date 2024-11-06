@@ -19,6 +19,7 @@ use Osynapsy\Application\ApplicationInterface;
 use Osynapsy\Action\ActionInterface;
 use Osynapsy\Database\Driver\DboInterface;
 use Osynapsy\Observer\SubjectInterface;
+use Osynapsy\Html\Helper\JQuery;
 
 /**
  * Abstract Osynapsy controller.
@@ -297,8 +298,8 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
         $this->getResponse()->writeStream(['execCode', str_replace(PHP_EOL, '\n', $jscode)], 'command');
     }
 
-    public function jquery($selector)
+    public function jquery($selector) : JQuery
     {
-        return new \Osynapsy\Html\Helper\JQuery($selector, $this);
+        return new JQuery($selector, $this);
     }
 }
