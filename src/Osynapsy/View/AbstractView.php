@@ -63,12 +63,12 @@ abstract class AbstractView implements ViewInterface
 
     public function addCss($path)
     {
-        DOM::addCss($path);
+        DOM::requireCss($path);
     }
 
     public function addCssLibrary($path)
     {
-        DOM::addCss(sprintf('/assets/osynapsy/%s/%s', Kernel::VERSION, $path));
+        DOM::requireCss(sprintf('/assets/osynapsy/%s/%s', Kernel::VERSION, $path));
     }
 
     public function addJs($path)
