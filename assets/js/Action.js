@@ -162,9 +162,12 @@ Osynapsy.action =
     showErrorOnLabel : function(elm, err)
     {
         if ($(elm).closest('[data-label]').length > 0) {
-            return err.replace('<!--'+$(elm).attr('id')+'-->', '<strong>' + $(elm).closest('[data-label]').data('label') + '</strong>');
+            return err.replace('<!--' + elm.getAttribute('id') + '-->', '<strong>' + $(elm).closest('[data-label]').data('label') + '</strong>');
         }
-        return err.replace('<!--'+$(elm).attr('id')+'-->', '<i>'+ $(elm).attr('id') +'</i>');
+        if (elm.hasAttribute('placeholder')) {
+            return err.replace('<!--' + elm.getAttribute('id') +'-->', '<strong>' + elm.getAttribute('placeholder') + '</strong>');
+        }
+        return err.replace('<!--' + elm.getAttribute('id') + '-->', '<i>' + elm.getAttribute('id') + '</i>');
     },
     source : null
 };
