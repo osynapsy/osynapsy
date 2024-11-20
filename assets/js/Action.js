@@ -161,13 +161,14 @@ Osynapsy.action =
     },
     showErrorOnLabel : function(elm, err)
     {
-        if ($(elm).closest('[data-label]').length > 0) {
-            return err.replace('<!--' + elm.getAttribute('id') + '-->', '<strong>' + $(elm).closest('[data-label]').data('label') + '</strong>');
-        }
+        let elementId = elm.getAttribute('id');
+        let fieldLabel = elementId;
         if (elm.hasAttribute('placeholder')) {
-            return err.replace('<!--' + elm.getAttribute('id') +'-->', '<strong>' + elm.getAttribute('placeholder') + '</strong>');
-        }
-        return err.replace('<!--' + elm.getAttribute('id') + '-->', '<i>' + elm.getAttribute('id') + '</i>');
+            fieldLabel = elm.getAttribute('placeholder');
+        } else if ($(elm).closest('[data-label]').length > 0) {
+            fieldLabel = $(elm).closest('[data-label]').data('label');
+        }        
+        return err.replace('<!--' + elementId + '-->', '<strong>' + fieldLabel + '</strong>');
     },
     source : null
 };
