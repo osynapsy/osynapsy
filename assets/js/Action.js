@@ -162,12 +162,7 @@ Osynapsy.action =
     showErrorOnLabel : function(elm, err)
     {
         let elementId = elm.getAttribute('id');
-        let fieldLabel = elementId;
-        if (elm.hasAttribute('placeholder')) {
-            fieldLabel = elm.getAttribute('placeholder');
-        } else if ($(elm).closest('[data-label]').length > 0) {
-            fieldLabel = $(elm).closest('[data-label]').data('label');
-        }        
+        let fieldLabel = elm.hasAttribute('placeholder') ? elm.getAttribute('placeholder') : elm.closest('[data-label]') ? elm.closest('[data-label]').dataset.label : elementId;                
         return err.replace('<!--' + elementId + '-->', '<strong>' + fieldLabel + '</strong>');
     },
     source : null
