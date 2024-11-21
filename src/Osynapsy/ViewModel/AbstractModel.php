@@ -24,7 +24,7 @@ abstract class AbstractModel implements ModelInterface
         $this->exception = new ModelErrorException;
     }
 
-    protected function addError($errorMessage, $target = null, $postfix = '')
+    public function addError($errorMessage, $target = null, $postfix = '')
     {
         if (empty($errorMessage)) {
             return;
