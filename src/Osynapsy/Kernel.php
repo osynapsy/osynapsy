@@ -32,7 +32,7 @@ use Osynapsy\Helper\AssetLoader\AssetLoader;
 
 class Kernel
 {
-    const VERSION = '0.9.10-DEV';
+    const VERSION = '0.9.11-DEV';
     const ACTION_HEADER_KEY = 'HTTP_X_OSYNAPSY_ACTION';
     const DEFAULT_APP_CONTROLLER = BaseApplication::class;
     const DEFAULT_ASSET_CONTROLLER = AssetLoader::class;
