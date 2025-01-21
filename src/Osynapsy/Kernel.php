@@ -153,7 +153,7 @@ class Kernel
         return $route;
     }
 
-    private function runApplication($route, $request) : ResponseInterface
+    public function runApplication($route, $request) : ResponseInterface
     {
         $reqApp = $request->get(sprintf("env.app.%s.controller", $route->application));
         //If isn't configured an app controller for current instance load default App controller
