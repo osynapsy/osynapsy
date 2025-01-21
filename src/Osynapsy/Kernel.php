@@ -86,7 +86,7 @@ class Kernel
         }
     }
 
-    private function requestFactory()
+    public function requestFactory()
     {
         $request = new Request($_GET, $_POST, [], $_COOKIE, $_FILES, $_SERVER);
         $request->set('app.parameters', $this->loadConfig('parameter', 'name', 'value'));
