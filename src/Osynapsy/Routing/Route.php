@@ -36,7 +36,7 @@ class Route
         //?????
         '.' => '([.]+){1}'
     ];
-    
+
     private $route = [
         'id' => null,
         'uri' => null,
@@ -44,23 +44,23 @@ class Route
         'controller' => null,
         'template' => null,
         'weight' => null,
-        'acceptedMethods' => null,        
+        'acceptedMethods' => null,
     ];
 
     protected $parameters = [];
-    
+
     public function __construct($id = '', $uri = '', $application = '', $controller = '', $template = '', array $attributes = [])
     {
         $this->id = empty($id) ? sha1($uri) : $id;
         $this->uri = $uri;
         $this->application = trim($application);
         $this->setController($controller);
-        $this->template = $template;      
+        $this->template = $template;
         $this->route += $attributes;
         $this->setAcceptedMethods($this->methods);
         $this->initParameters($uri);
     }
-    
+
     protected function initParameters($uri)
     {
         //   ----- {(.+?)(}|:(.*?)}) ---- Prende i segnaposti in 0 i nome delle variabili in 1 e le espressioni regolari in 3 /order/{sectionid:i}/{id}/{ciao:pippo|pluto}
@@ -73,19 +73,19 @@ class Route
         $parameterIds = $output[1];
         $parameterRules = $output[3];
         foreach($placeholders as $i => $placeholder) {
-            $parameterId = $parameterIds[$i];            
+            $parameterId = $parameterIds[$i];
             $ruleId = $parameterRules[$i] ?: '?';
             $parameterRule = self::PATTERN_MAP[$ruleId] ?? sprintf('(%s)', $ruleId);
             $this->parameters[$parameterId] = [
-                'id' => $parameterId, 
-                'rule' => $ruleId, 
-                'placeholder' => $placeholder, 
+                'id' => $parameterId,
+                'rule' => $ruleId,
+                'placeholder' => $placeholder,
                 'pattern' => $parameterRule,
                 'value' => null
             ];
-        }          
+        }
     }
-    
+
     public function hasParameter($key)
     {
         return array_key_exists($key, $this->parameters);
@@ -98,7 +98,7 @@ class Route
         }
         return $this->parameters[$key]['value'] ?? null;
     }
-    
+
     public function getParameters()
     {
         return $this->parameters;
@@ -111,12 +111,25 @@ class Route
         if (count($output[0]) > count($segmentParams)) {
             throw new \Exception('Number of parameters don\'t match uri params');
         }
-        $url = str_replace($output[0], $segmentParams, $this->uri);
+        $url = $this->placeholderReplace($this->uri, $output[0], $segmentParams);
         $url .= !empty($getParams) ? '?' : '';
         $url .= http_build_query($getParams);
         return $url;
     }
-    
+
+    private function placeholderReplace($stringRaw, $placeholders, $values)
+    {
+        $result = $stringRaw;
+        foreach($placeholders as $i => $placeholder) {
+            $placeholderPos = strpos($result, $placeholder);
+            if ($placeholderPos !== false) {
+                $segment =  $values[$i];
+                $result = substr_replace($result, $segment, $placeholderPos, strlen($placeholder));
+            }
+        }
+        return $result;
+    }
+
     public function getSegment(int $index)
     {
         $segments = explode('/', $this->requestUrl ?? '');
@@ -142,22 +155,22 @@ class Route
                 break;
         }
     }
-    
+
     public static function createFromArray($route)
     {
         return new Route($route['id'], $route['path'], null, $route['@value'], $route['template'], $route);
     }
-    
+
     public function setParameterValues(array $values = [])
-    {                
+    {
         foreach(array_values($this->parameters) as $idx => $par) {
             if (array_key_exists($idx, $values) && $values[$idx] !== '') {
                 $this->parameters[$par['id']]['value'] = $values[$idx];
             }
-        }        
+        }
         $this->weight = count($values);
     }
-    
+
     public function __get($key)
     {
         return array_key_exists($key, $this->route) ? $this->route[$key] : null;
@@ -172,14 +185,14 @@ class Route
     {
         return $this->getUrl();
     }
-    
+
     public function __invoke($key)
     {
         return $this->getParameter($key);
     }
-    
+
     public function getTemplate()
-    {        
+    {
         return request()->getTemplate($this->template);
     }
 }
