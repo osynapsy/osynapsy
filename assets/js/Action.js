@@ -129,12 +129,17 @@ Osynapsy.action =
         }        
         fieldsInError.forEach(function(rawId) {
             let id = rawId.replace('<!--','').replace('-->','');
-            let elm = document.getElementById(id);
-            errorMsg = self.showErrorOnLabel(elm, errorMsg);
-            elm.classList.add('field-in-error');
-            Osynapsy.element(elm).on('change', null, function() {
-                this.classList.remove('field-in-error');
-            });
+            try {
+                let elm = document.getElementById(id);
+                errorMsg = self.showErrorOnLabel(elm, errorMsg);
+                elm.classList.add('field-in-error');
+                Osynapsy.element(elm).on('change', null, function() {
+                    this.classList.remove('field-in-error');
+                });
+            } catch(excp) {
+                errorMsg = errorMsg.replace(rawId, id);
+                console.log(excp);
+            }
         });
         if (typeof $().modal === 'function') {
             Osynapsy.modal.alert('Alert', '<pre>' + errorMsg.trim() + '</pre>');
