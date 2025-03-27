@@ -103,9 +103,10 @@ class ConfigLoader
                 $conf['path'] = 'vendor';
             }
             $appPath = sprintf('%s/../%s/%s/etc/config.xml', $path, $conf['path'], str_replace("_", "/", $app));
-            if (is_file($appPath)) {
-                $this->repo->append('configuration.app.'.$app, $this->loadFile($appPath));
+            if (!is_file($appPath)) {
+                die(sprintf('No configuration app file found in %s', $appPath));
             }
+            $this->repo->append('configuration.app.'.$app, $this->loadFile($appPath));
         }
     }
 
