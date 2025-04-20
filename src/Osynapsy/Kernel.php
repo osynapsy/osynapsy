@@ -14,7 +14,7 @@ namespace Osynapsy;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Emitter;
 use Osynapsy\Http\Response\ResponseInterface;
-use Osynapsy\Psr7\Http\ServerRequest as PsrRequest;
+use Osynapsy\Psr\Http\ServerRequest as PsrRequest;
 use Osynapsy\Kernel\ConfigLoader;
 use Osynapsy\Routing\Router;
 use Osynapsy\Kernel\KernelException;
