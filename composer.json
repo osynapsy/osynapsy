@@ -15,7 +15,7 @@
     ],
     "require": {
         "php": ">=7.4.0",
-        "osynapsy/osynapsy-psr" : "@stable",
+        "osynapsy/psr" : "@stable",
         "osynapsy/osynapsy-assert" : "@stable",
         "osynapsy/osynapsy-datastructure" : "@stable",
         "osynapsy/osynapsy-database" : "@stable",
