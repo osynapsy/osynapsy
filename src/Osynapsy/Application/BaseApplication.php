@@ -58,7 +58,7 @@ class BaseApplication implements ApplicationInterface
         $this->request = $autowire->addHandle($request);
         $this->session = $autowire->addHandle(new Session);
         $this->db = $autowire->addHandle($this->initDatasources($this->dbFactory, $this->request, $this->route));
-        $this->initResponse($this->request);
+        $this->response = $autowire->addHandle($this->initResponse($this->request));
         $autowire->execute($this, 'init');
         $this->autowire = $autowire;
     }
@@ -75,15 +75,12 @@ class BaseApplication implements ApplicationInterface
             case 'application/json':
             case 'application/json-osynapsy':
                 ini_set("xdebug.overload_var_dump", "off");
-                $this->setResponse(new JsonOsynapsyResponse());
-                break;
+                return new JsonOsynapsyResponse();            
             case 'application/xml':
                 ini_set("xdebug.overload_var_dump", "off");
-                $this->setResponse(new XmlResponse());
-                break;
+                return new XmlResponse();           
             default:
-                $this->setResponse(new HtmlResponse());
-                break;
+                return new HtmlResponse();          
         }
     }
 
@@ -195,7 +192,8 @@ class BaseApplication implements ApplicationInterface
      * @return Response
      */
     public function setResponse(ResponseInterface $response)
-    {
+    {        
+        $this->autowire->addHandle($response);
         return $this->response = $response;
     }
 
