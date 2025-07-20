@@ -242,3 +242,18 @@ input[type="text"].field-in-error, textarea.field-in-error {
     padding-left: 1px;
     margin-left: 0px;
 }
+
+.osy-bg-diagonal-lines {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  background-image: repeating-linear-gradient(
+    45deg,            /* Angolo della diagonale */
+    #dfdfdf,          /* Colore della linea */
+    #dfdfdf 1px,      /* Spessore della linea */
+    transparent 2px,  /* Spazio dopo la linea */
+    transparent 7px  /* Spaziatura tra le linee */
+  );  
+  font-family: sans-serif;
+  box-sizing: border-box;
+}
