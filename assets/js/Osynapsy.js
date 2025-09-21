@@ -314,8 +314,10 @@ var Osynapsy = new (function(){
             let remoteDoc = parser.parseFromString(strHtmlPage, 'text/html');            
             componentsIDs.forEach(componentId => {                
                 let remoteComponent = remoteDoc.getElementById(componentId);
-                if (remoteComponent && document.getElementById(componentId)) {
-                    document.getElementById(componentId).replaceWith(remoteComponent);
+                let localComponent = document.getElementById(componentId);
+                if (remoteComponent && localComponent) {               
+                    localComponent.replaceWith(remoteComponent);
+                    document.getElementById(componentId).dispatchEvent(new CustomEvent('afterRefresh', {detail: { componentId }, bubbles: true}));
                 }
             });
             if (remoteDoc.getElementById('responseLibs')) {
