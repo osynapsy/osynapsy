@@ -18,6 +18,11 @@ function request($elementPath = null)
     return is_null($elementPath) ? Kernel::$request : Kernel::$request->get($elementPath);
 }
 
+function psr7Request()
+{
+    return request('psr7Request');
+}
+
 function response()
 {
     return AutoWire::getHandle(Osynapsy\Http\Response\ResponseInterface::class);
@@ -107,7 +112,7 @@ function session(string $key = null)
  */
 function dispatch(?\Osynapsy\Event\Event $event) : Dispatcher
 {
-    
+
     $dispatcher = new Dispatcher(AutoWire::getHandle(ControllerInterface::class));
     if ($event) { $dispatcher->dispatch($event); }
     return $dispatcher;
