@@ -95,9 +95,9 @@ Osynapsy.action =
     {
         var uploadIsRequired = false;
         if (!Osynapsy.isEmpty(form)) {
-            form.querySelectorAll('input[type=file]').forEach(function(inputFileElement){
-                if (!Osynapsy.isEmpty(inputFileElement.value)) {
-                    uploadIsRequired = true;
+            form.querySelectorAll('input[type=file]').forEach(function(inputFileElement) {                
+                if (inputFileElement.files.length > 0) {
+                    uploadIsRequired = true;                    
                 }
             });
         }
