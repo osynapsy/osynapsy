@@ -1,6 +1,6 @@
 {
     "name": "osynapsy/osynapsy-core",
-    "version": "0.9.12",
+    "version": "0.9.20",
     "homepage": "http://www.osynapsy.net",
     "type": "library",
     "description": "Osynapsy is a framework MVC for develop Rich Internet Application (RIA).",
@@ -18,8 +18,8 @@
         "osynapsy/psr" : "@stable",
         "osynapsy/osynapsy-assert" : "@stable",
         "osynapsy/osynapsy-datastructure" : "@stable",
-        "osynapsy/osynapsy-database" : "@stable",
-        "osynapsy/osynapsy-html2" : "1.*"
+        "osynapsy/osynapsy-database" : "^2.0",
+        "osynapsy/osynapsy-html2" : "^1.0"
     },
     "autoload" : {
         "psr-4": {
