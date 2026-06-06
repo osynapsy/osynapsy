@@ -133,7 +133,7 @@ Osynapsy.action =
                 let elm = document.getElementById(id);
                 errorMsg = self.showErrorOnLabel(elm, errorMsg);
                 elm.classList.add('field-in-error');
-                Osynapsy.element(elm).on('change', null, function() {
+                Osynapsy.element(elm).on('blur', null, function() {
                     this.classList.remove('field-in-error');
                 });
             } catch(excp) {
