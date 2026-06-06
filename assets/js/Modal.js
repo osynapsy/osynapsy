@@ -79,7 +79,8 @@ class Modal
 
 Osynapsy.modal.remove = function()
 {
-    $('.modal').remove();
+    $('#amodal').remove();
+    $('.modal').modal('hide');
 };
 
 Osynapsy.modal.confirm = function(title, message, actionConfirm)
