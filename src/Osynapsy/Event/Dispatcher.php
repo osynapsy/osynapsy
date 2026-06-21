@@ -31,17 +31,17 @@ class Dispatcher
     public function dispatch(Event $event)
     {
         $this->loadGlobalListeners($event->getId());
-        $this->triggerEvent($event);
+        return $this->triggerEvent($event);
     }
 
     private function triggerEvent(Event $event)
     {
-        if (empty(self::$listeners[$event->getId()])) {
-            return;
-        }
-        foreach(self::$listeners[$event->getId()] as $listener) {
-            $listener->trigger($event);
-        }
+        $result = [];
+        $listeners = self::$listeners[$event->getId()] ?? [];        
+        foreach($listeners as $eventId => $listener) {
+            $result[$eventId] = $listener->trigger($event);
+        }                       
+        return $result;
     }
 
     private function loadGlobalListeners($eventId)
@@ -86,7 +86,7 @@ class Dispatcher
 
             public function trigger(Event $event)
             {
-                autowire()->execFunction($this->trigger, [$event]);
+                return autowire()->execFunction($this->trigger, [$event]);
             }
         };
         $listener->setTrigger($trigger);
