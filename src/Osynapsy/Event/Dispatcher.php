@@ -16,7 +16,7 @@ use Osynapsy\Controller\ControllerInterface;
 /**
  * Description of Dispatcher
  *
- * @author Peter
+ * @author Pietro Celeste <p.celeste@osynapsy.net>
  */
 class Dispatcher
 {
