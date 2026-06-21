@@ -63,7 +63,10 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
         if (is_object($result) && method_exists($result, 'factory')) {
             $result->factory();
         }
-        $this->getDispatcher()->dispatch(new Event($eventId, $this));
+        $eventResult = $this->getDispatcher()->dispatch(new Event($eventId, $this));
+        if (!empty($eventResult)) {
+            $this->alert(implode(PHP_EOL, $eventResult));
+        }
     }
 
     /**
