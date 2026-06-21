@@ -110,7 +110,7 @@ var Osynapsy = new (function(){
             let response = fetch(actionUrl, {
                 method: 'post',
                 headers: {
-                    'Osynapsy-Action': 'dispatchLocalEvent',
+                    'X-Osynapsy-Action': 'dispatchLocalEvent',
                     'Accept': 'application/json'
                 },
                 body: formData
