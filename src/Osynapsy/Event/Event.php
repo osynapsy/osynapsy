@@ -14,7 +14,7 @@ namespace Osynapsy\Event;
 /**
  * Description of Event
  *
- * @author Peter
+ * @author Pietro Celeste <p.celeste@osynapsy.net>
  */
 class Event 
 {
