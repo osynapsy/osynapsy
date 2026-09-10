@@ -1,4 +1,4 @@
-const Osynapsy = new (function(){
+var Osynapsy = new (function(){
 
     var pub = {modal : {}, action : {}, worker : {}, notification : {}};
 
