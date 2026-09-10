@@ -1,4 +1,4 @@
-var Osynapsy = Osynapsy || {'action' : {}};
+window.Osynapsy = window.Osynapsy || {'action' : {}};
 
 Osynapsy.action =
 {
@@ -141,7 +141,10 @@ Osynapsy.action =
                 console.log(excp);
             }
         });
-        if (typeof $().modal === 'function') {
+        const hasBs4Modal = typeof $ === 'function' && typeof $().modal === 'function';
+        const hasBs5Modal = typeof bootstrap !== 'undefined' && typeof bootstrap.Modal === 'function';
+
+        if (hasBs4Modal || hasBs5Modal) {
             Osynapsy.modal.alert('Alert', '<pre>' + errorMsg.trim() + '</pre>');
             return;
         }
