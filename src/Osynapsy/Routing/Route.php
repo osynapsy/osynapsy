@@ -60,28 +60,43 @@ class Route
         $this->setAcceptedMethods($this->methods);
         $this->initParameters($uri);
     }
-
-    protected function initParameters($uri)
+  
+    function initParameters($uri)
     {
         //   ----- {(.+?)(}|:(.*?)}) ---- Prende i segnaposti in 0 i nome delle variabili in 1 e le espressioni regolari in 3 /order/{sectionid:i}/{id}/{ciao:pippo|pluto}
-        //preg_match_all('/{.+?}/', $route->uri, $output);
-        preg_match_all('/{(.+?)(:([^}]*))?}/', $uri, $output);
+        preg_match_all('/{(.+?)(?::([^}]*))?}/', $uri, $output);
         if (empty($output) || empty($output[0])) {
-            return;
+            return [];
         }
         $placeholders = $output[0];
-        $parameterIds = $output[1];
-        $parameterRules = $output[3];
-        foreach($placeholders as $i => $placeholder) {
-            $parameterId = $parameterIds[$i];
-            $ruleId = $parameterRules[$i] ?: $parameterId ?: '?';
+        $rawIds       = $output[1];
+        $rawRules     = $output[2];
+        foreach ($placeholders as $i => $placeholder) {
+            $rawId = $rawIds[$i];
+            $rawRule = $rawRules[$i];
+
+            if ($rawRule !== '') {
+                // Caso {nome:regola} -> es: {prova:i}
+                $parameterId = $rawId;
+                $ruleId      = $rawRule;
+            } elseif (isset(self::PATTERN_MAP[$rawId])) {
+                // Caso senza due punti -> es: {i} oppure {slug}
+                // Il valore dentro { } è una regola della mappa (es. {i})
+                $ruleId      = $rawId;
+                // Generiamo una chiave unica per evitare sovrascritture se ce ne sono più di uno
+                $parameterId = $rawId . '_' . $i; 
+            } else {
+                // Il valore dentro { } è il nome della variabile, regola di default '?'
+                $parameterId = $rawId;
+                $ruleId      = '?';
+            }
             $parameterRule = self::PATTERN_MAP[$ruleId] ?? sprintf('(%s)', $ruleId);
             $this->parameters[$parameterId] = [
-                'id' => $parameterId,
-                'rule' => $ruleId,
+                'id'          => $parameterId,
+                'rule'        => $ruleId,
                 'placeholder' => $placeholder,
-                'pattern' => $parameterRule,
-                'value' => null
+                'pattern'     => $parameterRule,
+                'value'       => null
             ];
         }
     }
