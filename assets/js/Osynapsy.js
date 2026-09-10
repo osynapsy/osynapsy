@@ -1,4 +1,4 @@
-var Osynapsy = new (function(){
+const Osynapsy = new (function(){
 
     var pub = {modal : {}, action : {}, worker : {}, notification : {}};
 
@@ -237,6 +237,13 @@ var Osynapsy = new (function(){
         Osynapsy.setParentModalTitle();
         Osynapsy.include('Modal.js', function() { if(console) console.log('Modal module is loaded'); });
         Osynapsy.include('Action.js', function() { if(console) console.log('Action module is loaded'); });
+        /*
+         * TODO
+         * Osynapsy.include('Component.js', function() { 
+            Osynapsy.component._observer.observe(document.body, { childList: true, subtree: true });
+            if(console) console.log('Component module is loaded'); 
+        });
+        */
         Osynapsy.element('body').on('click','.save-history', function(){
             Osynapsy.history.save();
         }).on('click','.click-execute, .onclick-execute',function() {
@@ -272,7 +279,7 @@ var Osynapsy = new (function(){
                 this.getAttribute('modal-height')
             );
         });
-        Osynapsy.plugin.init();
+        Osynapsy.plugin.init();        
     };
 
     pub.post = function(url, values)
@@ -293,56 +300,7 @@ var Osynapsy = new (function(){
 
     pub.refreshComponents = function(components)
     {
-        let componentsIDs = Array.isArray(components) ? components : [components];
-        let execOnSuccess = arguments.length > 1 ? arguments[1] : null;
-        if (componentsIDs.length === 1 && document.getElementById(componentsIDs[0])) {
-            Osynapsy.waitMask.show(document.getElementById(componentsIDs[0]));
-        }
-        let form = document.querySelector('form');
-        let response = fetch(window.location.href, {
-            body: new FormData(form),
-            method: 'post',
-            headers: {
-                'Osynapsy-Html-Components': componentsIDs.join(';'),
-                'Accept': 'text/html'
-            }
-        });
-        response.then(response => response.text())
-                .then(strHtmlPage => {
-            Osynapsy.waitMask.remove();
-            let parser = new DOMParser();
-            let remoteDoc = parser.parseFromString(strHtmlPage, 'text/html');            
-            componentsIDs.forEach(componentId => {                
-                let remoteComponent = remoteDoc.getElementById(componentId);
-                let localComponent = document.getElementById(componentId);
-                if (remoteComponent && localComponent) {               
-                    localComponent.replaceWith(remoteComponent);
-                    document.getElementById(componentId).dispatchEvent(new CustomEvent('afterRefresh', {detail: { componentId }, bubbles: true}));
-                }
-            });
-            if (remoteDoc.getElementById('responseLibs')) {
-                let appended = 0;
-                Array.from(remoteDoc.getElementById('responseLibs').children).forEach(elm => {                    
-                    if (document.getElementById(elm.getAttribute('id'))) {                        
-                        return;
-                    }                    
-                    document.body.append(!elm.hasAttribute('src') ? elm : Osynapsy.createElement('script', { 
-                        'id' : elm.getAttribute('id'), 
-                        'src' : elm.getAttribute('src')
-                    }));
-                    appended++;
-                });
-                if (appended) {
-                    setTimeout(() => Osynapsy.plugin.init(), 500);
-                }
-            }
-            if (typeof execOnSuccess === 'function') {
-                execOnSuccess();
-            }
-        }).catch(error => {
-            Osynapsy.waitMask.remove();
-            console.log(error);
-        });
+        Osynapsy.component.reload(components);
     };
 
     pub.waitMask =
@@ -515,8 +473,8 @@ var Osynapsy = new (function(){
             sessionStorage.history = JSON.stringify(history);
             return lastUri;
         }
-    };
-
+    };    
+    
     return pub;
 });
 
