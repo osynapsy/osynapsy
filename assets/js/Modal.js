@@ -166,7 +166,7 @@ Osynapsy.modal.window = function(title, url, width = '640px', height = '480px')
     let modalFactory = new Modal();
 
     let spinner = modalFactory.createElement('i', {'class' : 'fa fa-spinner fa-spin', 'style' : 'font-size: 24px; position: absolute; top: 48%; left: 50%; color:silver;'});
-    let iframe = modalFactory.createElement('iframe', {'onload' : "$(this).prev().hide(); $(this).css('visibility','');", 'name' : 'amodal', 'style' : 'visibility:hidden; width: 100%; height:'+ modalHeight +'; border: 0px; border-radius: 3px;', 'border' : '0'});
+    let iframe = modalFactory.createElement('iframe', {'onload' : "this.previousElementSibling.style.display = 'none'; this.style.visibility = 'visible';", 'name' : 'amodal', 'style' : 'visibility:hidden; width: 100%; height:'+ modalHeight +'; border: 0px; border-radius: 3px;', 'border' : '0'});
     
     if (!Array.isArray(url)) {
         iframe.src = url;
