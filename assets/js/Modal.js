@@ -118,6 +118,21 @@ class Modal
         }
         return footContainer;
     }
+    
+    hide(id) 
+    {
+        let modalEl = typeof id === 'string' ? document.getElementById(id) : id;
+        if (!modalEl) return;
+
+        if (this.isBs5) {
+            let modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+        } else if (typeof $ === 'function' && typeof $().modal === 'function') {
+            $(modalEl).modal('hide');
+        }
+    }
 }
 
 // Metodo Factory centrale richiesto
@@ -126,6 +141,12 @@ Osynapsy.modal.create = function(id, title, body, actionConfirm, actionCancel)
     this.remove();
     let modalFactory = new Modal();
     return modalFactory.create(id, title, body, actionConfirm, actionCancel);
+};
+
+Osynapsy.modal.hide = function(id = 'amodal')
+{
+    let modalFactory = new Modal();
+    modalFactory.hide(id);
 };
 
 Osynapsy.modal.remove = function()

@@ -237,6 +237,7 @@ var Osynapsy = new (function(){
         Osynapsy.setParentModalTitle();
         Osynapsy.include('Modal.js', function() { if(console) console.log('Modal module is loaded'); });
         Osynapsy.include('Action.js', function() { if(console) console.log('Action module is loaded'); });
+        Osynapsy.include('Component.js', function() { if(console) console.log('Component module is loaded'); });
         /*
          * TODO
          * Osynapsy.include('Component.js', function() { 

@@ -237,7 +237,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      */
     public function closeModal() : void
     {
-        $this->js(sprintf("parent.$('#%s').modal('hide')", 'amodal'));
+        $this->js('parent.Osynapsy.modal.hide()');
     }
 
     public function historyPushState($id) : void
