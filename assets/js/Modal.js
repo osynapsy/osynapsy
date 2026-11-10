@@ -3,9 +3,8 @@ window.Osynapsy = window.Osynapsy || {'modal' : {}};
 class Modal
 {
     constructor()
-    {
-        // Rileva la presenza di Bootstrap 5 native o Bootstrap 4 (jQuery)
-        this.isBs5 = typeof bootstrap !== 'undefined' && typeof bootstrap.Modal === 'function';
+    {        
+        this.isBs5 = Osynapsy.modal.getBootstrapVersion() === 'bs5';        
         this.dismissAttr = this.isBs5 ? 'data-bs-dismiss' : 'data-dismiss';
     }
 
@@ -153,13 +152,15 @@ Osynapsy.modal.remove = function()
 {
     let el = document.getElementById('amodal');
     if (el) {
-        // Distruzione istanza nativa se presente (BS5)
-        if (typeof bootstrap !== 'undefined' && typeof bootstrap.Modal === 'function') {
-            let inst = bootstrap.Modal.getInstance(el);
-            if (inst) { inst.hide(); inst.dispose(); }
-        } else if (typeof $ === 'function' && typeof $().modal === 'function') {
-            $(el).modal('hide');
-        }
+        switch(Osynapsy.modal.getBootstrapVersion()) {
+            case 'bs5':
+                let inst = bootstrap.Modal.getInstance(el);
+                if (inst) { inst.hide(); inst.dispose(); }
+                break;
+            case 'bs4':
+                $(el).modal('hide');
+                break;
+        }        
         el.remove();
     }
     // Rimuove la classe backdrop se rimasta appesa
@@ -172,9 +173,13 @@ Osynapsy.modal.confirm = function(title, message, actionConfirm)
     return this.create('amodal', title ? title : 'Conferma', message, actionConfirm);
 };
 
-Osynapsy.modal.alert = function(title, message)
+Osynapsy.modal.alert = function(title, message, prefixSimpleAlert = null)
 {
-    return this.create('amodal', title ? title : 'Alert', message);
+    if (Osynapsy.modal.getBootstrapVersion()) {
+        this.create('amodal', title ? title : 'Alert', message);
+        return;
+    }     
+    alert(prefixSimpleAlert + "\n" + message.replace(/<[^>]*>/g, ''));    
 };
 
 Osynapsy.modal.window = function(title, url, width = '640px', height = '480px')
@@ -216,4 +221,15 @@ Osynapsy.modal.window = function(title, url, width = '640px', height = '480px')
         form.attr('target', target ? target : '');
         form.attr('method', method ? method : '');
     }
+};
+
+Osynapsy.modal.getBootstrapVersion = function()
+{   
+    if (typeof bootstrap !== 'undefined' && typeof bootstrap.Modal === 'function' && bootstrap.Modal.getInstance === 'function') {
+        return 'bs5';
+    }
+    if (typeof $ === 'function' && typeof $().modal === 'function') {
+        return 'bs4';
+    }
+    return null;
 };
