@@ -196,7 +196,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      */
     public function alert($message) : void
     {
-        $this->js(sprintf("alert(['%s'])", addslashes($message)));
+        $this->remoteCall('alert', [$message]);
     }
 
     /**
@@ -206,7 +206,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      */
     public function go($url) : void
     {
-        $this->getResponse()->message('command', 'goto', $url);
+        $this->remoteCall('Osynapsy.goto', $url);
     }
 
     /**
@@ -216,7 +216,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      */
     public function refreshComponents(array $components) : void
     {
-        $this->js(sprintf("Osynapsy.refreshComponents(['%s'])", implode("','", $components)));
+        $this->remoteCall("Osynapsy.refreshComponents", $components);
     }
 
     /**
@@ -226,7 +226,7 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      */
     public function refreshParentComponents(array $components) : void
     {
-        $this->js(sprintf("parent.Osynapsy.refreshComponents(['%s'])", implode("','", $components)));
+        $this->remoteCall("parent.Osynapsy.refreshComponents", $components);
     }
 
     /**
@@ -237,12 +237,12 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      */
     public function closeModal() : void
     {
-        $this->js('parent.Osynapsy.modal.hide()');
+        $this->remoteCall('parent.Osynapsy.modal.hide');
     }
 
     public function historyPushState($id) : void
     {
-        $this->js(sprintf("history.pushState(null,null,'%s');", $id));
+        $this->remoteCall("history.pushState", null, null, $id);
     }
 
     /**
@@ -253,17 +253,18 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
      */
     public function modalAlert(string $message, string $title = 'Alert') : void
     {
-        $this->js("Osynapsy.modal.alert('%s','%s')", $title, nl2br($message));
+        //$this->js("Osynapsy.modal.alert('%s','%s')", $title, nl2br($message));
+        $this->remoteCall('Osynapsy.modal.alert', $message, $title);
     }
 
     public function modalConfirm(string $message, string $actionOnConfirm, string $title = 'Confirm') : void
     {
-        $this->js(sprintf("Osynapsy.modal.confirm('%s','%s','%s')", $title, $message, $actionOnConfirm));
+        $this->remoteCall('Osynapsy.modal.confirm', $title, $message, $actionOnConfirm);
     }
 
     public function modalWindow(string $title, string $url, string $width = '640px', string $height = '480px') : void
     {
-        $this->js(sprintf("Osynapsy.modal.window('%s','%s','%s','%s')", $title, $url, $width, $height));
+        $this->remoteCall("Osynapsy.modal.window", $title, $url, $width, $height);
     }
 
     public function error($message)
@@ -301,6 +302,11 @@ abstract class AbstractController implements ControllerInterface, SubjectInterfa
         $this->getResponse()->writeStream(['execCode', str_replace(PHP_EOL, '\n', $jscode)], 'command');
     }
 
+    public function remoteCall($methods, ...$args) : void
+    {        
+        $this->getResponse()->writeStream(array_merge([$methods], $args), 'command');
+    }
+    
     public function jquery($selector) : JQuery
     {
         return new JQuery($selector, $this);
