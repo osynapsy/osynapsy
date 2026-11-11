@@ -16,57 +16,87 @@ var Osynapsy = new (function(){
     };
 
     pub.ajax =
-    {
-        execute : function(options)
+    {                            
+        execute : function(options) 
         {
             let request = new XMLHttpRequest();
-            if (!('headers' in options)) {
-                options['headers'] = {};
+            options = Object.assign({
+                headers: {},
+                type: 'get',
+                url: window.location.href,
+                data: null
+            }, options);
+
+            let lastIndex = 0;
+            let buffer = '';
+                        
+            if ('onMessage' in options) {
+                request.addEventListener('progress', (event) => {                    
+                    let chunk = request.responseText.substring(lastIndex);                        
+                    lastIndex = request.responseText.length;
+                    buffer += chunk;
+                    let lines = buffer.split('\n');
+                    buffer = lines.pop();
+                    lines.forEach(function(line) {                        
+                        if (!line.trim()) return;
+                        try {
+                            options.onMessage(JSON.parse(line));
+                        } catch(err) {
+                            console.log('onMessage - Errore nel parsare la stringa ', line);
+                            console.log(err);
+                        }
+                    });                    
+                    options.progress(event);
+                });
             }
-            if (!('type' in options)) {
-                options['type'] = 'get';
-            }
-            if (!('url' in options)) {
-                options['url'] = window.location;
-            }
-            if (!('data' in options)) {
-                options['data'] = null;
-            }
-            if ('uploadProgress' in options) {
-                request.upload.addEventListener("progress", options.uploadProgress, false);
-            }
+
             if ('success' in options) {
-                request.addEventListener("load",  function(event) {
+                request.addEventListener('load', function(event) {
                     try {
-                        let data = event.target.responseText;
-                        switch(options.dataType) {
-                            case 'json':
-                                data = JSON.parse(event.target.responseText);
-                                break;
+                        // Elabora l'eventuale ultima riga.
+                        if ('onMessage' in options) {
+                            if (buffer.trim()) {
+                                options.success(JSON.parse(buffer));
+                            }
+                            buffer = '';
+                            return;
+                        }
+                        let data = request.responseText;
+                        if (options.dataType === 'json') {
+                            data = JSON.parse(data);
                         }
                         options.success(data);
                     } catch (err) {
-                        options.error(event.target, 'error', err.message);
+                        if ('error' in options) {
+                            options.error(request, 'error', err.message);
+                        }
                     }
                 });
             }
-            if ('progress' in options) {
-                request.addEventListener("progress", options.progress);
+
+            if ('uploadProgress' in options) {
+                request.upload.addEventListener('progress', options.uploadProgress, false);
             }
+
             if ('error' in options) {
-                request.addEventListener("error", options.error);
+                request.addEventListener('error', options.error);
             }
+
             if ('abort' in options) {
-                request.addEventListener("abort", options.abort);
+                request.addEventListener('abort', options.abort);
             }
+
             request.open(options.type, options.url);
+
             Object.entries(options.headers).forEach(function(header) {
                 request.setRequestHeader(header[0], header[1]);
             });
+
             if ('beforeSend' in options) {
                 options.beforeSend();
             }
-            request.send(options['data']);
+            
+            request.send(options.data);
             return request;
         }
     };
@@ -237,14 +267,12 @@ var Osynapsy = new (function(){
         Osynapsy.setParentModalTitle();
         Osynapsy.include('Modal.js', function() { if(console) console.log('Modal module is loaded'); });
         Osynapsy.include('Action.js', function() { if(console) console.log('Action module is loaded'); });
-        Osynapsy.include('Component.js', function() { if(console) console.log('Component module is loaded'); });
-        /*
-         * TODO
-         * Osynapsy.include('Component.js', function() { 
+        //Osynapsy.include('Component.js', function() { if(console) console.log('Component module is loaded');});
+         Osynapsy.include('Component.js', function() { 
             Osynapsy.component._observer.observe(document.body, { childList: true, subtree: true });
+            Osynapsy.component.scan();
             if(console) console.log('Component module is loaded'); 
-        });
-        */
+        });        
         Osynapsy.element('body').on('click','.save-history', function(){
             Osynapsy.history.save();
         }).on('click','.click-execute, .onclick-execute',function() {
@@ -319,8 +347,8 @@ var Osynapsy = new (function(){
         },
         show : function()
         {
-            let message = 'PLEASE WAIT <span class="fa fa-refresh fa-sync fa-spin"></span>';
-            var parent = arguments.length > 0 ? arguments[0] : document;
+            let message = 'PLEASE WAIT <span class="spinner-border" role="status" style="width: 1rem; height: 1rem;"></span> <span class="fa fa-refresh fa-sync fa-spin"></span>';
+            let parent = arguments.length > 0 ? arguments[0] : document;
             this.build(message, parent);
         },
         showProgress : function()

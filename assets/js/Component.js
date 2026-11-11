@@ -23,23 +23,11 @@ Osynapsy.component =
         });
     }),
 
-    boot(el)
-    {
-        if (el.hasAttribute('data-osy-booted')) return;        
-        const initPath = el.getAttribute('data-init');
-        const initFunc = this.resolveNamespace(initPath, window);
-        console.log(initFunc);
-        if (!initFunc) {
-            console.log('[Osynapsy] La funzione di inizializzazione ${initPath} non esiste.');
-            return;                
-        }
-        try {
-            // Esegue la funzione passandogli l'elemento HTML
-            initFunc(el);
-            el.setAttribute('data-osy-booted', 'true');
-        } catch (error) {
-            console.error(`[Osynapsy] Errore durante l'esecuzione di ${initPath} su:`, el, error);
-        }
+    // Funzione di utilità per scansionare un intero container (es. al caricamento pagina)
+    scan(container = document) {
+        container.querySelectorAll('.osy-component:not([data-osy-booted])').forEach(el => {
+            this.enqueue(el);
+        });        
     },
 
     enqueue(element)
@@ -53,7 +41,7 @@ Osynapsy.component =
             queueMicrotask(() => this.flush());
         }
     },
-
+    
     flush() {            
         if (this._queue.size === 0) {
             this._isFlushing = false;
@@ -75,12 +63,20 @@ Osynapsy.component =
             detail: { bootedElements: currentBatch }
         }));
     },
-
-    // Funzione di utilità per scansionare un intero container (es. al caricamento pagina)
-    scan(container = document) {
-        container.querySelectorAll('.osy-component:not([data-osy-booted])').forEach(el => {
-            this.enqueue(el);
-        });
+    
+    boot(el)
+    {
+        if (el.hasAttribute('data-osy-booted')) return;
+        if (!el.hasAttribute('data-init')) return;        
+        const initPath = el.getAttribute('data-init');
+        try {            
+            const initFunc = this.resolveNamespace(initPath, window); 
+            // Esegue la funzione passandogli l'elemento HTML
+            initFunc(el);
+            el.setAttribute('data-osy-booted', 'true');
+        } catch (error) {
+            console.error(`[Osynapsy] Errore durante l'esecuzione di ${initPath} su:`, el.getAttribute('id'), error);
+        }
     },
 
     // Funzione helper per risolvere stringhe con il "dot notation" (es. "BclDatePicker2.initSingle")
@@ -98,7 +94,10 @@ Osynapsy.component =
             current = current[part];
         }
         // Restituisce la funzione solo se è effettivamente un costruttore o una funzione eseguibile
-        return typeof current === 'function' ? current : null;
+        if (typeof current !== 'function') {
+            throw new Error(`La funzione ${path} non esiste`);
+        }
+        return current;
     },
     
     reload(components)
@@ -108,7 +107,7 @@ Osynapsy.component =
         if (componentsIDs.length === 1 && document.getElementById(componentsIDs[0])) {
             Osynapsy.waitMask.show(document.getElementById(componentsIDs[0]));
         }
-        let form = document.querySelector('form');
+        let form = document.querySelector('form');        
         let response = fetch(window.location.href, {
             body: new FormData(form),
             method: 'post',
@@ -121,9 +120,9 @@ Osynapsy.component =
                 .then(strHtmlPage => {
             Osynapsy.waitMask.remove();
             let parser = new DOMParser();
-            let remoteDoc = parser.parseFromString(strHtmlPage, 'text/html');            
-            componentsIDs.forEach(componentId => {                
-                let remoteComponent = remoteDoc.getElementById(componentId);
+            let remoteDoc = parser.parseFromString(strHtmlPage, 'text/html');           
+            componentsIDs.forEach(componentId => {                 
+                let remoteComponent = remoteDoc.getElementById(componentId);                
                 let localComponent = document.getElementById(componentId);
                 if (remoteComponent && localComponent) {               
                     localComponent.replaceWith(remoteComponent);
