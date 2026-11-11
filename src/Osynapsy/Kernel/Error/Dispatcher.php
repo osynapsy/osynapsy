@@ -113,6 +113,9 @@ class Dispatcher
 
     public function dispatchException(\Exception $e)
     {
+        if (ob_get_length()) {
+            ob_clean();
+        }
         switch($e->getCode()) {
             case '403':
             case '404':
@@ -143,7 +146,6 @@ class Dispatcher
 
     public function httpErrorFactory(\Exception $e)
     {
-        ob_clean();
         http_response_code($e->getCode());
         $pageError = $this->htmlPageFactory();
         $pageError->setMessage($e->getMessage() . ' | '.$e->getCode(), method_exists($e, 'getInfoMessage') ? $e->getInfoMessage() : '');
@@ -152,7 +154,6 @@ class Dispatcher
 
     public function pageTraceError($message, $trace = [])
     {
-        ob_clean();
         $comments = [];
         if (!empty($this->request) && empty($this->request->get('env.instance.debug'))) {
             $comments[] = trim($message).PHP_EOL;
