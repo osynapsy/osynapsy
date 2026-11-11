@@ -14,7 +14,8 @@ namespace Osynapsy\Application;
 use Osynapsy\Routing\Route;
 use Osynapsy\Http\Request;
 use Osynapsy\Http\Response\ResponseInterface;
-use Osynapsy\Http\Response\JsonOsynapsy as JsonOsynapsyResponse;
+use Osynapsy\Http\Response\JsonOsynapsy;
+use Osynapsy\Http\Response\JsonStream;
 use Osynapsy\Http\Response\Html as HtmlResponse;
 use Osynapsy\Http\Response\Xml as XmlResponse;
 use Osynapsy\Helper\AutoWire;
@@ -69,19 +70,19 @@ class BaseApplication implements ApplicationInterface
      */
     protected function initResponse($request)
     {
-        $accept = $request->getAcceptedContentType() ?: ['text/html'];
-        switch($accept[0]) {
-            case 'text/json':
-            case 'application/json':
-            case 'application/json-osynapsy':
-                ini_set("xdebug.overload_var_dump", "off");
-                return new JsonOsynapsyResponse();            
-            case 'application/xml':
-                ini_set("xdebug.overload_var_dump", "off");
-                return new XmlResponse();           
-            default:
-                return new HtmlResponse();          
-        }
+        $accept = $request->getAcceptedContentType() ?: ['text/html'];        
+        return match($accept[0]) {
+            'text/json',
+            'application/json',
+            'application/x-osyjson' 
+                => new JsonOsynapsy,  
+            'application/x-ndjson' 
+                => new JsonStream, 
+            'application/xml' 
+                => new XmlResponse(),           
+            default 
+                => new HtmlResponse()          
+        };
     }
 
     /**
