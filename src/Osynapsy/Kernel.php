@@ -83,12 +83,9 @@ class Kernel
             $r_emit = (new Emitter($response))->emit();
             self::addTime('kernel.run');
             return $r_emit;
-        } catch (\Exception $exception) {
+        } catch (\Exception | \Error $exception) {
             $errorDispatcher = new ErrorDispatcher($this->getRequest());
             return $errorDispatcher->dispatchException($exception);
-        } catch (\Error $error) {
-            $errorDispatcher = new ErrorDispatcher($this->getRequest());
-            return $errorDispatcher->dispatchError($error);
         }
     }
 
@@ -212,17 +209,17 @@ class Kernel
     {
         return self::VERSION;
     }
-    
+
     public static function addTime($id, float $now = null)
     {
         if (empty(self::$times[$id])) {
             self::$times[$id] = [$now ?? microtime(true)];
         }
-        self::$times[$id][1] = $now ?? microtime(true);        
+        self::$times[$id][1] = $now ?? microtime(true);
     }
-    
+
     public static function getTime($id, $endId = null)
     {
-        return self::$times[$endId ?? $id][1] - self::$times[$id][0]; 
+        return self::$times[$endId ?? $id][1] - self::$times[$id][0];
     }
 }
