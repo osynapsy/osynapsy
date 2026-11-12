@@ -111,7 +111,7 @@ class Dispatcher
         $this->request = $request;
     }
 
-    public function dispatchException(\Exception $e)
+    public function dispatchException(\Exception|\Error $e)
     {
         if (ob_get_length()) {
             ob_clean();
@@ -128,12 +128,6 @@ class Dispatcher
                 $this->pageTraceError($this->formatMessage($e), $e->getTrace());
                 break;
         }
-        return $this->get();
-    }
-
-    public function dispatchError(\Error $e)
-    {
-        $this->pageTraceError($this->formatMessage($e), $e->getTrace());
         return $this->get();
     }
 
